@@ -155,6 +155,9 @@ const toolTipGen = (Message, Truck) => {
 const totalWeighBridgeUpload = (driver_vehicles) => {
     var total = 0.0;
 
+    if(Array.isArray(driver_vehicles)){
+        return  total;
+    }
     driver_vehicles.forEach(function (arrayItem) {
         var uploadWeight = arrayItem.weighbridge_upload_weight;
         total +=uploadWeight;
@@ -165,6 +168,10 @@ const totalWeighBridgeUpload = (driver_vehicles) => {
 
 const totalWeighBridgeOffload = (driver_vehicles) => {
     var total = 0.0;
+
+    if(Array.isArray(driver_vehicles)){
+        return  total;
+    }
 
     driver_vehicles.forEach(function (arrayItem) {
         var uploadWeight = arrayItem.weighbridge_upload_weight;

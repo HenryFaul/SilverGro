@@ -94,6 +94,10 @@ let NiceNumber = (_number) => {
 const totalWeighBridgeUpload = (driver_vehicles) => {
     var total = 0.0;
 
+    if(Array.isArray(driver_vehicles)){
+        return  total;
+    }
+
     driver_vehicles.forEach(function (arrayItem) {
         var uploadWeight = arrayItem.weighbridge_upload_weight;
         total +=uploadWeight;
@@ -105,6 +109,10 @@ const totalWeighBridgeUpload = (driver_vehicles) => {
 const totalWeighBridgeOffload = (driver_vehicles) => {
     var total = 0.0;
 
+    if(Array.isArray(driver_vehicles)){
+        return  total;
+    }
+
     driver_vehicles.forEach(function (arrayItem) {
         var uploadWeight = arrayItem.weighbridge_upload_weight;
         total +=uploadWeight;
@@ -114,6 +122,10 @@ const totalWeighBridgeOffload = (driver_vehicles) => {
 }
 
 const isPaymentOverdue = (driver_vehicles) => {
+
+    if(Array.isArray(driver_vehicles)){
+        return  false;
+    }
 
     driver_vehicles.forEach(function (arrayItem) {
         var paymentStatus = arrayItem.is_payment_overdue;
@@ -229,8 +241,6 @@ const niceWeighOffOrOutgoing = (trans) => {
     }
 
 }
-
-
 
 
 </script>
