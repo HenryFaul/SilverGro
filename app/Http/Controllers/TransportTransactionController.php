@@ -33,11 +33,13 @@ class TransportTransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, User $user)
+    public function index(Request $request,)
     {
-        $view_only = $user->cannot('ViewOnly');
+        $user = auth()->user();
 
-        if ($view_only){
+        $view_only = $user->can('view-only');
+
+        if ($view_only) {
             return to_route('no_permission');
         }
 
@@ -84,10 +86,19 @@ class TransportTransactionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TransportTransaction $transportTransaction): Response|ResponseFactory
+    public function show(TransportTransaction $transportTransaction)
     {
+        $user = auth()->user();
 
-        $transportTransaction= TransportTransaction::where('id',$transportTransaction->id)->with('TransportLoad')->with('TransportFinance')->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))->with('AssignedUserComm', fn($query) => $query->with('AssignedUserSupplier')->with('AssignedUserCustomer'))
+        $view_only = $user->can('view-only');
+
+        if ($view_only) {
+            return to_route('no_permission');
+        }
+
+
+
+        $transportTransaction = TransportTransaction::where('id', $transportTransaction->id)->with('TransportLoad')->with('TransportFinance')->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))->with('AssignedUserComm', fn($query) => $query->with('AssignedUserSupplier')->with('AssignedUserCustomer'))
             ->with('TransportJob', fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo')
                 ->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle', fn($query) => $query->with('VehicleType'))))->first();
 
@@ -118,17 +129,17 @@ class TransportTransactionController extends Controller
                 'contract_types' => $contract_types,
                 'all_suppliers' => $suppliers,
                 'all_transporters' => $transporters,
-                'all_staff'=>$staff,
-                'confirmation_types'=>$confirmation_types,
-                'all_product_sources'=>$product_sources,
-                'all_packaging'=>$packaging,
-                'all_billing_units'=>$billing_units,
-                'loading_hour_options'=>$loading_hour_options,
-                'all_drivers'=>$all_drivers,
-                'all_vehicles'=>$all_vehicles,
-                'all_transport_rates'=>$all_transport_rates,
-                'all_status_entities'=>$all_status_entities,
-                'all_status_types'=>$all_status_types
+                'all_staff' => $staff,
+                'confirmation_types' => $confirmation_types,
+                'all_product_sources' => $product_sources,
+                'all_packaging' => $packaging,
+                'all_billing_units' => $billing_units,
+                'loading_hour_options' => $loading_hour_options,
+                'all_drivers' => $all_drivers,
+                'all_vehicles' => $all_vehicles,
+                'all_transport_rates' => $all_transport_rates,
+                'all_status_entities' => $all_status_entities,
+                'all_status_types' => $all_status_types
             ]
         );
     }
@@ -151,7 +162,7 @@ class TransportTransactionController extends Controller
               'product_notes','supplier_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes',
               'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at'];*/
 
-       // dd($request->transport_date_earliest);
+        // dd($request->transport_date_earliest);
         //dd(Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg'));
 
 
@@ -209,11 +220,10 @@ class TransportTransactionController extends Controller
         );
 
 
-        if($is_updated){
+        if ($is_updated) {
             $request->session()->flash('flash.bannerStyle', 'success');
             $request->session()->flash('flash.banner', 'Transport Transaction updated');
-        }
-        else {
+        } else {
             $request->session()->flash('flash.bannerStyle', 'danger');
             $request->session()->flash('flash.banner', 'Transport NOT updated');
         }

@@ -106,6 +106,12 @@ const submit = () => {
                 <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Register
                 </PrimaryButton>
+
+
+            </div>
+
+            <div class="mt-4">
+                <InputError class="mt-2 font-bold text-lg" :message="form.errors.can_register" />
             </div>
         </form>
     </AuthenticationCard>
