@@ -4,7 +4,7 @@ import PaginationModified from "@/Components/UI/PaginationModified.vue";
 import Icon from "@/Components/Icon.vue";
 import {EnvelopeIcon, PhoneIcon} from '@heroicons/vue/20/solid'
 import {useForm} from "@inertiajs/vue3";
-import {computed, onMounted, onBeforeMount, watch} from "vue";
+import {computed, onMounted, onBeforeMount, watch, ref} from "vue";
 import {debounce} from "lodash";
 import BaseTooltip from "@/Components/UI/BaseTooltip.vue";
 import VueDatePicker from '@vuepic/vue-datepicker';
@@ -117,7 +117,7 @@ let TrunkCateText = (_text) => {
 }
 
 let NiceNumber = (_number) => {
-    let val = (_number / 1).toFixed(2).replace(".", ".");
+    let val = isNaN(_number) ? 0.0 : (_number / 1).toFixed(2).replace(".", ".");
     return "R " + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
@@ -174,6 +174,45 @@ const totalWeighBridgeOffload = (driver_vehicles) => {
     return total;
 }
 
+let mon = ref(true);
+let tue = ref(true);
+let wed = ref(true);
+let thu = ref(true);
+let fri = ref(true);
+let sat = ref(true);
+let sun = ref(true);
+
+let dayIncluded = (_date) => {
+    let _day = NiceDay(_date);
+    switch(_day) {
+        case 1:
+            return mon.value;
+        case 2:
+            return tue.value;
+        case 3:
+            return wed.value;
+        case 4:
+            return thu.value;
+        case 5:
+            return fri.value;
+        case 6:
+            return sat.value;
+        case 7:
+            return sun.value;
+        default:
+            return false;
+    }
+};
+
+let filteredTrans = computed(() =>
+    (mon.value && tue.value && wed.value && thu.value && fri.value && sat.value && sun.value )
+        ? props.transport_trans.data
+        : props.transport_trans.data.filter((trans) => {
+            return dayIncluded(trans.transport_date_earliest)
+        })
+);
+
+
 </script>
 
 <template>
@@ -214,6 +253,68 @@ const totalWeighBridgeOffload = (driver_vehicles) => {
                             <div class="text-xs mt-1 ml-2">
                                 ({{ NiceTDate(start_of_week) }} to {{ NiceTDate(end_of_week) }})
                             </div>
+
+                            <div class="row  mt-3">
+                                <div class="flex">
+                                    <div class="relative flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input v-model="mon" id="mon" aria-describedby="candidates-description" name="mon" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="mon" class="font-medium text-gray-900">Mon</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input v-model="tue" id="tue" aria-describedby="candidates-description" name="tue" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="tue" class="font-medium text-gray-900">Tue</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="wed" v-model="wed" aria-describedby="candidates-description" name="wed" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="wed" class="font-medium text-gray-900">Wed</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="thu" v-model="thu" aria-describedby="candidates-description" name="thu" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="thu" class="font-medium text-gray-900">Thu</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="fri" v-model="fri" aria-describedby="candidates-description" name="fri" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="fri" class="font-medium text-gray-900">Fri</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="sat" v-model="sat" aria-describedby="candidates-description" name="sat" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="sat" class="font-medium text-gray-900">Sat</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="sun" v-model="sun" aria-describedby="candidates-description" name="sun" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="sun" class="font-medium text-gray-900">Sun</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
 
                         <div class="basis-1/4">
@@ -247,6 +348,7 @@ const totalWeighBridgeOffload = (driver_vehicles) => {
 
                         </div>
 
+
                     </div>
 
 
@@ -254,12 +356,14 @@ const totalWeighBridgeOffload = (driver_vehicles) => {
 
                         <div class="px-4 sm:px-6 lg:px-8">
 
+
+
                             <div class="mt-2 flow-root">
 
                                 <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                                     <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
 
-                                        <div v-if="transport_trans.data.length > 0">
+                                        <div v-if="filteredTrans.length > 0">
                                             <div class="bg-white rounded-md shadow overflow-x-auto">
                                                 <table class="min-w-full table-auto">
                                                     <thead class="bg-indigo-400">
@@ -291,9 +395,8 @@ const totalWeighBridgeOffload = (driver_vehicles) => {
                                                     <tbody class="bg-white divide-y divide-gray-200">
 
 
-                                                    <tr v-for="(trans, index) in transport_trans.data"
+                                                    <tr v-for="(trans, index) in filteredTrans"
                                                         :key="trans.id" :class="DayStyle(trans.transport_date_earliest)">
-
 
                                                         <td class="py-4 px-6">
                                                             <div v-if="trans.supplier.terms_of_payment_id == 1">
@@ -507,7 +610,7 @@ const totalWeighBridgeOffload = (driver_vehicles) => {
                                                         <td class="py-4 px-6 whitespace-nowrap">
 
                                                             <div
-                                                                :class="trans.supplier.terms_of_payment_id == 1? 'p-2 bg-red-600 rounded': ''">
+                                                                :class="trans.supplier.terms_of_payment_id === 1? 'p-2 bg-red-600 rounded': ''">
                                                                 {{
                                                                     NiceNumber(trans.transport_invoice_details.cost_price)
                                                                 }}
@@ -521,10 +624,10 @@ const totalWeighBridgeOffload = (driver_vehicles) => {
                                                         <td class="py-4 px-6 whitespace-nowrap">
 
                                                             <div v-if="totalWeighBridgeUpload(trans.transport_driver_vehicle)>0">
-                                                                {{ NiceNumber(totalWeighBridgeUpload(trans.transport_driver_vehicle)*(trans.transport_finance.selling_price_per_ton))}}
+                                                                {{ NiceNumber(totalWeighBridgeUpload(trans.transport_driver_vehicle*trans.transport_finance.selling_price_per_ton))}}
                                                             </div>
                                                             <div v-else>
-                                                                {{NiceNumber(trans.transport_finance.selling_price_per_ton)*(trans.transport_finance.weight_ton_incoming)}}
+                                                                {{NiceNumber(trans.transport_finance.selling_price_per_ton*trans.transport_finance.weight_ton_incoming)}}
                                                             </div>
                                                         </td>
 

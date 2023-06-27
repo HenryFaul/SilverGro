@@ -203,7 +203,7 @@ const filteredPeople = computed(() =>
         })
 )
 
-const contractTypeQuery = ref('');
+let contractTypeQuery = ref('');
 
 const filteredContractTypes = computed(() =>
     contractTypeQuery.value === ''
@@ -214,7 +214,7 @@ const filteredContractTypes = computed(() =>
 );
 
 
-const productQuery = ref('');
+let productQuery = ref('');
 
 const filteredProducts = computed(() =>
     productQuery.value === ''
@@ -224,7 +224,7 @@ const filteredProducts = computed(() =>
         })
 );
 
-const supplierQuery = ref('');
+let supplierQuery = ref('');
 
 const filteredSuppliers = computed(() =>
     supplierQuery.value === ''
@@ -234,7 +234,7 @@ const filteredSuppliers = computed(() =>
         })
 );
 
-const customerQuery = ref('');
+let customerQuery = ref('');
 
 const filteredCustomers = computed(() =>
     customerQuery.value === ''
@@ -244,7 +244,7 @@ const filteredCustomers = computed(() =>
         })
 );
 
-const transporterQuery = ref('');
+let transporterQuery = ref('');
 
 const filteredTransporters = computed(() =>
     transporterQuery.value === ''
@@ -254,7 +254,7 @@ const filteredTransporters = computed(() =>
         })
 );
 
-const confirmedTypeQuery = ref('');
+let confirmedTypeQuery = ref('');
 
 const filteredConfirmationTypes = computed(() =>
     confirmedTypeQuery.value === ''
@@ -267,7 +267,7 @@ const filteredConfirmationTypes = computed(() =>
 
 const staffQuery = ref('');
 
-const filteredStaff = computed(() =>
+let filteredStaff = computed(() =>
     staffQuery.value === ''
         ? props.all_staff
         : props.all_staff.filter((type) => {
@@ -275,7 +275,7 @@ const filteredStaff = computed(() =>
         })
 );
 
-const productSourceQuery = ref('');
+let productSourceQuery = ref('');
 
 const filteredProductSources = computed(() =>
     productSourceQuery.value === ''
@@ -286,7 +286,7 @@ const filteredProductSources = computed(() =>
 );
 
 
-const packageIncomingQuery = ref('');
+let packageIncomingQuery = ref('');
 
 const filteredPackageIncoming = computed(() =>
     packageIncomingQuery.value === ''
@@ -296,7 +296,7 @@ const filteredPackageIncoming = computed(() =>
         })
 );
 
-const packageOutgoingQuery = ref('');
+let packageOutgoingQuery = ref('');
 
 const filteredPackageOutgoing = computed(() =>
     packageOutgoingQuery.value === ''
@@ -306,7 +306,7 @@ const filteredPackageOutgoing = computed(() =>
         })
 );
 
-const billingUnitsIncomingQuery = ref('');
+let billingUnitsIncomingQuery = ref('');
 
 const filteredBillingUnitsIncoming = computed(() =>
     billingUnitsIncomingQuery.value === ''
@@ -316,7 +316,7 @@ const filteredBillingUnitsIncoming = computed(() =>
         })
 );
 
-const billingUnitsOutgoingQuery = ref('');
+let billingUnitsOutgoingQuery = ref('');
 
 const filteredBillingUnitsOutgoing = computed(() =>
     billingUnitsOutgoingQuery.value === ''
@@ -327,7 +327,7 @@ const filteredBillingUnitsOutgoing = computed(() =>
 );
 
 
-const collectionAddressQuery = ref('');
+let collectionAddressQuery = ref('');
 
 const filteredCollectionAddress = computed(() =>
     collectionAddressQuery.value === ''
@@ -337,7 +337,7 @@ const filteredCollectionAddress = computed(() =>
         })
 );
 
-const deliveryAddressQuery = ref('');
+let deliveryAddressQuery = ref('');
 
 const filteredDeliveryAddress = computed(() =>
     deliveryAddressQuery.value === ''
