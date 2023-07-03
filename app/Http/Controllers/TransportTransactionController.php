@@ -278,9 +278,9 @@ class TransportTransactionController extends Controller
 
         $view_only = $user->can('view-only');
 
-        if ($view_only) {
+    /*    if ($view_only) {
             return to_route('no_permission');
-        }
+        }*/
 
 
 
