@@ -15,6 +15,7 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\TransportDriverVehicleController;
 use App\Http\Controllers\TransportFinanceController;
+use App\Http\Controllers\TransportInvoiceController;
 use App\Http\Controllers\TransportJobController;
 use App\Http\Controllers\TransportLoadController;
 use App\Http\Controllers\TransportStatusController;
@@ -95,7 +96,11 @@ Route::get('/planning/weekly', [PlanningWeekController::class, 'index'])->middle
 //Transport Transaction
 
 Route::resource('transport_transaction', TransportTransactionController::class)->middleware('auth')
-    ->only(['index', 'show','update','destroy']);
+    ->only(['index', 'show','update','destroy','store']);
+
+//Transport Trans SlideOver Props
+
+Route::get('/props/trade_slide_over', [TransportTransactionController::class, 'getProps'])->middleware('auth')->name('props.trade_slide_over');
 
 //Transport Load
 
@@ -126,6 +131,11 @@ Route::resource('assigned_user_comm', AssignedUserCommController::class)->middle
 
 Route::resource('transport_status', TransportStatusController::class)->middleware('auth')
     ->only([ 'destroy','update','store']);
+
+//Transport invoice
+
+Route::resource('transport_invoice', TransportInvoiceController::class)->middleware('auth')
+    ->only(['update']);
 
 
 //Customer

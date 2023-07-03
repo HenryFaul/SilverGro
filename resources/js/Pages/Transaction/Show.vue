@@ -51,7 +51,8 @@ const props = defineProps({
     all_vehicles: Object,
     all_transport_rates: Object,
     all_status_entities:Object,
-    all_status_types:Object
+    all_status_types:Object,
+    all_invoice_statuses:Object
 });
 
 const swal = inject('$swal');
@@ -164,6 +165,37 @@ let transport_finance_Form = useForm({
 
 });
 
+const emptyErrorsInvoiceForm = computed(() => Object.keys(transport_invoice_Form.errors).length === 0 && transport_invoice_Form.errors.constructor === Object)
+
+
+/*'old_id','transport_trans_id','type','comment','is_active','is_printed'*/
+/*
+'invoice_id','transport_trans_id','is_invoiced','is_invoice_paid','invoice_no', 'invoice_paid_date','invoice_pay_by_date','invoice_date','invoice_amount','invoice_amount_paid','cost_price','selling_price','status_id','notes'
+*/
+
+
+let transport_invoice_Form = useForm({
+    transport_trans_id: props.transaction.id,
+    old_id:props.transaction.transport_invoice.old_id,
+    is_active:props.transaction.transport_invoice.is_active,
+    is_printed:props.transaction.transport_invoice.is_printed,
+    invoice_id:props.transaction.transport_invoice.transport_invoice_details.invoice_id,
+    is_invoiced:props.transaction.transport_invoice.transport_invoice_details.is_invoiced,
+    is_invoice_paid:props.transaction.transport_invoice.transport_invoice_details.is_invoice_paid,
+    invoice_no:props.transaction.transport_invoice.transport_invoice_details.invoice_no,
+    invoice_paid_date:props.transaction.transport_invoice.transport_invoice_details.invoice_paid_date,
+    invoice_pay_by_date:props.transaction.transport_invoice.transport_invoice_details.invoice_pay_by_date,
+    invoice_date:props.transaction.transport_invoice.transport_invoice_details.invoice_date,
+    invoice_amount:props.transaction.transport_invoice.transport_invoice_details.invoice_amount,
+    invoice_amount_paid:props.transaction.transport_invoice.transport_invoice_details.invoice_amount_paid,
+    status_id:props.transaction.transport_invoice.transport_invoice_details.status_id,
+    notes:props.transaction.transport_invoice.transport_invoice_details.notes
+});
+
+
+
+
+
 let status_Form = useForm({
     transport_trans_id: props.transaction.id,
     status_entity_id:1,
@@ -185,6 +217,30 @@ const formatEarly = () => {
 
 const formatLate = () => {
     const _date = new Date(transport_trans_Form.transport_date_latest);
+    const day = _date.getDate();
+    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const year = _date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+const formatInvoicePdDay = () => {
+    const _date = new Date(transport_invoice_Form.invoice_paid_date);
+    const day = _date.getDate();
+    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const year = _date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+const formatInvoicePayByDay = () => {
+    const _date = new Date(transport_invoice_Form.invoice_pay_by_date);
+    const day = _date.getDate();
+    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const year = _date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+const formatInvoiceDate = () => {
+    const _date = new Date(transport_invoice_Form.invoice_date);
     const day = _date.getDate();
     const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
@@ -395,6 +451,21 @@ const updateTransportJob = () => {
 
 const updateTransportFinance = () => {
     transport_finance_Form.put(route('transport_finance.update', props.transaction.transport_finance.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (error) => {
+                alert('Something went wrong')
+                console.log(error)
+            }
+        }
+    );
+}
+
+const updateTransportInvoice = () => {
+    transport_invoice_Form.put(route('transport_invoice.update', props.transaction.transport_invoice.id),
         {
             preserveScroll: true,
             onSuccess: () => {
@@ -2950,7 +3021,223 @@ const closeDriverVehicleModal = () => {
                     <div class="m-2 p-2">
 
                         <div class="">
-                            <div class="text-lg mb-2 text-indigo-400">Transport To Do</div>
+                            <div class="text-lg mb-2 text-indigo-400">Transport Invoice</div>
+
+
+<!--                            'old_id','transport_trans_id','type','comment','is_active','is_printed'-->
+
+<!--
+                            'invoice_id','transport_trans_id','is_invoiced','is_invoice_paid','invoice_no', 'invoice_paid_date','invoice_pay_by_date','invoice_date','invoice_amount','invoice_amount_paid','cost_price','selling_price','status_id','notes'
+-->
+
+                            <form class="mt-5">
+
+                                <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
+
+                                    <div class="flex col-span-4 mt-2">
+                                        <SwitchGroup as="div" class="flex m-2 items-center">
+                                            <Switch v-model="transport_invoice_Form.is_active"
+                                                    :class="[transport_invoice_Form.is_active ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[transport_invoice_Form.is_active ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                            </Switch>
+                                            <SwitchLabel as="span" class="ml-3 text-sm">
+                                                <span class="font-medium text-gray-900">Active</span>
+                                            </SwitchLabel>
+                                        </SwitchGroup>
+
+                                        <SwitchGroup as="div" class="flex m-2 items-center">
+                                            <Switch v-model="transport_invoice_Form.is_printed"
+                                                    :class="[transport_invoice_Form.is_printed ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[transport_invoice_Form.is_printed? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                            </Switch>
+                                            <SwitchLabel as="span" class="ml-3 text-sm">
+                                                <span class="font-medium text-gray-900">Printed</span>
+                                            </SwitchLabel>
+                                        </SwitchGroup>
+
+                                        <SwitchGroup as="div" class="flex m-2 items-center">
+                                            <Switch v-model="transport_invoice_Form.is_invoiced"
+                                                    :class="[transport_invoice_Form.is_invoiced ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[transport_invoice_Form.is_invoiced ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                            </Switch>
+                                            <SwitchLabel as="span" class="ml-3 text-sm">
+                                                <span class="font-medium text-gray-900">Invoiced</span>
+                                            </SwitchLabel>
+                                        </SwitchGroup>
+
+                                        <SwitchGroup as="div" class="flex m-2 items-center">
+                                            <Switch v-model="transport_invoice_Form.is_invoice_paid"
+                                                    :class="[transport_invoice_Form.is_invoice_paid ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[transport_invoice_Form.is_invoice_paid ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                            </Switch>
+                                            <SwitchLabel as="span" class="ml-3 text-sm">
+                                                <span class="font-medium text-gray-900">Paid</span>
+                                            </SwitchLabel>
+                                        </SwitchGroup>
+
+
+
+                                    </div>
+
+                                    <div class="flex col-span-6 mt-1">
+
+                                        <div>
+                                            <div>
+                                                <VueDatePicker style="width: 250px;"
+                                                               v-model="transport_invoice_Form.invoice_date"
+                                                               :format="formatInvoiceDate"
+                                                               :teleport="true"></VueDatePicker>
+                                            </div>
+
+                                            <div class="ml-3 text-sm font-bold">
+                                                invoice_date
+                                            </div>
+
+                                            <InputError class="mt-2"
+                                                        :message="transport_invoice_Form.errors.invoice_date"/>
+                                        </div>
+
+                                        <div class="ml-2">
+                                            <div>
+                                                <VueDatePicker style="width: 250px;"
+                                                               v-model="transport_invoice_Form.invoice_pay_by_date"
+                                                               :format="formatInvoicePayByDay"
+                                                               :teleport="true"></VueDatePicker>
+                                            </div>
+
+                                            <div class="ml-3 text-sm font-bold">
+                                                invoice_pay_by_date
+                                            </div>
+
+                                            <InputError class="mt-2"
+                                                        :message="transport_invoice_Form.errors.invoice_pay_by_date"/>
+                                        </div>
+
+                                        <div class="ml-2">
+                                            <div>
+                                                <VueDatePicker style="width: 250px;"
+                                                               v-model="transport_invoice_Form.invoice_paid_date"
+                                                               :format="formatInvoicePdDay"
+                                                               :teleport="true"></VueDatePicker>
+                                            </div>
+
+                                            <div class="ml-3 text-sm font-bold">
+                                                invoice_paid_date
+                                            </div>
+
+                                            <InputError class="mt-2"
+                                                        :message="transport_invoice_Form.errors.invoice_paid_date"/>
+                                        </div>
+
+
+
+                                    </div>
+
+                                    <div class="col-span-4 ">
+
+                                        <div class="flex">
+                                            <div class="w-1/2">
+                                                <label class="block text-sm font-medium leading-6 text-gray-900">Invoice Status:</label>
+                                                <div class="mt-2">
+                                                    <div class="">
+                                                        <select v-model="transport_invoice_Form.status_id"
+                                                                class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                            <option v-for="n in props.all_invoice_statuses" :key="n.id" :value="n.id">
+                                                                {{n.name}}
+                                                            </option>
+                                                        </select>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-span-4">
+                                        <label class="block text-sm font-medium leading-6 text-gray-900">invoice_no:</label>
+                                        <div class="mt-2">
+                                            <input v-model="transport_invoice_Form.invoice_no" type="text"
+                                                   class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                        </div>
+
+                                        <InputError class="mt-2"
+                                                    :message="transport_invoice_Form.invoice_no"/>
+
+                                    </div>
+
+                                    <div class="col-span-4">
+                                        <label class="block text-sm font-medium leading-6 text-gray-900">invoice_amount:</label>
+                                        <div class="mt-2">
+                                            <input v-model="transport_invoice_Form.invoice_amount" type="number"
+                                                   class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                        </div>
+
+                                        <InputError class="mt-2"
+                                                    :message="transport_invoice_Form.errors.invoice_amount"/>
+
+                                    </div>
+
+                                    <div class="col-span-4">
+                                        <label class="block text-sm font-medium leading-6 text-gray-900">invoice_amount_paid:</label>
+                                        <div class="mt-2">
+                                            <input v-model="transport_invoice_Form.invoice_amount_paid" type="number"
+                                                   class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                        </div>
+
+                                        <InputError class="mt-2"
+                                                    :message="transport_invoice_Form.errors.invoice_amount_paid"/>
+
+                                    </div>
+
+                                    <div class="col-span-4">
+                                        <label
+                                            class="block text-sm font-medium leading-6 text-gray-900">Notes:</label>
+                                        <AreaInput
+                                            v-model="transport_invoice_Form.notes"
+                                            :rows=4
+                                            placeholder="Optional comments..."
+                                            type="text"
+                                            class="mt-1 block w-1/3"
+
+                                        />
+
+                                        <InputError class="mt-2"
+                                                    :message="transport_job_Form.errors.loading_instructions"/>
+                                    </div>
+
+                                    <div class="col-span-4">
+
+                                        <SecondaryButton @click="updateTransportInvoice" class="m-1">
+                                            Update
+                                        </SecondaryButton>
+                                    </div>
+
+                                </div>
+
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <SectionBorder/>
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+
+                    <div class="m-2 p-2">
+
+                        <div class="">
+                            <div class="text-lg mb-2 text-indigo-400">Transport Documents</div>
 
 
                             <form class="mt-5">
@@ -2984,45 +3271,6 @@ const closeDriverVehicleModal = () => {
 
                 </div>
 
-                <SectionBorder/>
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-
-                    <div class="m-2 p-2">
-
-                        <div class="">
-                            <div class="text-lg mb-2 text-indigo-400">Transport Invoice</div>
-
-
-                            <form class="mt-5">
-
-
-                            </form>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <SectionBorder/>
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-
-                    <div class="m-2 p-2">
-
-                        <div class="">
-                            <div class="text-lg mb-2 text-indigo-400">Transport Documents</div>
-
-
-                            <form class="mt-5">
-
-
-                            </form>
-
-                        </div>
-
-                    </div>
-
-                </div>
 
             </div>
         </div>

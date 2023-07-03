@@ -111,6 +111,43 @@ class TransportTransaction extends Model
 
     }
 
+
+    public function scopeIndex(Builder $query, array $filters): Builder
+    {
+
+        /*->orWhere('Supplier.id_reg_no', 'like', '%'.$value.'%')*/
+
+        return $query->when(
+            $filters['supplier_name'] ?? false,
+            fn ($query, $value) => $query->whereHas('Supplier', function ($q) use ($value){
+                $q->where('first_name', 'like', '%'.$value.'%')
+                    ->orWhere('last_legal_name', 'like', '%'.$value.'%')
+                    ->orWhere('id_reg_no', 'like', '%'.$value.'%');
+            })
+        )->when(
+            $filters['customer_name'] ?? false,
+            fn ($query, $value) => $query->whereHas('Customer', function ($q) use ($value){
+                $q->where('first_name', 'like', '%'.$value.'%')
+                    ->orWhere('last_legal_name', 'like', '%'.$value.'%')
+                    ->orWhere('id_reg_no', 'like', '%'.$value.'%');
+            })
+        )->when(
+            $filters['transporter_name'] ?? false,
+            fn ($query, $value) => $query->whereHas('Transporter', function ($q) use ($value){
+                $q->where('first_name', 'like', '%'.$value.'%')
+                    ->orWhere('last_legal_name', 'like', '%'.$value.'%')
+                    ->orWhere('id_reg_no', 'like', '%'.$value.'%');
+            })
+        )->when(
+            $filters['product_name'] ?? false,
+            fn ($query, $value) => $query->whereHas('Product', function ($q) use ($value){
+                $q->where('name', 'like', '%'.$value.'%');
+            })
+        );
+
+    }
+
+
     public function scopeWeek(Builder $query, array $filters): Builder
     {
         return $query->when(
