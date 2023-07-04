@@ -12,6 +12,26 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { LinkIcon, PlusIcon, QuestionMarkCircleIcon } from '@heroicons/vue/20/solid'
 
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+
+const format = () => {
+    const _date = new Date(filterForm.end_date);
+    console.log(filterForm.end_date);
+    const day = _date.getDate();
+    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const year = _date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+const formatStart = () => {
+    const _date = new Date(filterForm.start_date);
+    const day = _date.getDate();
+    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const year = _date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
 
 
 const open = ref(true)
@@ -19,6 +39,8 @@ const open = ref(true)
 const props = defineProps({
     transactions: Object,
     filters: Object,
+    start_date: String,
+    end_date: String
 });
 const permissions = computed(() => usePage().props.permissions)
 
@@ -41,6 +63,8 @@ const filterForm = useForm({
     customer_name:props.filters.customer_name ?? null,
     transporter_name:props.filters.transporter_name ?? null,
     product_name:props.filters.product_name ?? null,
+    start_date:props.filters.start_date ?? props.start_date,
+    end_date:props.filters.end_date ?? props.end_date,
 
 })
 
@@ -100,6 +124,20 @@ watch(
     }
 );
 
+watch(
+    () => filterForm.start_date,
+    (exampleField, prevExampleField) => {
+        filter();
+    }
+);
+
+watch(
+    () => filterForm.end_date,
+    (exampleField, prevExampleField) => {
+        filter();
+    }
+);
+
 const clear = () => {
     filterForm.supplier_name = null;
     filterForm.customer_name = null;
@@ -123,6 +161,48 @@ const closeTradeSlideOver = () => {
     viewTradeSlideOver.value = false;
 };
 
+let mon = ref(true);
+let tue = ref(true);
+let wed = ref(true);
+let thu = ref(true);
+let fri = ref(true);
+let sat = ref(true);
+let sun = ref(true);
+
+let NiceDay = (_date) => {
+    return new Date(_date).getDay()
+};
+
+let dayIncluded = (_date) => {
+    let _day = NiceDay(_date);
+    switch(_day) {
+        case 1:
+            return mon.value;
+        case 2:
+            return tue.value;
+        case 3:
+            return wed.value;
+        case 4:
+            return thu.value;
+        case 5:
+            return fri.value;
+        case 6:
+            return sat.value;
+        case 7:
+            return sun.value;
+        default:
+            return false;
+    }
+};
+
+let filteredTrans = computed(() =>
+    (mon.value && tue.value && wed.value && thu.value && fri.value && sat.value && sun.value )
+        ? props.transactions.data
+        : props.transactions.data.filter((trans) => {
+            return dayIncluded(trans.transport_date_earliest)
+        })
+);
+
 
 </script>
 
@@ -141,7 +221,40 @@ const closeTradeSlideOver = () => {
                     <div class="m-2 p-2">
                         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Transaction Data</h2>
 
-                        <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                        <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+
+                            <div class="flex col-span-6 mt-1">
+
+                                <div>
+                                    <div class="ml-3 text-indigo-400 text-sm font-bold">
+                                        Start Date
+                                    </div>
+                                    <div>
+                                        <VueDatePicker style="width: 250px;"
+                                                       v-model="filterForm.start_date"
+                                                       :format="formatStart"
+                                                       :teleport="true"></VueDatePicker>
+                                    </div>
+
+
+
+
+                                </div>
+
+                                <div class="ml-4">
+                                    <div class="ml-3 text-indigo-400 text-sm font-bold">
+                                        End Date
+                                    </div>
+                                    <div>
+                                        <VueDatePicker style="width: 250px;"
+                                                       v-model="filterForm.end_date"
+                                                       :format="format"
+                                                       :teleport="true"></VueDatePicker>
+                                    </div>
+                                </div>
+
+
+                            </div>
                             <div class="col-span-4 flex">
                                 <input type="search" v-model.number="filterForm.supplier_name" aria-label="Search"
                                        placeholder="Search supplier name..."
@@ -158,6 +271,68 @@ const closeTradeSlideOver = () => {
                                 <input type="search" v-model.number="filterForm.product_name" aria-label="Search"
                                        placeholder="Search product name..."
                                        class="block ml-2 w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+
+                            </div>
+
+                            <div class="col-span-6  mt-3">
+                                <div class="flex">
+                                    <div class="relative flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input v-model="mon" id="mon" aria-describedby="candidates-description" name="mon" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="mon" class="font-medium text-gray-900">Mon</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input v-model="tue" id="tue" aria-describedby="candidates-description" name="tue" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="tue" class="font-medium text-gray-900">Tue</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="wed" v-model="wed" aria-describedby="candidates-description" name="wed" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="wed" class="font-medium text-gray-900">Wed</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="thu" v-model="thu" aria-describedby="candidates-description" name="thu" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="thu" class="font-medium text-gray-900">Thu</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="fri" v-model="fri" aria-describedby="candidates-description" name="fri" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="fri" class="font-medium text-gray-900">Fri</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="sat" v-model="sat" aria-describedby="candidates-description" name="sat" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="sat" class="font-medium text-gray-900">Sat</label>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-2 flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="sun" v-model="sun" aria-describedby="candidates-description" name="sun" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="sun" class="font-medium text-gray-900">Sun</label>
+                                        </div>
+                                    </div>
+                                </div>
 
                             </div>
 
@@ -207,8 +382,8 @@ const closeTradeSlideOver = () => {
                                     'product_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes',
                                     'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at'-->
 
-                                    <tr @click="edit(transaction.id)"  v-for="(transaction, index) in transactions.data"
-                                        :key="transactions.id" class="hover:bg-gray-100 text-sm focus-within:bg-gray-100 ">
+                                    <tr @click="edit(transaction.id)"  v-for="(transaction, index) in filteredTrans"
+                                        :key="transaction.id" class="hover:bg-gray-100 text-sm focus-within:bg-gray-100 ">
 
                                         <td class="py-4 px-6 whitespace-nowrap">
                                             {{ NiceTDate( transaction.transport_date_earliest)}}
@@ -229,7 +404,7 @@ const closeTradeSlideOver = () => {
                                         </td>
 
                                         <td class="py-4 px-6 whitespace-nowrap">
-                                            <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',transaction.id)" >View</Link>
+                                            <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',transaction.id)" >View trans</Link>
                                         </td>
 
                                     </tr>

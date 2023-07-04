@@ -42,18 +42,19 @@ let contactForm = useForm({
 const emptyErrors = computed(() => Object.keys(contactForm.errors).length === 0 && contactForm.errors.constructor === Object)
 
 
+
+
 const updateContact = () => {
-
-
-    contactForm.post(route('customer.update', props.customer.id), {
-
-        preserveScroll: false,
-        onSuccess: () => {
-
-            // swal('Customer updated.');
-        },
-    });
-};
+    contactForm.put(route('contact.update', props.contact.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+                toggleEdit();
+            },
+        }
+    );
+}
 
 const editDisabled = ref(true);
 const toggleEdit = () => {
@@ -107,7 +108,7 @@ const relatedClassContact = ref('App\\Models\\Contact');
                                     <div class="col-span-4">
                                         <label class="block text-sm font-medium leading-6 text-gray-900">Title:</label>
                                         <input v-model="contactForm.title" :disabled="editDisabled" type="text"
-                                               class="block w-full p-2 rounded-md shadow-sm border border-gray-300 dark:border-gray-600 text-gray-500"/>
+                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
                                         <InputError class="mt-2" :message="contactForm.errors.title"/>
                                     </div>
@@ -116,7 +117,7 @@ const relatedClassContact = ref('App\\Models\\Contact');
                                         <label class="block text-sm font-medium leading-6 text-gray-900">First
                                             name:</label>
                                         <input v-model="contactForm.first_name" :disabled="editDisabled" type="text"
-                                               class="block w-full p-2 rounded-md shadow-sm border border-gray-300 dark:border-gray-600 text-gray-500"/>
+                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
                                         <InputError class="mt-2" :message="contactForm.errors.first_name"/>
                                     </div>
@@ -126,7 +127,7 @@ const relatedClassContact = ref('App\\Models\\Contact');
                                             name:</label>
                                         <input v-model="contactForm.last_legal_name" :disabled="editDisabled"
                                                type="text"
-                                               class="block w-full p-2 rounded-md shadow-sm border border-gray-300 dark:border-gray-600 text-gray-500"/>
+                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
                                         <InputError class="mt-2" :message="contactForm.errors.last_legal_name"/>
                                     </div>
@@ -135,7 +136,7 @@ const relatedClassContact = ref('App\\Models\\Contact');
                                         <label
                                             class="block text-sm font-medium leading-6 text-gray-900">Nickname:</label>
                                         <input v-model="contactForm.nickname" type="text" :disabled="editDisabled"
-                                               class="block w-full p-2 rounded-md shadow-sm border border-gray-300 dark:border-gray-600 text-gray-500"/>
+                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
                                         <InputError class="mt-2" :message="contactForm.errors.last_legal_name"/>
                                     </div>
@@ -144,7 +145,7 @@ const relatedClassContact = ref('App\\Models\\Contact');
                                         <label class="block text-sm font-medium leading-6 text-gray-900">Id/Reg
                                             no:</label>
                                         <input v-model="contactForm.id_reg_no" type="text" :disabled="editDisabled"
-                                               class="block w-full p-2 rounded-md shadow-sm border border-gray-300 dark:border-gray-600 text-gray-500"/>
+                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
                                         <InputError class="mt-2" :message="contactForm.errors.last_legal_name"/>
                                     </div>
@@ -154,7 +155,7 @@ const relatedClassContact = ref('App\\Models\\Contact');
                                             description:</label>
                                         <input v-model="contactForm.job_description" type="text"
                                                :disabled="editDisabled"
-                                               class="block w-full p-2 rounded-md shadow-sm border border-gray-300 dark:border-gray-600 text-gray-500"/>
+                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                         <InputError class="mt-2" :message="contactForm.errors.job_description"/>
                                     </div>
 
@@ -162,14 +163,14 @@ const relatedClassContact = ref('App\\Models\\Contact');
                                         <label
                                             class="block text-sm font-medium leading-6 text-gray-900">Branch:</label>
                                         <input v-model="contactForm.branch" type="text" :disabled="editDisabled"
-                                               class="block w-full p-2 rounded-md shadow-sm border border-gray-300 dark:border-gray-600 text-gray-500"/>
+                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                         <InputError class="mt-2" :message="contactForm.errors.branch"/>
                                     </div>
 
                                     <div class="col-span-4">
                                         <label class="block text-sm font-medium leading-6 text-gray-900">Department:</label>
                                         <input v-model="contactForm.department" type="text" :disabled="editDisabled"
-                                               class="block w-full p-2 rounded-md shadow-sm border border-gray-300 dark:border-gray-600 text-gray-500"/>
+                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                         <InputError class="mt-2" :message="contactForm.errors.department"/>
                                     </div>
                                     <div class="col-span-4">
@@ -206,7 +207,7 @@ const relatedClassContact = ref('App\\Models\\Contact');
                                             Edit
                                         </SecondaryButton>
 
-                                        <SecondaryButton v-if="!editDisabled" @click="" class="m-1">
+                                        <SecondaryButton v-if="!editDisabled" @click="updateContact" class="m-1">
                                             Save
                                         </SecondaryButton>
                                         <SecondaryButton class="m-1">

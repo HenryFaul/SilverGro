@@ -54,7 +54,9 @@ class TransportTransactionController extends Controller
             'customer_name',
             'transporter_name',
             'product_name',
-            'show'
+            'show',
+            'start_date',
+            'end_date'
         ]);
 
         $paginate = $request['show'] ?? 10;
@@ -65,11 +67,18 @@ class TransportTransactionController extends Controller
             ->paginate($paginate)
             ->withQueryString();
 
+        $start_date = TransportTransaction::index($filters)->min('transport_date_earliest');
+        $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDayDateTimeString();
+
+        //dd($end_date);
+
         return inertia(
             'Transaction/Index',
             [
                 'filters' => $filters,
                 'transactions' => $transactions,
+                'start_date'=>$start_date,
+                'end_date'=>$end_date
 
             ]
         );

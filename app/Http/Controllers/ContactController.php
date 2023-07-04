@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use App\Models\ContactType;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -11,9 +12,30 @@ class ContactController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filters = $request->only([
+            'searchName',
+            'isActive',
+            'field',
+            'direction',
+            'show'
+        ]);
+
+        $paginate = $request['show'] ?? 10;
+
+        $contacts = Contact::with('emailable')->filter($filters)
+            ->paginate($paginate)
+            ->withQueryString();
+
+        return inertia(
+            'Contact/Index',
+            [
+                'filters' => $filters,
+                'contacts'=>$contacts
+
+            ]
+        );
     }
 
     /**
@@ -107,7 +129,24 @@ class ContactController extends Controller
      */
     public function update(Request $request, Contact $contact)
     {
-        //
+        $contact->update(
+            $request->validate([
+                'first_name' => ['nullable', 'string'],
+                'last_legal_name' => ['required', 'string'],
+                'nickname' => ['nullable', 'string'],
+                'title' => ['nullable', 'string'],
+                'job_description' => ['nullable', 'string'],
+                'is_active' => ['nullable', 'boolean'],
+                'branch' => ['nullable', 'string'],
+                'department' => ['nullable', 'string'],
+                'comment' => ['nullable', 'string'],
+            ])
+        );
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Contact updated');
+
+        return redirect()->back();
     }
 
     /**

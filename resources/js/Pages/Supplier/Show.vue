@@ -15,43 +15,40 @@ import EmailContactDetailModal from "@/Components/UI/EmailContactDetailModal.vue
 const swal = inject('$swal');
 
 const props = defineProps({
-    customer: Object,
+    supplier: Object,
     invoice_basis: Object,
     terms_of_payment: Object,
-    customer_rating: Object,
     staff: Object,
     contact_type: Object
 });
 const permissions = computed(() => usePage().props.permissions)
-const emptyErrors = computed(() => Object.keys(customerForm.errors).length === 0 && customerForm.errors.constructor === Object)
+const emptyErrors = computed(() => Object.keys(supplierForm.errors).length === 0 && supplierForm.errors.constructor === Object)
 
 
-let customerForm = useForm({
+/*'id','first_name','last_legal_name','nickname','title','job_description','id_reg_no','is_active',
+    'terms_of_payment_id','account_number','comment*/
+
+
+let supplierForm = useForm({
 
     _method: 'PUT',
-    first_name: props.customer.first_name ?? null,
-    last_legal_name: props.customer.last_legal_name ?? null,
-    nickname: props.customer.nickname ?? null,
-    title: props.customer.title ?? null,
-    job_description: props.customer.job_description ?? null,
-    id_reg_no: props.customer.id_reg_no ?? null,
-    is_active: props.customer.is_active ?? null,
-    terms_of_payment_id: props.customer.terms_of_payment_id ?? null,
-    invoice_basis_id: props.customer.invoice_basis_id ?? null,
-    customer_rating_id: props.customer.customer_rating_id ?? null,
-    days_overdue_allowed_id: props.customer.days_overdue_allowed_id ?? null,
-    is_vat_exempt: props.customer.is_vat_exempt ?? null,
-    is_vat_cert_received: props.customer.is_vat_cert_received ?? null,
-    credit_limit: props.customer.credit_limit ?? null,
-    credit_limit_hard: props.customer.credit_limit_hard ?? null,
-    comment: props.customer.comment ?? null,
+    first_name: props.supplier.first_name ?? null,
+    last_legal_name: props.supplier.last_legal_name ?? null,
+    nickname: props.supplier.nickname ?? null,
+    title: props.supplier.title ?? null,
+    job_description: props.supplier.job_description ?? null,
+    id_reg_no: props.supplier.id_reg_no ?? null,
+    is_active: props.supplier.is_active ?? null,
+    terms_of_payment_id: props.supplier.terms_of_payment_id ?? null,
+    account_number:props.supplier.account_number ?? null,
+    comment: props.supplier.comment ?? null,
 
 
 });
 
 
-const updateCustomer = () => {
-    customerForm.put(route('customer.update', props.customer.id),
+const updateSupplier = () => {
+    supplierForm.put(route('supplier.update', props.supplier.id),
         {
             preserveScroll: true,
             onSuccess: () => {
@@ -64,7 +61,7 @@ const updateCustomer = () => {
 
 let staffForm = useForm({
     staff_id: 1,
-    customer_id: props.customer.id ?? 1
+    supplier_id: props.supplier.id ?? 1
 });
 
 
@@ -104,7 +101,7 @@ const viewEmailContactDetailModal = ref(false);
 const currentAddress = ref(null);
 const currentContact = ref(null);
 
-const relatedClass = ref('App\\Models\\Customer');
+const relatedClass = ref('App\\Models\\supplier');
 const relatedClassContact = ref('App\\Models\\Contact');
 
 const viewAddress = (address) => {
@@ -150,7 +147,7 @@ const toggleEdit = () => {
 const showContact = (id) => {
     //alert(id)
     //router.get('contact/' + 3);
-    router.get('customer/'+3);
+    router.get('supplier/'+3);
 }
 
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
@@ -158,10 +155,10 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
 </script>
 
 <template>
-    <AppLayout title="Customer">
+    <AppLayout title="Supplier">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Customer / <span class="text-indigo-400">{{ customerForm.last_legal_name }}</span>
+                Supplier / <span class="text-indigo-400">{{ supplierForm.last_legal_name }}</span>
             </h2>
         </template>
 
@@ -181,10 +178,10 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
                                         <label class="block text-sm font-medium leading-6 text-gray-900">First
                                             name:</label>
                                         <div class="mt-2">
-                                            <input v-model="customerForm.first_name" :disabled="editDisabled"
+                                            <input v-model="supplierForm.first_name" :disabled="editDisabled"
                                                    type="text"
                                                    class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
-                                            <InputError class="mt-2" :message="customerForm.errors.first_name"/>
+                                            <InputError class="mt-2" :message="supplierForm.errors.first_name"/>
                                         </div>
 
 
@@ -196,11 +193,11 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
 
                                         <div class="mt-2">
 
-                                        <input v-model="customerForm.last_legal_name" :disabled="editDisabled"
+                                        <input v-model="supplierForm.last_legal_name" :disabled="editDisabled"
                                                type="text"
                                                class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
-                                        <InputError class="mt-2" :message="customerForm.errors.last_legal_name"/>
+                                        <InputError class="mt-2" :message="supplierForm.errors.last_legal_name"/>
 
                                         </div>
                                     </div>
@@ -211,10 +208,10 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
 
                                         <div class="mt-2">
 
-                                        <input v-model="customerForm.nickname" type="text" :disabled="editDisabled"
+                                        <input v-model="supplierForm.nickname" type="text" :disabled="editDisabled"
                                                class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
-                                        <InputError class="mt-2" :message="customerForm.errors.nickname"/>
+                                        <InputError class="mt-2" :message="supplierForm.errors.nickname"/>
 
                                         </div>
                                     </div>
@@ -223,45 +220,32 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
                                         <label class="block text-sm font-medium leading-6 text-gray-900">Id/Reg
                                             no:</label>
                                         <div class="mt-2">
-                                        <input v-model="customerForm.id_reg_no" type="text" :disabled="editDisabled"
+                                        <input v-model="supplierForm.id_reg_no" type="text" :disabled="editDisabled"
                                                class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
-                                        <InputError class="mt-2" :message="customerForm.errors.id_reg_no"/>
+                                        <InputError class="mt-2" :message="supplierForm.errors.id_reg_no"/>
                                             </div>
                                     </div>
 
                                     <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Credit
-                                            limit:</label>
+                                        <label class="block text-sm font-medium leading-6 text-gray-900">Account number:</label>
 
                                         <div class="mt-2">
-                                        <input v-model="customerForm.credit_limit" type="number"
+                                        <input v-model="supplierForm.account_number" type="number"
                                                :disabled="editDisabled"
                                                class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
-                                        <InputError class="mt-2" :message="customerForm.errors.credit_limit"/>
+                                        <InputError class="mt-2" :message="supplierForm.errors.account_number"/>
 
                                             </div>
                                     </div>
 
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Hard
-                                            Credit limit:</label>
-                                        <div class="mt-2">
-                                        <input v-model="customerForm.credit_limit_hard" type="number"
-                                               :disabled="editDisabled"
-                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
-
-                                        <InputError class="mt-2" :message="customerForm.errors.credit_limit_hard"/>
-
-                                            </div>
-                                    </div>
 
                                     <div class="col-span-4">
                                         <label class="block text-sm font-medium leading-6 text-gray-900">Terms of
                                             payment:</label>
 
-                                        <select v-model="customerForm.terms_of_payment_id" :disabled="editDisabled"
+                                        <select v-model="supplierForm.terms_of_payment_id" :disabled="editDisabled"
                                                 class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                             <option v-for="n in terms_of_payment" :key="n.id" :value="n.id">{{
                                                     n.value
@@ -269,58 +253,10 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
                                             </option>
                                         </select>
 
-                                        <InputError class="mt-2" :message="customerForm.errors.terms_of_payment_id"/>
+                                        <InputError class="mt-2" :message="supplierForm.errors.terms_of_payment_id"/>
 
                                     </div>
 
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Invoice
-                                            basis:</label>
-
-                                        <select v-model="customerForm.invoice_basis_id" :disabled="editDisabled"
-                                                class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                            <option v-for="n in invoice_basis" :key="n.id" :value="n.id">{{
-                                                    n.value
-                                                }}
-                                            </option>
-                                        </select>
-
-                                        <InputError class="mt-2" :message="customerForm.errors.invoice_basis_id"/>
-
-                                    </div>
-
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Customer
-                                            rating:</label>
-
-                                        <select v-model="customerForm.customer_rating_id" :disabled="editDisabled"
-                                                class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                            <option v-for="n in customer_rating" :key="n.id" :value="n.id">{{
-                                                    n.value
-                                                }}
-                                            </option>
-                                        </select>
-
-                                        <InputError class="mt-2" :message="customerForm.errors.customer_rating_id"/>
-
-                                    </div>
-
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Days
-                                            overdue allowed:</label>
-
-                                        <select v-model="customerForm.days_overdue_allowed_id" :disabled="editDisabled"
-                                                class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                            <option v-for="n in terms_of_payment" :key="n.id" :value="n.id">{{
-                                                    n.value
-                                                }}
-                                            </option>
-                                        </select>
-
-                                        <InputError class="mt-2"
-                                                    :message="customerForm.errors.days_overdue_allowed_id"/>
-
-                                    </div>
 
 
                                     <div class="col-span-4">
@@ -330,12 +266,12 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
                                             id="comments"
                                             :rows=6
                                             placeholder="Optional comments..."
-                                            v-model="customerForm.comment"
+                                            v-model="supplierForm.comment"
                                             type="text"
                                             class="mt-1 block w-1/3"
                                             :disabled="editDisabled"
                                         />
-                                        <InputError class="mt-2" :message="customerForm.errors.comment"/>
+                                        <InputError class="mt-2" :message="supplierForm.errors.comment"/>
                                     </div>
 
                                     <div class="col-span-4">
@@ -344,7 +280,7 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
                                             Edit
                                         </SecondaryButton>
 
-                                        <SecondaryButton v-if="!editDisabled" @click="updateCustomer" class="m-1">
+                                        <SecondaryButton v-if="!editDisabled" @click="updateSupplier" class="m-1">
                                             Save
                                         </SecondaryButton>
                                         <SecondaryButton class="m-1">
@@ -391,7 +327,7 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
                                     </div>
 
                                     <InputError class="mt-2" :message="staffForm.errors.staff_id"/>
-                                    <InputError class="mt-2" :message="staffForm.errors.customer_id"/>
+                                    <InputError class="mt-2" :message="staffForm.errors.supplier_id"/>
 
                                 </div>
                             </div>
@@ -406,7 +342,7 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
 
                                         <ul class="w-1/3">
 
-                                            <li v-for="n in customer.staff" :key="n.id" :value="n.id"
+                                            <li v-for="n in supplier.staff" :key="n.id" :value="n.id"
                                                 class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
 
                                                 <div class="flex mt-1">
@@ -456,14 +392,14 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
                                     <div>
 
                                         <div v-if="viewAddressModal">
-                                            <address-modal :address="currentAddress" :related_id="customer.id"
+                                            <address-modal :address="currentAddress" :related_id="supplier.id"
                                                            :related_class="relatedClass"
                                                            :show="viewAddressModal" @close="closeModal"/>
                                         </div>
 
                                         <ul class="w-3/2">
 
-                                            <li v-for="n in customer.addressable" :key="n.id" :value="n.id"
+                                            <li v-for="n in supplier.addressable" :key="n.id" :value="n.id"
                                                 class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
 
 
@@ -522,13 +458,8 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
                                 Add (+)
                             </SecondaryButton>
 
-                            <contact-modal :contact="null" :related_id="customer.id" :related_class="relatedClass"
+                            <contact-modal :contact="null" :related_id="supplier.id" :related_class="relatedClass"
                                            :show="viewContactModal" @close="closeContactModal"/>
-
-
-
-
-
 
 
                             <div class="mt-5">
@@ -536,7 +467,7 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid'
                                     contacts:</label>
                                 <ul class="w-3/2">
 
-                                    <li v-for="n in customer.contactable" :key="n.id" :value="n.id"
+                                    <li v-for="n in supplier.contactable" :key="n.id" :value="n.id"
                                         class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
 
                                         <number-contact-detail-modal :related_id="n.id" :contact_type="contact_type"

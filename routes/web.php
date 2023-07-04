@@ -12,8 +12,10 @@ use App\Http\Controllers\NumberContactDetailController;
 use App\Http\Controllers\PlanningDiaryController;
 use App\Http\Controllers\PlanningWeekController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\TransportDriverVehicleController;
+use App\Http\Controllers\TransporterController;
 use App\Http\Controllers\TransportFinanceController;
 use App\Http\Controllers\TransportInvoiceController;
 use App\Http\Controllers\TransportJobController;
@@ -143,6 +145,16 @@ Route::resource('transport_invoice', TransportInvoiceController::class)->middlew
 Route::resource('customer', CustomerController::class)->middleware('auth')
     ->only(['index', 'show','update','destroy']);
 
+//Supplier
+
+Route::resource('supplier', SupplierController::class)->middleware('auth')
+    ->only(['index', 'show','update','destroy']);
+
+//Transporter
+
+Route::resource('transporter', TransporterController::class)->middleware('auth')
+    ->only(['index', 'show','update','destroy']);
+
 //Address
 
 Route::resource('address', AddressController::class)->middleware('auth')
@@ -156,7 +168,7 @@ Route::resource('staff', StaffController::class)->middleware('auth')
 //Contact
 
 Route::resource('contact', ContactController::class)->middleware('auth')
-    ->only(['store','update','show']);
+    ->only(['index','store','update','show']);
 
 //Number detail
 

@@ -143,6 +143,12 @@ class TransportTransaction extends Model
             fn ($query, $value) => $query->whereHas('Product', function ($q) use ($value){
                 $q->where('name', 'like', '%'.$value.'%');
             })
+        )->when(
+            $filters['start_date'] ?? false,
+            fn ($query, $value) => $query->whereDate('transport_date_earliest',">=" ,$value)
+        )->when(
+            $filters['end_date'] ?? false,
+            fn ($query, $value) => $query->whereDate('transport_date_earliest',"<=" ,$value)
         );
 
     }
