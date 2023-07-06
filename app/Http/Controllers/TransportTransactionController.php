@@ -59,16 +59,16 @@ class TransportTransactionController extends Controller
             'end_date'
         ]);
 
-        $paginate = $request['show'] ?? 10;
+        $paginate = $request['show'] ?? 25;
 
-        $transactions = TransportTransaction::with('Customer')->with('Supplier')->with('Transporter')->with('Product')
+        $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
             ->index($filters)
             ->orderBy('transport_date_earliest', 'desc')
             ->paginate($paginate)
             ->withQueryString();
 
-        $start_date = TransportTransaction::index($filters)->min('transport_date_earliest');
-        $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDayDateTimeString();
+        $start_date = (Carbon::now()->tz('Africa/Johannesburg')->startOfMonth())->toDateString();
+        $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
 
         //dd($end_date);
 
@@ -110,12 +110,12 @@ class TransportTransactionController extends Controller
 
         $request->validate([
             'no_units'=> ['required', 'numeric','gt:0'],
-            'contract_type_id.id' => ['required', 'integer', 'exists:contract_types,id','not_in:1'],
+            'contract_type_id.id' => ['required', 'integer', 'exists:contract_types,id'],
             'supplier_id.id' => ['required', 'integer', 'exists:suppliers,id'],
             'customer_id.id' => ['required', 'integer', 'exists:customers,id'],
             'transporter_id.id' => ['required', 'integer', 'exists:transporters,id'],
-            'product_id.id' => ['required', 'integer', 'exists:products,id','not_in:1'],
-            'billing_units_id.id' => ['required', 'integer','exists:billing_units,id','not_in:1'],
+            'product_id.id' => ['required', 'integer', 'exists:products,id'],
+            'billing_units_id.id' => ['required', 'integer','exists:billing_units,id'],
             'transport_date_earliest' => ['required', 'date'],
             'traders_notes' => ['nullable'],
             'transport_rate_basis_id' => ['required', 'integer','exists:transport_rate_bases,id','not_in:1']

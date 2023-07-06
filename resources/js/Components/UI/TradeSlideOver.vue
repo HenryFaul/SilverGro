@@ -79,13 +79,17 @@ onBeforeMount(async () => {
 const getComponentProps = () => {
     //props.trade_slide_over
 
+    //props.all_products.find(element => element.id === props.transaction.product_id)
+
+
+
     axios.get(route('props.trade_slide_over'),).then((res) => {
         tradeSlideProps.value = res.data;
         form.contract_type_id = res.data["contract_types"][0];
         form.product_id = res.data["products"][0];
-        form.supplier_id = res.data["suppliers"][0];
-        form.customer_id = res.data["customers"][0];
-        form.transporter_id = res.data["transporters"][0];
+        form.supplier_id = res.data["suppliers"].find(element => element.id === 1);;
+        form.customer_id = res.data["customers"].find(element => element.id === 1);
+        form.transporter_id = res.data["transporters"].find(element => element.id === 1);;
         form.billing_units_id = res.data["all_billing_units"][0];
     });
 
@@ -220,7 +224,7 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                     <div>
                                                         <label
                                                                class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">No
-                                                            units</label>
+                                                            units incoming</label>
                                                     </div>
                                                     <div class="sm:col-span-2">
                                                         <input v-model="form.no_units" type="number" name="project-name"

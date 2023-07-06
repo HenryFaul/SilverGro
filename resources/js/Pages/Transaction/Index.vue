@@ -17,7 +17,6 @@ import '@vuepic/vue-datepicker/dist/main.css';
 
 const format = () => {
     const _date = new Date(filterForm.end_date);
-    console.log(filterForm.end_date);
     const day = _date.getDate();
     const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
@@ -58,19 +57,21 @@ const filterForm = useForm({
     isActive: props.filters.isActive ?? null,
     field: props.filters.field ?? null,
     direction: props.filters.direction ?? "asc",
-    show: props.filters.show ?? 10,
+    show: props.filters.show ?? 25,
     supplier_name:props.filters.supplier_name ?? null,
     customer_name:props.filters.customer_name ?? null,
     transporter_name:props.filters.transporter_name ?? null,
     product_name:props.filters.product_name ?? null,
-    start_date:props.filters.start_date ?? props.start_date,
-    end_date:props.filters.end_date ?? props.end_date,
+    start_date:props.filters.start_date ?? null,
+    end_date:props.filters.end_date ?? null,
 
 })
 
 let curClient = ref(null);
 
-let tableStats = ref("Showing page " + props.transactions.current_page + "  of " + props.transactions.total + " entries.");
+
+
+//let tableStats = ref("Showing page " + props.transactions.current_page + "  of " + props.transactions.total + " entries.");
 
 let filter = debounce(() => {
 
@@ -80,7 +81,8 @@ let filter = debounce(() => {
             preserveState: true,
             preserveScroll: true,
         },
-    )
+    );
+
 },150);
 
 let sort = (field) => {
@@ -143,6 +145,22 @@ const clear = () => {
     filterForm.customer_name = null;
     filterForm.transporter_name = null;
     filterForm.product_name = null;
+    filterForm.start_date = null;
+    filterForm.end_date = null;
+
+    mon.value=true;
+    tue.value=true;
+    wed.value=true;
+    thu.value=true;
+    fri.value=true;
+    sat.value=true;
+    sun.value=true;
+
+    ua.value=true;
+    pc.value=true;
+    sc.value=true;
+    mq.value=true;
+
 
     filter();
 }
@@ -168,6 +186,16 @@ let thu = ref(true);
 let fri = ref(true);
 let sat = ref(true);
 let sun = ref(true);
+
+//Unallocated
+//'PC'
+//'SC'
+//'MQ'
+
+let ua = ref(true);
+let pc = ref(true);
+let sc = ref(true);
+let mq = ref(true);
 
 let NiceDay = (_date) => {
     return new Date(_date).getDay()
@@ -195,14 +223,34 @@ let dayIncluded = (_date) => {
     }
 };
 
+let typeIncluded = (typeId) => {
+
+    switch(typeId) {
+        case 1:
+            return ua.value;
+        case 2:
+            return pc.value;
+        case 3:
+            return sc.value;
+        case 4:
+            return mq.value;
+        default:
+            return false;
+    }
+};
+
+
 let filteredTrans = computed(() =>
-    (mon.value && tue.value && wed.value && thu.value && fri.value && sat.value && sun.value )
+    (mon.value && tue.value && wed.value && thu.value && fri.value && sat.value && sun.value && ua.value && pc.value && sc.value && mq.value )
         ? props.transactions.data
         : props.transactions.data.filter((trans) => {
-            return dayIncluded(trans.transport_date_earliest)
+            return dayIncluded(trans.transport_date_earliest) && typeIncluded(trans.contract_type.id)
         })
 );
 
+/*const tableStats = computed(() => {
+    return "Showing page " + props.transactions.current_page + "  of " + filteredTrans.length+ " entries.";
+})*/
 
 </script>
 
@@ -237,10 +285,7 @@ let filteredTrans = computed(() =>
                                     </div>
 
 
-
-
                                 </div>
-
                                 <div class="ml-4">
                                     <div class="ml-3 text-indigo-400 text-sm font-bold">
                                         End Date
@@ -253,6 +298,47 @@ let filteredTrans = computed(() =>
                                     </div>
                                 </div>
 
+                                <div class="mt-6 ml-6">
+                                    <div class="flex">
+                                        <div class="relative flex items-start">
+                                            <div class="flex h-6 items-center">
+                                                <input v-model="ua" id="ua" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            </div>
+                                            <div class="ml-3 text-sm leading-6">
+                                                <label for="mon" class="font-medium text-gray-900">UA</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="relative ml-3 flex items-start">
+                                            <div class="flex h-6 items-center">
+                                                <input v-model="pc" id="pc" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            </div>
+                                            <div class="ml-3 text-sm leading-6">
+                                                <label for="mon" class="font-medium text-gray-900">PC</label>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="relative ml-3 flex items-start">
+                                            <div class="flex h-6 items-center">
+                                                <input v-model="sc" id="sc" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            </div>
+                                            <div class="ml-3 text-sm leading-6">
+                                                <label for="tue" class="font-medium text-gray-900">SC</label>
+                                            </div>
+                                        </div>
+                                        <div class="relative ml-3 flex items-start">
+                                            <div class="flex h-6 items-center">
+                                                <input v-model="mq" id="mq" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            </div>
+                                            <div class="ml-3 text-sm leading-6">
+                                                <label for="tue" class="font-medium text-gray-900">MQ</label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
 
                             </div>
                             <div class="col-span-4 flex">
@@ -339,12 +425,14 @@ let filteredTrans = computed(() =>
                             <div class="col-span-4 mb-3">
 
                                 <select v-model="filterForm.show"
-                                        class="input-filter-l block w-1/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        class="input-filter-l block w-1/6 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
 
                                     <option :value=5>5</option>
                                     <option :value=10>10</option>
                                     <option :value=25>25</option>
                                     <option :value=100>100</option>
+                                    <option :value=200>200</option>
+                                    <option :value=500>500</option>
 
                                 </select>
                                 <secondary-button @click="filter" class="mt-3">Search</secondary-button>
@@ -360,7 +448,7 @@ let filteredTrans = computed(() =>
 
                         <div>
 
-                                <table class="min-w-full divide-y divide-gray-200">
+                                <table class="min-w-full divide-y  divide-gray-200">
                                     <thead class="bg-indigo-400 text-right">
                                     <tr class="font-bold ">
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
@@ -372,6 +460,7 @@ let filteredTrans = computed(() =>
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Customer</th>
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Transporter</th>
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Product</th>
+                                        <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Type</th>
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Actions</th>
                                     </tr>
                                     </thead>
@@ -403,6 +492,10 @@ let filteredTrans = computed(() =>
                                             {{transaction.product.name}}
                                         </td>
 
+                                        <td class="py-4 px-6 ">
+                                            {{transaction.contract_type.name}}
+                                        </td>
+
                                         <td class="py-4 px-6 whitespace-nowrap">
                                             <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',transaction.id)" >View trans</Link>
                                         </td>
@@ -413,7 +506,7 @@ let filteredTrans = computed(() =>
                                 </table>
 
                             <div class="ml-3 mt-2">
-                                {{ tableStats }}
+                                {{ "Showing page " + props.transactions.current_page + "  of " + props.transactions.total+ " entries." }}
                             </div>
                         </div>
                         <div v-if="transactions.data.length" class="w-full flex justify-center mt-5 mb-4">

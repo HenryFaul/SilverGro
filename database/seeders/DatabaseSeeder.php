@@ -444,6 +444,7 @@ class DatabaseSeeder extends Seeder
 
         //Contract types
 
+        //Unallocated
         //'PC'
         //'SC'
         //'MQ'

@@ -33,7 +33,7 @@ let tableStats = ref("Showing page " + props.transporters.current_page + "  of "
 let filter = debounce(() => {
 
     filterForm.get(
-        route('customer.index'),
+        route('transporter.index'),
         {
             preserveState: true,
             preserveScroll: true,

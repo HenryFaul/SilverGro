@@ -24,7 +24,6 @@ class TransportTransaction extends Model
         'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at'];
 
 
-
     public function TransportStatus(): HasMany
     {
         return $this->hasMany(TransportStatus::class,'transport_trans_id');

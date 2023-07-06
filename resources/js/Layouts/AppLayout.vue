@@ -24,6 +24,12 @@ const classesPlanning = computed(() => {
         : '';
 });
 
+const classesSetup = computed(() => {
+    return false
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
 
 const showingNavigationDropdown = ref(false);
 
@@ -107,9 +113,9 @@ const logout = () => {
                                                     Transporters
                                                 </DropdownLink>
 
-                                                <DropdownLink :href="route('transporter.index')">
-                                                    Staff
-                                                </DropdownLink>
+                                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                                    Manage Staff
+                                                </div>
 
                                                 <div class="border-t border-gray-100" />
 
@@ -162,9 +168,6 @@ const logout = () => {
                                                     Manage Documents
                                                 </div>
 
-                                                <DropdownLink :href="route('transport_transaction.index')">
-                                                    View all
-                                                </DropdownLink>
 
                                                 <div class="border-t border-gray-100" />
 
@@ -178,7 +181,7 @@ const logout = () => {
                                 <!-- Data Dropdown -->
                                 <div class="ml-3 relative">
 
-                                    <div :class="classesPlanning">
+                                    <div :class="classesSetup">
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
@@ -199,18 +202,6 @@ const logout = () => {
                                                     Manage System
                                                 </div>
 
-                                                <DropdownLink :href="route('planning.diary')">
-                                                    System constants
-                                                </DropdownLink>
-
-
-                                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                                    Manage Users
-                                                </div>
-
-                                                <DropdownLink :href="route('transport_transaction.index')">
-                                                    View all
-                                                </DropdownLink>
 
                                                 <div class="border-t border-gray-100" />
 
