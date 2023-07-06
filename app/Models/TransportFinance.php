@@ -60,11 +60,11 @@ class TransportFinance extends Model
         $weight_ton_outgoing = $transport_Load->no_units_outgoing * ($billing_units_outgoing_id->kgs) / 1000;
 
         //cost_price_per_ton = cost_price / weight_ton_outgoing
-        $cost_price_per_ton = $cost_price / $weight_ton_outgoing;
+        $cost_price_per_ton = $cost_price / ($weight_ton_outgoing == 0 ? 1 : $weight_ton_outgoing);
 
         //selling_price_per_ton = selling_price / weight_ton_incoming
 
-        $selling_price_per_ton = $selling_price / $weight_ton_incoming;
+        $selling_price_per_ton = $selling_price / ($weight_ton_incoming == 0 ? 1 : $weight_ton_incoming);;
 
         //load_insurance_per_ton = selling_price_per_ton*1.1
         $load_insurance_per_ton = $selling_price_per_ton * 1.1;
@@ -123,7 +123,7 @@ class TransportFinance extends Model
 
         //gross_profit_per_ton = gross_profit / weight_ton_outgoing
 
-        $gross_profit_per_ton = $gross_profit / $weight_ton_outgoing;
+        $gross_profit_per_ton = $gross_profit / ($weight_ton_outgoing == 0 ? 1 : $weight_ton_outgoing);
 
         //total_supplier_comm = gross_profit /2
 
