@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Address;
 use App\Models\AssignedUserComm;
 use App\Models\BillingUnits;
+use App\Models\ContractType;
 use App\Models\Customer;
 use App\Models\DealTicket;
 use App\Models\Packaging;
@@ -13,6 +14,7 @@ use App\Models\ProductSource;
 use App\Models\PurchaseOrder;
 use App\Models\Staff;
 use App\Models\Supplier;
+use App\Models\TransLink;
 use App\Models\TransportApproval;
 use App\Models\TransportDriverVehicle;
 use App\Models\Transporter;
@@ -54,6 +56,8 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     // $orig_date = Carbon::createFromTimestamp($timestamp)->toDateTimeString();
 
                     $conv_old_id = is_numeric($row['id']) ? $row['id'] : 0;
+                    $conv_old_deal_ticket = trim($row['dealticket']) === '' || trim($row['dealticket']) === 'NULL' ? null : trim($row['dealticket']);
+
                     $date_created = Carbon::createFromTimestamp($row['ts_datecreated'])->toDateTimeString();
                     $conv_contract_type_id = $row['contracttype'] === 'PC' ? 2 : ($row['contracttype'] === 'SC' ? 3 : ($row['contracttype'] === 'MQ' ? 4 : 1));
                     $conv_contract_no = $row['contractno'] != 'NULL' && $row['contractno'] != '' ? $row['contractno'] : null;
@@ -122,23 +126,23 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     };
 
 
-
                     //create transaction
                     $transport_trans = TransportTransaction::create([
                         'old_id' => $conv_old_id,
                         'contract_type_id' => $conv_contract_type_id,
                         'contract_no' => $conv_contract_no,
+                        'old_deal_ticket'=>$conv_old_deal_ticket,
                         'supplier_id' => $found_supplier_id,
                         'customer_id' => $found_customer_id,
                         'transporter_id' => $found_transporter_id,
                         'product_id' => $found_product_id,
                         'include_in_calculations' => $inc_calcs,
-                        'transport_date_earliest'=>$transport_date_earliest,
-                        'transport_date_latest'=>$transport_date_latest,
-                        'transport_rate_basis_id'=>$transport_rate_basis_id,
+                        'transport_date_earliest' => $transport_date_earliest,
+                        'transport_date_latest' => $transport_date_latest,
+                        'transport_rate_basis_id' => $transport_rate_basis_id,
                         'delivery_notes' => $conv_delivery_notes,
-                        'suppliers_notes'=>$conv_supplier_notes,
-                        'traders_notes'=>$traders_notes,
+                        'suppliers_notes' => $conv_supplier_notes,
+                        'traders_notes' => $traders_notes,
                         'product_notes' => $conv_product_notes,
                         'customer_notes' => $conv_customer_notes,
                         'transport_notes' => $conv_transport_notes,
@@ -155,6 +159,50 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     $transport_trans->created_at = $date_created;
 
                     $transport_trans->save();
+
+                    //Link
+
+                    //if MQ
+                    if ($conv_contract_type_id == 4) {
+
+                        $linkedpc = trim($row['linkedpc']);
+                        $linkedsc = trim($row['linkedsc']);
+
+                        if (is_numeric($linkedpc)) {
+
+                            //find PC
+                            $found_pc = TransportTransaction::where('old_id', '=', $linkedpc)->where('contract_type_id', '=', 2)->first();
+                            if ($found_pc != null) {
+
+                                //'trans_link_type_id','transport_trans_id','linked_transport_trans_id'
+                                TransLink::create([
+                                    'trans_link_type_id' => 3,
+                                    'transport_trans_id' => $found_pc->id,
+                                    'linked_transport_trans_id' => $transport_trans->id
+                                ]);
+
+
+                            }
+
+                        }
+
+                        if (is_numeric($linkedsc)) {
+
+                            //find PC
+                            $found_sc = TransportTransaction::where('old_id', '=', $linkedsc)->where('contract_type_id', '=', 3)->first();
+                            if ($found_sc != null) {
+
+                                //'trans_link_type_id','transport_trans_id','linked_transport_trans_id'
+                                TransLink::create([
+                                    'trans_link_type_id' => 4,
+                                    'transport_trans_id' => $found_sc->id,
+                                    'linked_transport_trans_id' => $transport_trans->id
+                                ]);
+                            }
+
+                        }
+
+                    }
 
                     //Deal ticket
 
@@ -446,7 +494,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     $cost_price_per_unit = is_numeric(trim($row['costpriceperunit'])) ? trim($row['costpriceperunit']) : 0;
 
 
-                    $cost_price_per_ton= is_numeric(trim($row['costpriceperton'])) ? trim($row['costpriceperton']) : 0;
+                    $cost_price_per_ton = is_numeric(trim($row['costpriceperton'])) ? trim($row['costpriceperton']) : 0;
                     $selling_price_per_ton = is_numeric(trim($row['sellingpriceperton'])) ? trim($row['sellingpriceperton']) : 0;
 
                     $transport_rate = is_numeric(trim($row['transportrate'])) ? trim($row['transportrate']) : 0;
@@ -487,20 +535,20 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     $transport_finance = TransportFinance::create([
                         'transport_trans_id' => $transport_trans->id,
                         'transport_load_id' => $transport_load->id,
-                        'transport_rate_basis_id'=>$transport_rate_basis_id,
+                        'transport_rate_basis_id' => $transport_rate_basis_id,
                         'cost_price_per_unit' => $cost_price_per_unit,
-                        'cost_price_per_ton'=>$cost_price_per_ton,
-                        'total_cost_price'=>$total_cost_price,
-                        'cost_price'=>$cost_price,
-                        'selling_price'=>$selling_price,
+                        'cost_price_per_ton' => $cost_price_per_ton,
+                        'total_cost_price' => $total_cost_price,
+                        'cost_price' => $cost_price,
+                        'selling_price' => $selling_price,
                         'selling_price_per_unit' => $selling_price_per_unit,
-                        'selling_price_per_ton'=> $selling_price_per_ton,
-                        'is_transport_costs_inc_price'=>$is_transport_costs_inc_price,
-                        'transport_cost'=>$transport_cost,
+                        'selling_price_per_ton' => $selling_price_per_ton,
+                        'is_transport_costs_inc_price' => $is_transport_costs_inc_price,
+                        'transport_cost' => $transport_cost,
                         'transport_rate_per_ton' => $transport_rate_per_ton,
                         'transport_rate' => $transport_rate,
                         'transport_price' => $transport_price,
-                        'load_insurance_per_ton'=>$load_insurance_per_ton,
+                        'load_insurance_per_ton' => $load_insurance_per_ton,
                         'comms_due_per_ton' => $comms_due_per_ton,
                         'weight_ton_incoming' => $weight_ton_incoming,
                         'weight_ton_outgoing' => $weight_ton_outgoing,
@@ -604,7 +652,6 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     //transport Job
 
 
-
                     $customer_order_number = trim($row['customer_order_number']) != '' || trim($row['customer_order_number']) != null || trim($row['customer_order_number']) != 'NULL' ? null : trim($row['customer_order_number']);
 
                     $is_multi_loads = !(trim($row['multipleloads']) == 0);
@@ -614,7 +661,6 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     //$date = Carbon::createFromFormat('m/d/Y', $myDate)->format('Y-m-d');
                     //2018-06-01
                     //Carbon::createFromFormat('yyyy-MM-dd',$row['ts_invoicepaybydate'])->toDateTimeString()
-
 
 
                     $transport_date_earliest = is_numeric(trim($row['ts_transportdateearliest'])) ? Carbon::createFromTimestamp($row['ts_transportdateearliest'])->toDateTimeString() : null;

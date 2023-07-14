@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContractType;
 use App\Models\Customer;
 use App\Models\OldTransaction;
 use App\Models\TransportDriverVehicle;
@@ -20,7 +21,8 @@ class PlanningWeekController extends Controller
 
         $filters = $request->only([
             'date',
-            'show'
+            'show',
+            'contract_type_id',
         ]);
 
         if (!$filters) {
@@ -37,6 +39,10 @@ class PlanningWeekController extends Controller
             ->orderBy('transport_date_earliest', 'asc')
             ->paginate($paginate)
             ->withQueryString();
+
+
+        $contract_types = ContractType::all();
+
 
 
         //start of week & end of week
@@ -139,6 +145,7 @@ class PlanningWeekController extends Controller
                 'selling_price' => round($selling_price, 0),
                 'gp' => round($gp, 0),
                 'gp_perc' => round($gp_perc, 1),
+                'contract_types'=>$contract_types
             ]
         );
     }

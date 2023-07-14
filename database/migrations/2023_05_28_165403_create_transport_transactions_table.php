@@ -18,10 +18,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transport_transactions', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(13000);
 
             $table->bigInteger('old_id')->nullable();
             $table->string('contract_no')->nullable();
+            $table->string('old_deal_ticket')->nullable();
 
             $table->bigInteger('contract_type_id')->unsigned();
             $table->foreign('contract_type_id')

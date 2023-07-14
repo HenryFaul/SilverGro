@@ -25,6 +25,7 @@ use App\Models\SystemPlayer;
 use App\Models\ContactType;
 use App\Models\SystemPlayerType;
 use App\Models\TermsOfPayment;
+use App\Models\TransLinkType;
 use App\Models\Transporter;
 use App\Models\TransportRateBasis;
 use App\Models\User;
@@ -76,9 +77,31 @@ class DatabaseSeeder extends Seeder
 
 
 
+        //TransLinkTypes
 
+/*        •	sc_to_pc
+            •	pc_to_sc
+            •	mq_to_pc
+            •	mq_to_sc
+*/
 
-      //AddressType
+        TransLinkType::create([
+            'name' => 'sc_to_pc'
+        ]);
+
+        TransLinkType::create([
+            'name' => 'pc_to_sc'
+        ]);
+
+        TransLinkType::create([
+            'name' => 'mq_to_pc'
+        ]);
+
+        TransLinkType::create([
+            'name' => 'mq_to_sc'
+        ]);
+
+        //AddressType
         //delivery 1, physical 2, postal 3
         AddressType::create([
             'type' => 'Delivery'

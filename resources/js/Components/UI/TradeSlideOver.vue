@@ -81,8 +81,6 @@ const getComponentProps = () => {
 
     //props.all_products.find(element => element.id === props.transaction.product_id)
 
-
-
     axios.get(route('props.trade_slide_over'),).then((res) => {
         tradeSlideProps.value = res.data;
         form.contract_type_id = res.data["contract_types"][0];

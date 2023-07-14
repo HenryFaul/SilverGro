@@ -7,6 +7,7 @@ use App\Models\BillingUnits;
 use App\Models\ConfirmationTypes;
 use App\Models\ContractType;
 use App\Models\Customer;
+use App\Models\DealTicket;
 use App\Models\InvoiceBasis;
 use App\Models\InvoiceStatus;
 use App\Models\LoadingHourOption;
@@ -19,6 +20,7 @@ use App\Models\Staff;
 use App\Models\StatusEntity;
 use App\Models\StatusType;
 use App\Models\Supplier;
+use App\Models\TransLink;
 use App\Models\Transporter;
 use App\Models\TransportFinance;
 use App\Models\TransportInvoice;
@@ -56,7 +58,9 @@ class TransportTransactionController extends Controller
             'product_name',
             'show',
             'start_date',
-            'end_date'
+            'end_date',
+            'contract_type_id',
+            'mq'
         ]);
 
         $paginate = $request['show'] ?? 25;
@@ -69,6 +73,8 @@ class TransportTransactionController extends Controller
 
         $start_date = (Carbon::now()->tz('Africa/Johannesburg')->startOfMonth())->toDateString();
         $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
+        $contract_types = ContractType::all();
+
 
         //dd($end_date);
 
@@ -78,7 +84,8 @@ class TransportTransactionController extends Controller
                 'filters' => $filters,
                 'transactions' => $transactions,
                 'start_date'=>$start_date,
-                'end_date'=>$end_date
+                'end_date'=>$end_date,
+                'contract_types'=>$contract_types
 
             ]
         );
@@ -142,6 +149,14 @@ class TransportTransactionController extends Controller
             'traders_notes'=>$request->traders_notes,
             'old_id'=>null,
             'include_in_calculations'=>false
+        ]);
+
+        //Deal Ticket
+
+        $deal_ticket = DealTicket::create([
+            'transport_trans_id' => $transport_trans->id,
+            'is_printed' => false,
+            'is_active' => false
         ]);
 
 
@@ -277,6 +292,15 @@ class TransportTransactionController extends Controller
 
     }
 
+    public function getPcs(): array
+    {
+        $transport_trans = TransportTransaction::where('contract_type_id',2)->with('Product')->with('TransportLoad')->orderBy('transport_date_earliest', 'desc')->get();
+        $contract_types = ContractType::all();
+
+        return array("transport_trans"=>$transport_trans,"contract_types"=>$contract_types);
+
+    }
+
 
     /**
      * Display the specified resource.
@@ -291,13 +315,47 @@ class TransportTransactionController extends Controller
             return to_route('no_permission');
         }*/
 
+        //Unallocated
+        //'PC'
+        //'SC'
+        //'MQ'
+
+        /*         •	sc_to_pc
+                    •	pc_to_sc
+                    •	mq_to_pc
+                    •	mq_to_sc
+        */
 
 
-        $transportTransaction = TransportTransaction::where('id', $transportTransaction->id)->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
-            ->with('TransportLoad')
+        //dd($link_id);
+
+        $transportTransaction = TransportTransaction::where('id', $transportTransaction->id)->with('ContractType')->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
+            ->with('TransportLoad')->with('DealTicket')
             ->with('TransportFinance')->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))->with('AssignedUserComm', fn($query) => $query->with('AssignedUserSupplier')->with('AssignedUserCustomer'))
             ->with('TransportJob', fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo')
                 ->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle', fn($query) => $query->with('VehicleType'))))->first();
+
+
+        //dd($transportTransaction->contract_type_id );
+
+
+        if ($transportTransaction->contract_type_id === 4){
+            $linked_trans = TransLink::where('linked_transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id','=',3)->with('TransportTransactionPc',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                    ->with('Product')->with('TransportFinance'))->get();
+           // dd($linked_trans);
+
+        } else if ($transportTransaction->contract_type_id === 3){
+            $linked_trans = TransLink::where('linked_transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id','=',4)->with('TransportTransactionPc',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance'))->get();
+        } else {
+            $linked_trans = TransLink::where('transport_trans_id','=',$transportTransaction->id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance'))->get();
+            }
+
+
+
+
+            //->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
 
         $customers = Customer::with('staff')->with('addressable')->with('contactable')->orderby('last_legal_name', 'asc')->get();
         $suppliers = Supplier::with('addressable')->orderby('last_legal_name', 'asc')->get();
@@ -339,7 +397,8 @@ class TransportTransactionController extends Controller
                 'all_transport_rates' => $all_transport_rates,
                 'all_status_entities' => $all_status_entities,
                 'all_status_types' => $all_status_types,
-                'all_invoice_statuses'=>$all_invoice_statuses
+                'all_invoice_statuses'=>$all_invoice_statuses,
+                'linked_trans'=>$linked_trans
             ]
         );
     }

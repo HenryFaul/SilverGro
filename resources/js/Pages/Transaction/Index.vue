@@ -39,7 +39,8 @@ const props = defineProps({
     transactions: Object,
     filters: Object,
     start_date: String,
-    end_date: String
+    end_date: String,
+    contract_types:Object
 });
 const permissions = computed(() => usePage().props.permissions)
 
@@ -64,12 +65,10 @@ const filterForm = useForm({
     product_name:props.filters.product_name ?? null,
     start_date:props.filters.start_date ?? null,
     end_date:props.filters.end_date ?? null,
-
+    contract_type_id:props.filters.contract_type_id ?? 1,
 })
 
 let curClient = ref(null);
-
-
 
 //let tableStats = ref("Showing page " + props.transactions.current_page + "  of " + props.transactions.total + " entries.");
 
@@ -140,6 +139,16 @@ watch(
     }
 );
 
+watch(
+    () => filterForm.contract_type_id,
+    (exampleField, prevExampleField) => {
+        filter();
+    }
+);
+
+
+
+
 const clear = () => {
     filterForm.supplier_name = null;
     filterForm.customer_name = null;
@@ -147,6 +156,7 @@ const clear = () => {
     filterForm.product_name = null;
     filterForm.start_date = null;
     filterForm.end_date = null;
+    filterForm.contract_type_id = null;
 
     mon.value=true;
     tue.value=true;
@@ -156,11 +166,10 @@ const clear = () => {
     sat.value=true;
     sun.value=true;
 
-    ua.value=true;
+  /*  ua.value=true;
     pc.value=true;
     sc.value=true;
-    mq.value=true;
-
+    mq.value=true;*/
 
     filter();
 }
@@ -192,10 +201,10 @@ let sun = ref(true);
 //'SC'
 //'MQ'
 
-let ua = ref(true);
+/*let ua = ref(true);
 let pc = ref(true);
 let sc = ref(true);
-let mq = ref(true);
+//let mq = ref(true);*/
 
 let NiceDay = (_date) => {
     return new Date(_date).getDay()
@@ -223,7 +232,7 @@ let dayIncluded = (_date) => {
     }
 };
 
-let typeIncluded = (typeId) => {
+/*let typeIncluded = (typeId) => {
 
     switch(typeId) {
         case 1:
@@ -233,18 +242,20 @@ let typeIncluded = (typeId) => {
         case 3:
             return sc.value;
         case 4:
-            return mq.value;
+
+         return  filterForm.mq.value;
+            //return mq.value;
         default:
             return false;
     }
-};
+};*/
 
 
 let filteredTrans = computed(() =>
-    (mon.value && tue.value && wed.value && thu.value && fri.value && sat.value && sun.value && ua.value && pc.value && sc.value && mq.value )
+    (mon.value && tue.value && wed.value && thu.value && fri.value && sat.value && sun.value )
         ? props.transactions.data
         : props.transactions.data.filter((trans) => {
-            return dayIncluded(trans.transport_date_earliest) && typeIncluded(trans.contract_type.id)
+            return dayIncluded(trans.transport_date_earliest)
         })
 );
 
@@ -298,7 +309,7 @@ let filteredTrans = computed(() =>
                                     </div>
                                 </div>
 
-                                <div class="mt-6 ml-6">
+<!--                                <div class="mt-6 ml-6">
                                     <div class="flex">
                                         <div class="relative flex items-start">
                                             <div class="flex h-6 items-center">
@@ -329,7 +340,7 @@ let filteredTrans = computed(() =>
                                         </div>
                                         <div class="relative ml-3 flex items-start">
                                             <div class="flex h-6 items-center">
-                                                <input v-model="mq" id="mq" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                                <input v-model="filterForm.mq" id="mq" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                                             </div>
                                             <div class="ml-3 text-sm leading-6">
                                                 <label for="tue" class="font-medium text-gray-900">MQ</label>
@@ -338,7 +349,7 @@ let filteredTrans = computed(() =>
 
                                     </div>
 
-                                </div>
+                                </div>-->
 
                             </div>
                             <div class="col-span-4 flex">
@@ -357,6 +368,20 @@ let filteredTrans = computed(() =>
                                 <input type="search" v-model.number="filterForm.product_name" aria-label="Search"
                                        placeholder="Search product name..."
                                        class="block ml-2 w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+
+                            </div>
+
+                            <div class="col-span-6  mt-3">
+                                <div class="">
+                                    <select v-model="filterForm.contract_type_id"
+                                            class="input-filter-l w-1/6  rounded-md rounded-md shadow-sm border border-gray-300 text-gray-500">
+                                       <option selected :value="null">All contracts</option>
+
+                                        <option v-for="n in contract_types" :key="n.id" :value="n.id">
+                                            {{n.name}}
+                                        </option>
+                                    </select>
+                                </div>
 
                             </div>
 

@@ -24,6 +24,7 @@ const props = defineProps({
     selling_price: Number,
     gp: Number,
     gp_perc: Number,
+    contract_types:Object
 
 });
 
@@ -39,6 +40,7 @@ const Form = useForm({
 
     date: props.filters.date ?? new Date().toISOString().substr(0, 10),
     show: props.filters.show ?? 1,
+    contract_type_id:props.filters.contract_type_id ?? 1,
 })
 
 onMounted(() => {
@@ -83,6 +85,14 @@ watch(
         filter();
     }
 )
+
+watch(
+    () => Form.contract_type_id,
+    (exampleField, prevExampleField) => {
+        filter();
+    }
+)
+
 
 const card_style = "bg-yellow-100 h-36 overflow-hidden shadow-xl sm:rounded-lg p-2 hover:bg-indigo-200 focus-within:bg-indigo-200 overflow-scroll";
 const card_style_cod = "bg-orange-300 h-36 overflow-hidden shadow-xl sm:rounded-lg  p-2 hover:bg-indigo-200 focus-within:bg-indigo-200 overflow-scroll";
@@ -172,31 +182,25 @@ const isQualityAlert = (Warnings) => {
 
 const contractName = (trans) => {
 
-let name = "";
-
 if(trans != null){
-
-    if(trans.contract_type.id === 4){
-
-        if(trans.deal_ticket.old_id != null){
-           name =  trans.deal_ticket.old_id;
-        }else{
-            name =  trans.deal_ticket.id;
-        }
-
-    }else {
-
-        if(trans.transport_invoice.old_id != null){
-            name =  trans.transport_invoice.old_id;
-        }else{
-            name =  trans.transport_invoice.id;
-        }
-
-    }
-
-    return  trans.contract_type.name+":"+name;
+    return  trans.contract_type.name+":"+trans.id;
 }
 else return "N/A";
+
+}
+
+const contractNameOld = (trans) => {
+
+    if(trans != null){
+
+        if(trans.deal_ticket != null){
+
+          return   trans.deal_ticket.old_id == null ? trans.contract_type.name+":"+trans.old_id :trans.contract_type.name+":"+trans.deal_ticket.old_id;
+        }
+
+        return  trans.contract_type.name+":"+trans.old_id;
+    }
+    else return "N/A";
 
 }
 
@@ -295,6 +299,19 @@ const closeTradeSlideOver = () => {
 
                             </div>
                         </div>
+                        <div class="basis-1/2">
+                            <div class="">
+                                <select v-model="Form.contract_type_id"
+                                        class="input-filter-l w-2/6  rounded-md rounded-md shadow-sm border border-gray-300 text-gray-500">
+                                    <option selected :value="null">All contracts</option>
+
+                                    <option v-for="n in contract_types" :key="n.id" :value="n.id">
+                                        {{n.name}}
+                                    </option>
+                                </select>
+                            </div>
+
+                        </div>
 
                         <div class="basis-1/4">
                             <div class="mt-2">
@@ -376,18 +393,20 @@ const closeTradeSlideOver = () => {
 
                                                             <div class="flex">
 
-                                                                <div class="font-bold">
+                                                                <div class="">
                                                                     <div>
-                                                                        {{ contractName(trans) }}
+                                                                        <div class="font-bold">{{ contractName(trans) }}</div>
+                                                                        <div class="italic">{{ contractNameOld(trans) }}</div>
+
                                                                     </div>
-                                                                    <div class="mt-1">
+                                                                    <div class="mt-3 font-bold">
                                                                         <span>GP: </span> <span>{{NiceNumber(trans.transport_finance.gross_profit)}}</span>
                                                                     </div>
-                                                                    <div class="mt-1">
+                                                                    <div class="mt-1 font-bold">
                                                                         <span>Invoice: </span> <span>{{invoiceNo(trans)}}</span>
 
                                                                     </div>
-                                                                    <div class="mt-1">
+                                                                    <div class="mt-1 font-bold">
                                                                         <div class="bg-red-600 rounded text-white"  v-if="!trans.include_in_calculations">
                                                                             Excl calc
                                                                         </div>

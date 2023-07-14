@@ -45,7 +45,9 @@ class TransportFinance extends Model
         $assigned_user_comm = $transport_Finance->AssignedUserComm;
 
         //selling_price = no_units_outgoing * selling_price_per_unit
+        //dd($transport_Finance->selling_price_per_unit);
         $selling_price = $transport_Load->no_units_outgoing * $transport_Finance->selling_price_per_unit;
+
 
         //cost_price = no_units_incoming * cost_price_per_unit
         $cost_price = $transport_Load->no_units_incoming * $transport_Finance->cost_price_per_unit;

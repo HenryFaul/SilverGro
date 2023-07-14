@@ -19,10 +19,15 @@ class TransportTransaction extends Model
 
     use SoftDeletes;
 
-    public $fillable = ['id','old_id','contract_type_id','contract_no','supplier_id','customer_id','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
+    public $fillable = ['id','old_id','old_deal_ticket','contract_type_id','contract_no','supplier_id','customer_id','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
         'product_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes',
         'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at'];
 
+
+    public function TransLinks(): HasMany
+    {
+        return $this->hasMany(TransLink::class,'transport_trans_id');
+    }
 
     public function TransportStatus(): HasMany
     {
@@ -106,6 +111,9 @@ class TransportTransaction extends Model
         return $query->when(
             $filters['date'] ?? false,
             fn ($query, $value) => $query->whereDate('transport_date_earliest',"=" ,$value)
+        )->when(
+            $filters['contract_type_id'] ?? false,
+            fn ($query, $value) => $query->where('contract_type_id',"=" ,$value)
         );
 
     }
@@ -148,6 +156,9 @@ class TransportTransaction extends Model
         )->when(
             $filters['end_date'] ?? false,
             fn ($query, $value) => $query->whereDate('transport_date_earliest',"<=" ,$value)
+        )->when(
+            $filters['contract_type_id'] ?? false,
+            fn ($query, $value) => $query->where('contract_type_id',"=" ,$value)
         );
 
     }
@@ -159,7 +170,10 @@ class TransportTransaction extends Model
             $filters['date'] ?? false,
             fn ($query, $value) =>
             $query->whereBetween('transport_date_earliest', [Carbon::parse($value)->startOfWeek(),Carbon::parse($value)->endOfWeek()])
-        );
+        )->when(
+                $filters['contract_type_id'] ?? false,
+                fn ($query, $value) => $query->where('contract_type_id',"=" ,$value)
+            );
 
     }
 

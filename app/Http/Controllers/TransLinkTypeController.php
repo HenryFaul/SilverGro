@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DealTicket;
+use App\Models\TransLinkType;
 use Illuminate\Http\Request;
 
-class DealTicketController extends Controller
+class TransLinkTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -29,13 +29,12 @@ class DealTicketController extends Controller
     public function store(Request $request)
     {
         //
-
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(DealTicket $dealTicket)
+    public function show(TransLinkType $transLinkType)
     {
         //
     }
@@ -43,7 +42,7 @@ class DealTicketController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(DealTicket $dealTicket)
+    public function edit(TransLinkType $transLinkType)
     {
         //
     }
@@ -51,27 +50,15 @@ class DealTicketController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, DealTicket $dealTicket)
+    public function update(Request $request, TransLinkType $transLinkType)
     {
         //
-
-        $dealTicket->update(
-            $request->validate([
-                'is_active' => ['nullable','boolean'],
-                'is_printed' => ['nullable','boolean'],
-            ])
-        );
-
-        $request->session()->flash('flash.bannerStyle', 'success');
-        $request->session()->flash('flash.banner', 'Deal Ticket updated');
-
-        return redirect()->back();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DealTicket $dealTicket)
+    public function destroy(TransLinkType $transLinkType)
     {
         //
     }

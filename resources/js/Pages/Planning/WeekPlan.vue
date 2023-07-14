@@ -27,12 +27,14 @@ const props = defineProps({
     selling_price: Number,
     gp: Number,
     gp_perc: Number,
+    contract_types:Object
 
 });
 
 const Form = useForm({
     date: props.filters.date ?? new Date().toISOString().substr(0, 10),
     show: props.filters.show ?? 1,
+    contract_type_id:props.filters.contract_type_id ?? 1,
 })
 
 
@@ -75,6 +77,13 @@ watch(
 
 watch(
     () => Form.show,
+    (exampleField, prevExampleField) => {
+        filter();
+    }
+)
+
+watch(
+    () => Form.contract_type_id,
     (exampleField, prevExampleField) => {
         filter();
     }
@@ -230,6 +239,30 @@ const closeTradeSlideOver = () => {
     viewTradeSlideOver.value = false;
 };
 
+const contractName = (trans) => {
+
+    if(trans != null){
+        return  trans.contract_type.name+":"+trans.id;
+    }
+    else return "N/A";
+
+}
+
+const contractNameOld = (trans) => {
+
+    if(trans != null){
+
+        if(trans.deal_ticket != null){
+
+            return   trans.deal_ticket.old_id == null ? trans.contract_type.name+":"+trans.old_id :trans.contract_type.name+":"+trans.deal_ticket.old_id;
+        }
+
+        return  trans.contract_type.name+":"+trans.old_id;
+    }
+    else return "N/A";
+
+}
+
 
 
 </script>
@@ -361,6 +394,20 @@ const closeTradeSlideOver = () => {
                             <trade-slide-over :show="viewTradeSlideOver" @close="closeTradeSlideOver"  />
                         </div>
 
+                        <div class="basis-1/2">
+                            <div class="">
+                                <select v-model="Form.contract_type_id"
+                                        class="input-filter-l w-2/6  rounded-md rounded-md shadow-sm border border-gray-300 text-gray-500">
+                                    <option selected :value="null">All contracts</option>
+
+                                    <option v-for="n in contract_types" :key="n.id" :value="n.id">
+                                        {{n.name}}
+                                    </option>
+                                </select>
+                            </div>
+
+                        </div>
+
 
                         <div class="basis-1/4">
                             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -457,29 +504,16 @@ const closeTradeSlideOver = () => {
                                                         </td>
                                                         <td class="py-4 px-6">
 
-
                                                             {{ NiceTDate(trans.transport_date_earliest) }}
-
 
                                                         </td>
                                                         <td class="py-4 px-6">
 
-                                                            {{ trans.contract_type.name }}
-                                                            <div v-if="trans.contract_type.id === 4">
-                                                                <div v-if="trans.deal_ticket.old_id">
-                                                                    {{trans.deal_ticket.old_id}}
-                                                                </div>
-                                                                <div v-else>
-                                                                    {{trans.deal_ticket.id}}
-                                                                </div>
+                                                            <div class="font-bold">
+                                                                {{contractName(trans)}}
                                                             </div>
-                                                            <div v-else>
-                                                                <div v-if="trans.old_id">
-                                                                    {{trans.old_id}}
-                                                                </div>
-                                                                <div>
-                                                                    {{trans.id}}
-                                                                </div>
+                                                            <div class="italic">
+                                                                {{contractNameOld(trans)}}
                                                             </div>
 
                                                         </td>

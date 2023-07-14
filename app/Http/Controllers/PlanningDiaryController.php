@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContractType;
 use App\Models\Customer;
 use App\Models\OldTransaction;
 use App\Models\TransportTransaction;
@@ -19,7 +20,8 @@ class PlanningDiaryController extends Controller
 
         $filters = $request->only([
             'date',
-            'show'
+            'show',
+            'contract_type_id',
         ]);
 
         if (!$filters) {
@@ -37,6 +39,9 @@ class PlanningDiaryController extends Controller
             ->orderBy('transport_date_earliest', 'asc')
             ->paginate($paginate)
             ->withQueryString();
+
+        $contract_types = ContractType::all();
+
 
         //TONS IN	TONS OUT	WEIGHT UPLOADED	WEIGHT OFFLOADED	COST PRICE	TRANS COST	OTHER COSTS	SELL PRICE	GP	GP %
 
@@ -143,6 +148,7 @@ class PlanningDiaryController extends Controller
                 'selling_price' => round($selling_price, 0),
                 'gp' => round($gp, 0),
                 'gp_perc' => round($gp_perc, 1),
+                'contract_types'=>$contract_types
             ]
         );
     }

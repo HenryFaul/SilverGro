@@ -7,6 +7,7 @@ use App\Http\Controllers\ContactDetailController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataImports\DataImportController;
+use App\Http\Controllers\DealTicketController;
 use App\Http\Controllers\EmailContactDetailController;
 use App\Http\Controllers\NumberContactDetailController;
 use App\Http\Controllers\PlanningDiaryController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\PlanningWeekController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\TransLinkController;
 use App\Http\Controllers\TransportDriverVehicleController;
 use App\Http\Controllers\TransporterController;
 use App\Http\Controllers\TransportFinanceController;
@@ -104,9 +106,24 @@ Route::resource('transport_transaction', TransportTransactionController::class)-
 
 Route::get('/props/trade_slide_over', [TransportTransactionController::class, 'getProps'])->middleware('auth')->name('props.trade_slide_over');
 
+//Transport PC trans Modal Props
+
+Route::get('/props/contract_link_modal', [TransportTransactionController::class, 'getPcs'])->middleware('auth')->name('props.contract_link_modal');
+
+
 //Transport Load
 
 Route::resource('transport_load', TransportLoadController::class)->middleware('auth')
+    ->only([ 'update']);
+
+//TransLink
+
+Route::resource('trans_link', TransLinkController::class)->middleware('auth')
+    ->only([ 'store']);
+
+//Deal Ticket
+
+Route::resource('deal_ticket', DealTicketController::class)->middleware('auth')
     ->only([ 'update']);
 
 //Transport Load

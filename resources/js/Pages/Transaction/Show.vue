@@ -21,6 +21,8 @@ import {
 import DriverVehicleModal from "@/Components/UI/DriverVehicleModal.vue";
 import DriverVehicleModalAdd from "@/Components/UI/DriverVehicleModal.vue";
 import AssignedCommModal from "@/Components/UI/AssignedCommModal.vue";
+import ContractLinkModal from "@/Components/UI/ContractLinkModal.vue";
+
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
@@ -52,7 +54,8 @@ const props = defineProps({
     all_transport_rates: Object,
     all_status_entities:Object,
     all_status_types:Object,
-    all_invoice_statuses:Object
+    all_invoice_statuses:Object,
+    linked_trans:Object
 });
 
 const swal = inject('$swal');
@@ -194,13 +197,21 @@ let transport_invoice_Form = useForm({
 
 
 
-
-
 let status_Form = useForm({
     transport_trans_id: props.transaction.id,
     status_entity_id:1,
     status_type_id:1
 });
+
+/*'transport_trans_id','old_id','type','comment','is_active','is_printed','stamp_printed'*/
+
+
+let deal_ticket_Form = useForm({
+    transport_trans_id: props.transaction.id,
+    is_active: props.transaction.deal_ticket == null? false: props.transaction.deal_ticket.is_active,
+    is_printed:props.transaction.deal_ticket == null? false: props.transaction.deal_ticket.is_printed,
+});
+
 
 let NiceNumber = (_number) => {
     let val = (_number / 1).toFixed(2).replace(".", ".");
@@ -492,6 +503,21 @@ const createStatus = () => {
 };
 
 
+const updateDealTicket = () => {
+    deal_ticket_Form.put(route('deal_ticket.update', props.transaction.deal_ticket.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (error) => {
+                alert('Something went wrong')
+                console.log(error)
+            }
+        }
+    );
+}
+
 
 const temp_form = useForm({
 });
@@ -546,11 +572,18 @@ let viewDriverVehicleNewModal = ref(false);
 let viewAssignedCommModal = ref(false);
 let viewAssignedCommNewModal = ref(false);
 
+let viewContractLinkModal = ref(false);
+
 
 let currentDriverVehicle = ref(null);
 
 let currentAssignedComm = ref(null);
 //let currentDriverNewVehicle = ref(null);
+
+const viewContractLink = () => {
+    viewContractLinkModal.value = true;
+
+};
 
 const viewDriverVehicle = (driver_vehicle) => {
     currentDriverVehicle.value = driver_vehicle;
@@ -574,7 +607,11 @@ const viewAssignedNewComm = () => {
 };
 
 const closeAssignedComm = () => {
-    viewAssignedCommModal.value = false;
+    viewContractLinkModal.value = false;
+};
+
+const closeContractLink = () => {
+    viewContractLinkModal.value = false;
 };
 
 const closeAssignedNewComm = () => {
@@ -586,6 +623,66 @@ const closeDriverVehicleModal = () => {
     viewDriverVehicleNewModal.value = false;
 };
 
+
+
+const filteredLinkedContractsMq = computed(() =>
+    props.linked_trans.filter((trans_link) => {
+        return (trans_link.trans_link_type_id === 3);
+    }
+));
+
+const filteredLinkedContractsPc = computed(() =>
+    props.linked_trans.filter((trans_link) => {
+            return (trans_link.trans_link_type_id === 3);
+        }));
+
+const sumLinkedContractsMq = computed(() => {
+
+        let sum = 0;
+
+        //transport_transaction.transport_finance.gross_profit
+
+        if (props.linked_trans != null){
+
+            for (let linked of props.linked_trans){
+
+                if (linked.trans_link_type_id === 3){
+
+                    if (linked.transport_transaction != null){
+                        sum += linked.transport_transaction.transport_finance.gross_profit
+                    }
+
+
+                }
+            }
+        }
+        return sum;
+    });
+
+const sumLinkedContractsPc = computed(() => {
+
+    let sum = 0;
+
+    //transport_transaction.transport_finance.gross_profit
+
+    if (props.linked_trans != null){
+
+        for (let linked of props.linked_trans){
+
+            if (linked.trans_link_type_id === 3){
+                if(linked.transport_transaction_pc != null){
+                    sum += linked.transport_transaction_pc.transport_finance.gross_profit
+                }
+            }
+        }
+    }
+    return sum;
+});
+
+const viewTrans = (id) => {
+    alert(id)
+    router.get('transport_transaction/'+id);
+}
 
 </script>
 
@@ -604,9 +701,12 @@ const closeDriverVehicleModal = () => {
                         class="m-2 p-2 rounded-md rounded-md">
                         <div class="">
                             <div class="text-lg mb-2 text-indigo-400">Transport Transaction</div>
+                            <div class=" text-indigo-400">{{ transaction.contract_type.name}}{{ transaction.id}}</div>
+                            <div v-if="transaction.contract_type_id ===4" class="mb-2 text-gray-400">{{ transaction.contract_type.name}}{{ transaction.deal_ticket.old_id}}</div>
+                            <div v-else class="mb-2 text-gray-400">{{ transaction.contract_type.name}}{{ transaction.old_id}}</div>
+
 
                             <form>
-
                                 <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
                                     <!--                                    'old_id','contract_type_id','contract_no','supplier_id','customer_id','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
@@ -616,7 +716,6 @@ const closeDriverVehicleModal = () => {
                                     <div class="text-right col-span-6 text-sm italic">
                                         (Last updated: {{ transaction.updated_at }})
                                     </div>
-
                                     <div class="flex col-span-6 mt-1">
 
                                         <div>
@@ -652,7 +751,6 @@ const closeDriverVehicleModal = () => {
                                                     :message="transport_trans_Form.errors.transport_date_latest"/>
 
                                     </div>
-
                                     <div class="flex col-span-4 mt-2">
                                         <SwitchGroup as="div" class="flex m-2 items-center">
                                             <Switch v-model="transport_trans_Form.include_in_calculations"
@@ -1097,7 +1195,6 @@ const closeDriverVehicleModal = () => {
                                         <InputError class="mt-2"
                                                     :message="transport_trans_Form.errors.traders_notes_transport"/>
                                     </div>
-
                                     <div class="col-span-4">
 
                                         <SecondaryButton class="m-1" @click="updateTransportTrans">
@@ -1114,8 +1211,243 @@ const closeDriverVehicleModal = () => {
                             </form>
                         </div>
 
+                    </div>
+                </div>
+
+
+                <div v-if="transaction.contract_type_id === 4">
+                    <SectionBorder/>
+                    <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+
+                        <div class="m-2 p-2">
+
+                            <div class="">
+                                <div class="text-lg mb-2 text-indigo-400">Deal Ticket</div>
+
+                                <div v-if="transaction.deal_ticket.is_active" class=" mt-3">
+                                    <div class="text-green-400">Deal Ticket is Active </div>
+                                    <div class=" text-indigo-400">{{ transaction.contract_type.name}}{{ transaction.id}}</div>
+                                    <div v-if="transaction.contract_type_id ===4" class="mb-2 text-gray-400">{{ transaction.contract_type.name}}{{ transaction.deal_ticket.old_id}}</div>
+                                    <div v-else class="mb-2 text-gray-400">{{ transaction.contract_type.name}}{{ transaction.old_id}}</div>
+                                </div>
+
+                                <div v-else class="text-red-400 mt-3">
+                                    Deal Ticket Not Active
+                                </div>
+
+                                <form class="mt-5">
+
+                                    <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
+                                        <div class="flex col-span-4 mt-2">
+                                            <SwitchGroup as="div" class="flex m-2 items-center">
+                                                <Switch v-model="deal_ticket_Form.is_active"
+                                                        :class="[deal_ticket_Form.is_active ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[deal_ticket_Form.is_active ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                </Switch>
+                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                    <span class="font-medium text-gray-900">Deal ticket active</span>
+                                                </SwitchLabel>
+                                            </SwitchGroup>
+
+                                            <SwitchGroup as="div" class="flex m-2 items-center">
+                                                <Switch v-model="deal_ticket_Form.is_printed"
+                                                        :class="[deal_ticket_Form.is_printed ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[deal_ticket_Form.is_printed ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                </Switch>
+                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                    <span class="font-medium text-gray-900">Deal ticket printed</span>
+                                                </SwitchLabel>
+                                            </SwitchGroup>
+
+
+                                        </div>
+
+                                        <div class="col-span-4">
+
+                                            <SecondaryButton class="m-1" @click="updateDealTicket">
+                                                Update
+                                            </SecondaryButton>
+
+                                        </div>
+
+                                    </div>
+                                </form>
+
+                            </div>
+
+                        </div>
 
                     </div>
+                </div>
+
+
+                <SectionBorder/>
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+
+                    <div class="m-2 p-2">
+
+                        <div class="">
+                            <div class="text-lg mb-2 text-indigo-400">Linked Contracts</div>
+
+                            <div class="">
+
+                            <div v-if="transaction.contract_type_id === 1">
+                                Unallocated
+                            </div>
+
+                            <div v-if="transaction.contract_type_id === 2">
+
+                                <div class="text-indigo-400 font-bold">
+                                    PC (MQ's linked to this contract)
+                                </div>
+                                <div>
+                                    <form class="mt-5">
+
+                                        <div class="px-4 sm:px-6 lg:px-8">
+                                            <div class="-mx-4 mt-8 flow-root sm:mx-0">
+                                                <table class="min-w-full">
+                                                    <colgroup>
+                                                        <col class="w-full sm:w-1/2" />
+                                                        <col class="sm:w-1/6" />
+                                                        <col class="sm:w-1/6" />
+                                                        <col class="sm:w-1/6" />
+                                                    </colgroup>
+                                                    <thead class="border-b border-gray-300 text-gray-900">
+                                                    <tr>
+                                                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Parties</th>
+                                                        <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">Product</th>
+                                                        <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">GP</th>
+                                                        <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Action</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr v-for="contract in filteredLinkedContractsMq" :key="contract.id" class="border-b border-gray-200">
+
+
+                                                        <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                                            <div class="font-medium text-gray-900">{{contract.transport_transaction.supplier.last_legal_name}}</div>
+                                                            <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction.customer.last_legal_name}}</div>
+                                                            <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction.transporter.last_legal_name}}</div>
+                                                        </td>
+                                                        <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{contract.transport_transaction.product.name}}</td>
+                                                        <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ NiceNumber(contract.transport_transaction.transport_finance.gross_profit)}}</td>
+                                                        <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
+                                                            <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',contract.transport_transaction.id)" >View trans</Link>
+                                                        </td>
+
+
+                                                    </tr>
+                                                    </tbody>
+                                                    <tfoot>
+
+                                                    <tr>
+                                                        <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell sm:pl-0">Total GP</th>
+                                                        <td class="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">{{NiceNumber(sumLinkedContractsMq)}}</td>
+                                                        <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden">Total</th>
+                                                    </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+
+                            </div>
+
+                            <div v-if="transaction.contract_type_id === 3">
+                                SC
+                            </div>
+
+                            <div v-if="transaction.contract_type_id === 4">
+
+                                <div class="text-indigo-400 font-bold">
+                                    MQ
+                                </div>
+
+                                <SecondaryButton class="m-1 mt-3" @click="viewContractLink">
+                                    Link MQ
+                                </SecondaryButton>
+
+                                <ContractLinkModal
+                                    :show="viewContractLinkModal"
+                                    @close="closeContractLink"
+                                    :mq_trans_id="transaction.id"
+                                    :link_type_id="3"
+                                />
+
+                                <div class="mt-3">
+
+                                    <div>PC linked to this MQ:</div>
+
+                                    <div>
+                                        <form class="mt-5">
+
+                                            <div class="px-4 sm:px-6 lg:px-8">
+                                                <div class="-mx-4 mt-8 flow-root sm:mx-0">
+                                                    <table class="min-w-full">
+                                                        <colgroup>
+                                                            <col class="w-full sm:w-1/2" />
+                                                            <col class="sm:w-1/6" />
+                                                            <col class="sm:w-1/6" />
+                                                            <col class="sm:w-1/6" />
+                                                        </colgroup>
+                                                        <thead class="border-b border-gray-300 text-gray-900">
+                                                        <tr>
+                                                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Parties</th>
+                                                            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">Product</th>
+                                                            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">GP</th>
+                                                            <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Action</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr v-for="contract in filteredLinkedContractsPc" :key="contract.id" class="border-b border-gray-200">
+
+                                                            <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                                                <div class="font-medium text-gray-900">{{contract.transport_transaction_pc.supplier.last_legal_name}}</div>
+                                                                <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction_pc.customer.last_legal_name}}</div>
+                                                                <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction_pc.transporter.last_legal_name}}</div>
+                                                            </td>
+                                                            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{contract.transport_transaction_pc.product.name}}</td>
+                                                            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ NiceNumber(contract.transport_transaction_pc.transport_finance.gross_profit)}}</td>
+                                                            <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
+                                                                <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',contract.transport_transaction_pc.id)" >View trans</Link>
+                                                            </td>
+
+
+                                                        </tr>
+                                                        </tbody>
+                                                        <tfoot>
+
+                                                        <tr>
+                                                            <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell sm:pl-0">Total GP</th>
+                                                            <td class="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">{{NiceNumber(sumLinkedContractsPc)}}</td>
+                                                            <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden">Total</th>
+                                                        </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                    </div>
+
+                                </div>
+
+
+
+                            </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
                 </div>
                 <SectionBorder/>
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
