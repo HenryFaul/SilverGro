@@ -131,7 +131,6 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         'old_id' => $conv_old_id,
                         'contract_type_id' => $conv_contract_type_id,
                         'contract_no' => $conv_contract_no,
-                        'old_deal_ticket'=>$conv_old_deal_ticket,
                         'supplier_id' => $found_supplier_id,
                         'customer_id' => $found_customer_id,
                         'transporter_id' => $found_transporter_id,
