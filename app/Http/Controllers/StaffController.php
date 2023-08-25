@@ -4,17 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Staff;
+use App\Models\Transporter;
+use App\Models\User;
 use App\Rules\StaffAssignRule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Fortify\Rules\Password;
+use Spatie\Permission\Models\Role;
 
 class StaffController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filters = $request->only([
+            'searchName',
+            'isActive',
+            'field',
+            'direction',
+            'show'
+        ]);
+
+        $paginate = $request['show'] ?? 10;
+        $staff = User::with('roles')->with('Staff')->paginate($paginate)->withQueryString();
+
+        return inertia(
+            'Staff/Index',
+            [
+                'filters' => $filters,
+                'staff' => $staff,
+            ]
+        );
     }
 
     /**
@@ -25,35 +47,45 @@ class StaffController extends Controller
         //
     }
 
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $customer_id = $request->customer_id;
-        $staff_id = $request->staff_id;
-
-        $class = "App\Models\Customer";
-
         $request->validate([
-            'staff_id' => ['required','integer','exists:staff,id',new StaffAssignRule($customer_id,$class)],
-            'customer_id' => ['required','integer','exists:customers,id'],
+            'first_name' => ['required','string'],
+            'last_legal_name' => ['required','string','string'],
+            'nickname' => ['nullable','string'],
+            'title' => ['nullable','string'],
+            'id_reg_no' => ['nullable','string','unique:staff,id_reg_no'],
+            'job_description' => ['nullable','string'],
+            'password_confirmation' => ['required'],
+            'password'=> ['required', 'string', new Password,'required_with:password_confirmation','same:password_confirmation'],
+            'email'=> ['required', 'string', 'email', 'max:255', 'unique:users'],
         ]);
 
-        $staff = Staff::find($staff_id);
-        $customer = Customer::find($customer_id);
+        $user =  User::create([
+            'name' => $request->first_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ]);
 
-        if ($staff != null && $customer != null){
+        if($user->exists()){
+            Staff::create([
+                'first_name' => $request->first_name,
+                'last_legal_name' => $request->last_legal_name,
+                'nickname' => $request->nickname,
+                'title' => $request->title,
+                'id_reg_no' => $request->id_reg_no,
+                'job_description' => $request->job_description,
+                'user_id'=> $user->id
+            ]);
 
-            $customer->staff()->attach($staff);
             $request->session()->flash('flash.bannerStyle', 'success');
-            $request->session()->flash('flash.banner', 'Staff added');
-            return redirect()->back();
+            $request->session()->flash('flash.banner', 'Staff created');
         }
 
-
-        $request->session()->flash('flash.bannerStyle', 'danger');
-        $request->session()->flash('flash.banner', 'Staff not added');
 
         return redirect()->back();
 
@@ -65,6 +97,19 @@ class StaffController extends Controller
     public function show(Staff $staff)
     {
         //
+        $staff = User::where('id','=',$staff->user_id)->with('roles')->with('Staff')->first();
+
+        $all_roles_in_database = Role::all();
+        $permissions = $staff?->getPermissionsViaRoles()->pluck('name');
+
+        return inertia(
+            'Staff/Show',
+            [
+                'staff' => $staff,
+                'all_roles'=>$all_roles_in_database,
+                'permissions'=>$permissions
+            ]
+        );
     }
 
     /**
@@ -80,21 +125,32 @@ class StaffController extends Controller
      */
     public function update(Request $request, Staff $staff)
     {
-        $customer = Customer::find($request->customer_id);
-        $res = $customer->staff()->detach($staff);
 
-        if ($res){
+        $staff->update(
+            $request->validate([
+                'first_name' => ['nullable','string'],
+                'last_legal_name' => ['nullable','string'],
+                'nickname' => ['nullable','string'],
+                'title' => ['nullable','string'],
+                'id_reg_no' => ['nullable','string'],
+                'is_active' => ['nullable','boolean'],
+                'job_description' => ['nullable','string'],
+            ])
+        );
 
-            $request->session()->flash('flash.bannerStyle', 'success');
-            $request->session()->flash('flash.banner', 'Staff unlinked');
-            return redirect()->back();
+        //Update the system user first name field to align with staff
+        $user = $staff->User();
+
+        if($user->exists()){
+            $user->update([
+                'name' => $request->first_name,
+            ]);
         }
 
-        $request->session()->flash('flash.bannerStyle', 'danger');
-        $request->session()->flash('flash.banner', 'Staff not unlinked');
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Staff updated');
 
         return redirect()->back();
-
     }
 
     /**

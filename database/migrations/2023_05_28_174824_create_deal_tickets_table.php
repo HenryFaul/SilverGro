@@ -27,8 +27,11 @@ return new class extends Migration
             $table->foreign('transport_trans_id')
                 ->references('id')->on('transport_transactions')->onDelete('cascade');
             $table->string('type')->nullable();
+            $table->double('trade_value')->default(0);
+
             $table->longText('comment')->nullable();
             $table->boolean('is_active')->default(1);
+            $table->boolean('is_approved')->default(0);
             $table->boolean('is_printed')->default(0);
             $table->timestamp('stamp_printed')->nullable();
             $table->softDeletes();

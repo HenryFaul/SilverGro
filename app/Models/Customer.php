@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -18,13 +19,17 @@ class Customer extends Model
 
     use SoftDeletes;
 
-    public $fillable = ['id','first_name','last_legal_name','nickname','title','id_reg_no','is_active'
-        ,'terms_of_payment_id','invoice_basis_id','customer_rating_id','days_overdue_allowed_id','is_vat_exempt','is_vat_cert_received',
+    public $fillable = ['id','first_name','last_legal_name','nickname','title','id_reg_no','is_active','terms_of_payment_basis_id','terms_of_payment_id','invoice_basis_id','customer_rating_id','is_vat_exempt','is_vat_cert_received',
         'credit_limit','credit_limit_hard','comment'];
 
     public function TermsOfPayment(): BelongsTo
     {
         return $this->belongsTo(TermsOfPayment::class);
+    }
+
+    public function TermsOfPaymentBasis(): BelongsTo
+    {
+        return $this->belongsTo(TermsOfPaymentBasis::class);
     }
 
     public function InvoiceBasis(): BelongsTo
@@ -37,10 +42,6 @@ class Customer extends Model
         return $this->belongsTo(CustomerRating::class);
     }
 
-    public function DaysOverDue(): BelongsTo
-    {
-        return $this->belongsTo(TermsOfPayment::class);
-    }
 
     public function addressable(): MorphMany
     {

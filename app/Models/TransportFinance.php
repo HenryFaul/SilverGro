@@ -15,7 +15,7 @@ class TransportFinance extends Model
 
     use SoftDeletes;
 
-    public $fillable = ['transport_trans_id', 'transport_load_id', 'transport_rate_basis_id', 'cost_price_per_unit', 'cost_price_per_ton', 'selling_price_per_unit', 'cost_price',
+    public $fillable = ['transport_trans_id', 'transport_load_id', 'transport_rate_basis_id', 'cost_price_per_unit', 'cost_price_per_ton', 'cost_price',
         'selling_price', 'selling_price_per_ton', 'cost_price_per_unit', 'selling_price_per_unit', 'transport_rate_per_ton', 'transport_rate', 'transport_price', 'load_insurance_per_ton',
         'comms_due_per_ton', 'weight_ton_incoming', 'weight_ton_outgoing', 'is_transport_costs_inc_price', 'transport_cost', 'total_cost_price', 'additional_cost_1', 'additional_cost_2', 'additional_cost_3',
         'additional_cost_desc_1', 'additional_cost_desc_2', 'additional_cost_desc_3', 'gross_profit', 'gross_profit_percent',
@@ -29,7 +29,7 @@ class TransportFinance extends Model
 
     public function TransportTransaction(): BelongsTo
     {
-        return $this->belongsTo(TransportTransaction::class);
+        return $this->belongsTo(TransportTransaction::class,'transport_trans_id');
     }
 
     public function TransportLoad(): BelongsTo
@@ -43,6 +43,8 @@ class TransportFinance extends Model
         $transport_Finance = $this;
         $transport_Load = ($transport_Finance->TransportLoad);
         $assigned_user_comm = $transport_Finance->AssignedUserComm;
+        $transport_trans = $transport_Finance->TransportTransaction;
+        $deal_ticket = $transport_trans->DealTicket;
 
         //selling_price = no_units_outgoing * selling_price_per_unit
         //dd($transport_Finance->selling_price_per_unit);
@@ -105,9 +107,9 @@ class TransportFinance extends Model
         $total_cost_price = 0;
 
         if ($transport_Finance->is_transport_costs_inc_price) {
-            $total_cost_price = $cost_price + $transport_Finance->additional_cost_1 + $transport_Finance->additional_cost_2 + $transport_Finance->additional_cost_3 + $transport_cost;
-        } else {
             $total_cost_price = $cost_price + $transport_Finance->additional_cost_1 + $transport_Finance->additional_cost_2 + $transport_Finance->additional_cost_3;
+        } else {
+            $total_cost_price = $cost_price + $transport_Finance->additional_cost_1 + $transport_Finance->additional_cost_2 + $transport_Finance->additional_cost_3+ $transport_cost;
         }
 
         //gross_profit = selling_price – (total_cost_price + adjusted_gp)
@@ -176,6 +178,7 @@ class TransportFinance extends Model
                 }
             }
         }
+
 
 
         $this->save();

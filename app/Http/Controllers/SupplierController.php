@@ -55,7 +55,44 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'first_name' => ['nullable','string'],
+            'last_legal_name' => ['required','string','string','unique:suppliers,last_legal_name'],
+            'nickname' => ['nullable','string'],
+            'title' => ['nullable','string'],
+            'id_reg_no' => ['nullable','string','unique:customers,id_reg_no'],
+            'comment' => ['nullable','string'],
+        ]);
+
+
+        $supplier = Supplier::create([
+            'first_name' => $request->first_name,
+            'last_legal_name' => $request->last_legal_name,
+            'nickname' => $request->nickname,
+            'title' => $request->title,
+            'id_reg_no' => $request->id_reg_no,
+            'is_active' => 1,
+            'terms_of_payment_id' => 1,
+            'invoice_basis_id' => 1,
+            'customer_rating_id' => 1,
+            'days_overdue_allowed_id' => 1,
+            'is_vat_exempt' => 0,
+            'is_vat_cert_received' => 0,
+            'credit_limit' => 0,
+            'credit_limit_hard' => 0,
+            'comment' => $request->comment,
+        ]);
+
+        if ($supplier->exists()) {
+            $request->session()->flash('flash.bannerStyle', 'success');
+            $request->session()->flash('flash.banner', 'Supplier Created');
+        }
+        else{
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Supplier NOT Created');
+        }
+
+        return redirect()->back();
     }
 
     /**

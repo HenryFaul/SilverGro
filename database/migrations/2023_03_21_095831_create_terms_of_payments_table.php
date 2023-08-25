@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('terms_of_payments', function (Blueprint $table) {
             $table->id();
             $table->string('value');
+            $table->integer('days')->default(0);
             $table->string('comment')->nullable();
             $table->timestamps();
         });

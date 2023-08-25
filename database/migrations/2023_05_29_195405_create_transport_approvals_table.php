@@ -11,6 +11,9 @@ return new class extends Migration
      */
 
 
+
+
+
     public function up(): void
     {
         Schema::create('transport_approvals', function (Blueprint $table) {
@@ -24,11 +27,19 @@ return new class extends Migration
             $table->foreign('transport_job_id')
                 ->references('id')->on('transport_jobs')->onDelete('cascade');
 
+            $table->bigInteger('deal_ticket_id')->unsigned();
+            $table->foreign('deal_ticket_id')
+                ->references('id')->on('deal_tickets')->onDelete('cascade');
 
-            $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')
-                ->references('id')->on('staff')->onDelete('cascade');
+            $table->bigInteger('approved_by_id')->unsigned()->nullable();
+            $table->foreign('approved_by_id')
+                ->references('id')->on('users')->onDelete('cascade');
 
+            $table->Morphs('poly_approval');
+
+            $table->string('role_name');
+
+            $table->boolean('is_approved')->default(false);
 
             $table->softDeletes();
             $table->timestamps();

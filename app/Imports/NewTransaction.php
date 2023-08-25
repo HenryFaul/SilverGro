@@ -14,6 +14,7 @@ use App\Models\ProductSource;
 use App\Models\PurchaseOrder;
 use App\Models\Staff;
 use App\Models\Supplier;
+use App\Models\TradeRule;
 use App\Models\TransLink;
 use App\Models\TransportApproval;
 use App\Models\TransportDriverVehicle;
@@ -203,21 +204,6 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                     }
 
-                    //Deal ticket
-
-                    // dealticket, dealticketprinted, ts_dealticketprinted,
-                    //dealticket
-
-                    $deal_ticket = is_numeric(trim($row['dealticket'])) ? trim($row['dealticket']) : null;
-                    $dealticketprinted = !(trim($row['dealticketprinted']) == 0);
-                    $ts_dealticketprinted = trim($row['ts_dealticketprinted']) === '' || trim($row['ts_dealticketprinted']) === 'NULL' ? null : Carbon::createFromTimestamp($row['ts_dealticketprinted'])->toDateTimeString();
-
-                    $deal_ticket = DealTicket::create([
-                        'transport_trans_id' => $transport_trans->id,
-                        'old_id' => $deal_ticket,
-                        'is_printed' => $dealticketprinted,
-                        'stamp_printed' => $ts_dealticketprinted
-                    ]);
 
 
                     //Purchase order
@@ -265,6 +251,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     $transport_invoice = TransportInvoice::create([
                         'old_id' => $invoiceno,
                         'transport_trans_id' => $transport_trans->id,
+                        'customer_id'=>$found_customer_id,
                         'is_active' => 0,
                         'is_printed' => 0
                     ]);
@@ -288,6 +275,9 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     $invoice_pay_by_date = is_numeric(trim($row['ts_invoicepaybydate'])) ? Carbon::createFromTimestamp($row['ts_invoicepaybydate'])->toDateTimeString() : null;
                     $invoice_date = is_numeric(trim($row['ts_invoicedate'])) ? Carbon::createFromTimestamp($row['ts_invoicedate'])->toDateTimeString() : null;
                     $invoice_amount = is_numeric(trim($row['invoiceamount'])) ? trim($row['invoiceamount']) : 0;
+                    $invoice_amount_paid = is_numeric(trim($row['invoiceamountpaid'])) ? trim($row['invoiceamountpaid']) : 0;
+
+
                     $cost_price = is_numeric(trim($row['costprice'])) ? trim($row['costprice']) : 0;
                     $selling_price = is_numeric(trim($row['sellingprice'])) ? trim($row['sellingprice']) : 0;
 
@@ -319,6 +309,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         'invoice_pay_by_date' => $invoice_pay_by_date,
                         'invoice_date' => $invoice_date,
                         'invoice_amount' => $invoice_amount,
+                        'invoice_amount_paid'=>$invoice_amount_paid,
                         'cost_price' => $cost_price,
                         'selling_price' => $selling_price,
                         'status_id' => $status_id,
@@ -567,6 +558,34 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         'adjusted_gp_notes' => $adjusted_gp_notes
                     ]);
 
+
+                    //Deal ticket
+
+                    // dealticket, dealticketprinted, ts_dealticketprinted,
+                    //dealticket
+                    //'transport_trans_id','old_id','trade_rule_id','trade_value','type','comment','is_active','is_printed','stamp_printed'
+
+                    $deal_ticket = is_numeric(trim($row['dealticket'])) ? trim($row['dealticket']) : null;
+                    $dealticketprinted = !(trim($row['dealticketprinted']) == 0);
+                    $ts_dealticketprinted = trim($row['ts_dealticketprinted']) === '' || trim($row['ts_dealticketprinted']) === 'NULL' ? null : Carbon::createFromTimestamp($row['ts_dealticketprinted'])->toDateTimeString();
+
+                   // $trade_rule = TradeRule::where('max_trade_value','>=',$cost_price)->where('min_trade_value','<=',$cost_price)->with('PolyRuleRoles')->first();
+
+                    $deal_ticket = DealTicket::create([
+                        'transport_trans_id' => $transport_trans->id,
+                        'old_id' => $deal_ticket,
+                        'trade_value'=>$selling_price,
+                        'is_printed' => $dealticketprinted,
+                        'trade_value'=>$cost_price,
+                        'stamp_printed' => $ts_dealticketprinted,
+                        'is_active'=>false
+                    ]);
+
+                    //Trade Rule
+
+
+                  //
+
                     //user comm
                     /* assigned_user_1_supplier,
                      assigned_user_1_supplier_comm,
@@ -614,7 +633,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     }
 
                     //user 2
-                    if (true) {
+                    if (false) {
 
                         $assigned_user_supplier_id = match (trim($row['assigned_user_2_supplier'])) {
                             "3" => 2,
@@ -704,7 +723,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
                        approvalmarelize,
                        approvalallan, */
 
-                    if (trim($row['approvaldesiree']) == "Yes") {
+                  /*  if (trim($row['approvaldesiree']) == "Yes") {
                         $transport_approval = TransportApproval::create([
                             'transport_trans_id' => $transport_trans->id,
                             'transport_job_id' => $transport_job->id,
@@ -750,7 +769,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
                             'transport_job_id' => $transport_job->id,
                             'user_id' => 2
                         ]);
-                    }
+                    }*/
 
 
                     //TransportDriverVehicle

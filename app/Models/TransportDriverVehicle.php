@@ -18,7 +18,7 @@ class TransportDriverVehicle extends Model
     public $fillable = ['transport_trans_id','transport_job_id','regular_driver_id','regular_vehicle_id','weighbridge_upload_weight','weighbridge_offload_weight',
         'is_weighbridge_variance','is_cancelled','date_cancelled','is_loaded','date_loaded','is_onroad','date_onroad',
         'is_delivered','date_delivered','is_transport_scheduled','date_scheduled','is_paid','date_paid','is_payment_overdue',
-        'traders_notes','operations_alert_notes','date_payment_overdue'];
+        'traders_notes','operations_alert_notes','date_payment_overdue','driver_vehicle_loading_number'];
 
 
 

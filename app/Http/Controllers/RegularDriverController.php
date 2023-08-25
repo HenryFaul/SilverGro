@@ -2,17 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\RegularDriver;
 use Illuminate\Http\Request;
+use SebastianBergmann\CodeCoverage\Driver\Driver;
 
 class RegularDriverController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): \Inertia\Response|\Inertia\ResponseFactory
     {
-        //
+
+        $filters = $request->only([
+            'searchName',
+            'isActive',
+            'field',
+            'direction',
+            'show'
+        ]);
+
+        $paginate = $request['show'] ?? 10;
+
+        $regular_drivers = RegularDriver::filter($filters)
+            ->paginate($paginate)
+            ->withQueryString();
+
+
+
+        return inertia(
+            'Driver/Index',
+            [
+                'filters' => $filters,
+                'drivers' => $regular_drivers,
+            ]
+        );
     }
 
     /**
@@ -34,9 +59,14 @@ class RegularDriverController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RegularDriver $regularDriver)
+    public function show(RegularDriver $regular_driver): \Inertia\Response|\Inertia\ResponseFactory
     {
-        //
+        return inertia(
+            'Driver/Show',
+            [
+                'driver' => $regular_driver,
+            ]
+        );
     }
 
     /**
@@ -52,7 +82,20 @@ class RegularDriverController extends Controller
      */
     public function update(Request $request, RegularDriver $regularDriver)
     {
-        //
+        $regularDriver->update(
+            $request->validate([
+                'first_name' => ['nullable','string'],
+                'last_name' => ['nullable','string'],
+                'cell_no' => ['nullable','string'],
+                'is_active' => ['nullable','boolean'],
+                'comment' => ['nullable','string'],
+            ])
+        );
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Driver updated');
+
+        return redirect()->back();
     }
 
     /**

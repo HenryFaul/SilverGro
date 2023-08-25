@@ -45,6 +45,7 @@ class CustomerImport implements ToCollection, WithHeadingRow
                     $credit_limit_hard = trim($row['hard_credit_limit']) == '' ? 0 : doubleval(trim($row['hard_credit_limit']));
 
 
+
                     $customer = Customer::create([
                         'id'=>trim($row['id']),
                         'last_legal_name'=>trim($row['customername']),
@@ -52,7 +53,7 @@ class CustomerImport implements ToCollection, WithHeadingRow
                         'terms_of_payment_id'=>$terms_of_payment_id,
                         'invoice_basis_id'=>$invoice_basis_id,
                         'customer_rating_id'=>$customer_rating_id,
-                        'days_overdue_allowed_id'=>$days_overdue_allowed_id,
+                        'terms_of_payment_basis_id'=>1,
                         'is_vat_exempt'=>$is_vat_exempt,
                         'is_vat_cert_received'=>$is_vat_cert_received,
                         'credit_limit'=>$credit_limit,

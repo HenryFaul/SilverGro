@@ -27,6 +27,7 @@ return new class extends Migration
             $table->foreign('transport_rate_basis_id')
                 ->references('id')->on('transport_rate_bases')->onDelete('cascade');
             $table->string('customer_order_number')->nullable();
+            $table->string('supplier_loading_number')->nullable();
             $table->boolean('is_multi_loads')->default(0);
             $table->boolean('is_approved')->default(0);
             $table->timestamp('transport_date_earliest')->nullable();

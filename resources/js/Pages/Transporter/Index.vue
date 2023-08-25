@@ -6,6 +6,7 @@ import {router, useForm, usePage,Link} from "@inertiajs/vue3";
 import {debounce, throttle} from 'lodash'
 import PaginationModified from  "@/Components/UI/PaginationModified.vue";
 import Icon from "@/Components/Icon.vue";
+import TransporterSlideOver from  "@/Components/UI/TransporterSlideOver.vue";
 
 
 const props = defineProps({
@@ -23,7 +24,19 @@ const filterForm = useForm({
     direction: props.filters.direction ?? "asc",
     show: props.filters.show ?? 10,
 
-})
+});
+
+const viewTransporterSlideOver = ref(false);
+
+const showTransporterSlideOver = () => {
+    viewTransporterSlideOver.value = true;
+};
+
+const closeTransporterSlideOver = () => {
+    viewTransporterSlideOver.value = false;
+};
+
+
 
 let curClient = ref(null);
 let showModel = ref(false);
@@ -122,9 +135,13 @@ const edit = (id) => {
                             </div>
                             <secondary-button @click="filter" class="mt-3">Search</secondary-button>
                             <secondary-button @click="clear" class="mt-3 ml-1">Clear</secondary-button>
-                            <secondary-button  class="mt-3 ml-1">Add (+)</secondary-button>
+                            <secondary-button  @click="showTransporterSlideOver" class="mt-3 ml-1">Add (+)</secondary-button>
                         </div>
                         <div>
+                            <div>
+                                <transporter-slide-over :show="viewTransporterSlideOver" @close="closeTransporterSlideOver"/>
+                            </div>
+
 
                             <div class="bg-white rounded-md shadow overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200 table-fixed">

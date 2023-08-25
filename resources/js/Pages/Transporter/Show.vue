@@ -28,8 +28,6 @@ const permissions = computed(() => usePage().props.permissions)
 
 
 let Form = useForm({
-
-    _method: 'PUT',
     first_name: props.transporter == null ? '' : props.transporter.first_name,
     last_legal_name: props.transporter == null ? '' : props.transporter.last_legal_name,
     nickname: props.transporter == null ? '' : props.transporter.nickname,
@@ -39,7 +37,7 @@ let Form = useForm({
     is_active: props.transporter == null ? 1 : props.transporter.is_active,
     terms_of_payment_id: props.transporter == null ? '' : props.transporter.terms_of_payment_id,
     account_number: props.transporter == null ? '' : props.transporter.account_number,
-    is_git: props.transporter == null ? false : props.transporter.is_git,
+    is_git: props.transporter == null ? 1 : props.transporter.is_git,
     comment: props.transporter == null ? '' : props.transporter.comment,
 
 });
@@ -101,6 +99,9 @@ const closeModal = () => {
     viewAddressModal.value = false;
 };
 
+const roles_permissions = computed(() => usePage().props.roles_permissions);
+const can_update_transporter = computed(() => usePage().props.roles_permissions.permissions.includes("update_transporter"));
+
 
 </script>
 
@@ -119,143 +120,160 @@ const closeModal = () => {
                     <div
                         :class="!emptyErrors ?'m-2 p-2 rounded-md rounded-md shadow-sm border border-red-500':  editDisabled ? 'm-2 p-2':'m-2 p-2 rounded-md rounded-md shadow-sm border border-indigo-500' ">
                         <div class="">
-                            <div class="text-lg mb-2 text-indigo-400">Transporter</div>
-                            <form class="mt-3">
-                                <div class="grid grid-cols-6 gap-4">
+                            <form>
+                                <div class="text-lg mb-4 text-indigo-400">General details</div>
+                                <div class="space-y-12">
+                                    <div class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+                                        <div>
+                                            <h2 class="text-base font-semibold leading-7 text-gray-900">Static Information</h2>
+                                            <p class="mt-1 text-sm leading-6 text-gray-600">Static Transporter information.</p>
+                                        </div>
 
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Title:</label>
-                                        <input v-model="Form.title" :disabled="editDisabled" type="text"
-                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                        <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
 
-                                        <InputError class="mt-2" :message="Form.errors.title"/>
+                                            <div class="sm:col-span-3">
+                                                <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">First name</label>
+                                                <div class="mt-2">
+                                                    <input v-model="Form.title" :disabled="editDisabled" type="text" name="title" id="title"  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                </div>
+                                                <InputError class="mt-2" :message="Form.errors.title"/>
+                                            </div>
+
+                                            <div class="sm:col-span-3">
+                                                <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">First name</label>
+                                                <div class="mt-2">
+                                                    <input v-model="Form.first_name" :disabled="editDisabled" type="text" name="first_name" id="first_name" autocomplete="given-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                </div>
+                                                <InputError class="mt-2" :message="Form.errors.first_name"/>
+                                            </div>
+
+                                            <div class="sm:col-span-3">
+                                                <label for="last_legal_name" class="block text-sm font-medium leading-6 text-gray-900">Last / Legal name</label>
+                                                <div class="mt-2">
+                                                    <input v-model="Form.last_legal_name" :disabled="editDisabled" type="text" name="last_legal_name" id="last_legal_name" autocomplete="family-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                </div>
+                                                <InputError class="mt-2" :message="Form.errors.last_legal_name"/>
+                                            </div>
+
+                                            <div class="sm:col-span-3">
+                                                <label for="nickname" class="block text-sm font-medium leading-6 text-gray-900">Nick name</label>
+                                                <div class="mt-2">
+                                                    <input v-model="Form.nickname" type="text" :disabled="editDisabled" name="nickname" id="nickname" autocomplete="nickname" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                </div>
+                                                <InputError class="mt-2" :message="Form.errors.nickname"/>
+                                            </div>
+
+                                            <div class="sm:col-span-3">
+                                                <label for="id_reg_no" class="block text-sm font-medium leading-6 text-gray-900">Id/Reg no</label>
+                                                <div class="mt-2">
+                                                    <input v-model="Form.id_reg_no" type="text" :disabled="editDisabled" name="id_reg_no" id="id_reg_no" autocomplete="id_reg_no" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                </div>
+                                                <InputError class="mt-2" :message="Form.errors.id_reg_no"/>
+                                            </div>
+
+                                            <div class="sm:col-span-3">
+                                                <label for="id_reg_no" class="block text-sm font-medium leading-6 text-gray-900">Status</label>
+                                                <div class="mt-2">
+                                                    <select v-model="Form.is_active"
+                                                            class="input-filter-l block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                        <option :value=1>Active</option>
+                                                        <option :value=0>Inactive</option>
+                                                    </select>
+
+                                                </div>
+                                                <InputError class="mt-2" :message="Form.errors.is_active"/>
+                                            </div>
+
+
+
+                                            <div class="sm:col-span-6">
+                                                <label for="comments" class="block text-sm font-medium leading-6 text-gray-900">Comments</label>
+                                                <AreaInput
+                                                    id="comments"
+                                                    :rows=6
+                                                    placeholder="Optional comments..."
+                                                    v-model="Form.comment"
+                                                    type="text"
+                                                    class="mt-1 block w-full"
+                                                    :disabled="editDisabled"
+                                                />
+                                                <InputError class="mt-2" :message="Form.errors.comment"/>
+
+                                            </div>
+
+                                        </div>
                                     </div>
 
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">First
-                                            name:</label>
-                                        <input v-model="Form.first_name" :disabled="editDisabled" type="text"
-                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                    <div class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+                                        <div>
+                                            <h2 class="text-base font-semibold leading-7 text-gray-900">Additional Information</h2>
+                                            <p class="mt-1 text-sm leading-6 text-gray-600">Transporter additional information.</p>
+                                        </div>
 
-                                        <InputError class="mt-2" :message="Form.errors.first_name"/>
-                                    </div>
+                                        <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+                                            <div class="sm:col-span-3">
+                                                <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">Account number</label>
+                                                <div class="mt-2">
+                                                    <input v-model="Form.account_number" type="text"
+                                                           :disabled="editDisabled"
+                                                           class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    <InputError class="mt-2" :message="Form.errors.account_number"/>
 
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Last/Legal
-                                            name:</label>
-                                        <input v-model="Form.last_legal_name" :disabled="editDisabled"
-                                               type="text"
-                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                </div>
+                                            </div>
 
-                                        <InputError class="mt-2" :message="Form.errors.last_legal_name"/>
-                                    </div>
+                                            <div class="sm:col-span-3">
+                                                <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">Payment terms</label>
+                                                <div class="mt-2">
 
-                                    <div class="col-span-4">
-                                        <label
-                                            class="block text-sm font-medium leading-6 text-gray-900">Nickname:</label>
-                                        <input v-model="Form.nickname" type="text" :disabled="editDisabled"
-                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    <select v-model="Form.terms_of_payment_id"
+                                                            class="input-filter-l block  w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                        <option v-for="n in props.terms_of_payments" :key="n.id" :value="n.id">
+                                                            {{n.value}}
+                                                        </option>
+                                                    </select>
+                                                    <InputError class="mt-2" :message="Form.errors.terms_of_payments"/>
 
-                                        <InputError class="mt-2" :message="Form.errors.last_legal_name"/>
-                                    </div>
+                                                </div>
+                                            </div>
 
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Id/Reg
-                                            no:</label>
-                                        <input v-model="Form.id_reg_no" type="text" :disabled="editDisabled"
-                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                            <div class="sm:col-span-3">
+                                                <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">Is Git</label>
+                                                <div class="mt-2">
 
-                                        <InputError class="mt-2" :message="Form.errors.last_legal_name"/>
-                                    </div>
+                                                    <select v-model="Form.is_git"
+                                                            class="input-filter-l block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                        <option :value=1>Active</option>
+                                                        <option :value=0>Inactive</option>
+                                                    </select>
 
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Job
-                                            description:</label>
-                                        <input v-model="Form.job_description" type="text"
-                                               :disabled="editDisabled"
-                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
-                                        <InputError class="mt-2" :message="Form.errors.job_description"/>
-                                    </div>
+                                                    <InputError class="mt-2" :message="Form.errors.is_git"/>
+                                                </div>
+                                            </div>
 
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Account number:</label>
-                                        <input v-model="Form.account_number" type="text"
-                                               :disabled="editDisabled"
-                                               class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
-                                        <InputError class="mt-2" :message="Form.errors.account_number"/>
-                                    </div>
 
-                                    <div class="col-span-4 mt-2">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Terms of payment:</label>
 
-                                        <select v-model="Form.terms_of_payment_id"
-                                                class="input-filter-l block ml-4 w-1/3 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                            <option v-for="n in props.terms_of_payments" :key="n.id" :value="n.id">
-                                                {{n.value}}
-                                            </option>
 
-                                        </select>
-                                        <InputError class="mt-2" :message="Form.errors.is_active"/>
-                                    </div>
 
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Is Git:</label>
 
-                                        <select v-model="Form.is_git"
-                                                class="input-filter-l block ml-4 w-1/3 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                            <option :value=1>Active</option>
-                                            <option :value=0>Inactive</option>
-
-                                        </select>
-                                        <InputError class="mt-2" :message="Form.errors.is_active"/>
-                                    </div>
-
-                                    <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">Status:</label>
-
-                                        <select v-model="Form.is_active"
-                                                class="input-filter-l block ml-4 w-1/3 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                            <option :value=1>Active</option>
-                                            <option :value=0>Inactive</option>
-
-                                        </select>
-                                        <InputError class="mt-2" :message="Form.errors.is_active"/>
+                                        </div>
                                     </div>
 
 
-                                    <div class="col-span-4">
-                                        <label
-                                            class="block text-sm font-medium leading-6 text-gray-900">Comments:</label>
-                                        <AreaInput
-                                            id="comments"
-                                            :rows=3
-                                            placeholder="Optional comments..."
-                                            v-model="Form.comment"
-                                            type="text"
-                                            class="mt-1 block w-1/3"
-                                            :disabled="editDisabled"
-                                        />
-                                        <InputError class="mt-2" :message="Form.errors.last_legal_name"/>
-                                    </div>
+                                </div>
 
-                                    <div class="col-span-4">
+                                <div class="mt-6 flex items-center justify-end gap-x-6">
 
-                                        <SecondaryButton class="m-1" @click="toggleEdit">
-                                            Edit
-                                        </SecondaryButton>
+                                    <SecondaryButton v-if="can_update_transporter" class="m-1" @click="toggleEdit">
+                                        Edit
+                                    </SecondaryButton>
 
-                                        <SecondaryButton v-if="!editDisabled" @click="updateTransporter" class="m-1">
-                                            Save
-                                        </SecondaryButton>
-                                        <SecondaryButton class="m-1">
-                                            Delete
-                                        </SecondaryButton>
-                                    </div>
-
+                                    <SecondaryButton v-if="!editDisabled && can_update_transporter" @click="updateTransporter" class="m-1">
+                                        Save
+                                    </SecondaryButton>
                                 </div>
                             </form>
                         </div>
-
 
                     </div>
 

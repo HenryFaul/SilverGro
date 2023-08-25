@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
 
@@ -32,6 +33,9 @@ class HandleInertiaRequests extends Middleware
     {
 
         $logo = asset('silvergro.png');
+        $user = Auth::user();
+        $roles = $user?->getRoleNames();
+        $permissions = $user?->getPermissionsViaRoles()->pluck('name');
 
         return array_merge(parent::share($request), [
             'ziggy' => function () use ($request) {
@@ -39,7 +43,8 @@ class HandleInertiaRequests extends Middleware
                     'location' => $request->url(),
                 ]);
             },
-            'app_logo'=>$logo
+            'app_logo'=>$logo,
+            'roles_permissions'=>['roles'=>$roles,'permissions'=>$permissions]
         ]);
     }
 }

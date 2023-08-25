@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\DealTicket;
+use App\Models\TradeRule;
+use App\Models\TransportApproval;
+use App\Models\TransportTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class DealTicketController extends Controller
 {
@@ -53,14 +58,24 @@ class DealTicketController extends Controller
      */
     public function update(Request $request, DealTicket $dealTicket)
     {
-        //
 
-        $dealTicket->update(
-            $request->validate([
-                'is_active' => ['nullable','boolean'],
-                'is_printed' => ['nullable','boolean'],
-            ])
-        );
+        $user = Auth::user();
+        $roles = $user?->getRoleNames();
+        $permissions = $user->getPermissionsViaRoles()->pluck('name');
+        $dealTicket->calculateRules();
+
+        $can_approve = $permissions->contains('approve_deal_ticket');
+
+
+        $request->validate([
+            'is_printed' => ['nullable', 'boolean'],
+            'is_active'=>['nullable','boolean',Rule::prohibitedIf(!$can_approve)],
+        ],
+        ['is_active'=>'You need permissions to activate a deal ticket & must be approved!']);
+
+        $is_updated = $dealTicket->update(
+            ['is_active' =>$request->is_active]);
+
 
         $request->session()->flash('flash.bannerStyle', 'success');
         $request->session()->flash('flash.banner', 'Deal Ticket updated');
@@ -75,4 +90,5 @@ class DealTicketController extends Controller
     {
         //
     }
+
 }

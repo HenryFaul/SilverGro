@@ -63,24 +63,47 @@ class TransportFinanceController extends Controller
 
         //dd($request->selling_price_per_unit);
 
+        $user = auth()->user();
 
-        $is_updated = $transportFinance->update(
-            $request->validate([
-                'transport_rate_basis_id'=>['required', 'integer','exists:transport_rate_bases,id'],
-                'cost_price_per_unit' => ['required','numeric'],
-                'selling_price_per_unit' => ['required','numeric'],
-                'additional_cost_1' => ['required','numeric'],
-                'additional_cost_2' => ['required','numeric'],
-                'additional_cost_3' => ['required','numeric'],
-                'additional_cost_desc_1' => ['nullable','string'],
-                'additional_cost_desc_2' => ['nullable','string'],
-                'additional_cost_desc_3' => ['nullable','string']
-            ])
-        );
+        $can_edit_adjusted_gp = $user->can('edit_adjusted_gp');
 
-        $transportFinance->save();
 
-        //$this->doCalculatedFields($transportFinance);
+        if($can_edit_adjusted_gp){
+
+            $is_updated = $transportFinance->update(
+                $request->validate([
+                    'transport_rate_basis_id'=>['required', 'integer','exists:transport_rate_bases,id'],
+                    'cost_price_per_unit' => ['required','numeric'],
+                    'selling_price_per_unit' => ['required','numeric'],
+                    'adjusted_gp'=> ['required','numeric'],
+                    'adjusted_gp_notes'=> ['required','string'],
+                    'transport_rate' => ['nullable','numeric'],
+                    'additional_cost_1' => ['nullable','numeric'],
+                    'additional_cost_2' => ['nullable','numeric'],
+                    'additional_cost_3' => ['nullable','numeric'],
+                    'additional_cost_desc_1' => ['nullable','string'],
+                    'additional_cost_desc_2' => ['nullable','string'],
+                    'additional_cost_desc_3' => ['nullable','string']
+                ])
+            );
+
+        }else{
+            $is_updated = $transportFinance->update(
+                $request->validate([
+                    'transport_rate_basis_id'=>['required', 'integer','exists:transport_rate_bases,id'],
+                    'cost_price_per_unit' => ['required','numeric'],
+                    'selling_price_per_unit' => ['required','numeric'],
+                    'transport_rate' => ['nullable','numeric'],
+                    'additional_cost_1' => ['nullable','numeric'],
+                    'additional_cost_2' => ['nullable','numeric'],
+                    'additional_cost_3' => ['nullable','numeric'],
+                    'additional_cost_desc_1' => ['nullable','string'],
+                    'additional_cost_desc_2' => ['nullable','string'],
+                    'additional_cost_desc_3' => ['nullable','string']
+                ])
+            );
+        }
+
 
         $transportFinance->CalculateFields();
 
@@ -90,11 +113,6 @@ class TransportFinanceController extends Controller
         return redirect()->back();
     }
 
-    public function doCalculatedFields(TransportFinance $transportFinance){
-
-        $transportFinance->total_supplier_comm = $transportFinance->total_supplier_comm+1;
-        $transportFinance->save();
-    }
 
     /**
      * Remove the specified resource from storage.

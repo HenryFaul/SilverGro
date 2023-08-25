@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactType;
 use App\Models\Customer;
+use App\Models\Supplier;
 use App\Models\TermsOfPayment;
 use App\Models\Transporter;
 use Illuminate\Http\Request;
@@ -53,7 +54,37 @@ class TransporterController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'first_name' => ['required','string'],
+            'last_legal_name' => ['required','string','string','unique:transporters,last_legal_name'],
+            'nickname' => ['nullable','string'],
+            'title' => ['nullable','string'],
+            'id_reg_no' => ['nullable','string','unique:customers,id_reg_no'],
+            'comment' => ['nullable','string'],
+        ]);
+
+        $transporter = Transporter::create([
+            'first_name' => $request->first_name,
+            'last_legal_name' => $request->last_legal_name,
+            'nickname' => $request->nickname,
+            'title' => $request->title,
+            'id_reg_no' => $request->id_reg_no,
+            'is_active' => 1,
+            'terms_of_payment_id' => 1,
+            'is_git' => 0,
+            'comment' => $request->comment,
+        ]);
+
+        if ($transporter->exists()) {
+            $request->session()->flash('flash.bannerStyle', 'success');
+            $request->session()->flash('flash.banner', 'Transporter Created');
+        }
+        else{
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Transporter NOT Created');
+        }
+
+        return redirect()->back();
     }
 
     /**

@@ -7,7 +7,7 @@ import Icon from "@/Components/Icon.vue";
 import InputError from '@/Components/InputError.vue';
 import AreaInput from '@/Components/AreaInput.vue';
 import SectionBorder from '@/Components/SectionBorder.vue';
-import {CheckIcon, ChevronUpDownIcon, PaperClipIcon} from '@heroicons/vue/20/solid';
+import {CheckIcon, ChevronUpDownIcon, PaperClipIcon, XCircleIcon} from '@heroicons/vue/20/solid';
 import {
     Switch,
     SwitchGroup,
@@ -55,7 +55,8 @@ const props = defineProps({
     all_status_entities:Object,
     all_status_types:Object,
     all_invoice_statuses:Object,
-    linked_trans:Object
+    linked_trans:Object,
+    rules_with_approvals:Object
 });
 
 const swal = inject('$swal');
@@ -157,6 +158,7 @@ let transport_finance_Form = useForm({
     transport_rate_basis_id: props.transaction.transport_finance.transport_rate_basis_id,
     cost_price_per_unit: props.transaction.transport_finance.cost_price_per_unit,
     selling_price_per_unit: props.transaction.transport_finance.selling_price_per_unit,
+    transport_rate:props.transaction.transport_finance.transport_rate,
     additional_cost_1: props.transaction.transport_finance.additional_cost_1,
     additional_cost_2: props.transaction.transport_finance.additional_cost_2,
     additional_cost_3: props.transaction.transport_finance.additional_cost_3,
@@ -205,11 +207,20 @@ let status_Form = useForm({
 
 /*'transport_trans_id','old_id','type','comment','is_active','is_printed','stamp_printed'*/
 
+//['transport_trans_id','trade_rule_id','transport_job_id','approved_by_id','is_approved'];
 
 let deal_ticket_Form = useForm({
     transport_trans_id: props.transaction.id,
+    transport_job_id: props.transaction.transport_job.id,
     is_active: props.transaction.deal_ticket == null? false: props.transaction.deal_ticket.is_active,
     is_printed:props.transaction.deal_ticket == null? false: props.transaction.deal_ticket.is_printed,
+});
+
+let transport_approval_Form = useForm({
+    transport_trans_id: props.transaction.id,
+    transport_job_id: props.transaction.transport_job.id,
+    deal_ticket_id: props.transaction.deal_ticket.id,
+
 });
 
 
@@ -490,6 +501,18 @@ const updateTransportInvoice = () => {
     );
 }
 
+const createApproval = () => {
+    transport_approval_Form.post(route('trans_approval.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            swal(usePage().props.jetstream.flash?.banner || '');
+        },
+        onError: (e) => {
+            console.log(e);
+        },
+    });
+};
+
 const createStatus = () => {
     status_Form.post(route('transport_status.store'), {
         preserveScroll: true,
@@ -511,7 +534,6 @@ const updateDealTicket = () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
             },
             onError: (error) => {
-                alert('Something went wrong')
                 console.log(error)
             }
         }
@@ -683,6 +705,10 @@ const viewTrans = (id) => {
     alert(id)
     router.get('transport_transaction/'+id);
 }
+
+const roles_permissions = computed(() => usePage().props.roles_permissions)
+const can_adjust_gp = computed(() => usePage().props.roles_permissions.permissions.includes("edit_adjusted_gp"))
+
 
 </script>
 
@@ -1265,11 +1291,153 @@ const viewTrans = (id) => {
 
                                         </div>
 
+                                        <div class="col-span-4 mt-2">
+
+                                            <div v-if="transaction.deal_ticket.is_approved"  class="flex-row text-green-400 text-lg">Trade approved (can activate)</div>
+                                            <div v-else class="flex-row text-indigo-400 text-lg">Requires approvals</div>
+
+                                            <SecondaryButton class="m-1 mt-2" @click="createApproval">
+                                                Approve
+                                            </SecondaryButton>
+                                        </div>
+
+                                        <div class="col-span-4 mt-2">
+                                            <div class="shadow">
+
+                                                <div class="px-4 sm:px-6 lg:px-8">
+                                                    <div class="flex-row text-indigo-400 text-lg mb-2">
+                                                        <span>Trade Rules </span>
+                                                    </div>
+
+                                                    <div class="sm:flex sm:items-center">
+                                                        <div class="sm:flex-auto">
+                                                            <h1 class="text-base font-semibold leading-6 text-gray-900">Approvals:</h1>
+                                                            <p class="mt-2 text-sm text-gray-700">Approvals based on the applied trading rule.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-8 flow-root">
+                                                        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                                            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                                                <table class="min-w-full divide-y divide-gray-300">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Rule</th>
+                                                                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Required Role</th>
+                                                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Approved details</th>
+
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody class="divide-y divide-gray-200">
+                                                                    <tr v-for="(n,index) in rules_with_approvals.TradeRule" :key="index">
+
+                                                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                                                            {{n.rule}}</td>
+
+                                                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                                                            {{ n.role}}</td>
+
+                                                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+
+                                                                            <ul>
+                                                                                <li v-if="n.approvals.length > 0" v-for="(m,index) in n.approvals" :key="index">
+                                                                                    <div class="flex">
+                                                                                        <span><check-icon class="w-6 h-6 fill-green-300 mr-3" />  </span> <span> {{m.user.name}} ({{m.user.created_at}})</span>
+                                                                                    </div>
+                                                                                </li>
+
+                                                                                <div v-else class="flex">
+
+                                                                                    <span><XCircleIcon class="w-6 h-6 fill-red-400 mr-3" />  </span> <span>None received..</span>
+                                                                                </div>
+                                                                            </ul>
+
+                                                                        </td>
+
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-span-4 mt-2">
+                                            <div class="shadow">
+
+                                                <div class="px-4 sm:px-6 lg:px-8">
+                                                    <div class="flex-row text-indigo-400 text-lg mb-2">
+                                                        <span>Trade Operation Rules </span>
+                                                    </div>
+
+                                                    <div class="sm:flex sm:items-center">
+                                                        <div class="sm:flex-auto">
+                                                            <h1 class="text-base font-semibold leading-6 text-gray-900">Approvals:</h1>
+                                                            <p class="mt-2 text-sm text-gray-700">Approvals based on the applied trading operation rule.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-8 flow-root">
+                                                        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                                            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                                                <table class="min-w-full divide-y divide-gray-300">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Rule</th>
+                                                                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Required Role</th>
+                                                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Approved details</th>
+
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody class="divide-y divide-gray-200">
+
+
+                                                                    <tr v-for="(n,index) in rules_with_approvals.TradeRuleOpp" :key="index">
+
+                                                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                                                            {{n.rule}}</td>
+
+                                                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                                                            {{ n.role}}</td>
+
+                                                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+
+                                                                            <ul>
+                                                                                <li v-if="n.approvals.length > 0" v-for="(m,index) in n.approvals" :key="index">
+
+                                                                                    <div class="flex">
+                                                                                        <span><check-icon class="w-6 h-6 fill-green-300 mr-3" />  </span> <span> {{m.user.name}} ({{m.user.created_at}})</span>
+                                                                                    </div>
+                                                                                </li>
+
+                                                                                <div v-else class="flex">
+
+                                                                                    <span><XCircleIcon class="w-6 h-6 fill-red-400 mr-3" />  </span> <span>None received..</span>
+                                                                                </div>
+                                                                            </ul>
+
+                                                                        </td>
+
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
                                         <div class="col-span-4">
 
                                             <SecondaryButton class="m-1" @click="updateDealTicket">
                                                 Update
                                             </SecondaryButton>
+
+                                            <InputError class="mt-2"
+                                                        :message="deal_ticket_Form.errors.is_active"/>
 
                                         </div>
 
@@ -2783,7 +2951,7 @@ const viewTrans = (id) => {
 
                                 <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                                     <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">cost_price_per_unit:</label>
+                                        <label class="block text-sm font-medium leading-6 text-gray-900">cost_price_per_unit ({{transport_load_Form.billing_units_incoming_id.name}}) incoming:</label>
                                         <div class="mt-2">
                                             <input v-model="transport_finance_Form.cost_price_per_unit" type="number"
                                                    class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
@@ -2792,7 +2960,7 @@ const viewTrans = (id) => {
                                         </div>
                                     </div>
                                     <div class="col-span-4">
-                                        <label class="block text-sm font-medium leading-6 text-gray-900">selling_price_per_unit:</label>
+                                        <label class="block text-sm font-medium leading-6 text-gray-900">selling_price_per_unit ({{transport_load_Form.billing_units_outgoing_id.name}}) outgoing:</label>
                                         <div class="mt-2">
                                             <input v-model="transport_finance_Form.selling_price_per_unit" type="number"
                                                    class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
@@ -2813,8 +2981,20 @@ const viewTrans = (id) => {
                                         <InputError class="mt-2"
                                                     :message="transport_finance_Form.errors.transport_rate_basis_id"/>
                                     </div>
-                                    <div class="col-span-4 ">
-                                        <div class="text-sm mb-2 text-indigo-400">Senior Manager Only</div>
+                                    <div  class="col-span-4 ">
+                                        <div class="">
+                                            <div class="w-1/2">
+                                                <label class="block text-sm font-medium leading-6 text-gray-900">transport_rate:</label>
+                                                <div class="mt-2">
+                                                    <input v-model="transport_finance_Form.transport_rate" type="number"
+                                                           class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    <InputError class="mt-2" :message="transport_finance_Form.errors.transport_rate"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-if="can_adjust_gp" class="col-span-4">
+                                        <div class="text-sm mb-2 text-indigo-400">Only Approved users</div>
 
                                           <div class="flex m-2 p-2 border shadow-xl rounded">
                                               <div class="w-1/2">
@@ -2822,8 +3002,7 @@ const viewTrans = (id) => {
                                                   <div class="mt-2">
                                                       <input v-model="transport_finance_Form.adjusted_gp" type="number"
                                                              class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
-
-                                                      <!--                                            <InputError class="mt-2" :message="customerForm.errors.id_reg_no"/>-->
+                                                      <InputError class="mt-2" :message="transport_finance_Form.errors.adjusted_gp"/>
                                                   </div>
                                               </div>
                                               <div class="ml-3 w-1/2">
@@ -3501,7 +3680,7 @@ const viewTrans = (id) => {
                                         </div>
 
                                         <InputError class="mt-2"
-                                                    :message="transport_invoice_Form.invoice_no"/>
+                                                    :message="transport_invoice_Form.errors.invoice_no"/>
 
                                     </div>
 

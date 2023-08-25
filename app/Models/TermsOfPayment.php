@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class TermsOfPayment extends Model
 {
     use HasFactory;
-    public $fillable = ['value','comment'];
+    public $fillable = ['value','comment','days'];
 }

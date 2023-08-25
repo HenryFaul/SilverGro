@@ -97,6 +97,10 @@ const logout = () => {
                                                    Manage System Players
                                                 </div>
 
+                                                <DropdownLink :href="route('product.index')">
+                                                    Products
+                                                </DropdownLink>
+
                                                 <DropdownLink :href="route('customer.index')">
                                                     Customers
                                                 </DropdownLink>
@@ -113,9 +117,21 @@ const logout = () => {
                                                     Transporters
                                                 </DropdownLink>
 
+                                                <DropdownLink :href="route('regular_driver.index')">
+                                                    Regular Drivers
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('regular_vehicle.index')">
+                                                    Regular Vehicles
+                                                </DropdownLink>
+
                                                 <div class="block px-4 py-2 text-xs text-gray-400">
                                                     Manage Staff
                                                 </div>
+
+                                                <DropdownLink :href="route('staff.index')">
+                                                    Staff
+                                                </DropdownLink>
 
                                                 <div class="border-t border-gray-100" />
 
@@ -161,12 +177,24 @@ const logout = () => {
                                                 </div>
 
                                                 <DropdownLink :href="route('transport_transaction.index')">
-                                                    View all
+                                                    Detail view
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('transaction_summary.index')">
+                                                    Summary view
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('transaction_spreadsheet.index')">
+                                                    Spreadsheet view
                                                 </DropdownLink>
 
                                                 <div class="block px-4 py-2 text-xs text-gray-400">
-                                                    Manage Documents
+                                                    Manage Debtors
                                                 </div>
+
+                                                <DropdownLink :href="route('debtor.index')">
+                                                    Debtor Standing
+                                                </DropdownLink>
 
 
                                                 <div class="border-t border-gray-100" />

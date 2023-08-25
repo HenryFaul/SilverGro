@@ -51,7 +51,7 @@ let NiceNumber = (_number) => {
                                 <div >
                                     <div class="text-center">
                                         <h2 class="text-3xl font-bold tracking-tight text-indigo-500 sm:text-4xl">Stats overview for:</h2>
-                                        <p class="mt-4 text-lg leading-8 text-gray-600">{{month}}</p>
+                                        <p class="mt-4 text-lg leading-8 text-gray-600">Current month: {{month}}</p>
                                     </div>
                                 </div>
 
@@ -117,9 +117,9 @@ let NiceNumber = (_number) => {
 
                                 </div>
 
-                                <div class="shadow-2xl m-10 p-10">
+                                <div v-if="false" class="shadow-2xl m-10 p-10">
 
-                                    <div>
+                                    <div >
                                         <apexchart :width="chart.width" :height="chart.height" :type="chart.type" :options="chart.options" :series="chart.series"></apexchart>
                                     </div>
                                 </div>

@@ -33,6 +33,8 @@ return new class extends Migration
             $table->foreign('regular_vehicle_id')
                 ->references('id')->on('regular_vehicles')->onDelete('cascade');
 
+            $table->string('driver_vehicle_loading_number')->nullable();
+
             $table->double('weighbridge_upload_weight')->default(0);
             $table->double('weighbridge_offload_weight')->default(0);
             $table->boolean('is_weighbridge_variance')->default(0);

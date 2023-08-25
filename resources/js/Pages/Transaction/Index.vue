@@ -42,7 +42,7 @@ const props = defineProps({
     end_date: String,
     contract_types:Object
 });
-const permissions = computed(() => usePage().props.permissions)
+const roles_permissions = computed(() => usePage().props.roles_permissions)
 
 let NiceTDate = (date) => {
 
@@ -65,7 +65,8 @@ const filterForm = useForm({
     product_name:props.filters.product_name ?? null,
     start_date:props.filters.start_date ?? null,
     end_date:props.filters.end_date ?? null,
-    contract_type_id:props.filters.contract_type_id ?? 1,
+    contract_type_id:props.filters.contract_type_id ?? null,
+    id:props.filters.id ?? null,
 })
 
 let curClient = ref(null);
@@ -146,6 +147,14 @@ watch(
     }
 );
 
+watch(
+    () => filterForm.id,
+    (exampleField, prevExampleField) => {
+        filter();
+    }
+);
+
+
 
 
 
@@ -157,6 +166,7 @@ const clear = () => {
     filterForm.start_date = null;
     filterForm.end_date = null;
     filterForm.contract_type_id = null;
+    filterForm.id = null;
 
     mon.value=true;
     tue.value=true;
@@ -283,7 +293,6 @@ let filteredTrans = computed(() =>
                         <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                             <div class="flex col-span-6 mt-1">
-
                                 <div>
                                     <div class="ml-3 text-indigo-400 text-sm font-bold">
                                         Start Date
@@ -309,48 +318,18 @@ let filteredTrans = computed(() =>
                                     </div>
                                 </div>
 
-<!--                                <div class="mt-6 ml-6">
-                                    <div class="flex">
-                                        <div class="relative flex items-start">
-                                            <div class="flex h-6 items-center">
-                                                <input v-model="ua" id="ua" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                            </div>
-                                            <div class="ml-3 text-sm leading-6">
-                                                <label for="mon" class="font-medium text-gray-900">UA</label>
-                                            </div>
-                                        </div>
+                                <div class="mt-5 ml-4">
+                                    <select v-model="filterForm.show"
+                                            class="input-filter-l  w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <option :value=5>5</option>
+                                        <option :value=10>10</option>
+                                        <option :value=25>25</option>
+                                        <option :value=100>100</option>
+                                        <option :value=200>200</option>
+                                        <option :value=500>500</option>
+                                    </select>
 
-                                        <div class="relative ml-3 flex items-start">
-                                            <div class="flex h-6 items-center">
-                                                <input v-model="pc" id="pc" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                            </div>
-                                            <div class="ml-3 text-sm leading-6">
-                                                <label for="mon" class="font-medium text-gray-900">PC</label>
-                                            </div>
-                                        </div>
-
-
-                                        <div class="relative ml-3 flex items-start">
-                                            <div class="flex h-6 items-center">
-                                                <input v-model="sc" id="sc" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                            </div>
-                                            <div class="ml-3 text-sm leading-6">
-                                                <label for="tue" class="font-medium text-gray-900">SC</label>
-                                            </div>
-                                        </div>
-                                        <div class="relative ml-3 flex items-start">
-                                            <div class="flex h-6 items-center">
-                                                <input v-model="filterForm.mq" id="mq" aria-describedby="candidates-description"  type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                            </div>
-                                            <div class="ml-3 text-sm leading-6">
-                                                <label for="tue" class="font-medium text-gray-900">MQ</label>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </div>-->
-
+                                </div>
                             </div>
                             <div class="col-span-4 flex">
                                 <input type="search" v-model.number="filterForm.supplier_name" aria-label="Search"
@@ -368,25 +347,23 @@ let filteredTrans = computed(() =>
                                 <input type="search" v-model.number="filterForm.product_name" aria-label="Search"
                                        placeholder="Search product name..."
                                        class="block ml-2 w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
-
                             </div>
 
-                            <div class="col-span-6  mt-3">
-                                <div class="">
-                                    <select v-model="filterForm.contract_type_id"
-                                            class="input-filter-l w-1/6  rounded-md rounded-md shadow-sm border border-gray-300 text-gray-500">
-                                       <option selected :value="null">All contracts</option>
+                            <div class="col-span-4 flex">
+                                <input type="search" v-model.number="filterForm.id" aria-label="Search"
+                                       placeholder="Search contract no..."
+                                       class="block w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
 
-                                        <option v-for="n in contract_types" :key="n.id" :value="n.id">
-                                            {{n.name}}
-                                        </option>
-                                    </select>
-                                </div>
+                                <select v-model="filterForm.contract_type_id"
+                                        class="input-filter-l ml-2 w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    <option  :value="null">All contracts</option>
 
-                            </div>
+                                    <option v-for="n in contract_types" :key="n.id" :value="n.id">
+                                        {{n.name}}
+                                    </option>
+                                </select>
 
-                            <div class="col-span-6  mt-3">
-                                <div class="flex">
+                                <div class="flex ml-6">
                                     <div class="relative flex items-start">
                                         <div class="flex h-6 items-center">
                                             <input v-model="mon" id="mon" aria-describedby="candidates-description" name="mon" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
@@ -444,25 +421,16 @@ let filteredTrans = computed(() =>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
 
                             <div class="col-span-4 mb-3">
 
-                                <select v-model="filterForm.show"
-                                        class="input-filter-l block w-1/6 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <div>
+                                    <secondary-button @click="filter" class="mt-3">Search</secondary-button>
+                                    <secondary-button @click="clear" class="mt-3 ml-1">Clear</secondary-button>
+                                    <secondary-button @click="showTradeSlideOver"  class="mt-3 ml-1">Add (+)</secondary-button>
+                                </div>
 
-                                    <option :value=5>5</option>
-                                    <option :value=10>10</option>
-                                    <option :value=25>25</option>
-                                    <option :value=100>100</option>
-                                    <option :value=200>200</option>
-                                    <option :value=500>500</option>
-
-                                </select>
-                                <secondary-button @click="filter" class="mt-3">Search</secondary-button>
-                                <secondary-button @click="clear" class="mt-3 ml-1">Clear</secondary-button>
-                                <secondary-button @click="showTradeSlideOver"  class="mt-3 ml-1">Add (+)</secondary-button>
                             </div>
 
                         </div>
@@ -476,6 +444,11 @@ let filteredTrans = computed(() =>
                                 <table class="min-w-full divide-y  divide-gray-200">
                                     <thead class="bg-indigo-400 text-right">
                                     <tr class="font-bold ">
+
+                                        <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
+                                            ID
+                                        </th>
+                                        <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Type</th>
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
                                              DATE
                                         </th>
@@ -485,7 +458,7 @@ let filteredTrans = computed(() =>
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Customer</th>
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Transporter</th>
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Product</th>
-                                        <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Type</th>
+
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Actions</th>
                                     </tr>
                                     </thead>
@@ -498,6 +471,13 @@ let filteredTrans = computed(() =>
 
                                     <tr @click="edit(transaction.id)"  v-for="(transaction, index) in filteredTrans"
                                         :key="transaction.id" class="hover:bg-gray-100 text-sm focus-within:bg-gray-100 ">
+
+                                        <td class="py-4 px-6 whitespace-nowrap">
+                                            {{ transaction.id}}
+                                        </td>
+                                        <td class="py-4 px-6 ">
+                                            {{transaction.contract_type.name}}
+                                        </td>
 
                                         <td class="py-4 px-6 whitespace-nowrap">
                                             {{ NiceTDate( transaction.transport_date_earliest)}}
@@ -515,10 +495,6 @@ let filteredTrans = computed(() =>
 
                                         <td class="py-4 px-6 ">
                                             {{transaction.product.name}}
-                                        </td>
-
-                                        <td class="py-4 px-6 ">
-                                            {{transaction.contract_type.name}}
                                         </td>
 
                                         <td class="py-4 px-6 whitespace-nowrap">

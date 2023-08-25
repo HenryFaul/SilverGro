@@ -25,6 +25,10 @@ use App\Models\SystemPlayer;
 use App\Models\ContactType;
 use App\Models\SystemPlayerType;
 use App\Models\TermsOfPayment;
+use App\Models\TermsOfPaymentBasis;
+use App\Models\TradeRule;
+use App\Models\TradeRuleOpp;
+use App\Models\TradeRuleRole;
 use App\Models\TransLinkType;
 use App\Models\Transporter;
 use App\Models\TransportRateBasis;
@@ -50,32 +54,322 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         //Standard
+/*        Add new line
+    Update supplier
+    Update product
+    Update customer
+    Update transport
+    Update pricing
+    Update process
+    Delete system documents
+    Delete user documents
+    Manage users
+    Manage products
+    Create dealtickerts
+    Create purchase contracts
+    Create sales contracts*/
 
 
-        Permission::create(['name' => 'view-only']);
+        Permission::create(['name' => 'view_only']);
+        Permission::create(['name' => 'update_supplier']);
+        Permission::create(['name' => 'update_product']);
+        Permission::create(['name' => 'update_customer']);
+        Permission::create(['name' => 'update_transporter']);
+        Permission::create(['name' => 'update_contact']);
+        Permission::create(['name' => 'update_pricing']);
+        Permission::create(['name' => 'update_process']);
+        Permission::create(['name' => 'delete_system_document']);
+        Permission::create(['name' => 'delete_user_document']);
+        Permission::create(['name' => 'manage_users']);
+        Permission::create(['name' => 'create_pc']);
+        Permission::create(['name' => 'create_sc']);
+        Permission::create(['name' => 'create_mq']);
+        Permission::create(['name' => 'link_mq']);
+        Permission::create(['name' => 'approve_deal_ticket']);
+        Permission::create(['name' => 'edit_adjusted_gp']);
+        Permission::create(['name' => 'edit_transport_trans']);
 
-        $viewOnlyRole = Role::create(['name' => 'ViewOnly']);
+     /*   System Tester
+        Admin
+        Trader
+        Logistics
+        Trading Director
+        Financial Director
+        Super Admin*/
+
+        $viewOnlyRole = Role::create(['name' => 'ViewOnlyRole']);
+        $SystemTesterRole = Role::create(['name' => 'SystemTesterRole']);
+        $AdminRole = Role::create(['name' => 'AdminRole']);
+        $TraderRole = Role::create(['name' => 'TraderRole']);
+        $LogisticsRole = Role::create(['name' => 'LogisticsRole']);
+        $TradeDirectorRole = Role::create(['name' => 'TradeDirectorRole']);
+        $FinancialDirectorRole = Role::create(['name' => 'FinancialDirectorRole']);
+        $FinancialDirectorRole = Role::create(['name' => 'OpsAdmin Manager']);
+
 
         $viewOnlyRole->givePermissionTo([
-            'view-only',
+            'view_only',
         ]);
 
-        $henry=  User::create([
+        $SystemTesterRole->givePermissionTo([
+            'update_supplier',
+            'update_product',
+            'update_customer',
+            'update_transporter',
+            'update_contact',
+            'update_pricing',
+            'update_process',
+            'delete_system_document',
+            'delete_user_document',
+            'manage_users',
+            'create_pc',
+            'create_sc',
+            'create_mq',
+            'link_mq',
+            'approve_deal_ticket',
+            'edit_adjusted_gp',
+            'edit_transport_trans'
+        ]);
+
+
+        //Staff
+
+        $unallocated_user =  User::create([
+            'name' => 'Unallocated',
+            'email' => 'unallocated@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+        Staff::create([
+            'first_name' => 'Unallocated',
+            'user_id'=> $unallocated_user->id
+        ]);
+
+
+        $allan_user =  User::create([
+            'name' => 'Allan',
+            'email' => 'allan@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+       Staff::create([
+            'first_name' => 'Allan',
+            'user_id'=> $allan_user->id
+        ]);
+
+        $maralize_user =  User::create([
+            'name' => 'Marlize',
+            'email' => 'maralize@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+        Staff::create([
+            'first_name' => 'Marlize',
+            'user_id'=> $maralize_user->id
+        ]);
+
+        $harry_user =  User::create([
+            'name' => 'Harry',
+            'email' => 'harry@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+        Staff::create([
+            'first_name' => 'Harry',
+            'user_id'=> $harry_user->id
+        ]);
+
+
+        $lize_user =  User::create([
+            'name' => 'Liza-Marie',
+            'email' => 'lize@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+        Staff::create([
+            'first_name' => 'Liza-Marie',
+            'user_id'=> $lize_user->id
+        ]);
+
+
+
+        $desire_user =  User::create([
+            'name' => 'Desire',
+            'email' => 'desire@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+        Staff::create([
+            'first_name' => 'Desire',
+            'user_id'=> $desire_user->id
+        ]);
+
+        $hennie_user =  User::create([
+            'name' => 'Hennie',
+            'email' => 'hennie@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+        Staff::create([
+            'first_name' => 'Hennie',
+            'user_id'=> $hennie_user->id
+        ]);
+
+        $petro_user =  User::create([
+            'name' => 'Petro',
+            'email' => 'petro@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+        Staff::create([
+            'first_name' => 'Petro',
+            'user_id'=> $petro_user->id
+        ]);
+
+        $landi_user =  User::create([
+            'name' => 'Landi',
+            'email' => 'Landi@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+        Staff::create([
+            'first_name' => 'Landi',
+            'user_id'=> $landi_user->id
+        ]);
+
+
+        $henry_user =  User::create([
             'name' => 'Henry',
             'email' => 'rhfaul@gmail.com',
             'password' => bcrypt('test1234')
         ]);
 
-        $view=  User::create([
-            'name' => 'View_Only',
-            'email' => 'view@only.com',
-            'password' => bcrypt('test1234')
+        Staff::create([
+            'first_name' => 'Henry',
+            'user_id'=> $henry_user->id
+        ]);
+
+        $henry_user->assignRole('SystemTesterRole');
+        $henry_user->assignRole('TraderRole');
+        $henry_user->assignRole('AdminRole');
+
+        /*Staff::create([
+            'first_name' => 'Allan',
+        ]);
+
+        Staff::create([
+            'first_name' => 'Marlize',
+        ]);
+
+        Staff::create([
+            'first_name' => 'Harry',
+        ]);
+
+        Staff::create([
+            'first_name' => 'Liza-Marie',
+        ]);
+
+        Staff::create([
+            'first_name' => 'Desire',
+        ]);
+
+        Staff::create([
+            'first_name' => 'Hennie',
+        ]);
+
+        Staff::create([
+            'first_name' => 'Petro',
+        ]);
+
+        Staff::create([
+            'first_name' => 'Landi',
+        ]);*/
+
+
+
+        //$view->assignRole('ViewOnly');
+
+
+        //TradeRules
+
+    /*    'name','min_trade_value','max_trade_vale'*/
+
+        //'poly_rule_type','poly_rule_id','role'
+
+       $rule_1 = TradeRule::create([
+            'name' => 'R0 to  R199,999.00',
+            'min_trade_value' => 0,
+            'max_trade_value' =>  199999.00 ,
+        ]);
+
+        TradeRuleRole::create([
+            'poly_rule_id' => $rule_1->id,
+            'poly_rule_type' => get_class($rule_1),
+            'role' => 'TraderRole',
+        ]);
+
+        $rule_2 = TradeRule::create([
+            'name' => 'R200 000 to  R3,999,999.00',
+            'min_trade_value' => 200000,
+            'max_trade_value' =>   3999999.00,
+        ]);
+
+        TradeRuleRole::create([
+            'poly_rule_id' => $rule_2->id,
+            'poly_rule_type' => get_class($rule_1),
+            'role' => 'TradeDirectorRole',
+        ]);
+
+        TradeRuleRole::create([
+            'poly_rule_id' => $rule_2->id,
+            'poly_rule_type' => get_class($rule_1),
+            'role' => 'TraderRole',
         ]);
 
 
-        $view->assignRole('ViewOnly');
+        $rule_3 = TradeRule::create([
+            'name' => 'R4 000 000 to  R9,999,999.00',
+            'min_trade_value' => 4000000,
+            'max_trade_value' =>   9999999.00,
+        ]);
 
+        TradeRuleRole::create([
+            'poly_rule_id' => $rule_3->id,
+            'poly_rule_type' => get_class($rule_1),
+            'role' => 'TradeDirectorRole',
+        ]);
 
+        TradeRuleRole::create([
+            'poly_rule_id' => $rule_3->id,
+            'poly_rule_type' => get_class($rule_1),
+            'role' => 'FinancialDirectorRole',
+        ]);
+
+        TradeRuleRole::create([
+            'poly_rule_id' => $rule_3->id,
+            'poly_rule_type' => get_class($rule_1),
+            'role' => 'TraderRole',
+        ]);
+
+        $rule_opp_1 = TradeRuleOpp::create([
+            'name' => 'Purchase is C.O.D',
+        ]);
+
+        $rule_opp_2 = TradeRuleOpp::create([
+            'name' => 'Supplier Suspended',
+        ]);
+
+        TradeRuleRole::create([
+            'poly_rule_id' => $rule_opp_1->id,
+            'poly_rule_type' => get_class($rule_opp_1),
+            'role' => 'FinancialDirectorRole',
+        ]);
+
+        TradeRuleRole::create([
+            'poly_rule_id' => $rule_opp_2->id,
+            'poly_rule_type' => get_class($rule_opp_1),
+            'role' => 'FinancialDirectorRole',
+        ]);
 
         //TransLinkTypes
 
@@ -168,77 +462,61 @@ class DatabaseSeeder extends Seeder
             'type' => 'Email'
         ]);
 
+
+        //TermsOfPaymentBasis
+
+        TermsOfPaymentBasis::create([
+            'value' => 'Days from Invoice Date'
+        ]);
+
+        TermsOfPaymentBasis::create([
+            'value' => 'Days from Statement'
+        ]);
+
         //TermsOfPayment
 
         TermsOfPayment::create([
-            'value' => 'C.O.D'
+            'value' => 'C.O.D',
+            'days' => 0
         ]);
 
         TermsOfPayment::create([
-            'value' => 'Unallocated'
+            'value' => 'Unallocated',
+            'days' => 0
         ]);
 
         TermsOfPayment::create([
-            'value' => '3 Days'
+            'value' => '3 Days',
+            'days' => 3
+
         ]);
 
         TermsOfPayment::create([
-            'value' => '7 Days'
+            'value' => '7 Days',
+            'days' => 7
         ]);
 
         TermsOfPayment::create([
-            'value' => '14 Days'
+            'value' => '14 Days',
+            'days' => 14
         ]);
 
         TermsOfPayment::create([
-            'value' => '30 Days'
+            'value' => '30 Days',
+            'days' => 30
         ]);
 
         TermsOfPayment::create([
-            'value' => 'F.C.A'
+            'value' => 'F.C.A',
+            'days' => 0
         ]);
 
         TermsOfPayment::create([
-            'value' => 'Prepaid'
+            'value' => 'Prepaid',
+            'days' => 0
         ]);
 
-        //Staff
 
-        Staff::create([
-            'first_name' => 'Unallocated',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Allan',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Marlize',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Harry',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Liza-Marie',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Desire',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Hennie',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Petro',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Landi',
-        ]);
 
         //Unallocated types
 
@@ -246,7 +524,8 @@ class DatabaseSeeder extends Seeder
         Transporter::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1]);
         Customer::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1,
             'invoice_basis_id'=>1,
-            'customer_rating_id'=>1,'days_overdue_allowed_id'=>1]);
+            'terms_of_payment_basis_id'=>1,
+            'customer_rating_id'=>1]);
 
 
         //TransportRateBasis

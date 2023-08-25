@@ -6,6 +6,8 @@ import {router, useForm, usePage,Link} from "@inertiajs/vue3";
 import {debounce, throttle} from 'lodash'
 import PaginationModified from  "@/Components/UI/PaginationModified.vue";
 import Icon from "@/Components/Icon.vue";
+import ContactSlideOver from  "@/Components/UI/ContactSlideOver.vue";
+import { ExclamationTriangleIcon } from '@heroicons/vue/20/solid'
 
 
 const props = defineProps({
@@ -22,7 +24,23 @@ const filterForm = useForm({
     direction: props.filters.direction ?? "asc",
     show: props.filters.show ?? 10,
 
-})
+});
+
+const viewContactSlideOver = ref(false);
+
+const viewWarning= ref(false);
+
+const clickAdd = () => {
+    viewWarning.value ? viewWarning.value= false : viewWarning.value = true;
+};
+
+const showContactSlideOver = () => {
+    viewContactSlideOver.value = true;
+};
+
+const closeContactSlideOver = () => {
+    viewContactSlideOver.value = false;
+};
 
 let curClient = ref(null);
 let showModel = ref(false);
@@ -121,9 +139,27 @@ const edit = (id) => {
                             </div>
                             <secondary-button @click="filter" class="mt-3">Search</secondary-button>
                             <secondary-button @click="clear" class="mt-3 ml-1">Clear</secondary-button>
-                            <secondary-button  class="mt-3 ml-1">Add (+)</secondary-button>
+                            <secondary-button @click="clickAdd"  class="mt-3 ml-1">Add (+)</secondary-button>
                         </div>
                         <div>
+
+                            <div>
+                                <div v-if="viewWarning" class="rounded-md w-2/3 bg-yellow-50 mb-3 p-4">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />
+                                        </div>
+                                        <div class="ml-3">
+                                            <h3 class="text-sm font-medium text-yellow-800">Add new contact</h3>
+                                            <div class="mt-2 text-sm text-yellow-700">
+                                                <p>Contacts are added via a specific instance of customer or supplier. Visit a supplier and add a contact.</p>
+                                                <p>This is done for it to automatically link to that entity.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
 
                             <div class="bg-white rounded-md shadow overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200 table-fixed">

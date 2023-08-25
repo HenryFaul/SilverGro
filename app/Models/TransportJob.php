@@ -14,7 +14,7 @@ class TransportJob extends Model
     use HasFactory;
     use SoftDeletes;
 
-    public $fillable = ['transport_trans_id','transport_rate_basis_id','customer_order_number','is_multi_loads',
+    public $fillable = ['transport_trans_id','transport_rate_basis_id','customer_order_number','supplier_loading_number"','is_multi_loads',
         'is_approved','transport_date_earliest','transport_date_latest','is_transport_costs_inc_price','is_product_zero_rated',
         'loading_hours_from_id','loading_hours_to_id','offloading_hours_from_id','offloading_hours_to_id','load_insurance_per_ton',
         'total_load_insurance','number_loads','loading_instructions','offloading_instructions','comments'];
