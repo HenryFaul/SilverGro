@@ -34,6 +34,8 @@ return new class extends Migration
             $table->boolean('is_approved')->default(0);
             $table->boolean('is_printed')->default(0);
             $table->timestamp('stamp_printed')->nullable();
+            $table->string('report_path')->nullable();
+            $table->string('report_path_old')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -16,10 +16,16 @@ class TransportFinance extends Model
     use SoftDeletes;
 
     public $fillable = ['transport_trans_id', 'transport_load_id', 'transport_rate_basis_id', 'cost_price_per_unit', 'cost_price_per_ton', 'cost_price',
-        'selling_price', 'selling_price_per_ton', 'cost_price_per_unit', 'selling_price_per_unit', 'transport_rate_per_ton', 'transport_rate', 'transport_price', 'load_insurance_per_ton',
+        'selling_price', 'selling_price_per_ton', 'selling_price_per_unit', 'transport_rate_per_ton', 'transport_rate', 'transport_price', 'load_insurance_per_ton',
         'comms_due_per_ton', 'weight_ton_incoming', 'weight_ton_outgoing', 'is_transport_costs_inc_price', 'transport_cost', 'total_cost_price', 'additional_cost_1', 'additional_cost_2', 'additional_cost_3',
         'additional_cost_desc_1', 'additional_cost_desc_2', 'additional_cost_desc_3', 'gross_profit', 'gross_profit_percent',
         'gross_profit_per_ton', 'total_supplier_comm', 'total_customer_comm', 'total_comm', 'adjusted_gp', 'adjusted_gp_notes'];
+
+
+    public function TransportRateBasis(): BelongsTo
+    {
+        return $this->belongsTo(TransportRateBasis::class);
+    }
 
 
     public function AssignedUserComm(): HasMany

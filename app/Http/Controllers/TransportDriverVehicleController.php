@@ -44,7 +44,8 @@ class TransportDriverVehicleController extends Controller
             'is_paid' => ['required','boolean'],
             'is_payment_overdue' => ['required','boolean'],
             'traders_notes' => ['nullable','string'],
-            'operations_alert_notes' => ['nullable','string']
+            'operations_alert_notes' => ['nullable','string'],
+            'driver_vehicle_loading_number' => ['nullable','string']
         ]);
 
         $cur_date = (Carbon::now())->toDateString();
@@ -87,6 +88,7 @@ class TransportDriverVehicleController extends Controller
                 'date_scheduled' => $date_scheduled,
                 'date_paid' => $date_paid,
                 'date_payment_overdue' => $date_payment_overdue,
+                'driver_vehicle_loading_number' => $request->driver_vehicle_loading_number,
             ]
         );
 
@@ -131,6 +133,7 @@ class TransportDriverVehicleController extends Controller
         'is_delivered','date_delivered','is_transport_scheduled','date_scheduled','is_paid','date_paid','is_payment_overdue',
         'traders_notes','operations_alert_notes','date_payment_overdue'*/
 
+
         $request->validate([
             'regular_driver_id' => ['required', 'integer','exists:regular_drivers,id'],
             'regular_vehicle_id' => ['required', 'integer','exists:regular_vehicles,id'],
@@ -144,7 +147,8 @@ class TransportDriverVehicleController extends Controller
             'is_paid' => ['required','boolean'],
             'is_payment_overdue' => ['required','boolean'],
             'traders_notes' => ['nullable','string'],
-            'operations_alert_notes' => ['nullable','string']
+            'operations_alert_notes' => ['nullable','string'],
+            'driver_vehicle_loading_number' => ['nullable','string']
         ]);
 
         $cur_date = (Carbon::now())->toDateString();
@@ -185,6 +189,7 @@ class TransportDriverVehicleController extends Controller
                 'date_scheduled' => $date_scheduled,
                 'date_paid' => $date_paid,
                 'date_payment_overdue' => $date_payment_overdue,
+                'driver_vehicle_loading_number'=>$request->driver_vehicle_loading_number,
             ]
         );
 

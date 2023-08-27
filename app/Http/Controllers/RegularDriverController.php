@@ -53,7 +53,30 @@ class RegularDriverController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'first_name' => ['required','string'],
+            'last_name' => ['required','string'],
+            'comment' => ['nullable','string'],
+            'cell_no' => ['required','string'],
+        ]);
+
+        $driver = RegularDriver::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'comment'=>$request->comment,
+            'cell_no'=>$request->cell_no
+        ]);
+
+        if ($driver->exists()) {
+            $request->session()->flash('flash.bannerStyle', 'success');
+            $request->session()->flash('flash.banner', 'Driver Created');
+        }
+        else{
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Driver NOT Created');
+        }
+
+        return redirect()->back();
     }
 
     /**

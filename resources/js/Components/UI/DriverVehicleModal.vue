@@ -69,7 +69,8 @@ const form = useForm({
     date_paid: props.driver_vehicle == null ? null : props.driver_vehicle.date_paid,
     is_payment_overdue: props.driver_vehicle == null ? false : props.driver_vehicle.is_payment_overdue,
     traders_notes: props.driver_vehicle == null ? null : props.driver_vehicle.traders_notes,
-    operations_alert_notes: props.driver_vehicle == null ? null : props.driver_vehicle.operations_alert_notes
+    operations_alert_notes: props.driver_vehicle == null ? null : props.driver_vehicle.operations_alert_notes,
+    driver_vehicle_loading_number: props.driver_vehicle == null ? null : props.driver_vehicle.driver_vehicle_loading_number,
 
 });
 
@@ -156,6 +157,17 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                 <div class="text-lg mb-2 text-indigo-400">Driver Vehicle
 
                                     <span v-if="driver_vehicle != null"> ({{driver_vehicle.id}}) </span> <span v-else>(New)</span>
+                                </div>
+
+                                <div class="mt-3">
+                                    <label class="block text-sm font-medium leading-6 text-gray-900">Driver/Vehicle loading no</label>
+                                    <TextInput
+                                        id="loading_no"
+                                        v-model="form.driver_vehicle_loading_number"
+                                        type="text"
+                                        class="mt-1 block w-full"
+                                    />
+                                    <!--                                    <InputError class="mt-2" :message="form.errors.line_1"/>-->
                                 </div>
 
                                 <div class="mt-3">

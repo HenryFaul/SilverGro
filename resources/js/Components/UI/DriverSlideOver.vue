@@ -44,8 +44,12 @@ let props = defineProps({
     closeable: true,
 });
 
-let productForm = useForm({
-    name:  null,
+
+
+let driverForm = useForm({
+    first_name:  null,
+    last_name:  null,
+    cell_no:  null,
     comment: null,
 });
 
@@ -72,7 +76,7 @@ const getComponentProps = () => {
 
 const createProduct = () => {
 
-    productForm.post(route('product.store'), {
+    driverForm.post(route('regular_driver.store'), {
         preserveScroll: true,
         onSuccess: () => {
             close();
@@ -83,7 +87,7 @@ const createProduct = () => {
     });
 };
 
-let emptyErrors = computed(() => Object.keys(productForm.errors).length === 0 && productForm.errors.constructor === Object)
+let emptyErrors = computed(() => Object.keys(driverForm.errors).length === 0 && driverForm.errors.constructor === Object)
 let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border-solid border-2 border-red-500' : 'ml-4 mt-4 p-4 rounded-md border-solid border-2 border-gray')
 
 </script>
@@ -113,10 +117,10 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                     <div class="space-y-1">
                                                         <DialogTitle
                                                             class="text-base font-semibold leading-6 text-gray-900">New
-                                                            Product
+                                                            Regular Driver
                                                         </DialogTitle>
                                                         <p class="text-sm text-gray-500">Complete the Required details
-                                                            to load a new Product.</p>
+                                                            to load a new Driver.</p>
                                                     </div>
                                                     <div class="flex h-7 items-center">
                                                         <button type="button" class="text-gray-400 hover:text-gray-500"
@@ -131,16 +135,46 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                             <!-- Divider container -->
                                             <div
                                                 class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
-                                                <!--  name -->
+                                                <!-- First name -->
                                                 <div
                                                     class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                                                     <div>
                                                         <label
-                                                               class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Product name</label>
+                                                               class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">First name</label>
                                                     </div>
                                                     <div class="sm:col-span-2">
-                                                        <input v-model="productForm.name" type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                                        <InputError class="mt-2" :message="productForm.errors.name"/>
+                                                        <input v-model="driverForm.first_name" type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                        <InputError class="mt-2" :message="driverForm.errors.first_name"/>
+
+
+                                                    </div>
+                                                </div>
+
+                                                <!-- Last name -->
+                                                <div
+                                                    class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                    <div>
+                                                        <label
+                                                            class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Last name</label>
+                                                    </div>
+                                                    <div class="sm:col-span-2">
+                                                        <input v-model="driverForm.last_name" type="text" name="last_name" id="last_name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                        <InputError class="mt-2" :message="driverForm.errors.last_name"/>
+
+
+                                                    </div>
+                                                </div>
+
+                                                <!-- Cell no -->
+                                                <div
+                                                    class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                    <div>
+                                                        <label
+                                                            class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Cell no</label>
+                                                    </div>
+                                                    <div class="sm:col-span-2">
+                                                        <input v-model="driverForm.cell_no" type="text" name="cell_no" id="cell_no" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                        <InputError class="mt-2" :message="driverForm.errors.cell_no"/>
 
 
                                                     </div>
@@ -159,11 +193,11 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                             id="comments"
                                                             :rows=6
                                                             placeholder="Optional comments..."
-                                                            v-model="productForm.comment"
+                                                            v-model="driverForm.comment"
                                                             type="text"
                                                             class="mt-1 block w-full"
                                                         />
-                                                        <InputError class="mt-2" :message="productForm.errors.comment"/>
+                                                        <InputError class="mt-2" :message="driverForm.errors.comment"/>
 
                                                     </div>
                                                 </div>

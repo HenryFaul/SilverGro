@@ -129,6 +129,10 @@ Route::middleware([
 
     Route::get('/props/trade_slide_over', [TransportTransactionController::class, 'getProps'])->middleware('auth')->name('props.trade_slide_over');
 
+    //Transport Trans SlideOver Props
+
+    Route::get('/props/vehicle_slide_over', [RegularVehicleController::class, 'getProps'])->middleware('auth')->name('props.vehicle_slide_over');
+
     //Transport PC trans Modal Props
 
     Route::get('/props/contract_link_modal', [TransportTransactionController::class, 'getPcs'])->middleware('auth')->name('props.contract_link_modal');
@@ -144,10 +148,11 @@ Route::middleware([
     Route::resource('trans_link', TransLinkController::class)->middleware('auth')
         ->only(['store']);
 
-    //TransLink
+    //Trans Approval
+   // Route::resource('trans_approval', TransportApprovalController::class)->middleware('auth')->only(['store']);
+    Route::post('trans_approval/approve', [TransportApprovalController::class, 'approve'])->middleware('auth')->name('trans_approval.approve');
+    Route::post('trans_approval/activate', [TransportApprovalController::class, 'activate'])->middleware('auth')->name('trans_approval.activate');
 
-    Route::resource('trans_approval', TransportApprovalController::class)->middleware('auth')
-        ->only(['store']);
 
     //Deal Ticket
 
@@ -225,12 +230,12 @@ Route::middleware([
     //Driver
 
     Route::resource('regular_driver', RegularDriverController::class)->middleware('auth')
-        ->only(['index', 'show','update']);
+        ->only(['index', 'show','update','store']);
 
-    //Driver
+    //Vehicle
 
     Route::resource('regular_vehicle', RegularVehicleController::class)->middleware('auth')
-        ->only(['index', 'show','update']);
+        ->only(['index', 'show','update','store']);
 
 
     //Transporter
@@ -258,6 +263,10 @@ Route::middleware([
     //Email detail
     Route::resource('email_contact_detail', EmailContactDetailController::class)->middleware('auth')
         ->only(['store', 'update', 'show']);
+
+    //PDF Reports
+    Route::get('/pdf_report/deal_ticket_view/{id}', [DealTicketController::class, 'viewPDF'])->middleware('auth')->name('pdf_report.deal_ticket_view');
+    Route::post('/pdf_report/deal_ticket_final/', [DealTicketController::class, 'generatePDF'])->middleware('auth')->name('pdf_report.deal_ticket_final');
 
 
 });

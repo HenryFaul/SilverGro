@@ -42,6 +42,8 @@ return new class extends Migration
             $table->longText('comment')->nullable();
             $table->boolean('is_active')->default(1);
             $table->boolean('is_printed')->default(0);
+            $table->string('report_path')->nullable();
+            $table->string('report_path_old')->nullable();
 
 
             $table->softDeletes();

@@ -12,12 +12,16 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class TransportTransaction extends Model
 {
     use HasFactory;
 
     use SoftDeletes;
+
+    use LogsActivity;
 
     public $fillable = ['id','old_id','old_deal_ticket','contract_type_id','contract_no','supplier_id','customer_id','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
         'product_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes',
@@ -191,4 +195,13 @@ class TransportTransaction extends Model
     }
 
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        // TODO: Implement getActivitylogOptions() method.
+
+        return LogOptions::defaults()
+            ->logOnly(['old_id','old_deal_ticket','contract_type_id','contract_no','supplier_id','customer_id','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
+                'product_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes',
+                'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done']);
+    }
 }

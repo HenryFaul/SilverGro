@@ -213,6 +213,7 @@ let deal_ticket_Form = useForm({
     transport_trans_id: props.transaction.id,
     transport_job_id: props.transaction.transport_job.id,
     is_active: props.transaction.deal_ticket == null? false: props.transaction.deal_ticket.is_active,
+    is_approved: props.transaction.deal_ticket == null? false: props.transaction.deal_ticket.is_approved,
     is_printed:props.transaction.deal_ticket == null? false: props.transaction.deal_ticket.is_printed,
 });
 
@@ -502,7 +503,7 @@ const updateTransportInvoice = () => {
 }
 
 const createApproval = () => {
-    transport_approval_Form.post(route('trans_approval.store'), {
+    transport_approval_Form.post(route('trans_approval.approve'), {
         preserveScroll: true,
         onSuccess: () => {
             swal(usePage().props.jetstream.flash?.banner || '');
@@ -512,6 +513,19 @@ const createApproval = () => {
         },
     });
 };
+
+const createActivation = () => {
+    transport_approval_Form.post(route('trans_approval.activate'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            swal(usePage().props.jetstream.flash?.banner || '');
+        },
+        onError: (e) => {
+            console.log(e);
+        },
+    });
+};
+
 
 const createStatus = () => {
     status_Form.post(route('transport_status.store'), {
@@ -582,10 +596,7 @@ const deleteDriverVehicle = (id) => {
         close();
     }
 
-
 };
-
-
 
 
 //Modals
@@ -1262,6 +1273,7 @@ const can_adjust_gp = computed(() => usePage().props.roles_permissions.permissio
                                 </div>
 
                                 <form class="mt-5">
+                                    {{transaction.deal_ticket}}
 
                                     <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
@@ -1298,6 +1310,10 @@ const can_adjust_gp = computed(() => usePage().props.roles_permissions.permissio
 
                                             <SecondaryButton class="m-1 mt-2" @click="createApproval">
                                                 Approve
+                                            </SecondaryButton>
+
+                                            <SecondaryButton class="m-1 mt-2" @click="createActivation">
+                                                Activate
                                             </SecondaryButton>
                                         </div>
 
@@ -1430,16 +1446,6 @@ const can_adjust_gp = computed(() => usePage().props.roles_permissions.permissio
                                             </div>
                                         </div>
 
-                                        <div class="col-span-4">
-
-                                            <SecondaryButton class="m-1" @click="updateDealTicket">
-                                                Update
-                                            </SecondaryButton>
-
-                                            <InputError class="mt-2"
-                                                        :message="deal_ticket_Form.errors.is_active"/>
-
-                                        </div>
 
                                     </div>
                                 </form>

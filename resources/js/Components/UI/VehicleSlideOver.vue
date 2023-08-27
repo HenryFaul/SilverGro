@@ -44,9 +44,11 @@ let props = defineProps({
     closeable: true,
 });
 
-let productForm = useForm({
-    name:  null,
+
+let vehicleForm = useForm({
+    vehicle_type_id:  1,
     comment: null,
+    reg_no: null,
 });
 
 const format = () => {
@@ -62,17 +64,25 @@ onMounted(() => {
 });
 
 onBeforeMount(async () => {
+
+   await getComponentProps();
 });
 
+let vehicleSlideProps = ref(null);
 
 const getComponentProps = () => {
+
+    axios.get(route('props.vehicle_slide_over'),).then((res) => {
+        vehicleSlideProps.value = res.data['vehicle_types'];
+
+    });
 
 };
 
 
 const createProduct = () => {
 
-    productForm.post(route('product.store'), {
+    vehicleForm.post(route('regular_vehicle.store'), {
         preserveScroll: true,
         onSuccess: () => {
             close();
@@ -83,7 +93,7 @@ const createProduct = () => {
     });
 };
 
-let emptyErrors = computed(() => Object.keys(productForm.errors).length === 0 && productForm.errors.constructor === Object)
+let emptyErrors = computed(() => Object.keys(vehicleForm.errors).length === 0 && vehicleForm.errors.constructor === Object)
 let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border-solid border-2 border-red-500' : 'ml-4 mt-4 p-4 rounded-md border-solid border-2 border-gray')
 
 </script>
@@ -113,10 +123,10 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                     <div class="space-y-1">
                                                         <DialogTitle
                                                             class="text-base font-semibold leading-6 text-gray-900">New
-                                                            Product
+                                                            Regular Vehicle
                                                         </DialogTitle>
                                                         <p class="text-sm text-gray-500">Complete the Required details
-                                                            to load a new Product.</p>
+                                                            to load a new Vehicle.</p>
                                                     </div>
                                                     <div class="flex h-7 items-center">
                                                         <button type="button" class="text-gray-400 hover:text-gray-500"
@@ -131,20 +141,39 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                             <!-- Divider container -->
                                             <div
                                                 class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
-                                                <!--  name -->
+                                                <!--  reg no -->
                                                 <div
                                                     class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                                                     <div>
                                                         <label
-                                                               class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Product name</label>
+                                                               class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Reg no</label>
                                                     </div>
                                                     <div class="sm:col-span-2">
-                                                        <input v-model="productForm.name" type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                                                        <InputError class="mt-2" :message="productForm.errors.name"/>
-
-
+                                                        <input v-model="vehicleForm.reg_no" type="text" name="reg_no" id="reg_no" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                        <InputError class="mt-2" :message="vehicleForm.errors.reg_no"/>
                                                     </div>
                                                 </div>
+
+                                                <!--  vehicle type -->
+                                                <div
+                                                    class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                    <div>
+                                                        <label
+                                                            class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Vehicle type</label>
+                                                    </div>
+                                                    <div class="sm:col-span-2">
+                                                        <select v-model="vehicleForm.vehicle_type_id"
+                                                                class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                            <option v-for="n in vehicleSlideProps" :key="n.id" :value="n.id">{{
+                                                                    n.name
+                                                                }}
+                                                            </option>
+
+                                                        </select>
+                                                        <InputError class="mt-2" :message="vehicleForm.errors.vehicle_type_id"/>
+                                                    </div>
+                                                </div>
+
 
 
                                                 <!-- Comment -->
@@ -159,11 +188,11 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                             id="comments"
                                                             :rows=6
                                                             placeholder="Optional comments..."
-                                                            v-model="productForm.comment"
+                                                            v-model="vehicleForm.comment"
                                                             type="text"
                                                             class="mt-1 block w-full"
                                                         />
-                                                        <InputError class="mt-2" :message="productForm.errors.comment"/>
+                                                        <InputError class="mt-2" :message="vehicleForm.errors.comment"/>
 
                                                     </div>
                                                 </div>

@@ -33,5 +33,30 @@ class TransportLoad extends Model
         return $this->hasOne(TransportFinance::class,'transport_load_id');
     }
 
+    public function ProductSource(): BelongsTo
+    {
+        return $this->belongsTo(ProductSource::class);
+    }
+
+    public function PackagingOutgoing(): BelongsTo
+    {
+        return $this->belongsTo(Packaging::class);
+    }
+
+    public function CollectionAddress(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
+    }
+
+    public function DeliveryAddress(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
+    }
+
+    public function ConfirmedByType(): BelongsTo
+    {
+        return $this->belongsTo(ConfirmationTypes::class);
+    }
+
 
 }

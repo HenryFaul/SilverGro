@@ -38,6 +38,8 @@ return new class extends Migration
 
             $table->boolean('is_po_sent')->default(0);
             $table->boolean('is_po_received')->default(0);
+            $table->string('report_path')->nullable();
+            $table->string('report_path_old')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

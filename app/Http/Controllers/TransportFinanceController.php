@@ -76,7 +76,7 @@ class TransportFinanceController extends Controller
                     'cost_price_per_unit' => ['required','numeric'],
                     'selling_price_per_unit' => ['required','numeric'],
                     'adjusted_gp'=> ['required','numeric'],
-                    'adjusted_gp_notes'=> ['required','string'],
+                    'adjusted_gp_notes'=> ['nullable','string'],
                     'transport_rate' => ['nullable','numeric'],
                     'additional_cost_1' => ['nullable','numeric'],
                     'additional_cost_2' => ['nullable','numeric'],

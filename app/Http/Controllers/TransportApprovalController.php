@@ -8,29 +8,16 @@ use App\Models\TransportApproval;
 use App\Models\TransportTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class TransportApprovalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function approve(Request $request): \Illuminate\Http\RedirectResponse
     {
 
         $request->validate([
@@ -110,7 +97,6 @@ class TransportApprovalController extends Controller
         }
 
 
-
         $request->session()->flash('flash.bannerStyle', 'success');
         $request->session()->flash('flash.banner', 'Approval Updated');
 
@@ -119,35 +105,37 @@ class TransportApprovalController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(TransportApproval $transportApproval)
+    public function activate(Request $request): \Illuminate\Http\RedirectResponse
     {
-        //
+        $user = Auth::user();
+        $permissions = $user->getPermissionsViaRoles()->pluck('name');
+        $can_approve = $permissions->contains('approve_deal_ticket');
+        $transport_trans = TransportTransaction::find($request->transport_trans_id);
+        $deal_ticket = $transport_trans->DealTicket;
+        $deal_ticket->calculateRules();
+        $is_approved = $deal_ticket->is_approved;
+
+
+        $request->validate([
+            'is_active'=>['nullable','boolean',Rule::prohibitedIf(!$can_approve),Rule::prohibitedIf(!$is_approved)],
+        ],['is_active'=>'You need permissions to activate a deal ticket & must be approved!']);
+
+        $is_updated = false;
+
+        if ($can_approve && $is_approved){
+            $is_updated = $deal_ticket->update(['is_active' =>1]);
+        }
+
+        if ($is_updated){
+            $request->session()->flash('flash.bannerStyle', 'success');
+            $request->session()->flash('flash.banner', 'Deal Ticket updated');
+        }else{
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Deal Ticket NOT updated');
+        }
+
+        return redirect()->back();
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TransportApproval $transportApproval)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, TransportApproval $transportApproval)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(TransportApproval $transportApproval)
-    {
-        //
-    }
 }

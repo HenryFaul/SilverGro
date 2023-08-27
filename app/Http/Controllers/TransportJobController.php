@@ -60,6 +60,8 @@ class TransportJobController extends Controller
 
         $transportJob->update(
             $request->validate([
+                'supplier_loading_number'=>['nullable','string'],
+                'customer_order_number'=>['nullable','string'],
                 'number_loads' => ['nullable','numeric'],
                 'is_multi_loads' => ['nullable','boolean'],
                 'is_approved' => ['nullable','boolean'],
