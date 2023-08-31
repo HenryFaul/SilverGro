@@ -65,6 +65,21 @@ class TransportTransaction extends Model
         return $this->hasOne(DealTicket::class,'transport_trans_id');
     }
 
+    public function PurchaseOrder(): HasOne
+    {
+        return $this->hasOne(PurchaseOrder::class,'transport_trans_id');
+    }
+
+    public function TransportOrder(): HasOne
+    {
+        return $this->hasOne(TransportOrder::class,'transport_trans_id');
+    }
+
+    public function SalesOrder(): HasOne
+    {
+        return $this->hasOne(SalesOrder::class,'transport_trans_id');
+    }
+
     public function TransportJob(): HasOne
     {
         return $this->hasOne(TransportJob::class,'transport_trans_id');

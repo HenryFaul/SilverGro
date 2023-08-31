@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use JetBrains\PhpStorm\NoReturn;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class DealTicket extends Model
+class DealTicket extends Model implements HasMedia
 {
     use HasFactory;
-
+    use InteractsWithMedia;
     use SoftDeletes;
 
     public $fillable = ['transport_trans_id', 'old_id', 'trade_value', 'type', 'comment', 'is_active', 'is_approved', 'is_printed', 'stamp_printed','report_path','report_path_old'];

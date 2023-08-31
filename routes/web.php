@@ -17,6 +17,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegularDriverController;
 use App\Http\Controllers\RegularVehicleController;
 use App\Http\Controllers\RoleModifyController;
+use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffLinkController;
 use App\Http\Controllers\SupplierController;
@@ -265,8 +266,20 @@ Route::middleware([
         ->only(['store', 'update', 'show']);
 
     //PDF Reports
+    //DealTicket
     Route::get('/pdf_report/deal_ticket_view/{id}', [DealTicketController::class, 'viewPDF'])->middleware('auth')->name('pdf_report.deal_ticket_view');
     Route::post('/pdf_report/deal_ticket_final/', [DealTicketController::class, 'generatePDF'])->middleware('auth')->name('pdf_report.deal_ticket_final');
+    Route::get('/pdf_report/deal_ticket_final/download/{file_name}', [DealTicketController::class, 'downloadPDF'])->middleware('auth')->name('pdf_report.deal_ticket_final.download');
+
+    //SalesOrder
+
+    Route::get('/pdf_report/sales_order_view/{id}', [SalesOrderController::class, 'viewPDF'])->middleware('auth')->name('pdf_report.sales_order_view');
+    Route::post('/sales_order/activate', [SalesOrderController::class, 'activate'])->middleware('auth')->name('sales_order.activate');
+    Route::post('/sales_order/send', [SalesOrderController::class, 'send'])->middleware('auth')->name('sales_order.send');
+    Route::post('/sales_order/receive', [SalesOrderController::class, 'receive'])->middleware('auth')->name('sales_order.received');
+
+    //SalesOrder Confirmation
+    Route::get('/pdf_report/sales_order_confirmation_view/{id}', [SalesOrderController::class, 'viewConfirmationPDF'])->middleware('auth')->name('pdf_report.sales_order_confirmation_view');
 
 
 });

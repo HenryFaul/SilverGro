@@ -12,6 +12,7 @@ use App\Models\Packaging;
 use App\Models\Product;
 use App\Models\ProductSource;
 use App\Models\PurchaseOrder;
+use App\Models\SalesOrder;
 use App\Models\Staff;
 use App\Models\Supplier;
 use App\Models\TradeRule;
@@ -224,6 +225,16 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         'confirmed_by_id' => 1,
                         'is_po_sent' => $purchaseordersent,
                         'is_po_received' => $purchaseorderreceived
+                    ]);
+
+                    //Sales Oder
+
+                    $sales_order = SalesOrder::create([
+                        'transport_trans_id' => $transport_trans->id,
+                        'confirmed_by_id'=>1,
+                        'confirmed_by_type_id'=>1,
+                        'is_printed' => false,
+                        'is_active' => false
                     ]);
 
                     //Transport order

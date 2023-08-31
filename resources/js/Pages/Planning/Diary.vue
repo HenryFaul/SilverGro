@@ -40,7 +40,7 @@ const Form = useForm({
 
     date: props.filters.date ?? new Date().toISOString().substr(0, 10),
     show: props.filters.show ?? 1,
-    contract_type_id:props.filters.contract_type_id ?? 1,
+    contract_type_id:props.filters.contract_type_id ?? null,
 })
 
 onMounted(() => {
@@ -301,6 +301,7 @@ const closeTradeSlideOver = () => {
                         </div>
                         <div class="basis-1/2">
                             <div class="">
+                                {{Form.contract_type_id}}
                                 <select v-model="Form.contract_type_id"
                                         class="input-filter-l w-2/6  rounded-md rounded-md shadow-sm border border-gray-300 text-gray-500">
                                     <option selected :value="null">All contracts</option>

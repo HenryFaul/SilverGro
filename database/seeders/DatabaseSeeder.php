@@ -86,6 +86,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'create_mq']);
         Permission::create(['name' => 'link_mq']);
         Permission::create(['name' => 'approve_deal_ticket']);
+        Permission::create(['name' => 'override_deal_ticket']);
         Permission::create(['name' => 'edit_adjusted_gp']);
         Permission::create(['name' => 'edit_transport_trans']);
 
@@ -104,11 +105,30 @@ class DatabaseSeeder extends Seeder
         $LogisticsRole = Role::create(['name' => 'LogisticsRole']);
         $TradeDirectorRole = Role::create(['name' => 'TradeDirectorRole']);
         $FinancialDirectorRole = Role::create(['name' => 'FinancialDirectorRole']);
-        $FinancialDirectorRole = Role::create(['name' => 'OpsAdmin Manager']);
+        $OpsAdminManger = Role::create(['name' => 'OpsAdmin Manager']);
 
 
         $viewOnlyRole->givePermissionTo([
             'view_only',
+        ]);
+
+        $AdminRole->givePermissionTo([
+            'update_supplier',
+            'update_product',
+            'update_customer',
+            'update_transporter',
+            'update_contact',
+            'update_pricing',
+            'update_process',
+            'delete_system_document',
+            'delete_user_document',
+            'manage_users',
+            'create_pc',
+            'create_sc',
+            'create_mq',
+            'link_mq',
+            'edit_adjusted_gp',
+            'edit_transport_trans'
         ]);
 
         $SystemTesterRole->givePermissionTo([
@@ -131,6 +151,119 @@ class DatabaseSeeder extends Seeder
             'edit_transport_trans'
         ]);
 
+        $TraderRole->givePermissionTo([
+            'update_supplier',
+            'update_product',
+            'update_customer',
+            'update_transporter',
+            'update_contact',
+            'update_pricing',
+            'update_process',
+            'delete_system_document',
+            'delete_user_document',
+            'manage_users',
+            'create_pc',
+            'create_sc',
+            'create_mq',
+            'link_mq',
+            'edit_transport_trans'
+        ]);
+
+        $LogisticsRole->givePermissionTo([
+            'update_supplier',
+            'update_product',
+            'update_customer',
+            'update_transporter',
+            'update_contact',
+            'update_pricing',
+            'update_process',
+            'delete_system_document',
+            'delete_user_document',
+            'manage_users',
+            'create_pc',
+            'create_sc',
+            'create_mq',
+            'link_mq',
+            'edit_transport_trans'
+        ]);
+
+        $TradeDirectorRole->givePermissionTo([
+            'update_supplier',
+            'update_product',
+            'update_customer',
+            'update_transporter',
+            'update_contact',
+            'update_pricing',
+            'update_process',
+            'delete_system_document',
+            'delete_user_document',
+            'manage_users',
+            'create_pc',
+            'create_sc',
+            'create_mq',
+            'link_mq',
+            'approve_deal_ticket',
+            'edit_adjusted_gp',
+            'edit_transport_trans'
+        ]);
+
+        $FinancialDirectorRole->givePermissionTo([
+            'update_supplier',
+            'update_product',
+            'update_customer',
+            'update_transporter',
+            'update_contact',
+            'update_pricing',
+            'update_process',
+            'delete_system_document',
+            'delete_user_document',
+            'manage_users',
+            'create_pc',
+            'create_sc',
+            'create_mq',
+            'link_mq',
+            'approve_deal_ticket',
+            'edit_adjusted_gp',
+            'edit_transport_trans'
+        ]);
+
+        $AdminRole->givePermissionTo([
+            'update_supplier',
+            'update_product',
+            'update_customer',
+            'update_transporter',
+            'update_contact',
+            'update_pricing',
+            'update_process',
+            'delete_system_document',
+            'delete_user_document',
+            'manage_users',
+            'create_pc',
+            'create_sc',
+            'create_mq',
+            'link_mq',
+            'approve_deal_ticket',
+            'edit_transport_trans'
+        ]);
+
+        $OpsAdminManger->givePermissionTo([
+            'update_supplier',
+            'update_product',
+            'update_customer',
+            'update_transporter',
+            'update_contact',
+            'update_pricing',
+            'update_process',
+            'delete_system_document',
+            'delete_user_document',
+            'manage_users',
+            'create_pc',
+            'create_sc',
+            'create_mq',
+            'link_mq',
+            'approve_deal_ticket',
+            'edit_transport_trans'
+        ]);
 
         //Staff
 
@@ -721,7 +854,97 @@ class DatabaseSeeder extends Seeder
         //Loading Time
 
         LoadingHourOption::create([
-            'name' => 'Unallocated',
+            'name' => '00:00',
+        ]);
+        LoadingHourOption::create([
+            'name' => '01:00',
+        ]);
+        LoadingHourOption::create([
+            'name' => '02:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '03:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '04:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '05:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '06:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '07:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '08:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '09:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '10:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '11:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '12:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '13:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '14:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '15:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '16:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '17:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '18:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '19:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '20:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '21:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '22:00',
+        ]);
+
+        LoadingHourOption::create([
+            'name' => '23:00',
         ]);
 
         //Confirmation type

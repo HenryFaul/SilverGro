@@ -72,6 +72,10 @@ class TransactionSummaryController extends Controller
 
 
         $deal_ticket = $transportTransaction->DealTicket;
+        $purchase_order = $transportTransaction->PurchaseOrder;
+        $transport_order = $transportTransaction->TransportOrder;
+        $sales_order = $transportTransaction->SalesOrder;
+
 
         $deal_ticket->calculateRules();
         $rules_with_approvals = $deal_ticket->getAppliedRules();
@@ -136,7 +140,11 @@ class TransactionSummaryController extends Controller
                 'all_status_types' => $all_status_types,
                 'all_invoice_statuses'=>$all_invoice_statuses,
                 'rules_with_approvals'=>$rules_with_approvals,
-                'linked_trans'=>$linked_trans
+                'linked_trans'=>$linked_trans,
+                'deal_ticket'=>$deal_ticket,
+                'transport_order'=>$transport_order,
+                'purchase_order'=>$purchase_order,
+                'sales_order'=>$sales_order
 
             ]
         );

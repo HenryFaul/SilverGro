@@ -290,37 +290,46 @@ let filteredTrans = computed(() =>
                     <div class="m-2 p-2">
                         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Transaction Data</h2>
 
-                        <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                        <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
-                            <div class="flex col-span-6 mt-1">
+                            <div class="flex col-span-6">
                                 <div>
                                     <div class="ml-3 text-indigo-400 text-sm font-bold">
                                         Start Date
                                     </div>
-                                    <div>
-                                        <VueDatePicker style="width: 250px;"
-                                                       v-model="filterForm.start_date"
-                                                       :format="formatStart"
-                                                       :teleport="true"></VueDatePicker>
+                                    <div class="w-48">
+                                        <VueDatePicker  v-model="filterForm.start_date"
+                                                        :format="formatStart"
+                                                        :teleport="true"
+                                        ></VueDatePicker>
                                     </div>
 
-
                                 </div>
-                                <div class="ml-4">
+                                <div class="ml-2">
                                     <div class="ml-3 text-indigo-400 text-sm font-bold">
                                         End Date
                                     </div>
-                                    <div>
-                                        <VueDatePicker style="width: 250px;"
-                                                       v-model="filterForm.end_date"
+                                    <div class="w-48">
+                                        <VueDatePicker v-model="filterForm.end_date"
                                                        :format="format"
-                                                       :teleport="true"></VueDatePicker>
+                                                       :teleport="true"
+                                        ></VueDatePicker>
                                     </div>
                                 </div>
 
-                                <div class="mt-5 ml-4">
+                                <div class="mt-5 ml-2">
+                                    <select v-model="filterForm.contract_type_id"
+                                            class="input-filter-l  w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <option  :value="null">All contracts</option>
+
+                                        <option v-for="n in contract_types" :key="n.id" :value="n.id">
+                                            {{n.name}}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mt-5 ml-2">
                                     <select v-model="filterForm.show"
-                                            class="input-filter-l  w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            class="input-filter-l  w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                         <option :value=5>5</option>
                                         <option :value=10>10</option>
                                         <option :value=25>25</option>
@@ -330,106 +339,99 @@ let filteredTrans = computed(() =>
                                     </select>
 
                                 </div>
+
+
                             </div>
                             <div class="col-span-4 flex">
-                                <input type="search" v-model.number="filterForm.supplier_name" aria-label="Search"
-                                       placeholder="Search supplier name..."
-                                       class="block w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                                <input v-model.number="filterForm.supplier_name" aria-label="Search" class="block w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                       placeholder="supplier name..."
+                                       type="search"/>
 
-                                <input type="search" v-model.number="filterForm.customer_name" aria-label="Search"
-                                       placeholder="Search customer name..."
-                                       class="block ml-2 w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                                <input v-model.number="filterForm.customer_name" aria-label="Search" class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                       placeholder="customer name..."
+                                       type="search"/>
 
-                                <input type="search" v-model.number="filterForm.transporter_name" aria-label="Search"
-                                       placeholder="Search transporter name..."
-                                       class="block ml-2 w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                                <input v-model.number="filterForm.transporter_name" aria-label="Search" class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                       placeholder="transporter name..."
+                                       type="search"/>
 
-                                <input type="search" v-model.number="filterForm.product_name" aria-label="Search"
-                                       placeholder="Search product name..."
-                                       class="block ml-2 w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                                <input v-model.number="filterForm.product_name" aria-label="Search" class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                       placeholder="product name..."
+                                       type="search"/>
+
+                                <input v-model.number="filterForm.id" aria-label="Search" class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                       placeholder="contract no..."
+                                       type="search"/>
+
                             </div>
-
                             <div class="col-span-4 flex">
-                                <input type="search" v-model.number="filterForm.id" aria-label="Search"
-                                       placeholder="Search contract no..."
-                                       class="block w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
 
-                                <select v-model="filterForm.contract_type_id"
-                                        class="input-filter-l ml-2 w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    <option  :value="null">All contracts</option>
-
-                                    <option v-for="n in contract_types" :key="n.id" :value="n.id">
-                                        {{n.name}}
-                                    </option>
-                                </select>
+                                <div>
+                                    <secondary-button class="" @click="filter">Search</secondary-button>
+                                    <secondary-button class=" ml-1" @click="clear">Clear</secondary-button>
+                                    <secondary-button class=" ml-1"  @click="showTradeSlideOver">Add (+)</secondary-button>
+                                </div>
 
                                 <div class="flex ml-6">
                                     <div class="relative flex items-start">
                                         <div class="flex h-6 items-center">
-                                            <input v-model="mon" id="mon" aria-describedby="candidates-description" name="mon" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            <input id="mon" v-model="mon" aria-describedby="candidates-description" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" name="mon" type="checkbox" />
                                         </div>
                                         <div class="ml-3 text-sm leading-6">
-                                            <label for="mon" class="font-medium text-gray-900">Mon</label>
+                                            <label class="font-medium text-gray-900" for="mon">Mon</label>
                                         </div>
                                     </div>
                                     <div class="relative ml-2 flex items-start">
                                         <div class="flex h-6 items-center">
-                                            <input v-model="tue" id="tue" aria-describedby="candidates-description" name="tue" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            <input id="tue" v-model="tue" aria-describedby="candidates-description" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" name="tue" type="checkbox" />
                                         </div>
                                         <div class="ml-3 text-sm leading-6">
-                                            <label for="tue" class="font-medium text-gray-900">Tue</label>
+                                            <label class="font-medium text-gray-900" for="tue">Tue</label>
                                         </div>
                                     </div>
                                     <div class="relative ml-2 flex items-start">
                                         <div class="flex h-6 items-center">
-                                            <input id="wed" v-model="wed" aria-describedby="candidates-description" name="wed" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            <input id="wed" v-model="wed" aria-describedby="candidates-description" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" name="wed" type="checkbox" />
                                         </div>
                                         <div class="ml-3 text-sm leading-6">
-                                            <label for="wed" class="font-medium text-gray-900">Wed</label>
+                                            <label class="font-medium text-gray-900" for="wed">Wed</label>
                                         </div>
                                     </div>
                                     <div class="relative ml-2 flex items-start">
                                         <div class="flex h-6 items-center">
-                                            <input id="thu" v-model="thu" aria-describedby="candidates-description" name="thu" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            <input id="thu" v-model="thu" aria-describedby="candidates-description" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" name="thu" type="checkbox" />
                                         </div>
                                         <div class="ml-3 text-sm leading-6">
-                                            <label for="thu" class="font-medium text-gray-900">Thu</label>
+                                            <label class="font-medium text-gray-900" for="thu">Thu</label>
                                         </div>
                                     </div>
                                     <div class="relative ml-2 flex items-start">
                                         <div class="flex h-6 items-center">
-                                            <input id="fri" v-model="fri" aria-describedby="candidates-description" name="fri" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            <input id="fri" v-model="fri" aria-describedby="candidates-description" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" name="fri" type="checkbox" />
                                         </div>
                                         <div class="ml-3 text-sm leading-6">
-                                            <label for="fri" class="font-medium text-gray-900">Fri</label>
+                                            <label class="font-medium text-gray-900" for="fri">Fri</label>
                                         </div>
                                     </div>
                                     <div class="relative ml-2 flex items-start">
                                         <div class="flex h-6 items-center">
-                                            <input id="sat" v-model="sat" aria-describedby="candidates-description" name="sat" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            <input id="sat" v-model="sat" aria-describedby="candidates-description" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" name="sat" type="checkbox" />
                                         </div>
                                         <div class="ml-3 text-sm leading-6">
-                                            <label for="sat" class="font-medium text-gray-900">Sat</label>
+                                            <label class="font-medium text-gray-900" for="sat">Sat</label>
                                         </div>
                                     </div>
                                     <div class="relative ml-2 flex items-start">
                                         <div class="flex h-6 items-center">
-                                            <input id="sun" v-model="sun" aria-describedby="candidates-description" name="sun" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            <input id="sun" v-model="sun" aria-describedby="candidates-description" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" name="sun" type="checkbox" />
                                         </div>
                                         <div class="ml-3 text-sm leading-6">
-                                            <label for="sun" class="font-medium text-gray-900">Sun</label>
+                                            <label class="font-medium text-gray-900" for="sun">Sun</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-span-4 mb-3">
-
-                                <div>
-                                    <secondary-button @click="filter" class="mt-3">Search</secondary-button>
-                                    <secondary-button @click="clear" class="mt-3 ml-1">Clear</secondary-button>
-                                    <secondary-button @click="showTradeSlideOver"  class="mt-3 ml-1">Add (+)</secondary-button>
-                                </div>
 
                             </div>
 

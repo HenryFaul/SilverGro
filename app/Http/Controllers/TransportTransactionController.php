@@ -14,8 +14,10 @@ use App\Models\LoadingHourOption;
 use App\Models\Packaging;
 use App\Models\Product;
 use App\Models\ProductSource;
+use App\Models\PurchaseOrder;
 use App\Models\RegularDriver;
 use App\Models\RegularVehicle;
+use App\Models\SalesOrder;
 use App\Models\Staff;
 use App\Models\StatusEntity;
 use App\Models\StatusType;
@@ -29,6 +31,7 @@ use App\Models\TransportInvoice;
 use App\Models\TransportInvoiceDetails;
 use App\Models\TransportJob;
 use App\Models\TransportLoad;
+use App\Models\TransportOrder;
 use App\Models\TransportRateBasis;
 use App\Models\TransportTransaction;
 use App\Models\User;
@@ -241,7 +244,8 @@ class TransportTransactionController extends Controller
         $transport_invoice = TransportInvoice::create([
             'transport_trans_id' => $transport_trans->id,
             'is_active' => false,
-            'is_printed' => false
+            'is_printed' => false,
+            'customer_id'=>$found_customer->id
         ]);
 
         $transport_invoice_details = TransportInvoiceDetails::create([
@@ -256,6 +260,32 @@ class TransportTransactionController extends Controller
             'cost_price' => 0,
             'selling_price' => 0,
             'status_id' => 1,
+        ]);
+
+        //Orders
+
+        $transport_order = TransportOrder::create([
+            'transport_trans_id' => $transport_trans->id,
+            'confirmed_by_id'=>1,
+            'confirmed_by_type_id'=>1,
+            'is_printed' => false,
+            'is_active' => false
+        ]);
+
+        $sales_order = SalesOrder::create([
+            'transport_trans_id' => $transport_trans->id,
+            'confirmed_by_id'=>1,
+            'confirmed_by_type_id'=>1,
+            'is_printed' => false,
+            'is_active' => false
+        ]);
+
+        $purchase_order = PurchaseOrder::create([
+            'transport_trans_id' => $transport_trans->id,
+            'confirmed_by_id'=>1,
+            'confirmed_by_type_id'=>1,
+            'is_printed' => false,
+            'is_active' => false
         ]);
 
 

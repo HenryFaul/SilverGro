@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DealTicket;
+use App\Models\DocumentStore;
 use App\Models\TradeRule;
 use App\Models\TransportApproval;
 use App\Models\TransportTransaction;
@@ -60,7 +61,7 @@ class DealTicketController extends Controller
 
     }
 
-    public function generatePDF(Request $request)
+    public function generatePDF(Request $request): \Illuminate\Http\RedirectResponse
     {
 
         $final_deal_ticket = true;
@@ -77,6 +78,12 @@ class DealTicketController extends Controller
         if (!($deal_ticket->is_active)){
             abort(403);
         }
+
+        if (false){
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Deal Ticket Already exists');
+            return redirect()->back();
+        } else{
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
         $user_name = Auth::user()->name;
@@ -104,11 +111,33 @@ class DealTicketController extends Controller
         $file_name = str_ireplace(':nam',$transport_trans->id,$file_name);
         $file_name = str_ireplace(':dat',$date_stamp,$file_name);
         $filePdf = Storage::put('reports/mq/'.$file_name, $pdf->output());
-        $url = asset($file_name);
-        dd($url);
+        $url = Storage::url($file_name);
+        //$url = asset($file_name);
+
+
+        $document_store = DocumentStore::create([
+            'transport_trans_id'=>$transport_trans->id,
+            'report_type'=>'deal_ticket',
+            'file_name'=>$file_name,
+            'file_path'=>'/reports/mq/'.$file_name
+        ]);
+
+        $deal_ticket->report_path = $file_name;
+        $deal_ticket->save();
+
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Deal Ticket Created');
+
+        return redirect()->back();
+        }
 
     }
 
+    public function downloadPDF($file_name): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        return Storage::download('/reports/mq/'.$file_name);
+    }
 
     /**
      * Display a listing of the resource.

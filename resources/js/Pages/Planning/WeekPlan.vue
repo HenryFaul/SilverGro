@@ -34,7 +34,7 @@ const props = defineProps({
 const Form = useForm({
     date: props.filters.date ?? new Date().toISOString().substr(0, 10),
     show: props.filters.show ?? 1,
-    contract_type_id:props.filters.contract_type_id ?? 1,
+    contract_type_id:props.filters.contract_type_id ?? null,
 })
 
 
