@@ -163,6 +163,7 @@ class CustomerController extends Controller
                 'title' => $request->title,
                 'id_reg_no' => $request->id_reg_no,
                 'is_active' => 1,
+                'terms_of_payment_basis_id'=>1,
                 'terms_of_payment_id' => 1,
                 'invoice_basis_id' => 1,
                 'customer_rating_id' => 1,
