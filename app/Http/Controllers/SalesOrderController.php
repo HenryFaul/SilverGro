@@ -16,7 +16,7 @@ class SalesOrderController extends Controller
     public function viewPDF(Request $request, $id): \Illuminate\Http\Response
     {
 
-        $final_deal_ticket = false;
+        $final_sales_order = false;
         $path = 'images/pdflogo.jpg';
         $type = pathinfo($path, PATHINFO_EXTENSION);
         $file_data = file_get_contents($path);
@@ -26,6 +26,10 @@ class SalesOrderController extends Controller
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
 
         $deal_ticket = $transport_trans->DealTicket;
+        $sales_order = $transport_trans->SalesOrder;
+        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+        //dd($purchase_order);
+        //dd($sales_order);
 
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
@@ -36,9 +40,11 @@ class SalesOrderController extends Controller
 
         $data = [
             'logo' => $logo,
-            'final_deal_ticket'=>$final_deal_ticket,
+            'final_sales_order'=>$final_sales_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,
+            'sales_order'=>$sales_order,
+            'purchase_order'=>$purchase_order,
             'rules_with_approvals'=>$rules_with_approvals,
             'user_name'=>$user_name,
             'now'=>$now,
@@ -55,16 +61,20 @@ class SalesOrderController extends Controller
     public function viewConfirmationPDF(Request $request, $id): \Illuminate\Http\Response
     {
 
-        $final_deal_ticket = false;
+        $final_sales_order = false;
         $path = 'images/pdflogo.jpg';
         $type = pathinfo($path, PATHINFO_EXTENSION);
         $file_data = file_get_contents($path);
         $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
 
         $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
-            ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
+            ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
+            ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
+            ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
 
         $deal_ticket = $transport_trans->DealTicket;
+        $sales_order = $transport_trans->SalesOrder;
+        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
 
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
@@ -75,9 +85,11 @@ class SalesOrderController extends Controller
 
         $data = [
             'logo' => $logo,
-            'final_deal_ticket'=>$final_deal_ticket,
+            'final_sales_order'=>$final_sales_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,
+            'sales_order'=>$sales_order,
+            'purchase_order'=>$purchase_order,
             'rules_with_approvals'=>$rules_with_approvals,
             'user_name'=>$user_name,
             'now'=>$now,

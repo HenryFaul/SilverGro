@@ -14,6 +14,7 @@ use App\Http\Controllers\NumberContactDetailController;
 use App\Http\Controllers\PlanningDiaryController;
 use App\Http\Controllers\PlanningWeekController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RegularDriverController;
 use App\Http\Controllers\RegularVehicleController;
 use App\Http\Controllers\RoleModifyController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\TransportFinanceController;
 use App\Http\Controllers\TransportInvoiceController;
 use App\Http\Controllers\TransportJobController;
 use App\Http\Controllers\TransportLoadController;
+use App\Http\Controllers\TransportOrderController;
 use App\Http\Controllers\TransportStatusController;
 use App\Http\Controllers\TransportTransactionController;
 use App\Models\Customer;
@@ -280,6 +282,27 @@ Route::middleware([
 
     //SalesOrder Confirmation
     Route::get('/pdf_report/sales_order_confirmation_view/{id}', [SalesOrderController::class, 'viewConfirmationPDF'])->middleware('auth')->name('pdf_report.sales_order_confirmation_view');
+
+    //PurchaseOrder
+
+    Route::get('/pdf_report/purchase_order_view/{id}', [PurchaseOrderController::class, 'viewPDF'])->middleware('auth')->name('pdf_report.purchase_order_view');
+    Route::post('/purchase_order/activate', [PurchaseOrderController::class, 'activate'])->middleware('auth')->name('purchase_order.activate');
+    Route::post('/purchase_order/send', [PurchaseOrderController::class, 'send'])->middleware('auth')->name('purchase_order.send');
+    Route::post('/purchase_order/receive', [PurchaseOrderController::class, 'receive'])->middleware('auth')->name('purchase_order.received');
+
+    //PurchaseOrder Confirmation
+    Route::get('/pdf_report/purchase_order_confirmation_view/{id}', [PurchaseOrderController::class, 'viewConfirmationPDF'])->middleware('auth')->name('pdf_report.sales_order_confirmation_view');
+
+
+    //TransportOrder
+
+    Route::post('/transport_order/activate', [TransportOrderController::class, 'activate'])->middleware('auth')->name('transport_order.activate');
+    Route::post('/transport_order/send', [TransportOrderController::class, 'send'])->middleware('auth')->name('transport_order.send');
+    Route::post('/transport_order/receive', [TransportOrderController::class, 'receive'])->middleware('auth')->name('transport_order.received');
+
+    //TransportOrder Confirmation
+    Route::get('/pdf_report/transport_order_confirmation_view/{id}', [TransportOrderController::class, 'viewConfirmationPDF'])->middleware('auth')->name('pdf_report.transport_order_confirmation_view');
+
 
 
 });

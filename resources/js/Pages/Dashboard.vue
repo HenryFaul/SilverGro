@@ -14,7 +14,7 @@ const props = defineProps({
     selling_price: Number,
     gp: Number,
     gp_perc: Number,
-    chart: Object
+    chart: Object,
 
 });
 
@@ -117,10 +117,10 @@ let NiceNumber = (_number) => {
 
                                 </div>
 
-                                <div v-if="false" class="shadow-2xl m-10 p-10">
+                                <div v-if="true" class="shadow-2xl m-10 p-10">
 
-                                    <div >
-                                        <apexchart :width="chart.width" :height="chart.height" :type="chart.type" :options="chart.options" :series="chart.series"></apexchart>
+                                    <div>
+                                        <apexchart :width="chart.width" :height="chart.height" :type="chart.type" :options="chart.options" :series="chart.series" />
                                     </div>
                                 </div>
                             </div>

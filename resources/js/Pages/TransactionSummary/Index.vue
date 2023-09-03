@@ -408,6 +408,13 @@ let updateSelectValues = async () => {
     salesOrder_Form.is_active = props.sales_order.is_active;
     salesOrder_Form.is_so_conf_sent = props.sales_order.is_so_conf_sent;
     salesOrder_Form.is_so_conf_received = props.sales_order.is_so_conf_received;
+
+    //Purchase Order
+    purchaseOrder_Form.transport_trans_id = props.purchase_order.transport_trans_id;
+    purchaseOrder_Form.confirmed_by_type_id= props.purchase_order.confirmed_by_type_id;
+    purchaseOrder_Form.is_active= props.purchase_order.is_active;
+    purchaseOrder_Form.is_po_sent= props.purchase_order.is_po_sent;
+    purchaseOrder_Form.is_po_received= props.purchase_order.is_po_received;
 }
 
 
@@ -531,6 +538,24 @@ let salesOrder_Form = useForm({
     is_so_conf_received: props.sales_order.is_so_conf_received
 });
 
+let purchaseOrder_Form = useForm({
+    transport_trans_id: props.purchase_order.transport_trans_id,
+    confirmed_by_type_id: props.purchase_order.confirmed_by_type_id,
+    is_active: props.purchase_order.is_active,
+    is_po_sent: props.purchase_order.is_po_sent,
+    is_po_received: props.purchase_order.is_po_received
+});
+
+
+let transportOrder_Form = useForm({
+    transport_trans_id: props.transport_order.transport_trans_id,
+    confirmed_by_type_id: props.transport_order.confirmed_by_type_id,
+    is_active: props.transport_order.is_active,
+    is_to_sent: props.transport_order.is_to_sent,
+    is_to_received: props.transport_order.is_to_received
+});
+
+
 //Errors
 
 let ErrorsTrans = computed(() => Object.keys(transport_trans_Form.errors).length === 0 && transport_trans_Form.errors.constructor === Object);
@@ -653,6 +678,42 @@ const activateSalesOrder = () => {
     );
 }
 
+const activatePurchaseOrder = () => {
+
+    isUpdating.value = true;
+
+    purchaseOrder_Form.post(route('purchase_order.activate'),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                swal(usePage().props.jetstream.flash?.banner || '');
+            }
+        }
+    );
+}
+
+const activateTransportOrder = () => {
+
+    isUpdating.value = true;
+
+    transportOrder_Form.post(route('transport_order.activate'),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                swal(usePage().props.jetstream.flash?.banner || '');
+            }
+        }
+    );
+}
+
 const sendSalesOrder = () => {
 
     isUpdating.value = true;
@@ -671,11 +732,83 @@ const sendSalesOrder = () => {
     );
 }
 
+const sendPurchaseOrder = () => {
+
+    isUpdating.value = true;
+
+    purchaseOrder_Form.post(route('purchase_order.send'),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                swal(usePage().props.jetstream.flash?.banner || '');
+            }
+        }
+    );
+}
+
+const sendTransportOrder = () => {
+
+    isUpdating.value = true;
+
+    transportOrder_Form.post(route('transport_order.send'),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                swal(usePage().props.jetstream.flash?.banner || '');
+            }
+        }
+    );
+}
+
 const receiveSalesOrder = () => {
 
     isUpdating.value = true;
 
     salesOrder_Form.post(route('sales_order.received'),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                swal(usePage().props.jetstream.flash?.banner || '');
+            }
+        }
+    );
+}
+
+const receivePurchaseOrder = () => {
+
+    isUpdating.value = true;
+
+    purchaseOrder_Form.post(route('purchase_order.received'),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                swal(usePage().props.jetstream.flash?.banner || '');
+            }
+        }
+    );
+}
+
+const receiveTransportOrder = () => {
+
+    isUpdating.value = true;
+
+    transportOrder_Form.post(route('transport_order.received'),
         {
             preserveScroll: true,
             onSuccess: () => {
@@ -4376,55 +4509,43 @@ const createStatus = () => {
                                             </li>
                                             <li v-if="selected_transaction.contract_type_id === 4"  class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                                                    <div class="text-sm font-medium leading-6 text-gray-900">Transport Order</div>
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Transport Order Confirmation</div>
                                                 </div>
 
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">View</dt>
-                                                        <dd class="flex items-start gap-x-2">
-                                                        </dd>
-                                                    </div>
-
-
-
-                                                </dl>
-                                            </li>
-
-                                            <li v-if="selected_transaction.contract_type_id === 2"  class="overflow-hidden rounded-xl border border-gray-200">
-                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                                                    <div class="text-sm font-medium leading-6 text-gray-900">Purchase Order</div>
-                                                </div>
-
-                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-
-
-                                                    <div v-if="purchase_order.is_active">
+                                                    <div v-if="transport_order.is_active">
                                                         <div class="flex justify-between gap-x-4 py-3">
-                                                            <dt class="text-gray-500">Sent</dt>
+                                                            <dt class="text-gray-500">Confirmation Sent</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <div>
-                                                                    <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                        <Switch v-model="transport_invoice_Form.is_active"
-                                                                                :class="[transport_invoice_Form.is_active ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                                            <span aria-hidden="true" :class="[transport_invoice_Form.is_active ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                        </Switch>
-                                                                    </SwitchGroup>
+                                                                    <div v-if="transport_order.is_to_sent">
+                                                                        <p>
+                                                                            <check-icon class="h-5 h-5"/>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <SecondaryButton @click="sendTransportOrder">
+                                                                            Sent
+                                                                        </SecondaryButton>
+                                                                    </div>
                                                                 </div>
                                                             </dd>
                                                         </div>
-
                                                         <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Received</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <div>
-                                                                    <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                        <Switch v-model="transport_invoice_Form.is_active"
-                                                                                :class="[transport_invoice_Form.is_active ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                                            <span aria-hidden="true" :class="[transport_invoice_Form.is_active ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                        </Switch>
-                                                                    </SwitchGroup>
+                                                                    <div v-if="transport_order.is_to_received">
+                                                                        <p>
+                                                                            <check-icon class="h-5 h-5"/>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <SecondaryButton @click="receiveTransportOrder">
+                                                                            Received
+                                                                        </SecondaryButton>
+                                                                    </div>
                                                                 </div>
                                                             </dd>
                                                         </div>
@@ -4432,7 +4553,7 @@ const createStatus = () => {
                                                         <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Working Document</dt>
                                                             <dd class="flex items-start gap-x-2">
-                                                                <a :href="'/pdf_report/deal_ticket_view/' + props.selected_transaction.id" target="_blank"
+                                                                <a :href="'/pdf_report/transport_order_confirmation_view/' + props.selected_transaction.id" target="_blank"
                                                                    class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                                                     View
                                                                 </a>
@@ -4441,7 +4562,7 @@ const createStatus = () => {
                                                         <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Generate Final</dt>
                                                             <dd class="flex items-start gap-x-2">
-                                                                <SecondaryButton @click="createFinalDealTicket">
+                                                                <SecondaryButton @click="">
                                                                     Generate
                                                                 </SecondaryButton>
                                                             </dd>
@@ -4470,17 +4591,116 @@ const createStatus = () => {
                                                     </div>
 
                                                     <div v-else>
-                                                        Purchase order Not Active
+
+                                                        <p class="text-red-400 font-bold">Transport order Not Active</p>
                                                         <div class="flex justify-between gap-x-4 py-3">
-                                                            <dt class="text-gray-500">Generate Final</dt>
+                                                            <dt class="text-gray-500">Activate Transport Order</dt>
                                                             <dd class="flex items-start gap-x-2">
-                                                                <SecondaryButton @click="createFinalDealTicket">
-                                                                    Generate
+                                                                <SecondaryButton @click="activateTransportOrder">
+                                                                    Activate
                                                                 </SecondaryButton>
                                                             </dd>
                                                         </div>
                                                     </div>
 
+
+                                                </dl>
+                                            </li>
+
+                                            <li v-if="selected_transaction.contract_type_id === 2"  class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Purchase Order</div>
+                                                </div>
+
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                                                    <div v-if="purchase_order.is_active">
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Confirmation Sent</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <div>
+                                                                    <div v-if="purchase_order.is_po_sent">
+                                                                        <p>
+                                                                            <check-icon class="h-5 h-5"/>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <SecondaryButton @click="sendPurchaseOrder">
+                                                                            Sent
+                                                                        </SecondaryButton>
+                                                                    </div>
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Received</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <div>
+                                                                    <div v-if="purchase_order.is_po_received">
+                                                                        <p>
+                                                                            <check-icon class="h-5 h-5"/>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <SecondaryButton @click="receivePurchaseOrder">
+                                                                            Received
+                                                                        </SecondaryButton>
+                                                                    </div>
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Working Document</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <a :href="'/pdf_report/purchase_order_view/' + props.selected_transaction.id" target="_blank"
+                                                                   class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                    View
+                                                                </a>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Generate Final</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <SecondaryButton @click="">
+                                                                    Generate
+                                                                </SecondaryButton>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Download Final</dt>
+
+                                                            <dd class="flex items-start gap-x-2">
+
+                                                                <div v-if="deal_ticket.report_path">
+                                                                    <a :href="route('pdf_report.deal_ticket_final.download',deal_ticket.report_path)" target="_blank"
+                                                                       class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                        Download
+                                                                    </a>
+                                                                </div>
+
+                                                                <div v-else>
+                                                                    <p>Not generated</p>
+                                                                </div>
+
+
+                                                            </dd>
+
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div v-else>
+
+                                                        <p class="text-red-400 font-bold">Purchase order Not Active</p>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Activate Purchase Order</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <SecondaryButton @click="activatePurchaseOrder">
+                                                                    Activate
+                                                                </SecondaryButton>
+                                                            </dd>
+                                                        </div>
+                                                    </div>
 
 
 
@@ -4498,7 +4718,7 @@ const createStatus = () => {
                                                         <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Working Document</dt>
                                                             <dd class="flex items-start gap-x-2">
-                                                                <a :href="'/pdf_report/deal_ticket_view/' + props.selected_transaction.id" target="_blank"
+                                                                <a :href="'/pdf_report/purchase_order_confirmation_view/' + props.selected_transaction.id" target="_blank"
                                                                    class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                                                     View
                                                                 </a>
@@ -4507,7 +4727,7 @@ const createStatus = () => {
                                                         <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Generate Final</dt>
                                                             <dd class="flex items-start gap-x-2">
-                                                                <SecondaryButton @click="createFinalDealTicket">
+                                                                <SecondaryButton @click="">
                                                                     Generate
                                                                 </SecondaryButton>
                                                             </dd>
@@ -4533,7 +4753,7 @@ const createStatus = () => {
                                                     </div>
 
                                                     <div v-else>
-                                                        Purchase order Not Active
+                                                        Sales order Not Active
                                                     </div>
 
                                                 </dl>

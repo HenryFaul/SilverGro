@@ -33,6 +33,9 @@ class DealTicketController extends Controller
 
         $deal_ticket = $transport_trans->DealTicket;
 
+        $sales_order = $transport_trans->SalesOrder;
+        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+
         if (!($deal_ticket->is_active)){
             abort(403);
         }
@@ -51,7 +54,9 @@ class DealTicketController extends Controller
             'rules_with_approvals'=>$rules_with_approvals,
             'user_name'=>$user_name,
             'now'=>$now,
-            'app_version'=>$app_version
+            'app_version'=>$app_version,
+            'sales_order'=>$sales_order,
+            'purchase_order'=>$purchase_order
         ];
 
         $pdf = PDF::loadView('pdf_reports.deal_ticket',$data);
@@ -79,6 +84,9 @@ class DealTicketController extends Controller
             abort(403);
         }
 
+        $sales_order = $transport_trans->SalesOrder;
+        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+
         if (false){
             $request->session()->flash('flash.bannerStyle', 'danger');
             $request->session()->flash('flash.banner', 'Deal Ticket Already exists');
@@ -99,7 +107,9 @@ class DealTicketController extends Controller
             'rules_with_approvals'=>$rules_with_approvals,
             'user_name'=>$user_name,
             'now'=>$now,
-            'app_version'=>$app_version
+            'app_version'=>$app_version,
+            'sales_order'=>$sales_order,
+            'purchase_order'=>$purchase_order
         ];
 
         $pdf = PDF::loadView('pdf_reports.deal_ticket',$data);

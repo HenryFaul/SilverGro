@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-    <title>Sales Order Confirmation </title>
+    <title>Purchase Order Confirmation </title>
     <style>
         @page {
             margin: 90px 25px;
@@ -121,7 +121,7 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 20px;">
-                        <b><span>Sales Order Confirmation:</span> <span>SOC</span>
+                        <b><span>Purchase Order Confirmation:</span> <span>POC</span>
                             <span>{{$transport_trans->id}}</span>
                         </b>
                     </td>
@@ -133,6 +133,7 @@
                     <td style="float: right; text-align: right; font-size: 14px">
                         @if($final_sales_order)
                             <span>Final Version</span>
+
                         @else
                             <span style="color:red">Working Document Version</span>
                         @endif
@@ -143,14 +144,14 @@
             </table>
 
             <ol type="1">
-                <li class="section_heading">Customer Details</li>
+                <li class="section_heading">Supplier Details</li>
                 <div>
                     <table class="table_sections" style="width:100%;">
                         <tbody>
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading">Customer</td>
+                            <td class="table_sections table_row_heading">Supplier</td>
                             <td class="table_sections table_row_value"
-                                colspan="3">{{$transport_trans->Customer->last_legal_name}}</td>
+                                colspan="3">{{$transport_trans->Supplier->last_legal_name}}</td>
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Collection Address</td>
@@ -189,8 +190,8 @@
 
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Customer Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->customer_notes}}</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Supplier Notes</td>
+                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->supplier_notes}}</td>
                         </tr>
 
                         </tbody>
@@ -198,8 +199,8 @@
                     </table>
 
                     <p class="table_row_value">
-                        Herewith our confirmation of the SALES ORDER for the following product, including the specific terms and conditions of
-                        this order. This document is a confirmation of our telephone order.
+                        Herewith our confirmation of the PURCHASE ORDER for the following product, including the specific terms and
+                        conditions of this order. This document is a confirmation of our telephone order.
                     </p>
                 </div>
                 <li class="section_heading">
@@ -267,7 +268,7 @@
                     </table>
                 </div>
                 <br>
-                <li class="section_heading">Delivery and Transport</li>
+                <li class="section_heading">Collection and Transport</li>
                 <div>
                     <table class="table_sections" style="width:100%;">
                         <tbody>
@@ -275,35 +276,35 @@
                             <td class="table_sections table_row_heading" style="width: 20%;">Transport Date Earliest
                             </td>
                             <td class="table_sections table_row_value">{{$transport_trans->transport_date_earliest}}</td>
-                            <td class="table_sections table_row_heading">Delivery from</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->OffloadingHoursFrom->name}}<</td>
+                            <td class="table_sections table_row_heading">Collection from</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->LoadingHoursFrom->name}}<</td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Transport Date Latest</td>
                             <td class="table_sections table_row_value">{{$transport_trans->transport_date_latest}}</td>
-                            <td class="table_sections table_row_heading">Delivery to</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->OffloadingHoursTo->name}}</td>
+                            <td class="table_sections table_row_heading">Collection to</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->LoadingHoursTo->name}}</td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">No. Of Loads</td>
                             <td class="table_sections table_row_value">{{$transport_trans->TransportJob->number_loads}}</td>
-                            <td class="table_sections table_row_heading">Delivery address</td>
+                            <td class="table_sections table_row_heading">Collection address</td>
                             <td class="table_sections table_row_value">
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
+                                <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
                                 <br>
                                 <span>
-                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_2}}
+                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
                                 </span>
                                 <br>
                                 <span>
-                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_3}}
+                                    {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
                                 </span>
                                 <br>
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
                                 <br>
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                                <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
                             </td>
                         </tr>
 
@@ -313,14 +314,14 @@
                     </table>
                 </div>
                 <br>
-                <li class="section_heading">Customer Notes</li>
-                <div class="page-break">
+                <li class="section_heading">Supplier Notes</li>
+                <div class="">
                     <table class="table_sections" style="width:100%;">
                         <tbody>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->customer_notes}}</td>
+                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->supplier_notes}}</td>
 
                         </tr>
 
@@ -331,14 +332,10 @@
                     <br>
 
                     <div class="table_row_value">
-                        The buyer accepts the conditions as set out in this "SALES ORDER", unless changes are presented in writing within 24 hours after receiving this
-                        document, for acceptance by the seller. Please sign this document and email a scanned copy to documents@silvergro.co.za. If the buyer does
-                        not sign this document and return it as per the above, the transaction will still be considered as legal and binding. In the event of a quality
-                        dispute, in the event of immediate direct resolution efforts failing, an independent professional will be appointed by the seller at the expense of
-                        the default party. This transaction is subject to the terms, conditions and rules, including the arbitration clause and rules in contract form known
-                        as Sagos 1 (Current Version) with which the parties are fully familiar with and which will be applicable to the extent in which it will not be
-                        contradictory to what the parties agreed upon. FORCE MAJEURE : To be applied as per the SAGOS 1 (Version 09), section 11. We thank you for
-                        the opportunity to do business with you.
+                        The seller accepts the conditions as set out in this "PURCHASE ORDER", unless changes are presented in writing within 24 hours after receiving
+                        this document, for acceptance by the seller. Please sign this document and email a scanned copy to documents@silvergro.co.za. If the buyer
+                        does not sign this document and return it as per the above, the transaction will still be considered as legal and binding. FORCE MAJEURE : To be
+                        applied as per the SAGOS 1 (Version 09), section 11. We thank you for the opportunity to do business with you.
                     </div>
 
                 </div>
@@ -377,7 +374,7 @@
                             <td class=" table_row_heading">Trader</td>
                             <td class=" table_row_heading">Trading Director</td>
                             <td class=" table_row_heading">Financial Director</td>
-                            <td class=" table_row_heading">Customer</td>
+                            <td class=" table_row_heading">Supplier</td>
                         </tr>
 
                         </tbody>

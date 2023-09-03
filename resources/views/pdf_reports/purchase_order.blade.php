@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-    <title>Deal Ticket</title>
+    <title>Purchase Contract</title>
     <style>
         @page {
             margin: 90px 25px;
@@ -121,7 +121,7 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 20px;">
-                        <b><span>Deal Ticket:</span> <span>MQ</span>
+                        <b><span>Purchase Contract:</span> <span>PC</span>
                             <span>{{$transport_trans->id}}</span>
                         </b>
                     </td>
@@ -131,7 +131,7 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 14px">
-                        @if($final_deal_ticket)
+                        @if($final_sales_order)
                             <span>Final Version</span>
 
                         @else
@@ -166,6 +166,10 @@
                             <td class="table_sections table_row_value">{{$transport_trans->TransportLoad->PackagingOutgoing->name}}</td>
                             <td class="table_sections table_row_heading"></td>
                             <td class="table_sections table_row_value"></td>
+                        </tr>
+                        <tr class="table_sections">
+                            <td class="table_sections table_row_heading" style="width: 20%;">Product Notes</td>
+                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->product_notes}}</td>
                         </tr>
 
                         </tbody>
@@ -292,7 +296,6 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Customer Notes</td>
                             <td class="table_sections table_row_value" colspan="3">{{$transport_trans->customer_notes}}</td>
-
                         </tr>
 
                         </tbody>

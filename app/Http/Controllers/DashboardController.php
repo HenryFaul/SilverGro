@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Charts\MonthlyGpChart;
+use App\Charts\MonthlyPcChart;
+use App\Models\ContractSummary;
 use App\Models\Customer;
 use App\Models\TransportTransaction;
 use Carbon\Carbon;
@@ -12,9 +14,10 @@ class DashboardController extends Controller
 {
     //
 
-    public function index(MonthlyGpChart $chart)
+    public function index(MonthlyPcChart $chart)
     {
 
+        $this->doSummary();
         $today_date = Carbon::now();
         $month = ($today_date)->monthName;
         $filters['date'] = $today_date->toDateString();
@@ -130,8 +133,73 @@ class DashboardController extends Controller
                 'gp'=> round($gp,2),
                 'gp_perc'=> round($gp_perc),
                 'stats'=>$stats,
-                'chart' => $chart->build()
+                'chart' => $chart->build(),
             ]
         );
+    }
+
+    public function doSummary(){
+
+        $today_date = Carbon::now();
+        $month = ($today_date)->monthName;
+        $filters['date'] = $today_date->toDateString();
+
+        $trans_data = TransportTransaction::where('include_in_calculations', '=',1)->where('contract_type_id', '=', 2)->with('TransportFinance')->with('TransportDriverVehicle')->with('TransportJob')->get();
+
+
+
+        foreach ($trans_data as $trans) {
+            $transport_finance = $trans->TransportFinance;
+            $transport_job = $trans->TransportJob;
+            $transport_load= $trans->TransportLoad;
+            $transport_driver_vehicles = $trans->TransportDriverVehicle;
+
+            $cur_weight_uploaded = 0;
+            $cur_weight_offloaded = 0;
+
+            foreach ($transport_driver_vehicles as $driver_vehicle) {
+                $cur_weight_uploaded += $driver_vehicle->weighbridge_upload_weight;
+                $cur_weight_offloaded += $driver_vehicle->weighbridge_offload_weight;
+            }
+
+            $contract_summary = ContractSummary::where('transport_trans_id',$trans->id)->first();
+
+            if($contract_summary != null){
+
+                $contract_summary->update(
+                  [
+                      'transport_date_earliest'=>$trans->transport_date_earliest,
+                      'contract_type_id'=>$trans->contract_type_id,
+                      'contract_number'=>'PC'.$trans->id,
+                      'planned_tons_in'=> $transport_load->no_units_incoming??0,
+                      'planned_tons_out'=> $transport_load->no_units_outgoing,
+                      'actual_tons_in'=>$cur_weight_uploaded,
+                      'actual_tons_out'=>$cur_weight_offloaded,
+                      'variance_in'=>$transport_load->no_units_incoming-$cur_weight_uploaded,
+                      'variance_out'=>$transport_load->no_units_outgoing-$cur_weight_offloaded
+                  ]
+                );
+
+            }
+            else {
+                $contract_summary = ContractSummary::create([
+                    'transport_trans_id' => $trans->id,
+                    'transport_date_earliest'=>$trans->transport_date_earliest,
+                    'contract_type_id'=>$trans->contract_type_id,
+                    'contract_number'=>'PC'.$trans->id,
+                    'planned_tons_in'=> $transport_load->no_units_incoming??0,
+                    'planned_tons_out'=> $transport_load->no_units_outgoing,
+                    'actual_tons_in'=>$cur_weight_uploaded,
+                    'actual_tons_out'=>$cur_weight_offloaded,
+                    'variance_in'=>$transport_load->no_units_incoming-$cur_weight_uploaded,
+                    'variance_out'=>$transport_load->no_units_outgoing-$cur_weight_offloaded
+
+                ]);
+            }
+
+
+        }
+
+
     }
 }
