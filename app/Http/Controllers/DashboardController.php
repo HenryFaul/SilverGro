@@ -144,7 +144,7 @@ class DashboardController extends Controller
         $month = ($today_date)->monthName;
         $filters['date'] = $today_date->toDateString();
 
-        $trans_data = TransportTransaction::where('include_in_calculations', '=',1)->where('contract_type_id', '=', 2)->with('TransportFinance')->with('TransportDriverVehicle')->with('TransportJob')->get();
+        $trans_data = TransportTransaction::where('contract_type_id', '=', 2)->with('TransportFinance')->with('TransportDriverVehicle')->with('TransportJob')->get();
 
 
 

@@ -121,8 +121,6 @@ class DataImportController extends Controller
                 Excel::import(new NewTransaction(),
                     $request->file('file')->store('files'));
 
-
-
                 $count_after = TransportTransaction::all()->count();
 
                 $message = "New trans Count before: ".$count_before." trans after: ".$count_after;
@@ -131,12 +129,10 @@ class DataImportController extends Controller
 
             case "raw trans 2.csv":
 
-
                 $count_before = TransportTransaction::all()->count();
 
                 Excel::import(new NewTransaction(),
                     $request->file('file')->store('files'));
-
 
                 $count_after = TransportTransaction::all()->count();
 
