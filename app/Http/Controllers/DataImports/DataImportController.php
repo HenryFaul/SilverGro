@@ -113,7 +113,7 @@ class DataImportController extends Controller
                 $message = "Products Count before: ".$count_before." products after: ".$count_after;
 
                 break;
-            case "1 3k Silvergro Products.csv":
+            case "raw trans 1.csv":
 
 
                 $count_before = TransportTransaction::all()->count();
@@ -121,6 +121,21 @@ class DataImportController extends Controller
                 Excel::import(new NewTransaction(),
                     $request->file('file')->store('files'));
 
+
+
+                $count_after = TransportTransaction::all()->count();
+
+                $message = "New trans Count before: ".$count_before." trans after: ".$count_after;
+
+                break;
+
+            case "raw trans 2.csv":
+
+
+                $count_before = TransportTransaction::all()->count();
+
+                Excel::import(new NewTransaction(),
+                    $request->file('file')->store('files'));
 
 
                 $count_after = TransportTransaction::all()->count();

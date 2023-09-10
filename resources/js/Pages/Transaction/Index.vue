@@ -40,7 +40,8 @@ const props = defineProps({
     filters: Object,
     start_date: String,
     end_date: String,
-    contract_types:Object
+    contract_types:Object,
+    download_url:Object
 });
 const roles_permissions = computed(() => usePage().props.roles_permissions)
 
@@ -273,6 +274,19 @@ let filteredTrans = computed(() =>
     return "Showing page " + props.transactions.current_page + "  of " + filteredTrans.length+ " entries.";
 })*/
 
+
+const generateExcel = () => {
+    filterForm.get(route('excel_report.transactions.generate'),
+        {
+            only: ['download_url'],
+            preserveScroll: true,
+            onSuccess: (res) => {
+               // console.log(res);
+            },
+        }
+    );
+}
+
 </script>
 
 <template>
@@ -288,7 +302,6 @@ let filteredTrans = computed(() =>
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
 
                     <div class="m-2 p-2">
-                        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Transaction Data</h2>
 
                         <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
@@ -370,6 +383,16 @@ let filteredTrans = computed(() =>
                                     <secondary-button class="" @click="filter">Search</secondary-button>
                                     <secondary-button class=" ml-1" @click="clear">Clear</secondary-button>
                                     <secondary-button class=" ml-1"  @click="showTradeSlideOver">Add (+)</secondary-button>
+                                    <secondary-button class=" ml-1"  @click="generateExcel">Export</secondary-button>
+
+                                    <div class="m-2 p-2" v-if="download_url">
+                                        <a :href="route('excel_report.transactions.download',download_url)" target="_blank"
+                                           class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                            Download Excel
+                                        </a>
+
+                                    </div>
+
                                 </div>
 
                                 <div class="flex ml-6">

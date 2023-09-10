@@ -50,7 +50,7 @@ class TransactionSummaryController extends Controller
         $paginate = $request['show'] ?? 5;
 
         $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Supplier')->with('Transporter')->with('Product')->with('TransportFinance')
-            ->with('TransportLoad')
+            ->with('TransportLoad')->with('DealTicket')->with('PurchaseOrder')->with('SalesOrder')->with('TransportOrder')->with('TransportInvoice')
             ->index($filters)
             ->orderBy('transport_date_earliest', 'desc')
             ->paginate($paginate)

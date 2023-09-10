@@ -118,6 +118,9 @@ Route::middleware([
     Route::resource('transport_transaction', TransportTransactionController::class)->middleware('auth')
         ->only(['index', 'show', 'update', 'destroy', 'store']);
 
+    Route::put('/transport_transaction/update_players/{transport_transaction}', [TransportTransactionController::class, 'updatePlayers'])->middleware('auth')->name('transport_transaction.update_players');
+
+
     //Transaction Summary
 
     Route::resource('transaction_summary', TransactionSummaryController::class)->middleware('auth')
@@ -145,6 +148,8 @@ Route::middleware([
 
     Route::resource('transport_load', TransportLoadController::class)->middleware('auth')
         ->only(['update']);
+    Route::put('/transport_load/update_units/{transport_load}', [TransportLoadController::class, 'updateUnits'])->middleware('auth')->name('transport_load.update_units');
+
 
     //TransLink
 
@@ -302,6 +307,12 @@ Route::middleware([
 
     //TransportOrder Confirmation
     Route::get('/pdf_report/transport_order_confirmation_view/{id}', [TransportOrderController::class, 'viewConfirmationPDF'])->middleware('auth')->name('pdf_report.transport_order_confirmation_view');
+
+    //Excel
+
+    Route::get('/excel_report/trade/generate', [TransportTransactionController::class, 'generate'])->middleware('auth')->name('excel_report.transactions.generate');
+
+    Route::get('/excel_report/trade/generate/{file_name}', [TransportTransactionController::class, 'download'])->middleware('auth')->name('excel_report.transactions.download');
 
 
 

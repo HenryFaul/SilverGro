@@ -1080,6 +1080,14 @@ const sumLinkedContractsPc = computed(() => {
     return sum;
 });
 
+let showDetails = ref(true);
+
+const toggleDetails = () => {
+
+    showDetails.value === true ?  showDetails.value = false : showDetails.value = true;
+}
+
+
 const createStatus = () => {
     status_Form.post(route('transport_status.store'), {
         preserveScroll: true,
@@ -1091,6 +1099,11 @@ const createStatus = () => {
         },
     });
 };
+
+
+
+const header_styler = computed(() => "sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell");
+const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm text-gray-500 lg:table-cell");
 
 </script>
 
@@ -1191,6 +1204,7 @@ const createStatus = () => {
                                                     <secondary-button class="" @click="filter">Search</secondary-button>
                                                     <secondary-button class=" ml-1" @click="clear">Clear</secondary-button>
                                                     <secondary-button class=" ml-1"  @click="showTradeSlideOver">Add (+)</secondary-button>
+                                                    <secondary-button class=" ml-1"  @click="toggleDetails">Toggle</secondary-button>
                                                 </div>
 
                                                 <div class="flex ml-6">
@@ -1253,7 +1267,6 @@ const createStatus = () => {
                                                 </div>
                                             </div>
                                             <div class="col-span-4 mb-3">
-
                                             </div>
 
                                         </div>
@@ -1267,13 +1280,21 @@ const createStatus = () => {
                                                     <thead>
                                                     <tr>
                                                         <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8" scope="col">ID</th>
-                                                        <th class="sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell" scope="col">TYPE</th>
-                                                        <th class="sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell" scope="col">DATE</th>
-                                                        <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter" scope="col">SUPPLIER</th>
-                                                        <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter" scope="col">CUSTOMER</th>
-                                                        <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter" scope="col">TRANSPORTER</th>
-                                                        <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter" scope="col">PRODUCT</th>
-                                                        <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter" scope="col">NOTES</th>
+                                                        <th :class="header_styler" scope="col">TYPE</th>
+                                                        <th :class="header_styler"  scope="col">DATE</th>
+                                                        <th :class="header_styler"  scope="col">SUPPLIER</th>
+                                                        <th :class="header_styler" scope="col">CUSTOMER</th>
+                                                        <th :class="header_styler" scope="col">TRANSPORTER</th>
+                                                        <th :class="header_styler"  scope="col">PRODUCT</th>
+
+                                                        <th v-if="showDetails" scope="col" :class="header_styler">D/T</th>
+                                                        <th v-if="showDetails" scope="col" :class="header_styler">P/O</th>
+                                                        <th v-if="showDetails" scope="col" :class="header_styler">S/O</th>
+                                                        <th v-if="showDetails" scope="col" :class="header_styler">T/O</th>
+                                                        <th v-if="showDetails" scope="col" :class="header_styler">WB</th>
+                                                        <th v-if="showDetails" scope="col" :class="header_styler">INV</th>
+
+                                                        <th :class="header_styler"  scope="col">NOTES</th>
 
                                                     </tr>
                                                     </thead>
@@ -1284,32 +1305,61 @@ const createStatus = () => {
                                                         :class="[transaction.id === props.selected_transaction.id  ? 'bg-indigo-300' : '', 'hover:bg-gray-100 text-sm focus-within:bg-gray-100']"
                                                     >
 
-                                                        <td :class="[transaction !== filteredTrans.length - 1 ? 'border-b border-gray-200' : '', 'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8']">
+                                                        <td :class="row_styler" >
                                                             {{ transaction.id}}
                                                         </td>
-                                                        <td :class="[transaction !== filteredTrans.length - 1 ? 'border-b border-gray-200' : '', 'whitespace-nowrap hidden px-3 py-4 text-sm text-gray-500 sm:table-cell']">
+                                                        <td :class="row_styler">
                                                             {{transaction.contract_type.name}}
                                                         </td>
 
-                                                        <td :class="[transaction !== filteredTrans.length - 1 ? 'border-b border-gray-200' : '', 'px-3 py-4 text-sm text-gray-500 sm:table-cell']">
+                                                        <td :class="row_styler" >
                                                             {{ NiceTDate( transaction.transport_date_earliest)}}
                                                         </td>
 
-                                                        <td :class="[transaction !== filteredTrans.length - 1 ? 'border-b border-gray-200' : '', 'px-3 py-4 text-sm text-gray-500 sm:table-cell']">
+                                                        <td :class="row_styler" >
                                                             {{transaction.supplier.last_legal_name}}
                                                         </td>
-                                                        <td :class="[transaction !== filteredTrans.length - 1 ? 'border-b border-gray-200' : '', 'px-3 py-4 text-sm text-gray-500 sm:table-cell']">
+                                                        <td :class="row_styler" >
                                                             {{transaction.customer.last_legal_name}}
                                                         </td>
-                                                        <td :class="[transaction !== filteredTrans.length - 1 ? 'border-b border-gray-200' : '', 'px-3 py-4 text-sm text-gray-500 sm:table-cell']">
+                                                        <td :class="row_styler" >
                                                             {{transaction.transporter.last_legal_name}}
                                                         </td>
 
-                                                        <td :class="[transaction !== filteredTrans.length - 1 ? 'border-b border-gray-200' : '', 'px-3 py-4 text-sm text-gray-500 sm:table-cell']">
+                                                        <td :class="row_styler" >
                                                             {{transaction.product.name}}
                                                         </td>
 
-                                                        <td :class="[transaction !== filteredTrans.length - 1 ? 'border-b border-gray-200' : '', 'px-3 py-4 text-sm text-gray-500 sm:table-cell']">
+                                                        <td v-if="showDetails" :class="row_styler">
+                                                            <check-icon v-if="transaction.deal_ticket.is_active" class="w-5 h-5 fill-green-300"/>
+                                                            <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
+                                                        </td>
+
+                                                        <td v-if="showDetails" :class="row_styler">
+                                                            <check-icon v-if="transaction.purchase_order.is_active" class="w-5 h-5 fill-green-300"/>
+                                                            <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>                                                        </td>
+
+                                                        <td v-if="showDetails" :class="row_styler">
+                                                            <check-icon v-if="transaction.sales_order.is_active" class="w-5 h-5 fill-green-300"/>
+                                                            <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
+                                                        </td>
+
+                                                        <td v-if="showDetails" :class="row_styler">
+                                                            <check-icon v-if="transaction.transport_order.is_active" class="w-5 h-5 fill-green-300"/>
+                                                            <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
+                                                        </td>
+
+                                                        <td v-if="showDetails" :class="row_styler">
+                                                            <check-icon v-if="transaction.transport_load.is_weighbridge_certificate_received" class="w-5 h-5 fill-green-300"/>
+                                                            <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
+                                                        </td>
+
+                                                        <td v-if="showDetails" :class="row_styler">
+                                                            <check-icon v-if="transaction.transport_invoice.is_active" class="w-5 h-5 fill-green-300"/>
+                                                            <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
+                                                        </td>
+
+                                                        <td :class="row_styler" >
 
                                                             <div v-if="transaction.process_notes">
 
@@ -1327,8 +1377,14 @@ const createStatus = () => {
 
                                                     </tbody>
                                                 </table>
+
+                                                <div v-if="transactions.data.length" class="w-full flex justify-center mt-5 mb-4">
+                                                    <PaginationModified :links="transactions.links"/>
+                                                </div>
                                             </div>
+
                                         </div>
+
 
                                     </div>
                                 </div>
@@ -1339,7 +1395,7 @@ const createStatus = () => {
 
             </div>
 
-            <div class="bg-white m-2 p-2  shadow-xl sm:rounded-lg">
+            <div class="sticky bg-white m-2 p-2  shadow-xl sm:rounded-lg">
 
                 <div>
                     <div class="px-4 sm:px-6 lg:px-8">
@@ -4924,8 +4980,6 @@ const createStatus = () => {
                 </div>
 
             </div>
-
-
 
         </div>
     </AppLayout>

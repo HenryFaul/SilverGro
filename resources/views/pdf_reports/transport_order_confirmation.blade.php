@@ -131,7 +131,7 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 14px">
-                        @if($final_sales_order)
+                        @if($final_transport_order)
                             <span>Final Version</span>
 
                         @else
@@ -153,15 +153,19 @@
                             <td class="table_sections table_row_value"
                                 colspan="3">{{$transport_trans->Transporter->last_legal_name}}</td>
                         </tr>
+                        <tr class="table_sections">
+                            <td class="table_sections table_row_heading">Transporter contact:</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3"></td>
+                        </tr>
 
                         </tbody>
 
                     </table>
 
                 </div>
-                <li class="section_heading">
-                    Product and Payment Details
-                </li>
+                <br>
+                <li class="section_heading">Product & Tariff Detail</li>
                 <div>
                     <table class="table_sections" style="width:100%;">
                         <tbody>
@@ -175,47 +179,39 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Source</td>
                             <td class="table_sections table_row_value">{{$transport_trans->TransportLoad->ProductSource->name}}</td>
-                            <td class="table_sections table_row_heading">Weight in Tons Incoming</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportFinance->weight_ton_incoming}}</td>
-                        </tr>
-                        <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Packaging outgoing</td>
+                            <td class="table_sections table_row_heading">Package outgoing</td>
                             <td class="table_sections table_row_value">{{$transport_trans->TransportLoad->PackagingOutgoing->name}}</td>
-                            <td class="table_sections table_row_heading">Confirm Purchase Order By</td>
-                            <td class="table_sections table_row_value">{{$purchase_order->ConfirmedByType->name}}</td>
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">VAT (Zero rated)</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Transport Rate Basis</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportFinance->TransportRateBasis->name}}</td>
+                            <td class="table_sections table_row_heading">Load Rate / Ton</td>
                             <td class="table_sections table_row_value">
-                                @if($transport_trans->TransportJob->is_product_zero_rated)
-                                    Yes
-                                @else
-                                    No
-                                @endif
-                            </td>
-                            <td class="table_sections table_row_heading">Vat (Exempt)</td>
-                            <td class="table_sections table_row_value">
-                                @if($transport_trans->Customer->is_vat_exempt)
-                                    Yes
-                                @else
-                                    No
-                                @endif
+                                R {{number_format(round($transport_trans->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}
                             </td>
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Cost Price / Metric Ton</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
-                            <td class="table_sections table_row_heading">Cost Price / Unit</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Load Insurance / Ton</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->load_insurance_per_ton,2), 2, '.', ' ')}}
+                            </td>
+                            <td class="table_sections table_row_heading">Confirmed By</td>
+                            <td class="table_sections table_row_value">
+                                {{$transport_order->ConfirmedByType->name}}
+                            </td>
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Total Cost </td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Terms of payment</td>
+                            <td class="table_sections table_row_value">
+                                {{$transport_trans->Transporter->TermsOfPayment->value}}
+                            </td>
                             <td class="table_sections table_row_heading"></td>
-                            <td class="table_sections table_row_value"></td>
+                            <td class="table_sections table_row_value">
+
+                            </td>
                         </tr>
 
 
@@ -224,7 +220,7 @@
                     </table>
                 </div>
                 <br>
-                <li class="section_heading">Collection and Transport</li>
+                <li class="section_heading">Transport Details</li>
                 <div>
                     <table class="table_sections" style="width:100%;">
                         <tbody>
@@ -233,7 +229,9 @@
                             </td>
                             <td class="table_sections table_row_value">{{$transport_trans->transport_date_earliest}}</td>
                             <td class="table_sections table_row_heading">Collection from</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->LoadingHoursFrom->name}}<</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->LoadingHoursFrom->name}}
+                                <
+                            </td>
                         </tr>
 
                         <tr class="table_sections">
@@ -246,7 +244,65 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">No. Of Loads</td>
                             <td class="table_sections table_row_value">{{$transport_trans->TransportJob->number_loads}}</td>
-                            <td class="table_sections table_row_heading">Collection address</td>
+                            <td class="table_sections table_row_heading">Vehicle details</td>
+                            <td class="table_sections table_row_value">
+
+                                @foreach($transport_trans->TransportJob->TransportDriverVehicle as $driver_vehicle)
+                                    <p style="font-weight: bold;">Driver vehicle:</p>
+                                    <p>
+                                        <span>Driver:</span>
+                                        <span> {{$driver_vehicle->Driver->first_name}} {{$driver_vehicle->Driver->last_name}}</span>
+                                    </p>
+
+                                    <p>
+                                        <span>Cell: </span>
+                                        <span> {{$driver_vehicle->Driver->cell_no}}</span>
+                                    </p>
+
+                                    <p> <span>Vehicle Reg: </span> <span>{{$driver_vehicle->Vehicle->reg_no}}  </span> </p>
+                                    <p><span>Vehicle Type:</span> <span>{{$driver_vehicle->Vehicle->VehicleType->name}}</span></p>
+                                    <p><span>Loading no:</span> <span>{{$driver_vehicle->driver_vehicle_loading_number}}</span></p>
+
+                                @endforeach
+
+
+                            </td>
+                        </tr>
+
+
+                        </tbody>
+
+                    </table>
+                </div>
+                <br>
+
+                <li class="section_heading">Loading & Offloading Detail</li>
+                <div class="page-break">
+                    <table class="table_sections" style="width:100%;">
+                        <tbody>
+                        <tr class="table_sections">
+                            <td class="table_sections table_row_heading" style="width: 20%;">Supplier name
+                            </td>
+                            <td class="table_sections table_row_value">{{$transport_trans->Supplier->last_legal_name}}</td>
+                            <td class="table_sections table_row_heading">Customer name</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->Customer->last_legal_name}}
+                            </td>
+                        </tr>
+
+                        <tr class="table_sections">
+                            <td class="table_sections table_row_heading" style="width: 20%;">Supplier loading number
+                            </td>
+                            <td class="table_sections table_row_value">
+                                {{$transport_trans->TransportJob->supplier_loading_number}}
+                            </td>
+                            <td class="table_sections table_row_heading">Customer order number</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->customer_order_number}}
+                            </td>
+                        </tr>
+
+
+                        <tr class="table_sections">
+                            <td class="table_sections table_row_heading" style="width: 20%;">Collection Address</td>
                             <td class="table_sections table_row_value">
                                 <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
                                 <br>
@@ -261,6 +317,41 @@
                                 <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
                                 <br>
                                 <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
+
+                            </td>
+                            <td class="table_sections table_row_heading">Delivery Address</td>
+                            <td class="table_sections table_row_value">
+                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
+                                <br>
+                                <span>
+                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_2}}
+                                </span>
+                                <br>
+                                <span>
+                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_3}}
+                                </span>
+                                <br>
+                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                <br>
+                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                            </td>
+                        </tr>
+
+                        <tr class="table_sections">
+                            <td class="table_sections table_row_heading" style="width: 20%;">Loading instructions
+                            </td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->loading_instructions}}</td>
+                            <td class="table_sections table_row_heading">Offloading instructions</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->offloading_instructions}}
+                            </td>
+                        </tr>
+
+                        <tr class="table_sections">
+                            <td class="table_sections table_row_heading" style="width: 20%;">Supplier contact:
+                            </td>
+                            <td class="table_sections table_row_value"></td>
+                            <td class="table_sections table_row_heading">Customer contact:</td>
+                            <td class="table_sections table_row_value">
                             </td>
                         </tr>
 
@@ -269,53 +360,38 @@
 
                     </table>
                 </div>
-                <br>
-                <li class="section_heading">Supplier Notes</li>
-                <div class="">
-                    <table class="table_sections" style="width:100%;">
-                        <tbody>
 
-                        <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->supplier_notes}}</td>
+                <div class="table_row_value">
+                    <ol>
+                        <li>
+                            Transport Rate:- The rate is valid for the completion of this transport order on the tonnage agreed upon.
+                        </li>
 
-                        </tr>
+                        <li>
+                            Payment Terms:- will be made on receiving of transport's invoice with original documentation, normally within 14 working days from date of receipt of the original invoice/s,
+                            and based on upload weight.
+                        </li>
 
-                        </tbody>
+                        <li>
+                            Original Documentation:- Payment will only be on receiving of the transporter's POD's, the original invoice with all original loading documentation as well as original
+                            offloading documentation.
+                        </li>
 
-                    </table>
+                        <li>
+                            Load Insurance: The transporter confirms that the value of the load(s), calculated at the selling value of the commodity, that is R4,455.00 per mt, is fully insured by the
+                            Transport Company / CC / Other for all possible risks.
+                        </li>
 
-                    <br>
+                        <li>
+                            Transporter to provide customer ONLY a delivery note with the following information: Supplier Name - SilverGro Feed and Grain, Customer Name as per the Transport Order,
+                            Transport Order Number, The Product Description, Upload Weighbridge Weight and Weighbridge No, Truck Registration, Driver Name, Delivery Date, Delivery Time, Customer
+                            Signature.
+                        </li>
 
-                    <div class="table_row_value page-break">
-                        <ol>
-                            <li>Transport Rate:- The rate is valid for the completion of this transport order on the tonnage agreed upon.</li>
-                            <li>
-                                Payment Terms:- will be made on receiving of transport's invoice with original documentation, normally within 14 working days from date of receipt of the original invoice/s,
-                                and based on upload weight.
-                            </li>
-                            <li>
-                                Original Documentation:- Payment will only be on receiving of the transporter's POD's, the original invoice with all original loading documentation as well as original
-                                offloading documentation.
-                            </li>
-
-                            <li>
-                                Load Insurance: The transporter confirms that the value of the load(s), calculated at the selling value of the commodity, that is R4,455.00 per mt, is fully insured by the
-                                Transport Company / CC / Other for all possible risks.
-                            </li>
-
-                            <li>
-                                Transporter to provide customer ONLY a delivery note with the following information: Supplier Name - SilverGro Feed and Grain, Customer Name as per the Transport Order,
-                                Transport Order Number, The Product Description, Upload Weighbridge Weight and Weighbridge No, Truck Registration, Driver Name, Delivery Date, Delivery Time, Customer
-                                Signature.
-                            </li>
-
-                            <li>
-                                Contract Stipulations:- Please ensure you are familiar with SilverGro Feed & Grain's standard transport contract
-                            </li>
-                        </ol>
-                    </div>
-
+                        <li>
+                            Contract Stipulations:- Please ensure you are familiar with SilverGro Feed & Grain's standard transport contract
+                        </li>
+                    </ol>
                 </div>
                 <br>
                 <li class="section_heading">Signatures</li>

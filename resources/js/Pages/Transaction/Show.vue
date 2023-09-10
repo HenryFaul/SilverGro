@@ -1273,7 +1273,6 @@ const can_adjust_gp = computed(() => usePage().props.roles_permissions.permissio
                                 </div>
 
                                 <form class="mt-5">
-                                    {{transaction.deal_ticket}}
 
                                     <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
@@ -3738,46 +3737,6 @@ const can_adjust_gp = computed(() => usePage().props.roles_permissions.permissio
                                     </div>
 
                                 </div>
-
-
-                            </form>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <SectionBorder/>
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-
-                    <div class="m-2 p-2">
-
-                        <div class="">
-                            <div class="text-lg mb-2 text-indigo-400">Transport Documents</div>
-
-
-                            <form class="mt-5">
-
-
-                            </form>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <SectionBorder/>
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-
-                    <div class="m-2 p-2">
-
-                        <div class="">
-                            <div class="text-lg mb-2 text-indigo-400">Audit log</div>
-
-
-                            <form class="mt-5">
 
 
                             </form>

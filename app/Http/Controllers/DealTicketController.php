@@ -140,6 +140,7 @@ class DealTicketController extends Controller
         $request->session()->flash('flash.banner', 'Deal Ticket Created');
 
         return redirect()->back();
+
         }
 
     }

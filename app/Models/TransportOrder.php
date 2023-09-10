@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TransportOrder extends Model
@@ -13,4 +14,8 @@ class TransportOrder extends Model
 
     public $fillable = ['transport_trans_id','confirmed_by_type_id','confirmed_by_id','type','comment','is_active','is_printed','is_to_sent','is_to_received'];
 
+    public function ConfirmedByType(): BelongsTo
+    {
+        return $this->belongsTo(ConfirmationTypes::class);
+    }
 }

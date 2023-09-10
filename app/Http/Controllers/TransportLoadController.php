@@ -132,6 +132,40 @@ class TransportLoadController extends Controller
         return redirect()->back();
     }
 
+    public function updateUnits(Request $request, TransportLoad $transportLoad): \Illuminate\Http\RedirectResponse
+    {
+
+        $request->validate([
+            'selected_trans_id'=>['required', 'integer'],
+            'no_units_incoming'=>['required', 'integer'],
+            'no_units_outgoing'=>['required', 'integer']
+
+        ]);
+
+        $is_updated = $transportLoad->update(
+            [
+                'no_units_incoming' => $request->no_units_incoming,
+                'no_units_outgoing' => $request->no_units_outgoing,
+            ]
+        );
+
+        $transport_finance = ($transportLoad->TransportFinance);
+        $transport_finance->CalculateFields();
+
+        if($is_updated){
+            $request->session()->flash('flash.bannerStyle', 'success');
+            $request->session()->flash('flash.banner', 'Transport Load updated');
+        }
+        else {
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Transport Load NOT updated');
+        }
+
+        return redirect()->back();
+    }
+
+
+
     /**
      * Remove the specified resource from storage.
      */

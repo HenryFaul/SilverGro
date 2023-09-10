@@ -17,7 +17,7 @@ class TransportOrderController extends Controller
     public function viewConfirmationPDF(Request $request, $id): \Illuminate\Http\Response
     {
 
-        $final_sales_order = false;
+        $final_transport_order = false;
         $path = 'images/pdflogo.jpg';
         $type = pathinfo($path, PATHINFO_EXTENSION);
         $file_data = file_get_contents($path);
@@ -31,6 +31,7 @@ class TransportOrderController extends Controller
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+        $transport_order = $transport_trans->TransportOrder->load('ConfirmedByType');
 
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
@@ -41,7 +42,7 @@ class TransportOrderController extends Controller
 
         $data = [
             'logo' => $logo,
-            'final_sales_order'=>$final_sales_order,
+            'final_transport_order'=>$final_transport_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,
             'sales_order'=>$sales_order,
@@ -49,7 +50,8 @@ class TransportOrderController extends Controller
             'rules_with_approvals'=>$rules_with_approvals,
             'user_name'=>$user_name,
             'now'=>$now,
-            'app_version'=>$app_version
+            'app_version'=>$app_version,
+            'transport_order'=>$transport_order
         ];
 
         $pdf = PDF::loadView('pdf_reports.transport_order_confirmation',$data);

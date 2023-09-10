@@ -38,15 +38,25 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Response;
 use Inertia\ResponseFactory;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class TransportTransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request,)
+    public function index(Request $request)
     {
         $user = auth()->user();
 
@@ -90,7 +100,8 @@ class TransportTransactionController extends Controller
                 'transactions' => $transactions,
                 'start_date'=>$start_date,
                 'end_date'=>$end_date,
-                'contract_types'=>$contract_types
+                'contract_types'=>$contract_types,
+                'download_url'=>null
 
             ]
         );
@@ -498,7 +509,6 @@ class TransportTransactionController extends Controller
         $transport_invoice->customer_id = $request->customer_id['id'];
         $transport_invoice->save();
 
-
         $transport_finance = ($transportTransaction->TransportFinance);
         $transport_finance->CalculateFields();
 
@@ -520,4 +530,229 @@ class TransportTransactionController extends Controller
     {
         //
     }
+
+    public function updatePlayers(Request $request, TransportTransaction $transportTransaction): \Illuminate\Http\RedirectResponse
+    {
+
+        $request->validate([
+            'supplier_id' => ['required', 'integer', 'exists:suppliers,id'],
+            'customer_id' => ['required', 'integer', 'exists:customers,id'],
+            'transporter_id' => ['required', 'integer', 'exists:transporters,id'],
+            'product_id' => ['required', 'integer', 'exists:products,id'],
+        ]);
+
+        $is_updated = $transportTransaction->update(
+            [
+                'supplier_id' => $request->supplier_id,
+                'customer_id' => $request->customer_id,
+                'transporter_id' => $request->transporter_id,
+                'product_id' => $request->product_id,
+            ]
+        );
+
+        //update invoice to reflect updated customer
+
+        $transport_invoice = $transportTransaction->TransportInvoice;
+        $transport_invoice->customer_id = $request->customer_id;
+        $transport_invoice->save();
+
+        $transport_finance = ($transportTransaction->TransportFinance);
+        $transport_finance->CalculateFields();
+
+        if ($is_updated) {
+            $request->session()->flash('flash.bannerStyle', 'success');
+            $request->session()->flash('flash.banner', 'Transport Transaction updated');
+        } else {
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Transport NOT updated');
+        }
+
+        return redirect()->back();
+    }
+
+    public function generate(Request $request){
+
+        $filters = $request->only([
+            'supplier_name',
+            'customer_name',
+            'transporter_name',
+            'product_name',
+            'show',
+            'start_date',
+            'end_date',
+            'contract_type_id',
+            'id'
+        ]);
+
+        $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
+            ->index($filters)
+            ->orderBy('transport_date_earliest', 'desc')
+            ->get();
+
+        if ($transactions!= null){
+
+            $datestamp = time();
+            $file_name = ':nam_silvergrow_:dat.xlsx';
+            $file_name = str_ireplace(':nam',"trades_export",$file_name);
+            $file_name = str_ireplace(':dat',$datestamp,$file_name);
+
+            try {
+                $spreadsheet = $this->makeExcel($transactions);
+
+                if ($spreadsheet != null){
+                    $spreadsheet->getProperties()
+                        ->setCreator("silvergrow")
+                        ->setLastModifiedBy("silvergrow")
+                        ->setTitle("silvergrow")
+                        ->setSubject("silvergrow");
+
+                    $resource = tmpfile();
+                    $writer = new Xlsx($spreadsheet);
+                    $writer->save($resource);
+
+                    $filePdf = Storage::put('reports/excel/'.$file_name, $resource);
+
+
+                    return inertia(
+                        'Transaction/Index',
+                        [
+                            'download_url'=>$file_name
+                        ]
+                    );
+
+                }
+
+
+            }catch (\Error $e){
+
+                return "Error with your spreadsheet";
+
+            } catch (Exception $e) {
+            }
+        }
+
+
+    }
+
+    public function makeExcel($transactions ): ?Spreadsheet
+    {
+
+        try {
+
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet()->setTitle('report');
+
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true
+                )
+            );
+            $styleArray1 = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN
+                    ]
+                ],
+                'font' => array(
+                    'bold' => true
+                )
+            ];
+
+            $styleArray2 = array(
+                'font' => array(
+                    'bold' => true,
+                    'size' => '13'
+                ),
+                'alignment' => [
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                ],
+            );
+
+            //ID	TYPE	DATE	SUPPLIER	CUSTOMER	TRANSPORTER
+            $sheet->setCellValue('A1', 'ID');
+            $sheet->setCellValue('B1', 'TYPE');
+            $sheet->setCellValue('C1', 'DATE_EARLIEST');
+            $sheet->setCellValue('D1', 'DATE_LATEST');
+            $sheet->setCellValue('E1', 'SUPPLIER');
+            $sheet->setCellValue('F1', 'CUSTOMER');
+            $sheet->setCellValue('G1', 'TRANSPORTER');
+            $sheet->setCellValue('H1', 'PRODUCT');
+            $sheet->setCellValue('I1', 'PLANNED_IN');
+            $sheet->setCellValue('J1', 'PLANNED_OUT');
+            $sheet->setCellValue('K1', 'GP');
+
+            //Set style of headings
+
+            $sheet ->getStyle('A1'.':'.'k1')->applyFromArray($styleArray1);
+
+            //loop over trans
+
+            $row_count=2;
+
+            if ($transactions !=null){
+
+                $pos=0;
+                for ($r = $row_count; $r < count($transactions)+$row_count; $r++) {
+
+                    $trans=$transactions[$pos];
+                    $sheet->setCellValue([1,$r],$trans->id);
+                    $sheet->setCellValue([2,$r],$trans->ContractType->name);
+                    $sheet->setCellValue([3,$r],$trans->transport_date_earliest);
+                    $sheet->setCellValue([4,$r],$trans->transport_date_latest);
+                    $sheet->setCellValue([5,$r],$trans->Supplier->last_legal_name);
+                    $sheet->setCellValue([6,$r],$trans->Customer->last_legal_name);
+                    $sheet->setCellValue([7,$r],$trans->Transporter->last_legal_name);
+                    $sheet->setCellValue([8,$r],$trans->Product->name);
+                    $sheet->setCellValue([9,$r],$trans->TransportLoad->no_units_incoming);
+                    $sheet->setCellValue([10,$r],$trans->TransportLoad->no_units_outgoing);
+                    $sheet->setCellValue([11,$r],$trans->TransportFinance->gross_profit);
+
+                    $sheet
+                        ->getStyle([11,$r])
+                        ->getNumberFormat()
+                        ->setFormatCode(NumberFormat::FORMAT_ACCOUNTING_USD);
+
+                   // $sheet->setCellValueByColumnAndRow(1,$r,$investor->acc_num);
+
+                    $pos++;
+                }
+                $row_count+=count($transactions)+1;
+
+            }
+
+
+
+
+            foreach ($sheet->getColumnIterator() as $column) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            }
+
+            $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+            $sheet->getPageSetup()->setFitToPage(true);
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+
+
+            return $spreadsheet;
+
+
+
+        }catch (\Error $e){
+
+            return null;
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+        }
+
+
+        return null;
+    }
+
+    public function download($file_name): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        return Storage::download('/reports/excel/'.$file_name);
+    }
+
+
 }
