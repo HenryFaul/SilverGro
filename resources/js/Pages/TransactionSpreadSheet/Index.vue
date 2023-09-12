@@ -78,7 +78,7 @@ const filterForm = useForm({
     isActive: props.filters.isActive ?? null,
     field: props.filters.field ?? null,
     direction: props.filters.direction ?? "asc",
-    show: props.filters.show ?? 5,
+    show: props.filters.show ?? 25,
     supplier_name:props.filters.supplier_name ?? null,
     customer_name:props.filters.customer_name ?? null,
     transporter_name:props.filters.transporter_name ?? null,

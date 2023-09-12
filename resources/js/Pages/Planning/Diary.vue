@@ -39,7 +39,7 @@ const format = () => {
 const Form = useForm({
 
     date: props.filters.date ?? new Date().toISOString().substr(0, 10),
-    show: props.filters.show ?? 1,
+    show: props.filters.show ?? 25,
     contract_type_id:props.filters.contract_type_id ?? null,
 })
 
