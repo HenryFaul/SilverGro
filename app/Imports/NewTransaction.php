@@ -93,7 +93,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     if ($productid === "" || $productid === 0 || $productid === "0") {
                         $productid = 1;
                     }
-                    $found_product = Product::where('id', $productid)->first();
+                    $found_product = Product::where('old_id', $productid)->first();
                     $found_product_id = $found_product != null ? $found_product->id : 1;
 
                     // include_in_calculations

@@ -327,13 +327,13 @@ class DatabaseSeeder extends Seeder
 
 
         $desire_user =  User::create([
-            'name' => 'Desire',
-            'email' => 'desire@silvergro.co.za',
+            'name' => 'Desiree',
+            'email' => 'desiree@silvergro.co.za',
             'password' => bcrypt('test1234')
         ]);
 
         Staff::create([
-            'first_name' => 'Desire',
+            'first_name' => 'Desiree',
             'user_id'=> $desire_user->id
         ]);
 
@@ -381,6 +381,22 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Henry',
             'user_id'=> $henry_user->id
         ]);
+
+
+        $simone_user =  User::create([
+            'name' => 'simone',
+            'email' => 'simone@silvergro.co.za',
+            'password' => bcrypt('test1234')
+        ]);
+
+        Staff::create([
+            'first_name' => 'simone',
+            'user_id'=> $simone_user->id
+        ]);
+
+
+
+
 
         $henry_user->assignRole('SystemTesterRole');
         $henry_user->assignRole('TraderRole');

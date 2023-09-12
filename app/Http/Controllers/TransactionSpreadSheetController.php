@@ -34,7 +34,7 @@ class TransactionSpreadSheetController extends Controller
             'selected_trans_id'
         ]);
 
-        $paginate = $request['show'] ?? 5;
+        $paginate = $request['show'] ?? 25;
 
         $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Supplier')->with('Transporter')->with('Product')->with('TransportFinance')
             ->with('TransportLoad')->with('TransportJob',fn($query) => $query->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle', fn($query) => $query->with('VehicleType'))))->with('DealTicket')->with('PurchaseOrder')->with('SalesOrder')->with('TransportOrder')->with('TransportInvoice')

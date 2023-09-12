@@ -29,7 +29,7 @@ class PlanningDiaryController extends Controller
             $filters['date'] = $cur_date;
         }
 
-        $paginate = $request['show'] ?? 1;
+        $paginate = $request['show'] ?? 25;
 
         $transport_trans = TransportTransaction::with('Customer')->with('Supplier')->with('Transporter')->with('ContractType')->with('Product')->with('DealTicket')->with('TransportInvoice')
             ->with('TransportFinance')->with('TransportLoad')->with('TransportInvoiceDetails')->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))

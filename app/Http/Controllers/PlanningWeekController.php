@@ -30,7 +30,7 @@ class PlanningWeekController extends Controller
             $filters['date'] = $cur_date;
         }
 
-        $paginate = $request['show'] ?? 1;
+        $paginate = $request['show'] ?? 25;
 
 
         $transport_trans = TransportTransaction::with('Customer')->with('Supplier')->with('Transporter')->with('ContractType')->with('Product')->with('DealTicket')
