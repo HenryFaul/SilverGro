@@ -4663,7 +4663,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                                 </dl>
                                             </li>
 
-                                            <li v-if="selected_transaction.contract_type_id === 2"  class="overflow-hidden rounded-xl border border-gray-200">
+                                            <li v-if="selected_transaction.contract_type_id === 2 || selected_transaction.contract_type_id === 4"  class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Purchase Order</div>
                                                 </div>
@@ -4762,7 +4762,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
 
                                                 </dl>
                                             </li>
-                                            <li v-if="selected_transaction.contract_type_id === 2"  class="overflow-hidden rounded-xl border border-gray-200">
+                                            <li v-if="selected_transaction.contract_type_id === 2 || selected_transaction.contract_type_id === 4"  class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Purchase Order Confirmation</div>
                                                 </div>
@@ -4815,7 +4815,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                                 </dl>
                                             </li>
 
-                                            <li v-if="selected_transaction.contract_type_id === 3"  class="overflow-hidden rounded-xl border border-gray-200">
+                                            <li v-if="selected_transaction.contract_type_id === 3 || selected_transaction.contract_type_id === 4"  class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Sales Order</div>
                                                 </div>
@@ -4914,7 +4914,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
 
                                                 </dl>
                                             </li>
-                                            <li v-if="selected_transaction.contract_type_id === 3"  class="overflow-hidden rounded-xl border border-gray-200">
+                                            <li v-if="selected_transaction.contract_type_id === 3 || selected_transaction.contract_type_id === 4 "  class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Sales Order Confirmation</div>
                                                 </div>
