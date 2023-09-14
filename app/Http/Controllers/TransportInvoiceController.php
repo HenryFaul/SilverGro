@@ -79,7 +79,7 @@ class TransportInvoiceController extends Controller
 
         $request->validate([
                 'is_active' => ['nullable', 'boolean'],
-                'old_id' => ['nullable', 'string'],
+                'old_id' => ['nullable'],
                 'is_printed' => ['nullable', 'boolean'],
                 'is_invoiced' => ['nullable', 'boolean'],
                 'is_invoice_paid' => ['nullable', 'boolean'],

@@ -98,10 +98,10 @@ class TransportTransactionController extends Controller
             [
                 'filters' => $filters,
                 'transactions' => $transactions,
-                'start_date'=>$start_date,
-                'end_date'=>$end_date,
-                'contract_types'=>$contract_types,
-                'download_url'=>null
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+                'contract_types' => $contract_types,
+                'download_url' => null
 
             ]
         );
@@ -132,22 +132,22 @@ class TransportTransactionController extends Controller
 
 
         $request->validate([
-            'no_units'=> ['required', 'numeric','gt:0'],
+            'no_units' => ['required', 'numeric', 'gt:0'],
             'contract_type_id.id' => ['required', 'integer', 'exists:contract_types,id'],
             'supplier_id.id' => ['required', 'integer', 'exists:suppliers,id'],
             'customer_id.id' => ['required', 'integer', 'exists:customers,id'],
             'transporter_id.id' => ['required', 'integer', 'exists:transporters,id'],
             'product_id.id' => ['required', 'integer', 'exists:products,id'],
-            'billing_units_id.id' => ['required', 'integer','exists:billing_units,id'],
+            'billing_units_id.id' => ['required', 'integer', 'exists:billing_units,id'],
             'transport_date_earliest' => ['required', 'date'],
             'traders_notes' => ['nullable'],
-            'transport_rate_basis_id' => ['required', 'integer','exists:transport_rate_bases,id','not_in:1']
-        ],[
+            'transport_rate_basis_id' => ['required', 'integer', 'exists:transport_rate_bases,id', 'not_in:1']
+        ], [
 
-            'contract_type_id.id'=>'You need to select a valid option!',
-            'product_id.id'=>'You need to select a valid option!',
-            'transport_rate_basis_id'=>'You need to select a valid option!',
-            'billing_units_id.id'=>'You need to select a valid option!'
+            'contract_type_id.id' => 'You need to select a valid option!',
+            'product_id.id' => 'You need to select a valid option!',
+            'transport_rate_basis_id' => 'You need to select a valid option!',
+            'billing_units_id.id' => 'You need to select a valid option!'
 
         ]);
 
@@ -159,12 +159,12 @@ class TransportTransactionController extends Controller
             'customer_id' => $request->customer_id['id'],
             'transporter_id' => $request->transporter_id['id'],
             'product_id' => $request->product_id['id'],
-            'transport_date_earliest'=>Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg'),
-            'transport_date_latest'=>Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg'),
-            'transport_rate_basis_id'=>$request->transport_rate_basis_id,
-            'traders_notes'=>$request->traders_notes,
-            'old_id'=>null,
-            'include_in_calculations'=>false
+            'transport_date_earliest' => Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg'),
+            'transport_date_latest' => Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg'),
+            'transport_rate_basis_id' => $request->transport_rate_basis_id,
+            'traders_notes' => $request->traders_notes,
+            'old_id' => null,
+            'include_in_calculations' => false
         ]);
 
         //Deal Ticket
@@ -196,8 +196,8 @@ class TransportTransactionController extends Controller
             'no_units_outgoing' => $request->no_units,
             'billing_units_outgoing_id' => $request->billing_units_id['id'],
             'is_weighbridge_certificate_received' => false,
-            'delivery_address_id' =>$found_del_address == null ? 1: $found_del_address->id,
-            'collection_address_id'=>$found_col_address == null ? 1: $found_col_address->id,
+            'delivery_address_id' => $found_del_address == null ? 1 : $found_del_address->id,
+            'collection_address_id' => $found_col_address == null ? 1 : $found_col_address->id,
         ]);
 
         $transport_job = TransportJob::create([
@@ -221,20 +221,20 @@ class TransportTransactionController extends Controller
         $transport_finance = TransportFinance::create([
             'transport_trans_id' => $transport_trans->id,
             'transport_load_id' => $transport_load->id,
-            'transport_rate_basis_id'=>$request->transport_rate_basis_id,
+            'transport_rate_basis_id' => $request->transport_rate_basis_id,
             'cost_price_per_unit' => 0,
-            'cost_price_per_ton'=>0,
-            'total_cost_price'=>0,
-            'cost_price'=>0,
-            'selling_price'=>0,
+            'cost_price_per_ton' => 0,
+            'total_cost_price' => 0,
+            'cost_price' => 0,
+            'selling_price' => 0,
             'selling_price_per_unit' => 0,
-            'selling_price_per_ton'=> 0,
-            'is_transport_costs_inc_price'=>0,
-            'transport_cost'=>0,
+            'selling_price_per_ton' => 0,
+            'is_transport_costs_inc_price' => 0,
+            'transport_cost' => 0,
             'transport_rate_per_ton' => 0,
             'transport_rate' => 0,
             'transport_price' => 0,
-            'load_insurance_per_ton'=>0,
+            'load_insurance_per_ton' => 0,
             'comms_due_per_ton' => 0,
             'weight_ton_incoming' => 0,
             'weight_ton_outgoing' => 0,
@@ -256,7 +256,7 @@ class TransportTransactionController extends Controller
             'transport_trans_id' => $transport_trans->id,
             'is_active' => false,
             'is_printed' => false,
-            'customer_id'=>$found_customer->id
+            'customer_id' => $found_customer->id
         ]);
 
         $transport_invoice_details = TransportInvoiceDetails::create([
@@ -277,28 +277,27 @@ class TransportTransactionController extends Controller
 
         $transport_order = TransportOrder::create([
             'transport_trans_id' => $transport_trans->id,
-            'confirmed_by_id'=>1,
-            'confirmed_by_type_id'=>1,
+            'confirmed_by_id' => 1,
+            'confirmed_by_type_id' => 1,
             'is_printed' => false,
             'is_active' => false
         ]);
 
         $sales_order = SalesOrder::create([
             'transport_trans_id' => $transport_trans->id,
-            'confirmed_by_id'=>1,
-            'confirmed_by_type_id'=>1,
+            'confirmed_by_id' => 1,
+            'confirmed_by_type_id' => 1,
             'is_printed' => false,
             'is_active' => false
         ]);
 
         $purchase_order = PurchaseOrder::create([
             'transport_trans_id' => $transport_trans->id,
-            'confirmed_by_id'=>1,
-            'confirmed_by_type_id'=>1,
+            'confirmed_by_id' => 1,
+            'confirmed_by_type_id' => 1,
             'is_printed' => false,
             'is_active' => false
         ]);
-
 
 
         $request->session()->flash('flash.bannerStyle', 'success');
@@ -326,21 +325,21 @@ class TransportTransactionController extends Controller
         $all_status_types = StatusType::all();
         $all_invoice_statuses = InvoiceStatus::all();
 
-        return array("customers"=>$customers,"suppliers"=>$suppliers,'transporters'=>$transporters,
-            'contract_types'=>$contract_types,'products'=>$products,'staff'=>$staff, 'confirmation_types'=>$confirmation_types,
-            'product_sources'=>$product_sources,'packaging'=>$packaging, 'all_billing_units'=>$billing_units, 'loading_hour_options'=>$loading_hour_options,
-            'all_drivers'=>$all_drivers, 'all_vehicles'=>$all_vehicles, 'all_transport_rates'=>$all_transport_rates, 'all_status_entities'=>$all_status_entities,
-            'all_status_types'=>$all_status_types,'all_invoice_statuses'=>$all_invoice_statuses
-            );
+        return array("customers" => $customers, "suppliers" => $suppliers, 'transporters' => $transporters,
+            'contract_types' => $contract_types, 'products' => $products, 'staff' => $staff, 'confirmation_types' => $confirmation_types,
+            'product_sources' => $product_sources, 'packaging' => $packaging, 'all_billing_units' => $billing_units, 'loading_hour_options' => $loading_hour_options,
+            'all_drivers' => $all_drivers, 'all_vehicles' => $all_vehicles, 'all_transport_rates' => $all_transport_rates, 'all_status_entities' => $all_status_entities,
+            'all_status_types' => $all_status_types, 'all_invoice_statuses' => $all_invoice_statuses
+        );
 
     }
 
     public function getPcs(): array
     {
-        $transport_trans = TransportTransaction::where('contract_type_id',2)->with('Product')->with('TransportLoad')->orderBy('transport_date_earliest', 'desc')->get();
+        $transport_trans = TransportTransaction::where('contract_type_id', 2)->with('Product')->with('TransportLoad')->orderBy('transport_date_earliest', 'desc')->get();
         $contract_types = ContractType::all();
 
-        return array("transport_trans"=>$transport_trans,"contract_types"=>$contract_types);
+        return array("transport_trans" => $transport_trans, "contract_types" => $contract_types);
 
     }
 
@@ -358,23 +357,20 @@ class TransportTransactionController extends Controller
                 ->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle', fn($query) => $query->with('VehicleType'))))->first();
 
 
+        if ($transportTransaction->contract_type_id === 4) {
+            $linked_trans = TransLink::where('linked_transport_trans_id', '=', $transportTransaction->id)->where('trans_link_type_id', '=', 3)->with('TransportTransactionPc', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance'))->get();
 
-
-
-        if ($transportTransaction->contract_type_id === 4){
-            $linked_trans = TransLink::where('linked_transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id','=',3)->with('TransportTransactionPc',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                    ->with('Product')->with('TransportFinance'))->get();
-
-        } else if ($transportTransaction->contract_type_id === 3){
-            $linked_trans = TransLink::where('linked_transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id','=',4)->with('TransportTransactionPc',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+        } else if ($transportTransaction->contract_type_id === 3) {
+            $linked_trans = TransLink::where('linked_transport_trans_id', '=', $transportTransaction->id)->where('trans_link_type_id', '=', 4)->with('TransportTransactionPc', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
                 ->with('Product')->with('TransportFinance'))->get();
         } else {
-            $linked_trans = TransLink::where('transport_trans_id','=',$transportTransaction->id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+            $linked_trans = TransLink::where('transport_trans_id', '=', $transportTransaction->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
                 ->with('Product')->with('TransportFinance'))->get();
-            }
+        }
 
 
-            //->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
+        //->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
 
         $deal_ticket = $transportTransaction->DealTicket;
 
@@ -399,7 +395,7 @@ class TransportTransactionController extends Controller
         $all_status_types = StatusType::all();
         $all_invoice_statuses = InvoiceStatus::all();
 
-       // dd($transportTransaction);
+        // dd($transportTransaction);
 
         return inertia(
             'Transaction/Show',
@@ -421,9 +417,9 @@ class TransportTransactionController extends Controller
                 'all_transport_rates' => $all_transport_rates,
                 'all_status_entities' => $all_status_entities,
                 'all_status_types' => $all_status_types,
-                'all_invoice_statuses'=>$all_invoice_statuses,
-                'linked_trans'=>$linked_trans,
-                'rules_with_approvals'=>$rules_with_approvals
+                'all_invoice_statuses' => $all_invoice_statuses,
+                'linked_trans' => $linked_trans,
+                'rules_with_approvals' => $rules_with_approvals
             ]
         );
     }
@@ -476,6 +472,9 @@ class TransportTransactionController extends Controller
         ]);
 
         //->toDateTimeString()
+
+        //dd($request->process_notes);
+
         $is_updated = $transportTransaction->update(
             [
                 'contract_type_id' => $request->contract_type_id['id'],
@@ -570,7 +569,8 @@ class TransportTransactionController extends Controller
         return redirect()->back();
     }
 
-    public function generate(Request $request){
+    public function generate(Request $request)
+    {
 
         $filters = $request->only([
             'supplier_name',
@@ -589,17 +589,17 @@ class TransportTransactionController extends Controller
             ->orderBy('transport_date_earliest', 'desc')
             ->get();
 
-        if ($transactions!= null){
+        if ($transactions != null) {
 
             $datestamp = time();
             $file_name = ':nam_silvergrow_:dat.xlsx';
-            $file_name = str_ireplace(':nam',"trades_export",$file_name);
-            $file_name = str_ireplace(':dat',$datestamp,$file_name);
+            $file_name = str_ireplace(':nam', "trades_export", $file_name);
+            $file_name = str_ireplace(':dat', $datestamp, $file_name);
 
             try {
                 $spreadsheet = $this->makeExcel($transactions);
 
-                if ($spreadsheet != null){
+                if ($spreadsheet != null) {
                     $spreadsheet->getProperties()
                         ->setCreator("silvergrow")
                         ->setLastModifiedBy("silvergrow")
@@ -610,20 +610,20 @@ class TransportTransactionController extends Controller
                     $writer = new Xlsx($spreadsheet);
                     $writer->save($resource);
 
-                    $filePdf = Storage::put('reports/excel/'.$file_name, $resource);
+                    $filePdf = Storage::put('reports/excel/' . $file_name, $resource);
 
 
                     return inertia(
                         'Transaction/Index',
                         [
-                            'download_url'=>$file_name
+                            'download_url' => $file_name
                         ]
                     );
 
                 }
 
 
-            }catch (\Error $e){
+            } catch (\Error $e) {
 
                 return "Error with your spreadsheet";
 
@@ -634,7 +634,7 @@ class TransportTransactionController extends Controller
 
     }
 
-    public function makeExcel($transactions ): ?Spreadsheet
+    public function makeExcel($transactions): ?Spreadsheet
     {
 
         try {
@@ -684,44 +684,42 @@ class TransportTransactionController extends Controller
 
             //Set style of headings
 
-            $sheet ->getStyle('A1'.':'.'k1')->applyFromArray($styleArray1);
+            $sheet->getStyle('A1' . ':' . 'k1')->applyFromArray($styleArray1);
 
             //loop over trans
 
-            $row_count=2;
+            $row_count = 2;
 
-            if ($transactions !=null){
+            if ($transactions != null) {
 
-                $pos=0;
-                for ($r = $row_count; $r < count($transactions)+$row_count; $r++) {
+                $pos = 0;
+                for ($r = $row_count; $r < count($transactions) + $row_count; $r++) {
 
-                    $trans=$transactions[$pos];
-                    $sheet->setCellValue([1,$r],$trans->id);
-                    $sheet->setCellValue([2,$r],$trans->ContractType->name);
-                    $sheet->setCellValue([3,$r],$trans->transport_date_earliest);
-                    $sheet->setCellValue([4,$r],$trans->transport_date_latest);
-                    $sheet->setCellValue([5,$r],$trans->Supplier->last_legal_name);
-                    $sheet->setCellValue([6,$r],$trans->Customer->last_legal_name);
-                    $sheet->setCellValue([7,$r],$trans->Transporter->last_legal_name);
-                    $sheet->setCellValue([8,$r],$trans->Product->name);
-                    $sheet->setCellValue([9,$r],$trans->TransportLoad->no_units_incoming);
-                    $sheet->setCellValue([10,$r],$trans->TransportLoad->no_units_outgoing);
-                    $sheet->setCellValue([11,$r],$trans->TransportFinance->gross_profit);
+                    $trans = $transactions[$pos];
+                    $sheet->setCellValue([1, $r], $trans->id);
+                    $sheet->setCellValue([2, $r], $trans->ContractType->name);
+                    $sheet->setCellValue([3, $r], $trans->transport_date_earliest);
+                    $sheet->setCellValue([4, $r], $trans->transport_date_latest);
+                    $sheet->setCellValue([5, $r], $trans->Supplier->last_legal_name);
+                    $sheet->setCellValue([6, $r], $trans->Customer->last_legal_name);
+                    $sheet->setCellValue([7, $r], $trans->Transporter->last_legal_name);
+                    $sheet->setCellValue([8, $r], $trans->Product->name);
+                    $sheet->setCellValue([9, $r], $trans->TransportLoad->no_units_incoming);
+                    $sheet->setCellValue([10, $r], $trans->TransportLoad->no_units_outgoing);
+                    $sheet->setCellValue([11, $r], $trans->TransportFinance->gross_profit);
 
                     $sheet
-                        ->getStyle([11,$r])
+                        ->getStyle([11, $r])
                         ->getNumberFormat()
                         ->setFormatCode(NumberFormat::FORMAT_ACCOUNTING_USD);
 
-                   // $sheet->setCellValueByColumnAndRow(1,$r,$investor->acc_num);
+                    // $sheet->setCellValueByColumnAndRow(1,$r,$investor->acc_num);
 
                     $pos++;
                 }
-                $row_count+=count($transactions)+1;
+                $row_count += count($transactions) + 1;
 
             }
-
-
 
 
             foreach ($sheet->getColumnIterator() as $column) {
@@ -738,8 +736,7 @@ class TransportTransactionController extends Controller
             return $spreadsheet;
 
 
-
-        }catch (\Error $e){
+        } catch (\Error $e) {
 
             return null;
         } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
@@ -751,7 +748,7 @@ class TransportTransactionController extends Controller
 
     public function download($file_name): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        return Storage::download('/reports/excel/'.$file_name);
+        return Storage::download('/reports/excel/' . $file_name);
     }
 
 

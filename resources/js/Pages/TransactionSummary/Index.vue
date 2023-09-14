@@ -389,17 +389,44 @@ let updateSelectValues = async () => {
      transport_trans_Form.supplier_id = props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id);
      transport_trans_Form.customer_id = props.all_customers.find(element => element.id === props.selected_transaction.customer_id);
      transport_trans_Form.transporter_id = props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id);
+     transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
+     transport_trans_Form.contract_no = props.selected_transaction.contract_no;
+     transport_trans_Form.old_id= props.selected_transaction.old_id;
+     transport_trans_Form.include_in_calculations = props.selected_transaction.include_in_calculations;
+     transport_trans_Form.transport_date_earliest=  props.selected_transaction.transport_date_earliest;
+     transport_trans_Form.transport_date_latest= props.selected_transaction.transport_date_latest;
+     transport_trans_Form.suppliers_notes= props.selected_transaction.suppliers_notes;
+     transport_trans_Form.delivery_notes= props.selected_transaction.delivery_notes;
+     transport_trans_Form.product_notes= props.selected_transaction.product_notes;
+     transport_trans_Form.customer_notes= props.selected_transaction.customer_notes;
+     transport_trans_Form.traders_notes= props.selected_transaction.traders_notes;
+     transport_trans_Form.transport_notes= props.selected_transaction.transport_notes;
+     transport_trans_Form.pricing_notes = props.selected_transaction.pricing_notes;
+     transport_trans_Form.process_notes = props.selected_transaction.process_notes;
+     transport_trans_Form.document_notes = props.selected_transaction.document_notes;
+     transport_trans_Form.transaction_notes = props.selected_transaction.transaction_notes;
+     transport_trans_Form.traders_notes_supplier = props.selected_transaction.traders_notes_supplier;
+     transport_trans_Form.traders_notes_customer = props.selected_transaction.traders_notes_customer;
+     transport_trans_Form.traders_notes_transport = props.selected_transaction.traders_notes_transport;
+     transport_trans_Form.is_transaction_done = props.selected_transaction.is_transaction_done;
+
 
      //transport_load_Form
     transport_load_Form.confirmed_by_id= props.all_staff.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_id);
     transport_load_Form.confirmed_by_type_id = props.confirmation_types.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_type_id);
     transport_load_Form.packaging_incoming_id = props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_incoming_id);
     transport_load_Form.packaging_outgoing_id = props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_outgoing_id);
-    transport_load_Form. product_source_id = props.all_product_sources.find(element => element.id === props.selected_transaction.transport_load.product_source_id);
+    transport_load_Form.product_source_id = props.all_product_sources.find(element => element.id === props.selected_transaction.transport_load.product_source_id);
     transport_load_Form.billing_units_incoming_id = props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_incoming_id);
     transport_load_Form.billing_units_outgoing_id = props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_outgoing_id);
     transport_load_Form.collection_address_id = transport_trans_Form.supplier_id.addressable.find(element => element.id === props.selected_transaction.transport_load.collection_address_id);
     transport_load_Form.delivery_address_id = transport_trans_Form.customer_id.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id);
+    transport_load_Form.product_grade_perc= props.selected_transaction.transport_load.product_grade_perc;
+    transport_load_Form.no_units_incoming= props.selected_transaction.transport_load.no_units_incoming;
+    transport_load_Form.no_units_outgoing= props.selected_transaction.transport_load.no_units_outgoing;
+    transport_load_Form.is_weighbridge_certificate_received= props.selected_transaction.transport_load.is_weighbridge_certificate_received;
+    transport_load_Form.delivery_note= props.selected_transaction.transport_load.delivery_note;
+    transport_load_Form.calculated_route_distance= props.selected_transaction.transport_load.calculated_route_distance;
 
     //Sales Order
 
@@ -415,6 +442,58 @@ let updateSelectValues = async () => {
     purchaseOrder_Form.is_active= props.purchase_order.is_active;
     purchaseOrder_Form.is_po_sent= props.purchase_order.is_po_sent;
     purchaseOrder_Form.is_po_received= props.purchase_order.is_po_received;
+
+    //transport_job_Form
+
+        transport_job_Form.customer_order_number= props.selected_transaction.transport_job.customer_order_number;
+        transport_job_Form.supplier_loading_number= props.selected_transaction.transport_job.supplier_loading_number;
+        transport_job_Form.is_multi_loads= props.selected_transaction.transport_job.is_multi_loads;
+        transport_job_Form.is_approved= props.selected_transaction.transport_job.is_approved;
+        transport_job_Form.is_transport_costs_inc_price= props.selected_transaction.transport_job.is_transport_costs_inc_price;
+        transport_job_Form.is_product_zero_rated= props.selected_transaction.transport_job.is_product_zero_rated;
+        transport_job_Form.offloading_hours_from_id= props.selected_transaction.transport_job.offloading_hours_from_id;
+        transport_job_Form.offloading_hours_to_id= props.selected_transaction.transport_job.offloading_hours_to_id;
+        transport_job_Form.loading_hours_from_id= props.selected_transaction.transport_job.loading_hours_from_id;
+        transport_job_Form.loading_hours_to_id = props.selected_transaction.transport_job.loading_hours_to_id;
+        transport_job_Form.load_insurance_per_ton= props.selected_transaction.transport_job.load_insurance_per_ton;
+        transport_job_Form.total_load_insurance= props.selected_transaction.transport_job.total_load_insurance;
+        transport_job_Form.number_loads= props.selected_transaction.transport_job.number_loads;
+        transport_job_Form.loading_instructions= props.selected_transaction.transport_job.loading_instructions;
+        transport_job_Form.offloading_instructions= props.selected_transaction.transport_job.offloading_instructions;
+
+        //transport_finance_Form
+
+        transport_finance_Form.transport_rate_basis_id = props.selected_transaction.transport_finance.transport_rate_basis_id;
+        transport_finance_Form.cost_price_per_unit = props.selected_transaction.transport_finance.cost_price_per_unit;
+        transport_finance_Form.selling_price_per_unit = props.selected_transaction.transport_finance.selling_price_per_unit;
+        transport_finance_Form.transport_rate =props.selected_transaction.transport_finance.transport_rate;
+        transport_finance_Form.additional_cost_1 = props.selected_transaction.transport_finance.additional_cost_1;
+        transport_finance_Form.additional_cost_2 = props.selected_transaction.transport_finance.additional_cost_2;
+        transport_finance_Form.additional_cost_3 = props.selected_transaction.transport_finance.additional_cost_3;
+        transport_finance_Form.additional_cost_desc_1 = props.selected_transaction.transport_finance.additional_cost_desc_1;
+        transport_finance_Form.additional_cost_desc_2 = props.selected_transaction.transport_finance.additional_cost_desc_2;
+        transport_finance_Form.additional_cost_desc_3 = props.selected_transaction.transport_finance.additional_cost_desc_3;
+        transport_finance_Form.adjusted_gp = props.selected_transaction.transport_finance.adjusted_gp;
+        transport_finance_Form.adjusted_gp_notes = props.selected_transaction.transport_finance.adjusted_gp_notes;
+
+        //transport_invoice_Form
+
+        transport_invoice_Form.transport_trans_id= props.selected_transaction.id;
+        transport_invoice_Form.old_id=props.selected_transaction.transport_invoice.old_id;
+        transport_invoice_Form.is_active=props.selected_transaction.transport_invoice.is_active;
+        transport_invoice_Form.is_printed=props.selected_transaction.transport_invoice.is_printed;
+        transport_invoice_Form.invoice_id=props.selected_transaction.transport_invoice.transport_invoice_details.invoice_id;
+        transport_invoice_Form.is_invoiced=props.selected_transaction.transport_invoice.transport_invoice_details.is_invoiced;
+        transport_invoice_Form.is_invoice_paid=props.selected_transaction.transport_invoice.transport_invoice_details.is_invoice_paid;
+        transport_invoice_Form.invoice_no=props.selected_transaction.transport_invoice.transport_invoice_details.invoice_no;
+        transport_invoice_Form.invoice_paid_date=props.selected_transaction.transport_invoice.transport_invoice_details.invoice_paid_date;
+        transport_invoice_Form.invoice_pay_by_date=props.selected_transaction.transport_invoice.transport_invoice_details.invoice_pay_by_date;
+        transport_invoice_Form.invoice_date=props.selected_transaction.transport_invoice.transport_invoice_details.invoice_date;
+        transport_invoice_Form.invoice_amount=props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount;
+        transport_invoice_Form.invoice_amount_paid=props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount_paid;
+        transport_invoice_Form.status_id=props.selected_transaction.transport_invoice.transport_invoice_details.status_id;
+        transport_invoice_Form.notes=props.selected_transaction.transport_invoice.transport_invoice_details.notes;
+
 }
 
 
