@@ -96,7 +96,6 @@ class StaffController extends Controller
      */
     public function show(Staff $staff)
     {
-        //
         $staff = User::where('id','=',$staff->user_id)->with('roles')->with('Staff')->first();
 
         $all_roles_in_database = Role::all();
@@ -126,6 +125,22 @@ class StaffController extends Controller
     public function update(Request $request, Staff $staff)
     {
 
+        //Update the system user first name field to align with staff
+        $user = $staff->User()->first();
+
+
+        if ($request->email != $user->email){
+            $request->validate([
+                'email'=> ['required', 'string', 'email', 'max:255', 'unique:users'],
+            ]);
+        }
+
+        if ($request->password != null){
+            $request->validate([
+                'password'=> ['required', 'string', new Password],
+            ]);
+        }
+
         $staff->update(
             $request->validate([
                 'first_name' => ['nullable','string'],
@@ -138,12 +153,13 @@ class StaffController extends Controller
             ])
         );
 
-        //Update the system user first name field to align with staff
-        $user = $staff->User();
+
 
         if($user->exists()){
             $user->update([
                 'name' => $request->first_name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
             ]);
         }
 

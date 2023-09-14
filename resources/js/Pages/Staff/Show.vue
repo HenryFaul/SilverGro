@@ -30,6 +30,8 @@ let Form = useForm({
 
     first_name: props.staff.staff == null ? '' : props.staff.staff.first_name,
     last_legal_name: props.staff.staff == null ? '' : props.staff.staff.last_legal_name,
+    email:props.staff == null ? '' : props.staff.email,
+    password:null,
     title: props.staff.staff == null ? '' : props.staff.staff.title,
     nick_name: props.staff.staff == null ? '' : props.staff.staff.nick_name,
     job_description: props.staff.staff == null ? '' : props.staff.staff.job_description,
@@ -158,11 +160,27 @@ const can_manage_users = computed(() => usePage().props.roles_permissions.permis
                                             </div>
 
                                             <div class="sm:col-span-3">
+                                                <label for="nickname" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
+                                                <div class="mt-2">
+                                                    <input v-model="Form.email" type="email" :disabled="editDisabled" name="email" id="email" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                </div>
+                                                <InputError class="mt-2" :message="Form.errors.email"/>
+                                            </div>
+
+                                            <div class="sm:col-span-3">
                                                 <label for="id_reg_no" class="block text-sm font-medium leading-6 text-gray-900">Id/Reg no</label>
                                                 <div class="mt-2">
                                                     <input v-model="Form.id_reg_no" type="text" :disabled="editDisabled" name="id_reg_no" id="id_reg_no" autocomplete="id_reg_no" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                                                 </div>
                                                 <InputError class="mt-2" :message="Form.errors.id_reg_no"/>
+                                            </div>
+
+                                            <div class="sm:col-span-3">
+                                                <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Password</label>
+                                                <div class="mt-2">
+                                                    <input v-model="Form.password" type="password" :disabled="editDisabled" name="password" id="password" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                </div>
+                                                <InputError class="mt-2" :message="Form.errors.password"/>
                                             </div>
 
 
