@@ -167,7 +167,8 @@ const props = defineProps({
     deal_ticket:Object,
     transport_order:Object,
     purchase_order:Object,
-    sales_order:Object
+    sales_order:Object,
+    all_terms_of_payments:Object
 });
 
 onBeforeMount(async () => {
@@ -223,6 +224,11 @@ const closeContractLink = () => {
     viewContractLinkModal.value = false;
 };
 
+const newTradeAdded = () => {
+
+    filterForm.new_trade_added = true;
+}
+
 
 const filterForm = useForm({
     isActive: props.filters.isActive ?? null,
@@ -238,6 +244,8 @@ const filterForm = useForm({
     contract_type_id:props.filters.contract_type_id ?? null,
     id:props.filters.id ?? null,
     selected_trans_id:props.selected_transaction.id ?? null,
+    new_trade_added: false,
+    old_id:null
 })
 
 
@@ -327,6 +335,13 @@ watch(
     }
 );
 
+watch(
+    () => filterForm.old_id,
+    (exampleField, prevExampleField) => {
+        filter();
+    }
+);
+
 
 let mon = ref(true);
 let tue = ref(true);
@@ -345,11 +360,8 @@ let filteredTrans = computed(() =>
 );
 
 let updateSelectedTrans = async (_id) => {
-
     filterForm.selected_trans_id = _id;
     filter();
-
-
 };
 
 const clear = () => {
@@ -361,6 +373,7 @@ const clear = () => {
     filterForm.end_date = null;
     filterForm.contract_type_id = null;
     filterForm.id = null;
+    filterForm.old_id = null;
 
     mon.value=true;
     tue.value=true;
@@ -373,7 +386,7 @@ const clear = () => {
     filter();
 }
 
-let updateSelectValues = async () => {
+let updateSelectValues = () => {
 
     //transport_approval_Form
     transport_approval_Form.transport_trans_id= props.selected_transaction.id;
@@ -384,31 +397,32 @@ let updateSelectValues = async () => {
     temp_form.transport_trans_id= props.selected_transaction.id;
 
     //transport_trans_Form
-     transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
-     transport_trans_Form.product_id = props.all_products.find(element => element.id === props.selected_transaction.product_id);
-     transport_trans_Form.supplier_id = props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id);
-     transport_trans_Form.customer_id = props.all_customers.find(element => element.id === props.selected_transaction.customer_id);
-     transport_trans_Form.transporter_id = props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id);
-     transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
-     transport_trans_Form.contract_no = props.selected_transaction.contract_no;
-     transport_trans_Form.old_id= props.selected_transaction.old_id;
-     transport_trans_Form.include_in_calculations = props.selected_transaction.include_in_calculations;
-     transport_trans_Form.transport_date_earliest=  props.selected_transaction.transport_date_earliest;
-     transport_trans_Form.transport_date_latest= props.selected_transaction.transport_date_latest;
-     transport_trans_Form.suppliers_notes= props.selected_transaction.suppliers_notes;
-     transport_trans_Form.delivery_notes= props.selected_transaction.delivery_notes;
-     transport_trans_Form.product_notes= props.selected_transaction.product_notes;
-     transport_trans_Form.customer_notes= props.selected_transaction.customer_notes;
-     transport_trans_Form.traders_notes= props.selected_transaction.traders_notes;
-     transport_trans_Form.transport_notes= props.selected_transaction.transport_notes;
-     transport_trans_Form.pricing_notes = props.selected_transaction.pricing_notes;
-     transport_trans_Form.process_notes = props.selected_transaction.process_notes;
-     transport_trans_Form.document_notes = props.selected_transaction.document_notes;
-     transport_trans_Form.transaction_notes = props.selected_transaction.transaction_notes;
-     transport_trans_Form.traders_notes_supplier = props.selected_transaction.traders_notes_supplier;
-     transport_trans_Form.traders_notes_customer = props.selected_transaction.traders_notes_customer;
-     transport_trans_Form.traders_notes_transport = props.selected_transaction.traders_notes_transport;
-     transport_trans_Form.is_transaction_done = props.selected_transaction.is_transaction_done;
+    transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
+    transport_trans_Form.product_id = props.all_products.find(element => element.id === props.selected_transaction.product_id);
+    transport_trans_Form.supplier_id = props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id);
+    transport_trans_Form.customer_id = props.all_customers.find(element => element.id === props.selected_transaction.customer_id);
+    transport_trans_Form.transporter_id = props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id);
+    transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
+    transport_trans_Form.contract_no = props.selected_transaction.contract_no;
+    transport_trans_Form.old_id = props.selected_transaction.old_id;
+    transport_trans_Form.include_in_calculations = props.selected_transaction.include_in_calculations;
+    transport_trans_Form.transport_date_earliest = props.selected_transaction.transport_date_earliest;
+    transport_trans_Form.transport_date_latest = props.selected_transaction.transport_date_latest;
+    transport_trans_Form.suppliers_notes = props.selected_transaction.suppliers_notes;
+    transport_trans_Form.delivery_notes = props.selected_transaction.delivery_notes;
+    transport_trans_Form.product_notes = props.selected_transaction.product_notes;
+    transport_trans_Form.customer_notes = props.selected_transaction.customer_notes;
+    transport_trans_Form.traders_notes = props.selected_transaction.traders_notes;
+    transport_trans_Form.transport_notes = props.selected_transaction.transport_notes;
+    transport_trans_Form.pricing_notes = props.selected_transaction.pricing_notes;
+    transport_trans_Form.process_notes = props.selected_transaction.process_notes;
+    transport_trans_Form.document_notes = props.selected_transaction.document_notes;
+    transport_trans_Form.transaction_notes = props.selected_transaction.transaction_notes;
+    transport_trans_Form.traders_notes_supplier = props.selected_transaction.traders_notes_supplier;
+    transport_trans_Form.traders_notes_customer = props.selected_transaction.traders_notes_customer;
+    transport_trans_Form.traders_notes_transport = props.selected_transaction.traders_notes_transport;
+    transport_trans_Form.is_transaction_done = props.selected_transaction.is_transaction_done;
+    transport_trans_Form.clearErrors();
 
 
      //transport_load_Form
@@ -427,6 +441,7 @@ let updateSelectValues = async () => {
     transport_load_Form.is_weighbridge_certificate_received= props.selected_transaction.transport_load.is_weighbridge_certificate_received;
     transport_load_Form.delivery_note= props.selected_transaction.transport_load.delivery_note;
     transport_load_Form.calculated_route_distance= props.selected_transaction.transport_load.calculated_route_distance;
+    transport_load_Form.clearErrors();
 
     //Sales Order
 
@@ -460,6 +475,7 @@ let updateSelectValues = async () => {
         transport_job_Form.number_loads= props.selected_transaction.transport_job.number_loads;
         transport_job_Form.loading_instructions= props.selected_transaction.transport_job.loading_instructions;
         transport_job_Form.offloading_instructions= props.selected_transaction.transport_job.offloading_instructions;
+        transport_job_Form.clearErrors();
 
         //transport_finance_Form
 
@@ -475,9 +491,9 @@ let updateSelectValues = async () => {
         transport_finance_Form.additional_cost_desc_3 = props.selected_transaction.transport_finance.additional_cost_desc_3;
         transport_finance_Form.adjusted_gp = props.selected_transaction.transport_finance.adjusted_gp;
         transport_finance_Form.adjusted_gp_notes = props.selected_transaction.transport_finance.adjusted_gp_notes;
+        transport_finance_Form.clearErrors();
 
         //transport_invoice_Form
-
         transport_invoice_Form.transport_trans_id= props.selected_transaction.id;
         transport_invoice_Form.old_id=props.selected_transaction.transport_invoice.old_id;
         transport_invoice_Form.is_active=props.selected_transaction.transport_invoice.is_active;
@@ -493,7 +509,7 @@ let updateSelectValues = async () => {
         transport_invoice_Form.invoice_amount_paid=props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount_paid;
         transport_invoice_Form.status_id=props.selected_transaction.transport_invoice.transport_invoice_details.status_id;
         transport_invoice_Form.notes=props.selected_transaction.transport_invoice.transport_invoice_details.notes;
-
+        transport_invoice_Form.clearErrors();
 }
 
 
@@ -637,15 +653,19 @@ let transportOrder_Form = useForm({
 
 //Errors
 
-let ErrorsTrans = computed(() => Object.keys(transport_trans_Form.errors).length === 0 && transport_trans_Form.errors.constructor === Object);
-let ErrorsLoad = computed(() => Object.keys(transport_load_Form.errors).length === 0 && transport_load_Form.errors.constructor === Object);
-let ErrorsJob = computed(() => Object.keys(transport_job_Form.errors).length === 0 && transport_job_Form.errors.constructor === Object);
-let ErrorsFinance = computed(() => Object.keys(transport_finance_Form.errors).length === 0 && transport_finance_Form.errors.constructor === Object);
-let ErrorsInvoice = computed(() => Object.keys(transport_invoice_Form.errors).length === 0 && transport_invoice_Form.errors.constructor === Object);
-let ErrorsApproval = computed(() => Object.keys(transport_approval_Form.errors).length === 0 && transport_approval_Form.errors.constructor === Object);
+let emptyErrorsTrans = computed(() => Object.keys(transport_trans_Form.errors).length === 0 && transport_trans_Form.errors.constructor === Object);
+let emptyErrorsLoad = computed(() => Object.keys(transport_load_Form.errors).length === 0 && transport_load_Form.errors.constructor === Object);
+let emptyErrorsJob = computed(() => Object.keys(transport_job_Form.errors).length === 0 && transport_job_Form.errors.constructor === Object);
+let emptyErrorsFinance = computed(() => Object.keys(transport_finance_Form.errors).length === 0 && transport_finance_Form.errors.constructor === Object);
+let emptyErrorsInvoice = computed(() => Object.keys(transport_invoice_Form.errors).length === 0 && transport_invoice_Form.errors.constructor === Object);
+let emptyErrorsApproval = computed(() => Object.keys(transport_approval_Form.errors).length === 0 && transport_approval_Form.errors.constructor === Object);
 
 
-let isErrors = computed(() =>ErrorsTrans || ErrorsJob || ErrorsJob || ErrorsFinance || ErrorsInvoice || ErrorsApproval );
+let paymentTerms = computed(() => props.all_terms_of_payments.find(element => element.id === transport_trans_Form.customer_id.terms_of_payment_id));
+
+
+
+//transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
 
 
 //Form CRUD
@@ -727,6 +747,7 @@ const updateTransportInvoice = () => {
         {
             preserveScroll: true,
             onSuccess: () => {
+                updateSelectValues();
                 swal('Updated');
                 isUpdating.value = false;
             },
@@ -734,6 +755,22 @@ const updateTransportInvoice = () => {
                 isUpdating.value = false;
                 alert('Something went wrong')
                 console.log(error)
+            }
+        }
+    );
+}
+
+const cloneTransportTrans = () => {
+
+    temp_form.post(route('transport_transaction.clone'),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                swal(usePage().props.jetstream.flash?.banner || '');
             }
         }
     );
@@ -1179,18 +1216,27 @@ const createStatus = () => {
     });
 };
 
+const getTitle = computed(() => {
+   return props.selected_transaction != null ? props.selected_transaction.contract_type.name+ props.selected_transaction.id : "Trans Summary";
+});
 
 
 const header_styler = computed(() => "sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell");
 const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm text-gray-500 lg:table-cell");
 
+const doCreatedTrade = (_id) => {
+    filterForm.selected_trans_id = _id;
+    filter();
+}
 </script>
 
 <template>
-    <AppLayout title="Transaction Summary">
+    <AppLayout :title="getTitle">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Transaction Summary
+
+                <div v-if="selected_transaction != null">Summary: {{getTitle}}</div>
+                <div v-else>Transaction Summary</div>
             </h2>
         </template>
 
@@ -1253,6 +1299,12 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
 
                                                 </div>
 
+                                                <div class="mt-5 ml-2">
+                                                    <input v-model.number="filterForm.old_id" aria-label="Search" class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                           placeholder="old contract no..."
+                                                           type="search"/>
+                                                </div>
+
 
                                             </div>
                                             <div class="col-span-4 flex">
@@ -1275,6 +1327,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                                 <input v-model.number="filterForm.id" aria-label="Search" class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                        placeholder="contract no..."
                                                        type="search"/>
+
 
                                             </div>
                                             <div class="col-span-4 flex">
@@ -1351,7 +1404,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                         </div>
 
                                         <div>
-                                            <trade-slide-over :show="viewTradeSlideOver" @close="closeTradeSlideOver"  />
+                                            <trade-slide-over :show="viewTradeSlideOver" @close="closeTradeSlideOver" @created_trade="doCreatedTrade"  />
                                         </div>
                                         <div class="">
                                             <div class="">
@@ -1385,7 +1438,9 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                                     >
 
                                                         <td :class="row_styler" >
-                                                            {{ transaction.id}}
+                                                            <div class="font-bold">{{transaction.id}}</div>
+                                                            <div>{{transaction.old_id}}</div>
+
                                                         </td>
                                                         <td :class="row_styler">
                                                             {{transaction.contract_type.name}}
@@ -1409,31 +1464,31 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                                             {{transaction.product.name}}
                                                         </td>
 
-                                                        <td v-if="showDetails" :class="row_styler">
+                                                        <td v-if="showDetails && transaction.deal_ticket" :class="row_styler">
                                                             <check-icon v-if="transaction.deal_ticket.is_active" class="w-5 h-5 fill-green-300"/>
                                                             <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
                                                         </td>
 
-                                                        <td v-if="showDetails" :class="row_styler">
+                                                        <td v-if="showDetails && transaction.purchase_order" :class="row_styler">
                                                             <check-icon v-if="transaction.purchase_order.is_active" class="w-5 h-5 fill-green-300"/>
                                                             <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>                                                        </td>
 
-                                                        <td v-if="showDetails" :class="row_styler">
+                                                        <td v-if="showDetails && transaction.sales_order" :class="row_styler">
                                                             <check-icon v-if="transaction.sales_order.is_active" class="w-5 h-5 fill-green-300"/>
                                                             <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
                                                         </td>
 
-                                                        <td v-if="showDetails" :class="row_styler">
+                                                        <td v-if="showDetails && transaction.transport_order" :class="row_styler">
                                                             <check-icon v-if="transaction.transport_order.is_active" class="w-5 h-5 fill-green-300"/>
                                                             <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
                                                         </td>
 
-                                                        <td v-if="showDetails" :class="row_styler">
+                                                        <td v-if="showDetails && transaction.transport_load" :class="row_styler">
                                                             <check-icon v-if="transaction.transport_load.is_weighbridge_certificate_received" class="w-5 h-5 fill-green-300"/>
                                                             <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
                                                         </td>
 
-                                                        <td v-if="showDetails" :class="row_styler">
+                                                        <td v-if="showDetails && transaction.transport_invoice" :class="row_styler">
                                                             <check-icon v-if="transaction.transport_invoice.is_active" class="w-5 h-5 fill-green-300"/>
                                                             <x-mark-icon v-else class="w-5 h-5 fill-red-400"/>
                                                         </td>
@@ -1488,6 +1543,9 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                         <button class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" type="button">
                                             {{selected_transaction.contract_type.name}} {{selected_transaction.id}}
                                         </button>
+                                        <button @click="cloneTransportTrans"   class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" type="button">
+                                            Clone
+                                        </button>
                                         <button @click.prevent="updateAll"  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" type="button">
                                             <exclamation-triangle-icon v-if="isUpdating" class="w-3 h-3 animate-spin mr-2 fill-white"/>
                                             Update
@@ -1503,8 +1561,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                 </div>
                             </div>
                             <div class="m-2 p-2">
-
-                                <div class="mb-2" v-if="!isErrors">
+                                <div class="mb-2" v-if="!emptyErrorsTrans || !emptyErrorsJob || !emptyErrorsLoad || !emptyErrorsFinance || !emptyErrorsInvoice || !emptyErrorsApproval">
                                     <div class="rounded-md bg-red-50 p-4">
                                     <div class="flex">
                                         <div class="flex-shrink-0">
@@ -1512,16 +1569,53 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                         </div>
                                         <div class="ml-3">
                                             <h3 class="text-sm font-medium text-red-800">There were errors when updating. Fix & update again.</h3>
-                                            <div class="mt-2 text-sm text-red-700">
+                                            <div class="mt-2 text-lg text-red-700">
                                                 <ul role="list" class="list-disc space-y-1 pl-5">
-                                                    <li v-if="!ErrorsTrans">Transaction errors</li>
-                                                    <li v-if="!ErrorsJob">Job errors</li>
-                                                    <li v-if="!ErrorsLoad">Load errors</li>
-                                                    <li v-if="!ErrorsFinance">Finance errors</li>
-                                                    <li v-if="!ErrorsInvoice">Invoice errors</li>
-                                                    <li v-if="!ErrorsApproval">Approval errors</li>
+                                                    <li v-if="!emptyErrorsTrans">Transaction errors (see appropriate tab)</li>
+                                                    <li v-if="!emptyErrorsJob">Job errors (see appropriate tab)</li>
+                                                    <li v-if="!emptyErrorsLoad">Load errors (see appropriate tab)</li>
+                                                    <li v-if="!emptyErrorsFinance">Finance errors (see appropriate tab)</li>
+                                                    <li v-if="!emptyErrorsInvoice">Invoice errors (see appropriate tab)</li>
+                                                    <li v-if="!emptyErrorsApproval">Approval errors (see appropriate tab)</li>
                                                 </ul>
                                             </div>
+
+                                            <div class="mt-2 ml-6">
+
+                                                <InputError class="mt-2" :message="transport_load_Form.errors['confirmed_by_id.id']"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors['confirmed_by_type_id.id']"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors['packaging_incoming_id.id']"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors['packaging_outgoing_id.id']"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors['billing_units_incoming_id.id']"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors['billing_units_outgoing_id.id']"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors['collection_address_id.id']"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors['delivery_address_id.id']"/>
+
+                                                <InputError class="mt-2" :message="transport_load_Form.errors.product_grade_perc"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors.no_units_incoming"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors.no_units_outgoing"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors.is_weighbridge_certificate_received"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors.delivery_note"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors.calculated_route_distance"/>
+
+
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.customer_order_number"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.supplier_loading_number"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.is_multi_loads"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.is_approved"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.is_transport_costs_inc_price"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.offloading_hours_from_id"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.offloading_hours_to_id"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.loading_hours_from_id"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.loading_hours_to_id"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.load_insurance_per_ton"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.total_load_insurance"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.loading_instructions"/>
+                                                <InputError class="mt-2" :message="transport_job_Form.errors.offloading_instructions"/>
+
+
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -3829,9 +3923,11 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                                                                v-model="transport_invoice_Form.invoice_pay_by_date"
                                                                                :format="formatInvoicePayByDay"
                                                                                :teleport="true"></VueDatePicker>
-
                                                                 <div class="ml-3 text-sm text-indigo-400">
                                                                     Invoice pay by date
+                                                                    <span v-if="paymentTerms">
+                                                                       ({{paymentTerms.value}} / {{paymentTerms.days}} days)
+                                                                    </span>
                                                                 </div>
                                                             </div>
 

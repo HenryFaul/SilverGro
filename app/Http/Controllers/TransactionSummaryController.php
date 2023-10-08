@@ -17,6 +17,7 @@ use App\Models\Staff;
 use App\Models\StatusEntity;
 use App\Models\StatusType;
 use App\Models\Supplier;
+use App\Models\TermsOfPayment;
 use App\Models\TransactionSummary;
 use App\Models\TransLink;
 use App\Models\Transporter;
@@ -44,7 +45,8 @@ class TransactionSummaryController extends Controller
             'end_date',
             'contract_type_id',
             'id',
-            'selected_trans_id'
+            'selected_trans_id',
+            'old_id'
         ]);
 
         $paginate = $request['show'] ?? 5;
@@ -57,9 +59,7 @@ class TransactionSummaryController extends Controller
             ->withQueryString();
 
         $first_transaction_id = TransportTransaction::with('ContractType')->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
-            ->index($filters)
-            ->orderBy('transport_date_earliest', 'desc')->pluck('id')->first();
-
+            ->index($filters)->pluck('id')->first();
 
         $selected_trans_id = $request['selected_trans_id'] ?? $first_transaction_id;
 
@@ -100,6 +100,8 @@ class TransactionSummaryController extends Controller
         $all_status_entities = StatusEntity::all();
         $all_status_types = StatusType::all();
         $all_invoice_statuses = InvoiceStatus::all();
+
+        $all_terms_of_payments = TermsOfPayment::all();
 
         if ($transportTransaction->contract_type_id === 4){
             $linked_trans = TransLink::where('linked_transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id','=',3)->with('TransportTransactionPc',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
@@ -144,7 +146,8 @@ class TransactionSummaryController extends Controller
                 'deal_ticket'=>$deal_ticket,
                 'transport_order'=>$transport_order,
                 'purchase_order'=>$purchase_order,
-                'sales_order'=>$sales_order
+                'sales_order'=>$sales_order,
+                'all_terms_of_payments'=>$all_terms_of_payments
 
             ]
         );

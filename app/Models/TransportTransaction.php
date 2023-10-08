@@ -181,6 +181,9 @@ class TransportTransaction extends Model
         )->when(
             $filters['id'] ?? false,
             fn ($query, $value) => $query->where('id','like', '%'.$value.'%')
+        )->when(
+            $filters['old_id'] ?? false,
+            fn ($query, $value) => $query->where('old_id','like', '%'.$value.'%')
         );
 
     }

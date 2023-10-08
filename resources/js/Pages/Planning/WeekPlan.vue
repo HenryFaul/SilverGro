@@ -10,6 +10,7 @@ import BaseTooltip from "@/Components/UI/BaseTooltip.vue";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import TradeSlideOver from  "@/Components/UI/TradeSlideOver.vue";
+import { Link } from '@inertiajs/vue3';
 
 
 const props = defineProps({
@@ -510,7 +511,7 @@ const contractNameOld = (trans) => {
                                                         <td class="py-4 px-6">
 
                                                             <div class="font-bold">
-                                                                {{contractName(trans)}}
+                                                            <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: trans.id }">  {{contractName(trans)}}</Link>
                                                             </div>
                                                             <div class="italic">
                                                                 {{contractNameOld(trans)}}

@@ -32,7 +32,11 @@ import {Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot} from 
 import {XMarkIcon} from '@heroicons/vue/24/outline';
 import {LinkIcon, PlusIcon, QuestionMarkCircleIcon} from '@heroicons/vue/20/solid';
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close','created_trade']);
+
+const sendCreated = (_id) => {
+    emit('created_trade',_id);
+};
 
 const close = () => {
     emit('close');
@@ -160,6 +164,10 @@ const createTransaction = () => {
         preserveScroll: true,
         onSuccess: () => {
 
+            let res = usePage().props.jetstream.flash?.banner || ''
+            let myArray = res.split(":");
+            let id = myArray[1];
+            sendCreated(id);
             close();
         },
         onError: (e) => {

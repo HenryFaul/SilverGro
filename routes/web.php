@@ -120,6 +120,9 @@ Route::middleware([
 
     Route::put('/transport_transaction/update_players/{transport_transaction}', [TransportTransactionController::class, 'updatePlayers'])->middleware('auth')->name('transport_transaction.update_players');
 
+    //Transport Transaction Clone
+    Route::post('/transport_transaction/clone', [TransportTransactionController::class, 'clone'])->middleware('auth')->name('transport_transaction.clone');
+
 
     //Transaction Summary
 

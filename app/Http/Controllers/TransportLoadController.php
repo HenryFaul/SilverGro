@@ -86,13 +86,13 @@ class TransportLoadController extends Controller
             'delivery_address_id.id'=>['required', 'integer']
         ],
             [
-                'packaging_incoming_id.id' => 'Need to select a valid option!',
-                'packaging_outgoing_id.id' => 'Need to select a valid option!',
-                'product_source_id.id' => 'Need to select a valid option!',
-                'billing_units_incoming_id.id' => 'Need to select a valid option!',
-                'billing_units_outgoing_id.id' => 'Need to select a valid option!',
-                'collection_address_id.id' => 'Need to select a valid option!',
-                'delivery_address_id.id' => 'Need to select a valid option!',
+                'packaging_incoming_id.id' => 'Need to select a valid incoming package option!',
+                'packaging_outgoing_id.id' => 'Need to select a valid outgoing package option!',
+                'product_source_id.id' => 'Need to select a valid product source option!',
+                'billing_units_incoming_id.id' => 'Need to select a valid billing units incoming option!',
+                'billing_units_outgoing_id.id' => 'Need to select a valid billing units outgoing option!',
+                'collection_address_id.id' => 'Need to select a valid collection address option!',
+                'delivery_address_id.id' => 'Need to select a valid delivery address option!',
             ]
         );
 

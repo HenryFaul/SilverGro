@@ -22,6 +22,7 @@ use App\Models\Staff;
 use App\Models\StatusEntity;
 use App\Models\StatusType;
 use App\Models\Supplier;
+use App\Models\TermsOfPayment;
 use App\Models\TradeRule;
 use App\Models\TransLink;
 use App\Models\TransportApproval;
@@ -118,18 +119,8 @@ class TransportTransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-
-        /*        contract_type_id:null,
-            transport_date_earliest: new Date(),
-            traders_notes: null,
-            product_id:null,
-            supplier_id:null,
-            customer_id:null,
-            transporter_id:null,
-            billing_units_id:null*/
-
 
         $request->validate([
             'no_units' => ['required', 'numeric', 'gt:0'],
@@ -259,14 +250,21 @@ class TransportTransactionController extends Controller
             'customer_id' => $found_customer->id
         ]);
 
+        $terms_of_payment = $found_customer->TermsOfPayment->days;
+        $terms_of_payment_days = is_numeric($terms_of_payment) ? $terms_of_payment : 0;
+        $invoice_date = Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg');
+        $invoice_pay_by_date = $invoice_date->addDays($terms_of_payment_days);
+
+
+
         $transport_invoice_details = TransportInvoiceDetails::create([
             'transport_trans_id' => $transport_trans->id,
             'invoice_id' => $transport_invoice->id,
             'is_invoiced' => false,
             'is_invoice_paid' => false,
-            'invoice_paid_date' => Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg'),
-            'invoice_pay_by_date' => Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg'),
-            'invoice_date' => Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg'),
+            'invoice_paid_date' => null,
+            'invoice_pay_by_date' => $invoice_pay_by_date,
+            'invoice_date' => $invoice_date,
             'invoice_amount' => 0,
             'cost_price' => 0,
             'selling_price' => 0,
@@ -301,7 +299,177 @@ class TransportTransactionController extends Controller
 
 
         $request->session()->flash('flash.bannerStyle', 'success');
-        $request->session()->flash('flash.banner', 'Transport Transaction created');
+        $request->session()->flash('flash.banner', 'Created:'.$transport_trans->id);
+        return redirect()->back();
+    }
+
+    /**
+     * Clone a trade
+     */
+    public function clone(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $request->validate([
+            'transport_trans_id' => ['required', 'integer'],
+        ]);
+
+        $id_trans_to_clone = $request->transport_trans_id;
+        $trans_to_clone = TransportTransaction::where('id', $id_trans_to_clone)->first();
+
+
+        $transport_trans = TransportTransaction::create([
+            'contract_type_id' => $trans_to_clone->contract_type_id,
+            'supplier_id' => $trans_to_clone->supplier_id,
+            'customer_id' => $trans_to_clone->customer_id,
+            'transporter_id' => $trans_to_clone->transporter_id,
+            'product_id' => $trans_to_clone->product_id,
+            'transport_date_earliest' => $trans_to_clone->transport_date_earliest,
+            'transport_date_latest' => $trans_to_clone->transport_date_latest,
+            'transport_rate_basis_id' => $trans_to_clone->transport_rate_basis_id,
+            'traders_notes' => $trans_to_clone->traders_notes,
+            'old_id' => $trans_to_clone->old_id,
+            'include_in_calculations' => $trans_to_clone->include_in_calculations
+        ]);
+
+        //Deal Ticket
+
+        $deal_ticket = DealTicket::create([
+            'transport_trans_id' => $transport_trans->id,
+            'is_printed' => false,
+            'is_active' => false
+        ]);
+
+
+        $transport_load_to_clone = $trans_to_clone->TransportLoad;
+
+
+
+        $transport_load = TransportLoad::create([
+            'transport_trans_id' => $transport_trans->id,
+            'confirmed_by_id' => 1,
+            'confirmed_by_type_id' => 1,
+            'product_id' => $transport_load_to_clone->product_id,
+            'packaging_incoming_id' => 1,
+            'packaging_outgoing_id' => 1,
+            'product_source_id' => 1,
+            'no_units_incoming' => $transport_load_to_clone->no_units_incoming,
+            'billing_units_incoming_id' => $transport_load_to_clone->billing_units_incoming_id,
+            'no_units_outgoing' => $transport_load_to_clone->no_units_outgoing,
+            'billing_units_outgoing_id' => $transport_load_to_clone->billing_units_outgoing_id,
+            'is_weighbridge_certificate_received' => false,
+            'delivery_address_id' => $transport_load_to_clone->delivery_address_id,
+            'collection_address_id' => $transport_load_to_clone->collection_address_id,
+        ]);
+
+        $transport_job_to_clone = $trans_to_clone->TransportJob;
+
+        $transport_job = TransportJob::create([
+            'transport_trans_id' => $transport_trans->id,
+            'transport_rate_basis_id' => $transport_job_to_clone->transport_rate_basis_id,
+            'is_multi_loads' => $transport_job_to_clone->is_multi_loads,
+            'is_approved' => $transport_job_to_clone->is_approved,
+            'transport_date_earliest' => $transport_job_to_clone->transport_date_earliest,
+            'transport_date_latest' => $transport_job_to_clone->transport_date_latest,
+            'is_transport_costs_inc_price' => $transport_job_to_clone->is_transport_costs_inc_price,
+            'is_product_zero_rated' => $transport_job_to_clone->is_product_zero_rated,
+            'loading_hours_from_id' => $transport_job_to_clone->loading_hours_from_id,
+            'loading_hours_to_id' => $transport_job_to_clone->loading_hours_to_id,
+            'offloading_hours_from_id' => $transport_job_to_clone->offloading_hours_from_id,
+            'offloading_hours_to_id' => $transport_job_to_clone->offloading_hours_to_id,
+            'load_insurance_per_ton' => $transport_job_to_clone->load_insurance_per_ton,
+            'total_load_insurance' => $transport_job_to_clone->total_load_insurance,
+            'number_loads' => $transport_job_to_clone->number_loads,
+        ]);
+
+        $transport_finance_to_clone = $trans_to_clone->TransportFinance;
+
+        $transport_finance = TransportFinance::create([
+            'transport_trans_id' => $transport_trans->id,
+            'transport_load_id' => $transport_load->id,
+            'transport_rate_basis_id' => $transport_finance_to_clone->transport_rate_basis_id,
+            'cost_price_per_unit' => 0,
+            'cost_price_per_ton' => 0,
+            'total_cost_price' => 0,
+            'cost_price' => 0,
+            'selling_price' => 0,
+            'selling_price_per_unit' => 0,
+            'selling_price_per_ton' => 0,
+            'is_transport_costs_inc_price' => 0,
+            'transport_cost' => 0,
+            'transport_rate_per_ton' => 0,
+            'transport_rate' => 0,
+            'transport_price' => 0,
+            'load_insurance_per_ton' => 0,
+            'comms_due_per_ton' => 0,
+            'weight_ton_incoming' => 0,
+            'weight_ton_outgoing' => 0,
+            'additional_cost_1' => 0,
+            'additional_cost_2' => 0,
+            'additional_cost_3' => 0,
+            'gross_profit' => 0,
+            'gross_profit_percent' => 0,
+            'gross_profit_per_ton' => 0,
+            'total_supplier_comm' => 0,
+            'total_customer_comm' => 0,
+            'total_comm' => 0,
+            'adjusted_gp' => 0,
+        ]);
+
+        $transport_finance->CalculateFields();
+
+        $transport_invoice_to_clone = $trans_to_clone->TransportInvoice;
+
+        $transport_invoice = TransportInvoice::create([
+            'transport_trans_id' => $transport_trans->id,
+            'is_active' => false,
+            'is_printed' => false,
+            'customer_id' => $transport_invoice_to_clone->customer_id
+        ]);
+
+        $transport_invoice_details_to_clone = $transport_invoice_to_clone->TransportInvoiceDetails;
+
+        $transport_invoice_details = TransportInvoiceDetails::create([
+            'transport_trans_id' => $transport_trans->id,
+            'invoice_id' => $transport_invoice->id,
+            'is_invoiced' => $transport_invoice_details_to_clone->is_invoiced,
+            'is_invoice_paid' => false,
+            'invoice_paid_date' => $transport_invoice_details_to_clone->invoice_paid_date,
+            'invoice_pay_by_date' => $transport_invoice_details_to_clone->invoice_pay_by_date,
+            'invoice_date' => $transport_invoice_details_to_clone->invoice_date,
+            'invoice_amount' => $transport_invoice_details_to_clone->invoice_amount,
+            'cost_price' => $transport_invoice_details_to_clone->cost_price,
+            'selling_price' => $transport_invoice_details_to_clone->selling_price,
+            'status_id' => $transport_invoice_details_to_clone->status_id,
+        ]);
+
+        //Orders
+
+        $transport_order = TransportOrder::create([
+            'transport_trans_id' => $transport_trans->id,
+            'confirmed_by_id' => 1,
+            'confirmed_by_type_id' => 1,
+            'is_printed' => false,
+            'is_active' => false
+        ]);
+
+        $sales_order = SalesOrder::create([
+            'transport_trans_id' => $transport_trans->id,
+            'confirmed_by_id' => 1,
+            'confirmed_by_type_id' => 1,
+            'is_printed' => false,
+            'is_active' => false
+        ]);
+
+        $purchase_order = PurchaseOrder::create([
+            'transport_trans_id' => $transport_trans->id,
+            'confirmed_by_id' => 1,
+            'confirmed_by_type_id' => 1,
+            'is_printed' => false,
+            'is_active' => false
+        ]);
+
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Cloned:'.$transport_trans->id);
         return redirect()->back();
     }
 
@@ -394,6 +562,8 @@ class TransportTransactionController extends Controller
         $all_status_entities = StatusEntity::all();
         $all_status_types = StatusType::all();
         $all_invoice_statuses = InvoiceStatus::all();
+        $all_terms_of_payments = TermsOfPayment::all();
+
 
         // dd($transportTransaction);
 
@@ -419,7 +589,8 @@ class TransportTransactionController extends Controller
                 'all_status_types' => $all_status_types,
                 'all_invoice_statuses' => $all_invoice_statuses,
                 'linked_trans' => $linked_trans,
-                'rules_with_approvals' => $rules_with_approvals
+                'rules_with_approvals' => $rules_with_approvals,
+                'all_terms_of_payments'=>$all_terms_of_payments
             ]
         );
     }
@@ -506,7 +677,9 @@ class TransportTransactionController extends Controller
 
         $transport_invoice = $transportTransaction->TransportInvoice;
         $transport_invoice->customer_id = $request->customer_id['id'];
+
         $transport_invoice->save();
+
 
         $transport_finance = ($transportTransaction->TransportFinance);
         $transport_finance->CalculateFields();
