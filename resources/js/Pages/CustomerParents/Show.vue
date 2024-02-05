@@ -17,14 +17,13 @@ import { PhotoIcon, UserCircleIcon } from '@heroicons/vue/24/solid'
 const swal = inject('$swal');
 
 const props = defineProps({
-    customer: Object,
+    customer_parent: Object,
     invoice_basis: Object,
     terms_of_payment_basis:Object,
     terms_of_payment: Object,
     customer_rating: Object,
     staff: Object,
-    contact_type: Object,
-    all_customer_parents:Object
+    contact_type: Object
 });
 const permissions = computed(() => usePage().props.permissions)
 const emptyErrors = computed(() => Object.keys(customerForm.errors).length === 0 && customerForm.errors.constructor === Object)
@@ -33,31 +32,30 @@ const emptyErrors = computed(() => Object.keys(customerForm.errors).length === 0
 let customerForm = useForm({
 
     _method: 'PUT',
-    first_name: props.customer.first_name ?? null,
-    last_legal_name: props.customer.last_legal_name ?? null,
-    nickname: props.customer.nickname ?? null,
-    title: props.customer.title ?? null,
-    customer_parent_id: props.customer.customer_parent_id ?? null,
-    job_description: props.customer.job_description ?? null,
-    id_reg_no: props.customer.id_reg_no ?? null,
-    is_active: props.customer.is_active ?? null,
-    terms_of_payment_id: props.customer.terms_of_payment_id ?? null,
-    terms_of_payment_basis_id: props.customer.terms_of_payment_basis_id ?? 1,
-    invoice_basis_id: props.customer.invoice_basis_id ?? null,
-    customer_rating_id: props.customer.customer_rating_id ?? null,
-    days_overdue_allowed_id: props.customer.days_overdue_allowed_id ?? null,
-    is_vat_exempt: props.customer.is_vat_exempt ?? null,
-    is_vat_cert_received: props.customer.is_vat_cert_received ?? null,
-    credit_limit: props.customer.credit_limit ?? null,
-    credit_limit_hard: props.customer.credit_limit_hard ?? null,
-    comment: props.customer.comment ?? null,
+    first_name: props.customer_parent.first_name ?? null,
+    last_legal_name: props.customer_parent.last_legal_name ?? null,
+    nickname: props.customer_parent.nickname ?? null,
+    title: props.customer_parent.title ?? null,
+    job_description: props.customer_parent.job_description ?? null,
+    id_reg_no: props.customer_parent.id_reg_no ?? null,
+    is_active: props.customer_parent.is_active ?? null,
+    terms_of_payment_id: props.customer_parent.terms_of_payment_id ?? null,
+    terms_of_payment_basis_id: props.customer_parent.terms_of_payment_basis_id ?? 1,
+    invoice_basis_id: props.customer_parent.invoice_basis_id ?? null,
+    customer_rating_id: props.customer_parent.customer_rating_id ?? null,
+    days_overdue_allowed_id: props.customer_parent.days_overdue_allowed_id ?? null,
+    is_vat_exempt: props.customer_parent.is_vat_exempt ?? null,
+    is_vat_cert_received: props.customer_parent.is_vat_cert_received ?? null,
+    credit_limit: props.customer_parent.credit_limit ?? null,
+    credit_limit_hard: props.customer_parent.credit_limit_hard ?? null,
+    comment: props.customer_parent.comment ?? null,
 
 
 });
 
 
 const updateCustomer = () => {
-    customerForm.put(route('customer.update', props.customer.id),
+    customerForm.put(route('customer_parent.update', props.customer_parent.id),
         {
             preserveScroll: true,
             onSuccess: () => {
@@ -70,8 +68,8 @@ const updateCustomer = () => {
 
 let staffForm = useForm({
     staff_id: 1,
-    related_id:props.customer.id ?? 1,
-    related_class:'App\\Models\\Customer',
+    related_id:props.customer_parent.id ?? 1,
+    related_class:'App\\Models\\CustomerParent',
 });
 
 const addStaff = () => staffForm.post(route('staff_link.store'), {
@@ -112,7 +110,7 @@ const viewEmailContactDetailModal = ref(false);
 const currentAddress = ref(null);
 const currentContact = ref(null);
 
-const relatedClass = ref('App\\Models\\Customer');
+const relatedClass = ref('App\\Models\\CustomerParent');
 const relatedClassContact = ref('App\\Models\\Contact');
 
 const viewAddress = (address) => {
@@ -156,7 +154,7 @@ const toggleEdit = () => {
 };
 
 const showContact = (id) => {
-    router.get('customer/'+id);
+    router.get('customer_parent/'+3);
 }
 
 const roles_permissions = computed(() => usePage().props.roles_permissions);
@@ -166,10 +164,10 @@ const can_update_customer = computed(() => usePage().props.roles_permissions.per
 </script>
 
 <template>
-    <AppLayout title="Customer">
+    <AppLayout title="Customer Parent">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Customer / <span class="text-indigo-400">{{ customerForm.last_legal_name }}</span>
+                Customer Parent / <span class="text-indigo-400">{{ customerForm.last_legal_name }}</span>
             </h2>
         </template>
 
@@ -190,21 +188,6 @@ const can_update_customer = computed(() => usePage().props.roles_permissions.per
                                             </div>
 
                                             <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
-
-                                                <div class="sm:col-span-3">
-                                                    <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">Customer Parent</label>
-                                                    <div class="mt-2">
-                                                        <select v-model="customerForm.customer_parent_id" :disabled="editDisabled"
-                                                                class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                            <option v-for="n in all_customer_parents" :key="n.id" :value="n.id">{{
-                                                                    n.last_legal_name
-                                                                }}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                    <InputError class="mt-2" :message="customerForm.errors.terms_of_payment_id"/>
-                                                </div>
-
                                                 <div class="sm:col-span-3">
                                                     <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">First name</label>
                                                     <div class="mt-2">
@@ -423,7 +406,7 @@ const can_update_customer = computed(() => usePage().props.roles_permissions.per
 
                                         <ul class="w-1/3">
 
-                                            <li v-for="n in customer.staff" :key="n.id" :value="n.id"
+                                            <li v-for="n in customer_parent.staff" :key="n.id" :value="n.id"
                                                 class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
 
                                                 <div class="flex mt-1">
@@ -473,14 +456,14 @@ const can_update_customer = computed(() => usePage().props.roles_permissions.per
                                     <div>
 
                                         <div v-if="viewAddressModal">
-                                            <address-modal :address="currentAddress" :related_id="customer.id"
+                                            <address-modal :address="currentAddress" :related_id="customer_parent.id"
                                                            :related_class="relatedClass"
                                                            :show="viewAddressModal" @close="closeModal"/>
                                         </div>
 
                                         <ul class="w-3/2">
 
-                                            <li v-for="n in customer.addressable" :key="n.id" :value="n.id"
+                                            <li v-for="n in customer_parent.addressable" :key="n.id" :value="n.id"
                                                 class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
 
 
@@ -539,8 +522,13 @@ const can_update_customer = computed(() => usePage().props.roles_permissions.per
                                 Add (+)
                             </SecondaryButton>
 
-                            <contact-modal :contact="null" :related_id="customer.id" :related_class="relatedClass"
+                            <contact-modal :contact="null" :related_id="customer_parent.id" :related_class="relatedClass"
                                            :show="viewContactModal" @close="closeContactModal"/>
+
+
+
+
+
 
 
                             <div class="mt-5">
@@ -548,7 +536,7 @@ const can_update_customer = computed(() => usePage().props.roles_permissions.per
                                     contacts:</label>
                                 <ul class="w-3/2">
 
-                                    <li v-for="n in customer.contactable" :key="n.id" :value="n.id"
+                                    <li v-for="n in customer_parent.contactable" :key="n.id" :value="n.id"
                                         class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
 
                                         <number-contact-detail-modal :related_id="n.id" :contact_type="contact_type"
@@ -602,6 +590,43 @@ const can_update_customer = computed(() => usePage().props.roles_permissions.per
 
                 </div>
 
+                <SectionBorder/>
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+
+                    <div class="m-2 p-2">
+
+                        <div class="">
+                            <div class="text-lg mb-2 text-indigo-400">Child Customers</div>
+
+                            <table class="min-w-full divide-y divide-gray-300">
+                                <thead>
+                                <tr>
+                                    <th scope="col" class="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Child Name</th>
+                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Child Registration</th>
+                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">View</th>
+
+                                </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 bg-white">
+
+
+                               <tr  v-for="(customer, index) in customer_parent.customer"
+                                    :key="customer.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{customer.last_legal_name}}</td>
+                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">{{customer.id_reg_no}}</td>
+                                    <td class="whitespace-nowrap  py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('customer_parent.show',customer.id)" >View</Link>
+                                    </td>
+                               </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
             </div>
         </div>
     </AppLayout>

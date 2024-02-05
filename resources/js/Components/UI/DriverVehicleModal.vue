@@ -74,6 +74,13 @@ const form = useForm({
 
 });
 
+let driverForm = useForm({
+    first_name:  null,
+    last_name:  null,
+    cell_no:  null,
+    comment: null,
+});
+
 const deleteDriverVehicle = () => {
 
     if (confirm("Sure you want to delete?")) {
@@ -291,6 +298,83 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                     </select>
 
                                     <InputError class="mt-2" :message="form.errors.regular_driver_id"/>
+                                    <div class=" mt-1 ml-2 underline button text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">+ Add driver</div>
+
+                                    <div class="m-2 p-2 border-gray-200">
+                                        <div
+                                            class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+                                            <!-- First name -->
+                                            <div
+                                                class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">First name</label>
+                                                </div>
+                                                <div class="sm:col-span-2">
+                                                    <input v-model="driverForm.first_name" type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                    <InputError class="mt-2" :message="driverForm.errors.first_name"/>
+
+
+                                                </div>
+                                            </div>
+
+                                            <!-- Last name -->
+                                            <div
+                                                class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Last name</label>
+                                                </div>
+                                                <div class="sm:col-span-2">
+                                                    <input v-model="driverForm.last_name" type="text" name="last_name" id="last_name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                    <InputError class="mt-2" :message="driverForm.errors.last_name"/>
+
+
+                                                </div>
+                                            </div>
+
+                                            <!-- Cell no -->
+                                            <div
+                                                class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Cell no</label>
+                                                </div>
+                                                <div class="sm:col-span-2">
+                                                    <input v-model="driverForm.cell_no" type="text" name="cell_no" id="cell_no" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                    <InputError class="mt-2" :message="driverForm.errors.cell_no"/>
+
+
+                                                </div>
+                                            </div>
+
+
+                                            <!-- Comment -->
+                                            <div
+                                                class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                <div>
+                                                    <label
+                                                        class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Comments</label>
+                                                </div>
+                                                <div class="sm:col-span-2">
+                                                    <AreaInput
+                                                        id="comments"
+                                                        :rows=6
+                                                        placeholder="Optional comments..."
+                                                        v-model="driverForm.comment"
+                                                        type="text"
+                                                        class="mt-1 block w-full"
+                                                    />
+                                                    <InputError class="mt-2" :message="driverForm.errors.comment"/>
+
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
                                 </div>
 
                                 <div class="mt-3">
@@ -304,6 +388,8 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                     </select>
 
                                     <InputError class="mt-2" :message="form.errors.regular_driver_id"/>
+
+
                                 </div>
 
                                 <div class="mt-5">

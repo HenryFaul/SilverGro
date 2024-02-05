@@ -60,6 +60,10 @@ return new class extends Migration
 
             $table->double('cost_price')->default(0);
             $table->double('selling_price')->default(0);
+            $table->double('selling_price_2')->default(0);
+            $table->double('selling_price_3')->default(0);
+            $table->double('selling_price_4')->default(0);
+            $table->double('selling_price_5')->default(0);
             $table->double('load_insurance_per_ton')->default(0);
             $table->double('cost_price_per_unit')->default(0);
             $table->double('cost_price_per_ton')->default(0);
@@ -70,6 +74,11 @@ return new class extends Migration
             $table->double('transport_rate')->default(0);
             $table->double('transport_price')->default(0);
             $table->double('transport_cost')->default(0);
+            $table->double('transport_cost_2')->default(0);
+            $table->double('transport_cost_3')->default(0);
+            $table->double('transport_cost_4')->default(0);
+            $table->double('transport_cost_5')->default(0);
+
             $table->double('comms_due_per_ton')->default(0);
             $table->double('weight_ton_incoming')->default(0);
             $table->double('weight_ton_outgoing')->default(0);

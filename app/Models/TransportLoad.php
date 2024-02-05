@@ -15,8 +15,8 @@ class TransportLoad extends Model
 
     public $fillable = ['transport_trans_id','confirmed_by_id','confirmed_by_type_id',
      'product_id','packaging_incoming_id','packaging_outgoing_id','product_source_id','product_grade_perc','no_units_incoming'
-    ,'billing_units_incoming_id','no_units_outgoing','billing_units_outgoing_id','is_weighbridge_certificate_received'
-      ,'delivery_note','calculated_route_distance','collection_address_id','delivery_address_id'];
+    ,'billing_units_incoming_id','no_units_outgoing','no_units_outgoing_2','no_units_outgoing_3','no_units_outgoing_4','no_units_outgoing_5','billing_units_outgoing_id','is_weighbridge_certificate_received'
+      ,'delivery_note','calculated_route_distance','collection_address_id','delivery_address_id','delivery_address_id_2','delivery_address_id_3','delivery_address_id_4','delivery_address_id_5'];
 
     public function BillingUnitsIncoming(): BelongsTo
     {
@@ -52,6 +52,27 @@ class TransportLoad extends Model
     {
         return $this->belongsTo(Address::class);
     }
+
+    public function DeliveryAddress_2(): BelongsTo
+    {
+        return $this->belongsTo(Address::class,'delivery_address_id_2');
+    }
+
+    public function DeliveryAddress_3(): BelongsTo
+    {
+        return $this->belongsTo(Address::class,'delivery_address_id_3');
+    }
+
+    public function DeliveryAddress_4(): BelongsTo
+    {
+        return $this->belongsTo(Address::class,'delivery_address_id_4');
+    }
+
+    public function DeliveryAddress_5(): BelongsTo
+    {
+        return $this->belongsTo(Address::class,'delivery_address_id_5');
+    }
+
 
     public function ConfirmedByType(): BelongsTo
     {

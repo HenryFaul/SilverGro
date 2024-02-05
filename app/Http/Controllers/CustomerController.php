@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactType;
 use App\Models\Customer;
+use App\Models\CustomerParent;
 use App\Models\CustomerRating;
 use App\Models\FlexType;
 use App\Models\InvoiceBasis;
@@ -167,6 +168,7 @@ class CustomerController extends Controller
                 'terms_of_payment_id' => 1,
                 'invoice_basis_id' => 1,
                 'customer_rating_id' => 1,
+                'customer_parent_id'=>1,
                 'is_vat_exempt' => 0,
                 'is_vat_cert_received' => 0,
                 'credit_limit' => 0,
@@ -200,6 +202,7 @@ class CustomerController extends Controller
         $terms_of_payment = TermsOfPayment::all();
         $staff = Staff::all();
         $contact_type = ContactType::all();
+        $all_customer_parents = CustomerParent::all();
 
 
         return inertia(
@@ -211,7 +214,8 @@ class CustomerController extends Controller
                 'terms_of_payment_basis'=>$terms_of_payment_basis,
                 'terms_of_payment'=>$terms_of_payment,
                 'staff'=>$staff,
-                'contact_type'=>$contact_type
+                'contact_type'=>$contact_type,
+                'all_customer_parents'=>$all_customer_parents
             ]
         );
     }
@@ -246,6 +250,7 @@ class CustomerController extends Controller
                 'is_vat_exempt' => ['nullable','boolean'],
                 'is_vat_cert_received' => ['nullable','boolean'],
                 'credit_limit' => ['nullable','integer'],
+                'customer_parent_id'=> ['nullable','integer'],
                 'credit_limit_hard' => ['nullable','integer'],
                 'comment' => ['nullable','string'],
             ])

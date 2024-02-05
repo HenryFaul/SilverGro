@@ -21,6 +21,7 @@ return new class extends Migration
             $table->id()->from(13000);
 
             $table->bigInteger('old_id')->nullable();
+            $table->bigInteger('a_mq')->nullable();
             $table->string('contract_no')->nullable();
             $table->string('old_deal_ticket')->nullable();
 
@@ -34,6 +35,22 @@ return new class extends Migration
 
             $table->bigInteger('customer_id')->unsigned();
             $table->foreign('customer_id')
+                ->references('id')->on('customers')->onDelete('cascade');
+
+            $table->bigInteger('customer_id_2')->unsigned()->default(1);
+            $table->foreign('customer_id_2')
+                ->references('id')->on('customers')->onDelete('cascade');
+
+            $table->bigInteger('customer_id_3')->unsigned()->default(1);
+            $table->foreign('customer_id_3')
+                ->references('id')->on('customers')->onDelete('cascade');
+
+            $table->bigInteger('customer_id_4')->unsigned()->default(1);
+            $table->foreign('customer_id_4')
+                ->references('id')->on('customers')->onDelete('cascade');
+
+            $table->bigInteger('customer_id_5')->unsigned()->default(1);
+            $table->foreign('customer_id_5')
                 ->references('id')->on('customers')->onDelete('cascade');
 
             $table->bigInteger('transporter_id')->unsigned();
@@ -63,6 +80,7 @@ return new class extends Migration
 
             $table->boolean('include_in_calculations')->default(1);
             $table->boolean('is_transaction_done')->default(0);
+            $table->boolean('is_split_load')->default(0);
 
             $table->softDeletes();
             $table->timestamps();

@@ -23,9 +23,9 @@ class TransportTransaction extends Model
 
     use LogsActivity;
 
-    public $fillable = ['id','old_id','old_deal_ticket','contract_type_id','contract_no','supplier_id','customer_id','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
+    public $fillable = ['id','old_id','old_deal_ticket','a_mq','contract_type_id','contract_no','supplier_id','customer_id','customer_id_2','customer_id_3','customer_id_4','customer_id_5','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
         'product_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes',
-        'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at'];
+        'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at','is_split_load'];
 
 
     public function TransLinks(): HasMany
@@ -118,6 +118,26 @@ class TransportTransaction extends Model
         return $this->belongsTo(Customer::class);
     }
 
+    public function Customer_2(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class,'customer_id_2');
+    }
+
+    public function Customer_3(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class,'customer_id_3');
+    }
+
+    public function Customer_4(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class,'customer_id_4');
+    }
+
+    public function Customer_5(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class,'customer_id_5');
+    }
+
     public function Supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
@@ -184,7 +204,11 @@ class TransportTransaction extends Model
         )->when(
             $filters['old_id'] ?? false,
             fn ($query, $value) => $query->where('old_id','like', '%'.$value.'%')
+        )->when(
+            $filters['a_mq'] ?? false,
+            fn ($query, $value) => $query->where('a_mq','like', '%'.$value.'%')
         );
+
 
     }
 

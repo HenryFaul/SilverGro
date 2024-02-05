@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class DebtorStandingController extends Controller
 {
 
-    public function calculateDebtors()
+    public function calculateDebtors(): \Illuminate\Http\RedirectResponse
     {
 
         $customers = Customer::with('CustomerRating')->with('TermsOfPayment')->with('TermsOfPaymentBasis')
@@ -19,6 +19,7 @@ class DebtorStandingController extends Controller
 
         $cur_date = (Carbon::now()->tz('Africa/Johannesburg'));
 
+        $counter =0;
 
         foreach ($customers as $customer){
 
@@ -36,11 +37,16 @@ class DebtorStandingController extends Controller
                 (boolean) $invoice_active = $invoice->is_active;
                 $transport_transaction = $invoice->TransportTransaction;
                 $contract_type_id = $transport_transaction->contract_type_id;
+                $deal_ticket = $transport_transaction->DealTicket;
+                $deal_ticket_is_active = $deal_ticket->is_active;
+
+               // $transport_trans = TransportTransaction::where('id', $deal_ticket->transport_trans_id)->first();
 
                 if ($contract_type_id === 4){
-                    //if amount paid less than invoice amount
+                    //if amount paid less than  invoice amount
 
                     if ($invoice_detail->invoice_amount_paid < $invoice_detail->invoice_amount){
+                        $counter++;
 
                         $invoice_balance = ($invoice_detail->invoice_amount - $invoice_detail->invoice_amount_paid);
                         $customer_total_outstanding += $invoice_balance;
@@ -57,14 +63,18 @@ class DebtorStandingController extends Controller
                 }
 
 
-
-
             }
 
+            $debtor_standing = DebtorStanding::where('customer_id',$customer->id)->first();
 
-            $debtor_standing = DebtorStanding::firstOrNew(['customer_id' =>  $customer->id]);
+            if($debtor_standing == null){
+                $debtor_standing =  DebtorStanding::create(['customer_id'=>$customer->id]);
+            }
 
-            $debtor_standing->customer_id = $customer->id;
+           // $debtor_standing = DebtorStanding::firstOrNew(['customer_id' =>  $customer->id])->get();
+
+            //$debtor_standing->customer_id = $customer->id;
+
             $debtor_standing->total_outstanding = round($customer_total_outstanding,2);
             $debtor_standing->total_overdue = round($customer_total_overdue,2);
             $debtor_standing->updated_at = $cur_date->toDayDateTimeString();
@@ -92,7 +102,8 @@ class DebtorStandingController extends Controller
             'isActive',
             'field',
             'direction',
-            'show'
+            'show',
+            'hasBalance'
         ]);
 
         $paginate = $request['show'] ?? 10;

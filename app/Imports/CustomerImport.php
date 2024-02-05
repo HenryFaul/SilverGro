@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Address;
 use App\Models\Customer;
+use App\Models\CustomerParent;
 use App\Models\Staff;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -44,6 +45,7 @@ class CustomerImport implements ToCollection, WithHeadingRow
                     $credit_limit = trim($row['credit_limit']) == '' ? 0 : doubleval(trim($row['credit_limit']));
                     $credit_limit_hard = trim($row['hard_credit_limit']) == '' ? 0 : doubleval(trim($row['hard_credit_limit']));
 
+                    $customer_parent= CustomerParent::first();
 
 
                     $customer = Customer::create([
@@ -59,6 +61,7 @@ class CustomerImport implements ToCollection, WithHeadingRow
                         'credit_limit'=>$credit_limit,
                         'credit_limit_hard'=>$credit_limit_hard,
                         'comment'=>$comment_combined,
+                        'customer_parent_id'=>$customer_parent->id
                     ]);
 
                     $staff_id = trim($row['staff_assigned_to_customer1']) == '' ? 1 : trim($row['staff_assigned_to_customer1']) ;

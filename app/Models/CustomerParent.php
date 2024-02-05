@@ -6,26 +6,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Customer extends Model
+class CustomerParent extends Model
 {
-    use HasFactory;
-
     use SoftDeletes;
 
-    public $fillable = ['id','first_name','customer_parent_id','last_legal_name','nickname','title','id_reg_no','is_active','terms_of_payment_basis_id','terms_of_payment_id','invoice_basis_id','customer_rating_id','is_vat_exempt','is_vat_cert_received',
+    public $fillable = ['id','first_name','last_legal_name','nickname','title','id_reg_no','is_active','terms_of_payment_basis_id','terms_of_payment_id','invoice_basis_id','customer_rating_id','is_vat_exempt','is_vat_cert_received',
         'credit_limit','credit_limit_hard','comment'];
 
 
-    public function CustomerParent(): BelongsTo
+    public function Customer(): HasMany
     {
-        return $this->belongsTo(CustomerParent::class);
+        return $this->hasMany(Customer::class);
     }
 
 

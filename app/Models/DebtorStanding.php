@@ -31,7 +31,14 @@ class DebtorStanding extends Model
              })
         )->when(
             $filters['isActive'] ?? false,
-            fn ($query, $value) => $query->where('is_active', $value == 'active' ? 1:0)
+            fn ($query, $value) => $query->whereHas('Customer', function ($q) use ($value){
+                $q->where('is_active', true);
+            })
+
+        )->when(
+            $filters['hasBalance'] ?? false,
+            fn ($query, $value) => $query->where('total_outstanding', '>',0)
+
         )->when(
             $filters['field'] ?? false,
             fn ($query, $value) =>

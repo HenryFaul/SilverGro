@@ -2,7 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {computed, ref, watch, inject} from 'vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import {router, useForm, usePage} from "@inertiajs/vue3";
+import {router, useForm, usePage, Link} from "@inertiajs/vue3";
 import Icon from "@/Components/Icon.vue";
 import InputError from '@/Components/InputError.vue';
 import AreaInput from '@/Components/AreaInput.vue';
@@ -12,13 +12,16 @@ import {EnvelopeIcon, PhoneIcon} from '@heroicons/vue/20/solid';
 
 import NumberContactDetailModal from "@/Components/UI/NumberContactDetailModal.vue";
 import EmailContactDetailModal from "@/Components/UI/EmailContactDetailModal.vue";
+import ContactModal from "@/Components/UI/ContactModal.vue";
+
 
 const swal = inject('$swal');
-
+const viewContactModal = ref(false);
 
 const props = defineProps({
     transporter: Object,
-    terms_of_payments: Object
+    terms_of_payments: Object,
+    contact_type: Object,
 });
 const permissions = computed(() => usePage().props.permissions)
 
@@ -59,6 +62,10 @@ const updateTransporter = () => {
     );
 }
 
+const closeContactModal = () => {
+    viewContactModal.value = false;
+};
+
 const editDisabled = ref(true);
 const toggleEdit = () => {
     editDisabled.value = !editDisabled.value;
@@ -88,12 +95,19 @@ const relatedClassContact = ref('App\\Models\\Contact');
 
 const viewAddressModal = ref(false);
 const currentAddress = ref(null);
+const currentContact = ref(null);
 
 
 const viewAddress = (address) => {
     currentAddress.value = address;
     viewAddressModal.value = true;
 };
+
+const viewContact = (contact) => {
+    currentContact.value = contact;
+    viewContactModal.value = true;
+};
+
 
 const closeModal = () => {
     viewAddressModal.value = false;
@@ -273,6 +287,81 @@ const can_update_transporter = computed(() => usePage().props.roles_permissions.
                                     </SecondaryButton>
                                 </div>
                             </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <SectionBorder/>
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+
+                    <div class="m-2 p-2">
+
+                        <div class="">
+                            <div class="text-lg mb-2 text-indigo-400">Contacts</div>
+
+                            <SecondaryButton @click="viewContact(null)">
+                                Add (+)
+                            </SecondaryButton>
+
+                            <contact-modal :contact="null" :related_id="transporter.id" :related_class="relatedClass"
+                                           :show="viewContactModal" @close="closeContactModal"/>
+
+
+                            <div class="mt-5">
+                                <label class="block mb-1 text-gray-500 dark:text-gray-300 font-medium">All
+                                    contacts:</label>
+                                <ul class="w-3/2">
+
+                                    <li v-for="n in transporter.contactable" :key="n.id" :value="n.id"
+                                        class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
+
+                                        <number-contact-detail-modal :related_id="n.id" :contact_type="contact_type"
+                                                                     :related_class="relatedClassContact"
+                                                                     :show="viewNumberContactDetailModal" @close="closeNumberContactDetailModal" />
+
+                                        <email-contact-detail-modal :related_id="n.id" :contact_type="contact_type"
+                                                                    :related_class="relatedClassContact"
+                                                                    :show="viewEmailContactDetailModal" @close="closeEmailDetailModal" />
+
+                                        <div class="flex row mt-1">
+                                            <div class="flex-none w-1/6">
+                                                <icon name="person"
+                                                      class="mr-2 w-6 h-6 fill-green-200"/>
+                                            </div>
+
+                                            <div class="flex-auto  w-3/6">
+                                                {{ n.title }} {{ n.first_name }} {{ n.last_legal_name }}
+
+                                                <div v-if="n.job_description">({{ n.job_description }})</div>
+
+
+                                            </div>
+                                            <div class="flex-auto w-1/6">
+
+                                                <icon v-if="n.is_primary ===1" name="tick-circle"
+                                                      class="mr-2 w-6 h-6 fill-green-200"/>
+
+                                            </div>
+                                            <div class="flex-auto w-1/6">
+
+                                                <SecondaryButton class="ml-2" @click="viewNumberContactDetail">
+                                                    <PhoneIcon class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                                </SecondaryButton>
+
+                                                <SecondaryButton class="ml-2" @click="viewEmailContactDetail">
+                                                    <EnvelopeIcon class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                                </SecondaryButton>
+
+                                                <Link class="inline-flex items-center ml-2 mt-3 px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150" :href="route('contact.show',n.id)" >View</Link>
+                                            </div>
+                                        </div>
+
+                                    </li>
+
+                                </ul>
+                            </div>
                         </div>
 
                     </div>

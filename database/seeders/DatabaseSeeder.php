@@ -3,12 +3,14 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Address;
 use App\Models\AddressType;
 use App\Models\BillingUnits;
 use App\Models\ConfirmationTypes;
 use App\Models\ContractType;
 use App\Models\Customer;
 use App\Models\CustomerDetail;
+use App\Models\CustomerParent;
 use App\Models\CustomerRating;
 use App\Models\InvoiceBasis;
 use App\Models\InvoiceStatus;
@@ -669,12 +671,60 @@ class DatabaseSeeder extends Seeder
 
         //Unallocated types
 
+       $customer_parent= CustomerParent::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1,
+            'invoice_basis_id'=>1,
+            'terms_of_payment_basis_id'=>1,
+            'customer_rating_id'=>1]);
+
+
+        $customer_parent_2= CustomerParent::create(['id'=>2,'last_legal_name'=>'Split Parent','terms_of_payment_id'=>1,
+            'invoice_basis_id'=>1,
+            'terms_of_payment_basis_id'=>2,
+            'customer_rating_id'=>1]);
+
+        $address = Address::create([
+            'line_1' => 'Split Address',
+            'line_2' => 'See split customer',
+            'line_3' => '',
+            'country' => 'none',
+            'code' => 1234,
+            'address_type_id' => 1,
+            'poly_address_type' => 'App\\Models\\CustomerParent',
+            'poly_address_id' => $customer_parent_2->id,
+            'is_primary' => 1,
+            'longitude' => 0,
+            'latitude' => 0,
+            'directions' => 'Address per split customer',
+        ]);
+
+
+
         Supplier::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1]);
         Transporter::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1]);
         Customer::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1,
             'invoice_basis_id'=>1,
             'terms_of_payment_basis_id'=>1,
-            'customer_rating_id'=>1]);
+            'customer_rating_id'=>1,'customer_parent_id'=>$customer_parent->id]);
+
+       $customer_2 = Customer::create(['last_legal_name'=>'Split Customer','terms_of_payment_id'=>1,
+            'invoice_basis_id'=>1,
+            'terms_of_payment_basis_id'=>2,
+            'customer_rating_id'=>1,'customer_parent_id'=>$customer_parent_2->id]);
+
+        $address = Address::create([
+            'line_1' => 'Split Address',
+            'line_2' => 'See split customer',
+            'line_3' => '',
+            'country' => 'none',
+            'code' => 1234,
+            'address_type_id' => 1,
+            'poly_address_type' => 'App\\Models\\Customer',
+            'poly_address_id' => $customer_2->id,
+            'is_primary' => 1,
+            'longitude' => 0,
+            'latitude' => 0,
+            'directions' => 'Address per split customer',
+        ]);
 
 
         //TransportRateBasis

@@ -5,6 +5,7 @@ use App\Http\Controllers\AssignedUserCommController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContactDetailController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerParentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataImports\DataImportController;
 use App\Http\Controllers\DealTicketController;
@@ -37,6 +38,7 @@ use App\Http\Controllers\TransportOrderController;
 use App\Http\Controllers\TransportStatusController;
 use App\Http\Controllers\TransportTransactionController;
 use App\Models\Customer;
+use App\Models\CustomerParent;
 use App\Models\RegularDriver;
 use App\Models\TransportDriverVehicle;
 use Illuminate\Foundation\Application;
@@ -146,6 +148,10 @@ Route::middleware([
 
     Route::get('/props/contract_link_modal', [TransportTransactionController::class, 'getPcs'])->middleware('auth')->name('props.contract_link_modal');
 
+    //Transport SC trans Modal Props
+
+    Route::get('/props/contract_link_sc_modal', [TransportTransactionController::class, 'getScs'])->middleware('auth')->name('props.contract_link_sc_modal');
+
 
     //Transport Load
 
@@ -217,6 +223,10 @@ Route::middleware([
 
     Route::put('/staff/link/remove', [StaffController::class, 'removeLink'])->middleware('auth')->name('staff.link.remove');*/
 
+    //Customer Parent
+
+    Route::resource('customer_parent', CustomerParentController::class)->middleware('auth')
+        ->only(['index', 'show', 'update', 'destroy','store']);
 
     //Customer
 
@@ -291,8 +301,10 @@ Route::middleware([
     //SalesOrder Confirmation
     Route::get('/pdf_report/sales_order_confirmation_view/{id}', [SalesOrderController::class, 'viewConfirmationPDF'])->middleware('auth')->name('pdf_report.sales_order_confirmation_view');
 
-    //PurchaseOrder
+    //SalesOrder Confirmation Split
+    Route::get('/pdf_report/sales_order_confirmation_view_split/{id}/{client_id}', [SalesOrderController::class, 'viewConfirmationPDFSplit'])->middleware('auth')->name('pdf_report.sales_order_confirmation_view_split');
 
+    //PurchaseOrder
     Route::get('/pdf_report/purchase_order_view/{id}', [PurchaseOrderController::class, 'viewPDF'])->middleware('auth')->name('pdf_report.purchase_order_view');
     Route::post('/purchase_order/activate', [PurchaseOrderController::class, 'activate'])->middleware('auth')->name('purchase_order.activate');
     Route::post('/purchase_order/send', [PurchaseOrderController::class, 'send'])->middleware('auth')->name('purchase_order.send');

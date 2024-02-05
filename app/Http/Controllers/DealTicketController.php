@@ -28,8 +28,12 @@ class DealTicketController extends Controller
         $file_data = file_get_contents($path);
         $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
 
-        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
-            ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
+        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))
+            ->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))
+            ->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
+            ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')
+                ->with('DeliveryAddress')->with('DeliveryAddress_2')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))
+            ->with('DealTicket')->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
 
         $deal_ticket = $transport_trans->DealTicket;
 
@@ -213,6 +217,25 @@ class DealTicketController extends Controller
 
         $is_updated = $dealTicket->update(
             ['is_active' =>$request->is_active]);
+
+
+
+        if ($dealTicket->is_active){
+
+            $transport_transaction = $dealTicket->TransportTransaction;
+            if ($transport_transaction->a_mq == null){
+
+                $max_a_mq = TransportTransaction::max("a_mq");
+                $max_a_mq = max(20000,$max_a_mq);
+
+                if (is_numeric($max_a_mq)){
+                    $transport_transaction->max_a_mq=($max_a_mq+1);
+                    $transport_transaction->save();
+                }
+
+
+            }
+        }
 
 
         $request->session()->flash('flash.bannerStyle', 'success');

@@ -9,10 +9,9 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('customer_parents', function (Blueprint $table) {
             $table->id();
             $table->string('first_name')->nullable();
             $table->string('last_legal_name')->nullable();
@@ -20,10 +19,6 @@ return new class extends Migration
             $table->string('id_reg_no')->nullable();
             $table->string('title')->nullable();
             $table->boolean('is_active')->default(true);
-
-            $table->bigInteger('customer_parent_id')->unsigned();
-            $table->foreign('customer_parent_id')
-                ->references('id')->on('customer_parents')->onDelete('cascade');
 
             $table->bigInteger('terms_of_payment_basis_id')->unsigned();
             $table->foreign('terms_of_payment_basis_id')
@@ -47,8 +42,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['first_name','last_legal_name','id_reg_no']);
-
-
         });
     }
 
@@ -57,6 +50,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('customer_parents');
     }
 };

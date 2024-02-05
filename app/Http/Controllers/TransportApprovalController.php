@@ -124,6 +124,26 @@ class TransportApprovalController extends Controller
 
         if ($can_approve && $is_approved){
             $is_updated = $deal_ticket->update(['is_active' =>1]);
+
+            if ($deal_ticket->is_active){
+
+                $transport_transaction = $deal_ticket->TransportTransaction;
+                if ($transport_transaction->a_mq == null){
+
+                    $max_a_mq = TransportTransaction::max("a_mq");
+
+                    if($max_a_mq == null){
+                        $max_a_mq = TransportTransaction::max("id");
+                    }
+
+                    if (is_numeric($max_a_mq)){
+                        $transport_transaction->a_mq=($max_a_mq+1);
+                        $transport_transaction->save();
+                    }
+
+
+                }
+            }
         }
 
         if ($is_updated){

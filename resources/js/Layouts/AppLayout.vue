@@ -14,7 +14,7 @@ defineProps({
 
 
 const classesSystemPlayer = computed(() => {
-    return route().current('customer.*') || route().current('contact.*') || route().current('supplier.*') || route().current('transporter.*')
+    return route().current('customer.*') || route().current('contact.*') || route().current('supplier.*') || route().current('transporter.*') || route().current('customer_parent.*')
         ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
         : '';
 });
@@ -97,8 +97,8 @@ const logout = () => {
                                                    Manage System Players
                                                 </div>
 
-                                                <DropdownLink :href="route('product.index')">
-                                                    Products
+                                                <DropdownLink :href="route('customer_parent.index')">
+                                                    Customer Parents
                                                 </DropdownLink>
 
                                                 <DropdownLink :href="route('customer.index')">
@@ -131,6 +131,10 @@ const logout = () => {
 
                                                 <DropdownLink :href="route('staff.index')">
                                                     Staff
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('product.index')">
+                                                    Products
                                                 </DropdownLink>
 
                                                 <div class="border-t border-gray-100" />

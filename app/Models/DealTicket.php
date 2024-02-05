@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use JetBrains\PhpStorm\NoReturn;
 use Spatie\MediaLibrary\HasMedia;
@@ -16,6 +17,11 @@ class DealTicket extends Model implements HasMedia
     use SoftDeletes;
 
     public $fillable = ['transport_trans_id', 'old_id', 'trade_value', 'type', 'comment', 'is_active', 'is_approved', 'is_printed', 'stamp_printed','report_path','report_path_old'];
+
+    public function TransportTransaction(): BelongsTo
+    {
+        return $this->belongsTo(TransportTransaction::class,'transport_trans_id');
+    }
 
 
     #[NoReturn] public function calculateRules()

@@ -28,6 +28,20 @@ return new class extends Migration
                 ->references('id')->on('transport_rate_bases')->onDelete('cascade');
             $table->string('customer_order_number')->nullable();
             $table->string('supplier_loading_number')->nullable();
+
+            $table->string('customer_order_number_2')->nullable();
+            $table->string('supplier_loading_number_2')->nullable();
+
+            $table->string('customer_order_number_3')->nullable();
+            $table->string('supplier_loading_number_3')->nullable();
+
+            $table->string('customer_order_number_4')->nullable();
+            $table->string('supplier_loading_number_4')->nullable();
+
+            $table->string('customer_order_number_5')->nullable();
+            $table->string('supplier_loading_number_5')->nullable();
+
+
             $table->boolean('is_multi_loads')->default(0);
             $table->boolean('is_approved')->default(0);
             $table->timestamp('transport_date_earliest')->nullable();

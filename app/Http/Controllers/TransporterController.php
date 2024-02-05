@@ -92,16 +92,19 @@ class TransporterController extends Controller
      */
     public function show(Transporter $transporter)
     {
-        $transporter->load('TermsOfPayment');
+        $transporter->load('TermsOfPayment')->load('contactable');
 
         $terms_of_payments = TermsOfPayment::all();
+        $contact_type = ContactType::all();
+
 
         return inertia(
             'Transporter/Show',
             [
                 'transporter' => $transporter,
-                'terms_of_payments'=>$terms_of_payments
-            ]
+                'terms_of_payments'=>$terms_of_payments,
+                'contact_type'=>$contact_type
+        ]
         );
     }
 

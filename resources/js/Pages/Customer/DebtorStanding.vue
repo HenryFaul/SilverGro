@@ -32,10 +32,11 @@ const permissions = computed(() => usePage().props.permissions)
 
 const filterForm = useForm({
     searchName: props.filters.searchName ?? null,
-    isActive: props.filters.isActive ?? null,
+    isActive: props.filters.isActive ?? false,
     field: props.filters.field ?? null,
     direction: props.filters.direction ?? "asc",
     show: props.filters.show ?? 10,
+    hasBalance:props.filters.isActive ?? false,
 
 })
 
@@ -143,8 +144,15 @@ const getComponentProps = async () => {
                                         class="input-filter-l block w-32 ml-2 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
 
                                     <option :value="null">All</option>
-                                    <option value="active">Active Only</option>
-                                    <option value="inactive">Inactive Only</option>
+                                    <option :value=true>Active Only</option>
+
+
+                                </select>
+
+                                <select v-model="filterForm.hasBalance"
+                                        class="input-filter-l block w-32 ml-2 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    <option :value="null">All</option>
+                                    <option :value=true>Has Balance</option>
 
                                 </select>
 
@@ -160,6 +168,7 @@ const getComponentProps = async () => {
 
 
                             </div>
+
 
                             <div class="flex col-span-6">
                                 <secondary-button @click="getComponentProps" class="ml-1">

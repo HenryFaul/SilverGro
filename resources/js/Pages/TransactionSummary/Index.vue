@@ -38,6 +38,7 @@ import {
 } from '@headlessui/vue';
 
 import ContractLinkModal from "@/Components/UI/ContractLinkModal.vue";
+import ContractLinkModalSc from "@/Components/UI/ContractLinkModal.vue";
 
 let dayIncluded = (_date) => {
     let _day = NiceDay(_date);
@@ -163,19 +164,37 @@ const props = defineProps({
     all_status_types:Object,
     all_invoice_statuses:Object,
     rules_with_approvals:Object,
-    linked_trans: Object,
     deal_ticket:Object,
     transport_order:Object,
     purchase_order:Object,
     sales_order:Object,
-    all_terms_of_payments:Object
+    all_terms_of_payments:Object,
+    linked_trans_sc:Object,
+    linked_trans_pc:Object,
+    linked_trans_other:Object
 });
 
 onBeforeMount(async () => {
 
 });
 
-const tabs = [
+
+const tabs_split = [
+    { id:0, name: 'Supplier', current: true },
+    { id:1, name: 'Product',  current: false },
+    { id:2, name: 'Customer', current: false },
+    { id:3,name: 'Transport',  current: false },
+    { id:4, name: 'Pricing',  current: false },
+    { id:5, name: 'Invoice',  current: false },
+    { id:6, name: 'Process Control', current: false },
+    { id:7, name: 'Linked Contracts',  current: false },
+    { id:8, name: 'Contracts',  current: false },
+    { id:9,name: 'Log', current: false },
+    { id:10,name: 'Admin', current: false },
+    { id:11,name: 'Split Customers', current: false },
+];
+
+const tabs_non_split = [
     { id:0, name: 'Supplier', current: true },
     { id:1, name: 'Product',  current: false },
     { id:2, name: 'Customer', current: false },
@@ -188,6 +207,8 @@ const tabs = [
     { id:9,name: 'Log', current: false },
     { id:10,name: 'Admin', current: false },
 ];
+
+let tabs = computed(()=>props.selected_transaction.is_split_load ? tabs_split:tabs_non_split) ;
 
 let supplierQuery = ref('');
 
@@ -204,6 +225,7 @@ const permissions = computed(() => usePage().props.permissions)
 const roles_permissions = computed(() => usePage().props.roles_permissions)
 const can_adjust_gp = computed(() => usePage().props.roles_permissions.permissions.includes("edit_adjusted_gp"))
 
+const selectedSplitCustomer = ref(2);
 
 let isLoading = ref(false);
 let isUpdating = ref(false);
@@ -222,6 +244,10 @@ const closeTradeSlideOver = () => {
 };
 const closeContractLink = () => {
     viewContractLinkModal.value = false;
+};
+
+const closeContractLinkSc = () => {
+    viewContractLinkModalSc.value = false;
 };
 
 const newTradeAdded = () => {
@@ -245,7 +271,8 @@ const filterForm = useForm({
     id:props.filters.id ?? null,
     selected_trans_id:props.selected_transaction.id ?? null,
     new_trade_added: false,
-    old_id:null
+    old_id:null,
+    a_mq:null
 })
 
 
@@ -271,6 +298,14 @@ let sort = (field) => {
     filterForm.direction = filterForm.direction === 'asc' ? 'desc' : 'asc';
     filter();
 }
+
+
+watch(
+    () => filterForm.a_mq,
+    (exampleField, prevExampleField) => {
+        filter();
+    }
+);
 
 watch(
     () => filterForm.supplier_name,
@@ -374,6 +409,7 @@ const clear = () => {
     filterForm.contract_type_id = null;
     filterForm.id = null;
     filterForm.old_id = null;
+    filterForm.a_mq = null;
 
     mon.value=true;
     tue.value=true;
@@ -401,6 +437,11 @@ let updateSelectValues = () => {
     transport_trans_Form.product_id = props.all_products.find(element => element.id === props.selected_transaction.product_id);
     transport_trans_Form.supplier_id = props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id);
     transport_trans_Form.customer_id = props.all_customers.find(element => element.id === props.selected_transaction.customer_id);
+    transport_trans_Form.customer_id_2 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_2);
+    transport_trans_Form.customer_id_3 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3);
+    transport_trans_Form.customer_id_4 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4);
+
+
     transport_trans_Form.transporter_id = props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id);
     transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
     transport_trans_Form.contract_no = props.selected_transaction.contract_no;
@@ -422,6 +463,7 @@ let updateSelectValues = () => {
     transport_trans_Form.traders_notes_customer = props.selected_transaction.traders_notes_customer;
     transport_trans_Form.traders_notes_transport = props.selected_transaction.traders_notes_transport;
     transport_trans_Form.is_transaction_done = props.selected_transaction.is_transaction_done;
+    transport_trans_Form.is_split_load = props.selected_transaction.is_split_load;
     transport_trans_Form.clearErrors();
 
 
@@ -435,9 +477,21 @@ let updateSelectValues = () => {
     transport_load_Form.billing_units_outgoing_id = props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_outgoing_id);
     transport_load_Form.collection_address_id = transport_trans_Form.supplier_id.addressable.find(element => element.id === props.selected_transaction.transport_load.collection_address_id);
     transport_load_Form.delivery_address_id = transport_trans_Form.customer_id.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id);
+    transport_load_Form.delivery_address_id_2 = props.selected_transaction.transport_load.delivery_address_id_2 === null? null: transport_trans_Form.customer_id_2.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_2);
+    transport_load_Form.delivery_address_id_3 = props.selected_transaction.transport_load.delivery_address_id_3 === null? null: transport_trans_Form.customer_id_3.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_3);
+    transport_load_Form.delivery_address_id_4 = props.selected_transaction.transport_load.delivery_address_id_4 === null? null: transport_trans_Form.customer_id_4.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_4);
+
+
+
     transport_load_Form.product_grade_perc= props.selected_transaction.transport_load.product_grade_perc;
     transport_load_Form.no_units_incoming= props.selected_transaction.transport_load.no_units_incoming;
     transport_load_Form.no_units_outgoing= props.selected_transaction.transport_load.no_units_outgoing;
+
+    transport_load_Form.no_units_outgoing_2= props.selected_transaction.transport_load.no_units_outgoing_2;
+    transport_load_Form.no_units_outgoing_3= props.selected_transaction.transport_load.no_units_outgoing_3;
+    transport_load_Form.no_units_outgoing_4= props.selected_transaction.transport_load.no_units_outgoing_4;
+    transport_load_Form.no_units_outgoing_total= props.selected_transaction.transport_load.no_units_outgoing_total;
+
     transport_load_Form.is_weighbridge_certificate_received= props.selected_transaction.transport_load.is_weighbridge_certificate_received;
     transport_load_Form.delivery_note= props.selected_transaction.transport_load.delivery_note;
     transport_load_Form.calculated_route_distance= props.selected_transaction.transport_load.calculated_route_distance;
@@ -462,6 +516,15 @@ let updateSelectValues = () => {
 
         transport_job_Form.customer_order_number= props.selected_transaction.transport_job.customer_order_number;
         transport_job_Form.supplier_loading_number= props.selected_transaction.transport_job.supplier_loading_number;
+        transport_job_Form.customer_order_number_2= props.selected_transaction.transport_job.customer_order_number_2;
+        transport_job_Form.supplier_loading_number_2= props.selected_transaction.transport_job.supplier_loading_number_2;
+        transport_job_Form.customer_order_number_3= props.selected_transaction.transport_job.customer_order_number_3;
+        transport_job_Form.supplier_loading_number_3= props.selected_transaction.transport_job.supplier_loading_number_3;
+        transport_job_Form.customer_order_number_4= props.selected_transaction.transport_job.customer_order_number_4;
+        transport_job_Form.supplier_loading_number_4= props.selected_transaction.transport_job.supplier_loading_number_4;
+
+
+
         transport_job_Form.is_multi_loads= props.selected_transaction.transport_job.is_multi_loads;
         transport_job_Form.is_approved= props.selected_transaction.transport_job.is_approved;
         transport_job_Form.is_transport_costs_inc_price= props.selected_transaction.transport_job.is_transport_costs_inc_price;
@@ -483,6 +546,14 @@ let updateSelectValues = () => {
         transport_finance_Form.cost_price_per_unit = props.selected_transaction.transport_finance.cost_price_per_unit;
         transport_finance_Form.selling_price_per_unit = props.selected_transaction.transport_finance.selling_price_per_unit;
         transport_finance_Form.transport_rate =props.selected_transaction.transport_finance.transport_rate;
+        transport_finance_Form.transport_cost_2 =props.selected_transaction.transport_finance.transport_cost_2;
+        transport_finance_Form.transport_cost_3 =props.selected_transaction.transport_finance.transport_cost_3;
+        transport_finance_Form.transport_cost_4 =props.selected_transaction.transport_finance.transport_cost_4;
+
+        transport_finance_Form.selling_price_2 =props.selected_transaction.transport_finance.selling_price_2;
+        transport_finance_Form.selling_price_3 =props.selected_transaction.transport_finance.selling_price_3;
+        transport_finance_Form.selling_price_4 =props.selected_transaction.transport_finance.selling_price_4;
+
         transport_finance_Form.additional_cost_1 = props.selected_transaction.transport_finance.additional_cost_1;
         transport_finance_Form.additional_cost_2 = props.selected_transaction.transport_finance.additional_cost_2;
         transport_finance_Form.additional_cost_3 = props.selected_transaction.transport_finance.additional_cost_3;
@@ -517,7 +588,13 @@ let transport_trans_Form = useForm({
 
     product_id: props.all_products.find(element => element.id === props.selected_transaction.product_id),
     supplier_id: props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id),
+
     customer_id: props.all_customers.find(element => element.id === props.selected_transaction.customer_id),
+    customer_id_2: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_2),
+    customer_id_3: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3),
+    customer_id_4: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4),
+    customer_id_5: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_5),
+
     transporter_id: props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id),
     contract_type_id: props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id),
     contract_no: props.selected_transaction.contract_no,
@@ -539,6 +616,7 @@ let transport_trans_Form = useForm({
     traders_notes_customer: props.selected_transaction.traders_notes_customer,
     traders_notes_transport: props.selected_transaction.traders_notes_transport,
     is_transaction_done: props.selected_transaction.is_transaction_done,
+    is_split_load: props.selected_transaction.is_split_load
 });
 
 let transport_load_Form = useForm({
@@ -551,18 +629,43 @@ let transport_load_Form = useForm({
     billing_units_outgoing_id: props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_outgoing_id),
     collection_address_id: transport_trans_Form.supplier_id.addressable.find(element => element.id === props.selected_transaction.transport_load.collection_address_id),
     delivery_address_id: transport_trans_Form.customer_id.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id),
+
+    delivery_address_id_2: transport_trans_Form.customer_id_2.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_2),
+    delivery_address_id_3: props.selected_transaction.transport_load.delivery_address_id_3 === null? null: transport_trans_Form.customer_id_3.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_3),
+    delivery_address_id_4: props.selected_transaction.transport_load.delivery_address_id_4 === null? null: transport_trans_Form.customer_id_4.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_4),
+    delivery_address_id_5: props.selected_transaction.transport_load.delivery_address_id_5 === null? null: transport_trans_Form.customer_id_5.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_5),
+
+
+
     product_grade_perc: props.selected_transaction.transport_load.product_grade_perc,
     no_units_incoming: props.selected_transaction.transport_load.no_units_incoming,
     no_units_outgoing: props.selected_transaction.transport_load.no_units_outgoing,
+    no_units_outgoing_2: props.selected_transaction.transport_load.no_units_outgoing_2,
+    no_units_outgoing_3: props.selected_transaction.transport_load.no_units_outgoing_3,
+    no_units_outgoing_4: props.selected_transaction.transport_load.no_units_outgoing_4,
+    no_units_outgoing_5: props.selected_transaction.transport_load.no_units_outgoing_5,
     is_weighbridge_certificate_received: props.selected_transaction.transport_load.is_weighbridge_certificate_received,
     delivery_note: props.selected_transaction.transport_load.delivery_note,
     calculated_route_distance: props.selected_transaction.transport_load.calculated_route_distance,
 
 });
 
+let no_units_to_allocate = computed(()=> transport_load_Form.no_units_outgoing - transport_load_Form.no_units_outgoing_2 - transport_load_Form.no_units_outgoing_3 - transport_load_Form.no_units_outgoing_4 - transport_load_Form.no_units_outgoing_5) ;
+
+
 let transport_job_Form = useForm({
     customer_order_number: props.selected_transaction.transport_job.customer_order_number,
     supplier_loading_number: props.selected_transaction.transport_job.supplier_loading_number,
+
+    customer_order_number_2: props.selected_transaction.transport_job.customer_order_number_2,
+    supplier_loading_number_2: props.selected_transaction.transport_job.supplier_loading_number_2,
+    customer_order_number_3: props.selected_transaction.transport_job.customer_order_number_3,
+    supplier_loading_number_3: props.selected_transaction.transport_job.supplier_loading_number_3,
+    customer_order_number_4: props.selected_transaction.transport_job.customer_order_number_4,
+    supplier_loading_number_4: props.selected_transaction.transport_job.supplier_loading_number_4,
+    customer_order_number_5: props.selected_transaction.transport_job.customer_order_number_5,
+    supplier_loading_number_5: props.selected_transaction.transport_job.supplier_loading_number_5,
+
     is_multi_loads: props.selected_transaction.transport_job.is_multi_loads,
     is_approved: props.selected_transaction.transport_job.is_approved,
     is_transport_costs_inc_price: props.selected_transaction.transport_job.is_transport_costs_inc_price,
@@ -583,6 +686,14 @@ let transport_finance_Form = useForm({
     cost_price_per_unit: props.selected_transaction.transport_finance.cost_price_per_unit,
     selling_price_per_unit: props.selected_transaction.transport_finance.selling_price_per_unit,
     transport_rate:props.selected_transaction.transport_finance.transport_rate,
+    transport_cost_2:props.selected_transaction.transport_finance.transport_cost_2,
+    transport_cost_3:props.selected_transaction.transport_finance.transport_cost_3,
+    transport_cost_4:props.selected_transaction.transport_finance.transport_cost_4,
+    transport_cost_5:props.selected_transaction.transport_finance.transport_cost_5,
+    selling_price_2:props.selected_transaction.transport_finance.selling_price_2,
+    selling_price_3:props.selected_transaction.transport_finance.selling_price_3,
+    selling_price_4:props.selected_transaction.transport_finance.selling_price_4,
+    selling_price_5:props.selected_transaction.transport_finance.selling_price_5,
     additional_cost_1: props.selected_transaction.transport_finance.additional_cost_1,
     additional_cost_2: props.selected_transaction.transport_finance.additional_cost_2,
     additional_cost_3: props.selected_transaction.transport_finance.additional_cost_3,
@@ -593,6 +704,10 @@ let transport_finance_Form = useForm({
     adjusted_gp_notes: props.selected_transaction.transport_finance.adjusted_gp_notes,
 
 });
+
+let selling_price_to_allocate = computed(()=>props.selected_transaction.transport_finance.selling_price - transport_finance_Form.selling_price_2 - transport_finance_Form.selling_price_3 -  transport_finance_Form.selling_price_4 -  transport_finance_Form.selling_price_5) ;
+let transport_cost_to_allocate = computed(()=>props.selected_transaction.transport_finance.transport_cost - transport_finance_Form.transport_cost_2 - transport_finance_Form.transport_cost_3 -  transport_finance_Form.transport_cost_4 -  transport_finance_Form.transport_cost_5) ;
+
 
 let transport_invoice_Form = useForm({
     transport_trans_id: props.selected_transaction.id,
@@ -1031,6 +1146,50 @@ const filteredDeliveryAddress = computed(() =>
         })
 );
 
+let deliveryAddressQuery2 = ref('');
+
+const filteredDeliveryAddress2 = computed(() =>
+    deliveryAddressQuery2.value === ''
+        ? transport_trans_Form.customer_id_2.addressable
+        : transport_trans_Form.customer_id_2.addressable.filter((address) => {
+            return address.line_1.toLowerCase().includes(deliveryAddressQuery2.value.toLowerCase())
+        })
+);
+
+let deliveryAddressQuery3 = ref('');
+
+const filteredDeliveryAddress3 = computed(() =>
+    deliveryAddressQuery3.value === ''
+        ? transport_trans_Form.customer_id_3.addressable
+        : transport_trans_Form.customer_id_3.addressable.filter((address) => {
+            return address.line_1.toLowerCase().includes(deliveryAddressQuery3.value.toLowerCase())
+        })
+);
+
+let deliveryAddressQuery4 = ref('');
+
+const filteredDeliveryAddress4 = computed(() =>
+    deliveryAddressQuery4.value === ''
+        ? transport_trans_Form.customer_id_4.addressable
+        : transport_trans_Form.customer_id_4.addressable.filter((address) => {
+            return address.line_1.toLowerCase().includes(deliveryAddressQuery4.value.toLowerCase())
+        })
+);
+
+
+let deliveryAddressQuery5 = ref('');
+
+const filteredDeliveryAddress5 = computed(() =>
+    deliveryAddressQuery5.value === ''
+        ? transport_trans_Form.customer_id_5.addressable
+        : transport_trans_Form.customer_id_5.addressable.filter((address) => {
+            return address.line_1.toLowerCase().includes(deliveryAddressQuery5.value.toLowerCase())
+        })
+);
+
+
+
+
 let billingUnitsIncomingQuery = ref('');
 
 const filteredBillingUnitsIncoming = computed(() =>
@@ -1101,6 +1260,52 @@ const filteredCustomers = computed(() =>
         })
 );
 
+let customerQuery2 = ref('');
+
+const filteredCustomers2 = computed(() =>
+    customerQuery2.value === ''
+        ? props.all_customers
+        : props.all_customers.filter((customer) => {
+            return customer.last_legal_name.toLowerCase().includes(customerQuery2.value.toLowerCase())
+        })
+);
+
+
+let customerQuery3 = ref('');
+
+const filteredCustomers3 = computed(() =>
+    customerQuery3.value === ''
+        ? props.all_customers
+        : props.all_customers.filter((customer) => {
+            return customer.last_legal_name.toLowerCase().includes(customerQuery3.value.toLowerCase())
+        })
+);
+
+let customerQuery4 = ref('');
+
+const filteredCustomers4 = computed(() =>
+    customerQuery4.value === ''
+        ? props.all_customers
+        : props.all_customers.filter((customer) => {
+            return customer.last_legal_name.toLowerCase().includes(customerQuery4.value.toLowerCase())
+        })
+);
+
+let customerQuery5 = ref('');
+
+const filteredCustomers5 = computed(() =>
+    customerQuery3.value === ''
+        ? props.all_customers
+        : props.all_customers.filter((customer) => {
+            return customer.last_legal_name.toLowerCase().includes(customerQuery5.value.toLowerCase())
+        })
+);
+
+
+
+
+
+
 let transporterQuery = ref('');
 
 const filteredTransporters = computed(() =>
@@ -1142,8 +1347,15 @@ const closeDriverVehicleModal = () => {
 
 let viewContractLinkModal = ref(false);
 
+let viewContractLinkModalSc = ref(false);
+
 const viewContractLink = () => {
     viewContractLinkModal.value = true;
+
+};
+
+const viewContractLinkSc = () => {
+    viewContractLinkModalSc.value = true;
 
 };
 
@@ -1154,8 +1366,13 @@ const filteredLinkedContractsMq = computed(() =>
     ));
 
 const filteredLinkedContractsPc = computed(() =>
-    props.linked_trans.filter((trans_link) => {
+    props.linked_trans_pc.filter((trans_link) => {
         return (trans_link.trans_link_type_id === 3);
+    }));
+
+const filteredLinkedContractsSc = computed(() =>
+    props.linked_trans_sc.filter((trans_link) => {
+        return (trans_link.trans_link_type_id === 4);
     }));
 
 const sumLinkedContractsMq = computed(() => {
@@ -1195,6 +1412,8 @@ const sumLinkedContractsPc = computed(() => {
     }
     return sum;
 });
+
+
 
 let showDetails = ref(true);
 
@@ -1327,6 +1546,9 @@ const doCreatedTrade = (_id) => {
                                                 <input v-model.number="filterForm.id" aria-label="Search" class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                        placeholder="contract no..."
                                                        type="search"/>
+                                                <input v-model.number="filterForm.a_mq" aria-label="Search" class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                       placeholder="approved mq no..."
+                                                       type="search"/>
 
 
                                             </div>
@@ -1440,6 +1662,7 @@ const doCreatedTrade = (_id) => {
                                                         <td :class="row_styler" >
                                                             <div class="font-bold">{{transaction.id}}</div>
                                                             <div>{{transaction.old_id}}</div>
+                                                            <div class="text-indigo-500" v-if="transaction.a_mq">{{transaction.a_mq}}</div>
 
                                                         </td>
                                                         <td :class="row_styler">
@@ -1752,6 +1975,10 @@ const doCreatedTrade = (_id) => {
                                                                     </Combobox>
 
                                                                     <InputError class="mt-2" :message="transport_load_Form.errors['collection_address_id.id']"/></div>
+
+                                                                <div class="mt-2">
+                                                                    <Link class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('supplier.show',transport_trans_Form.supplier_id)" >+ Add supplier address</Link>
+                                                                </div>
                                                             </div>
                                                         </dd>
                                                     </div>
@@ -2323,11 +2550,75 @@ const doCreatedTrade = (_id) => {
                                                 <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Customer details</div>
                                                 </div>
+
+
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Split Load</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                    <Switch v-model="transport_trans_Form.is_split_load"
+                                                                            :class="[transport_trans_Form.is_split_load ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                <span aria-hidden="true"
+                                                                      :class="[transport_trans_Form.is_split_load ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                                    </Switch>
+                                                                </SwitchGroup>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+<!--                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <p class="text-gray-500">Customer Parent</p>
+
+                                                                <Combobox as="div" v-model="transport_trans_Form.customer_id.customer_parent_id">
+
+                                                                    <div class="relative mt-2">
+
+                                                                        <ComboboxInput
+                                                                            class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="customerParentQuery = $event.target.value"
+                                                                            :display-value="(customer) => customer?.last_legal_name"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                               aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <ComboboxOptions v-if="filteredCustomersParents.length > 0"
+                                                                                         class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                            <ComboboxOption v-for="customer in filteredCustomersParents"
+                                                                                            :key="customer.id" :value="customer"
+                                                                                            as="template" v-slot="{ active, selected }">
+                                                                                <ul>
+                                                                                    <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                        <span
+                                                                                                            :class="['block truncate', selected && 'font-semibold']">
+                                                                                                          {{ customer.last_legal_name }}
+                                                                                                        </span>
+
+                                                                                        <span v-if="selected"
+                                                                                              :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                          <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                        </span>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </ComboboxOption>
+                                                                        </ComboboxOptions>
+                                                                    </div>
+                                                                </Combobox>
+                                                            </div>
+                                                        </dd>
+
+                                                    </div>-->
+
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-
+                                                                <p class="text-gray-500">Customer</p>
                                                                 <Combobox as="div" v-model="transport_trans_Form.customer_id">
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
@@ -2363,8 +2654,6 @@ const doCreatedTrade = (_id) => {
                                                                         </ComboboxOptions>
                                                                     </div>
                                                                 </Combobox>
-
-
                                                             </div>
                                                         </dd>
 
@@ -2452,10 +2741,12 @@ const doCreatedTrade = (_id) => {
                                                                         </div>
                                                                     </Combobox>
                                                                 </div>
+                                                                <div class="mt-2">
+                                                                    <Link class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('supplier.show',transport_trans_Form.customer_id)" >+ Add customer address</Link>
+                                                                </div>
                                                             </div>
                                                         </dd>
                                                     </div>
-
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <div>
                                                             <div v-if="transport_load_Form.delivery_address_id">
@@ -2697,6 +2988,1410 @@ const doCreatedTrade = (_id) => {
 
                                                 </dl>
                                             </li>
+                                        </ul>
+                                    </div>
+
+                                    <div v-if="selectedTabId === 11">
+
+
+                                        <div>
+                                            <table class="min-w-full divide-y divide-gray-300">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col" class="whitespace py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">No</th>
+                                                    <th scope="col" class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Customer</th>
+                                                    <th scope="col" class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Address</th>
+                                                    <th scope="col" class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Deal ticket</th>
+                                                    <th scope="col" class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Customer order no</th>
+                                                    <th scope="col" class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Supplier loading no</th>
+                                                    <th scope="col" class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Unit Split</th>
+                                                    <th scope="col" class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Transport Split</th>
+                                                    <th scope="col" class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Selling Split</th>
+
+                                                </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-200 bg-white">
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">2</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_2">
+                                                                <div class="relative mt-2">
+                                                                    <ComboboxInput
+                                                                        class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                        @change="customerQuery2 = $event.target.value"
+                                                                        :display-value="(customer) => customer?.last_legal_name"/>
+                                                                    <ComboboxButton
+                                                                        class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                        <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                           aria-hidden="true"/>
+                                                                    </ComboboxButton>
+
+                                                                    <ComboboxOptions v-if="filteredCustomers2.length > 0"
+                                                                                     class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                        <ComboboxOption v-for="customer in filteredCustomers2"
+                                                                                        :key="customer.id" :value="customer"
+                                                                                        as="template" v-slot="{ active, selected }">
+
+                                                                            <ul>
+                                                                                <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                        <span
+                                                                                                            :class="['block truncate', selected && 'font-semibold']">
+                                                                                                          {{ customer.last_legal_name }}
+                                                                                                        </span>
+
+                                                                                    <span v-if="selected"
+                                                                                          :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                          <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                        </span>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </ComboboxOption>
+                                                                    </ComboboxOptions>
+                                                                </div>
+                                                            </Combobox>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+
+                                                            <div>
+                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_2">
+
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="deliveryAddressQuery2 = $event.target.value"
+                                                                            :display-value="(address) => address?.line_1"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                               aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <div v-if="filteredDeliveryAddress2 != null">
+                                                                            <ComboboxOptions v-if="filteredDeliveryAddress2.length > 0"
+                                                                                             class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                <ComboboxOption v-for="address in filteredDeliveryAddress2"
+                                                                                                :key="address.id" :value="address" as="template"
+                                                                                                v-slot="{ active, selected }">
+                                                                                    <ul>
+                                                                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                            <div class="flex items-center">
+                                                                                                            <span
+                                                                                                                :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                aria-hidden="true"/>
+                                                                                                <span
+                                                                                                    :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                    <span>
+                                                                                                                        {{ address.line_1 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_2">
+                                                                                                                       , {{ address.line_2 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_3">
+                                                                                                                       , {{ address.line_3 }}
+                                                                                                                    </span>
+                                                                                                             <span class="sr-only"> is {{
+                                                                                                                     address.is_primary ? 'online' : 'offline'
+                                                                                                                 }}</span> </span>
+                                                                                            </div>
+
+                                                                                            <span v-if="selected"
+                                                                                                  :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                            <CheckIcon class="h-5 w-5"
+                                                                                                                       aria-hidden="true"/> </span>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </ComboboxOption>
+                                                                            </ComboboxOptions>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </Combobox>
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div v-if="selected_transaction.deal_ticket.is_active">
+                                                            <div class="text-green-400">Deal Ticket is Active </div>
+                                                            <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                            <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_b</div>
+                                                        </div>
+
+                                                        <div v-else class="text-red-400">
+                                                            Deal Ticket Not Active
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_job_Form.customer_order_number_2" type="text" class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_job_Form.supplier_loading_number_2" type="text"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_load_Form.no_units_outgoing_2" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_finance_Form.transport_cost_2" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_finance_Form.selling_price_2" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                </tr>
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">3</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_3">
+                                                                <div class="relative mt-2">
+                                                                    <ComboboxInput
+                                                                        class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                        @change="customerQuery3 = $event.target.value"
+                                                                        :display-value="(customer) => customer?.last_legal_name"/>
+                                                                    <ComboboxButton
+                                                                        class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                        <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                           aria-hidden="true"/>
+                                                                    </ComboboxButton>
+
+                                                                    <ComboboxOptions v-if="filteredCustomers3.length > 0"
+                                                                                     class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                        <ComboboxOption v-for="customer in filteredCustomers3"
+                                                                                        :key="customer.id" :value="customer"
+                                                                                        as="template" v-slot="{ active, selected }">
+
+                                                                            <ul>
+                                                                                <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                        <span
+                                                                                                            :class="['block truncate', selected && 'font-semibold']">
+                                                                                                          {{ customer.last_legal_name }}
+                                                                                                        </span>
+
+                                                                                    <span v-if="selected"
+                                                                                          :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                          <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                        </span>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </ComboboxOption>
+                                                                    </ComboboxOptions>
+                                                                </div>
+                                                            </Combobox>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+
+                                                            <div>
+                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_3">
+
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="deliveryAddressQuery3 = $event.target.value"
+                                                                            :display-value="(address) => address?.line_1"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                               aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <div v-if="filteredDeliveryAddress3 != null">
+                                                                            <ComboboxOptions v-if="filteredDeliveryAddress3.length > 0"
+                                                                                             class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                <ComboboxOption v-for="address in filteredDeliveryAddress3"
+                                                                                                :key="address.id" :value="address" as="template"
+                                                                                                v-slot="{ active, selected }">
+                                                                                    <ul>
+                                                                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                            <div class="flex items-center">
+                                                                                                            <span
+                                                                                                                :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                aria-hidden="true"/>
+                                                                                                <span
+                                                                                                    :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                    <span>
+                                                                                                                        {{ address.line_1 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_2">
+                                                                                                                       , {{ address.line_2 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_3">
+                                                                                                                       , {{ address.line_3 }}
+                                                                                                                    </span>
+                                                                                                             <span class="sr-only"> is {{
+                                                                                                                     address.is_primary ? 'online' : 'offline'
+                                                                                                                 }}</span> </span>
+                                                                                            </div>
+
+                                                                                            <span v-if="selected"
+                                                                                                  :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                            <CheckIcon class="h-5 w-5"
+                                                                                                                       aria-hidden="true"/> </span>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </ComboboxOption>
+                                                                            </ComboboxOptions>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </Combobox>
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div v-if="selected_transaction.deal_ticket.is_active">
+                                                            <div class="text-green-400">Deal Ticket is Active </div>
+                                                            <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                            <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_c</div>
+                                                        </div>
+
+                                                        <div v-else class="text-red-400">
+                                                            Deal Ticket Not Active
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_job_Form.customer_order_number_3" type="text" class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_job_Form.supplier_loading_number_3" type="text"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_load_Form.no_units_outgoing_3" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_finance_Form.transport_cost_3" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_finance_Form.selling_price_3" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                </tr>
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">4</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_4">
+                                                                <div class="relative mt-2">
+                                                                    <ComboboxInput
+                                                                        class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                        @change="customerQuery4 = $event.target.value"
+                                                                        :display-value="(customer) => customer?.last_legal_name"/>
+                                                                    <ComboboxButton
+                                                                        class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                        <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                           aria-hidden="true"/>
+                                                                    </ComboboxButton>
+
+                                                                    <ComboboxOptions v-if="filteredCustomers4.length > 0"
+                                                                                     class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                        <ComboboxOption v-for="customer in filteredCustomers4"
+                                                                                        :key="customer.id" :value="customer"
+                                                                                        as="template" v-slot="{ active, selected }">
+
+                                                                            <ul>
+                                                                                <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                        <span
+                                                                                                            :class="['block truncate', selected && 'font-semibold']">
+                                                                                                          {{ customer.last_legal_name }}
+                                                                                                        </span>
+
+                                                                                    <span v-if="selected"
+                                                                                          :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                          <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                        </span>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </ComboboxOption>
+                                                                    </ComboboxOptions>
+                                                                </div>
+                                                            </Combobox>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+
+                                                            <div>
+                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_4">
+
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="deliveryAddressQuery4 = $event.target.value"
+                                                                            :display-value="(address) => address?.line_1"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                               aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <div v-if="filteredDeliveryAddress4 != null">
+                                                                            <ComboboxOptions v-if="filteredDeliveryAddress4.length > 0"
+                                                                                             class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                <ComboboxOption v-for="address in filteredDeliveryAddress4"
+                                                                                                :key="address.id" :value="address" as="template"
+                                                                                                v-slot="{ active, selected }">
+                                                                                    <ul>
+                                                                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                            <div class="flex items-center">
+                                                                                                            <span
+                                                                                                                :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                aria-hidden="true"/>
+                                                                                                <span
+                                                                                                    :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                    <span>
+                                                                                                                        {{ address.line_1 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_2">
+                                                                                                                       , {{ address.line_2 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_3">
+                                                                                                                       , {{ address.line_3 }}
+                                                                                                                    </span>
+                                                                                                             <span class="sr-only"> is {{
+                                                                                                                     address.is_primary ? 'online' : 'offline'
+                                                                                                                 }}</span> </span>
+                                                                                            </div>
+
+                                                                                            <span v-if="selected"
+                                                                                                  :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                            <CheckIcon class="h-5 w-5"
+                                                                                                                       aria-hidden="true"/> </span>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </ComboboxOption>
+                                                                            </ComboboxOptions>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </Combobox>
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div v-if="selected_transaction.deal_ticket.is_active">
+                                                            <div class="text-green-400">Deal Ticket is Active </div>
+                                                            <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                            <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_d</div>
+                                                        </div>
+
+                                                        <div v-else class="text-red-400">
+                                                            Deal Ticket Not Active
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_job_Form.customer_order_number_4" type="text" class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_job_Form.supplier_loading_number_4" type="text"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_load_Form.no_units_outgoing_4" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_finance_Form.transport_cost_4" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_finance_Form.selling_price_4" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                </tr>
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">5</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_5">
+                                                                <div class="relative mt-2">
+                                                                    <ComboboxInput
+                                                                        class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                        @change="customerQuery5 = $event.target.value"
+                                                                        :display-value="(customer) => customer?.last_legal_name"/>
+                                                                    <ComboboxButton
+                                                                        class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                        <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                           aria-hidden="true"/>
+                                                                    </ComboboxButton>
+
+                                                                    <ComboboxOptions v-if="filteredCustomers5.length > 0"
+                                                                                     class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                        <ComboboxOption v-for="customer in filteredCustomers5"
+                                                                                        :key="customer.id" :value="customer"
+                                                                                        as="template" v-slot="{ active, selected }">
+
+                                                                            <ul>
+                                                                                <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                        <span
+                                                                                                            :class="['block truncate', selected && 'font-semibold']">
+                                                                                                          {{ customer.last_legal_name }}
+                                                                                                        </span>
+
+                                                                                    <span v-if="selected"
+                                                                                          :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                          <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                        </span>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </ComboboxOption>
+                                                                    </ComboboxOptions>
+                                                                </div>
+                                                            </Combobox>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+
+                                                            <div>
+                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_5">
+
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="deliveryAddressQuery5 = $event.target.value"
+                                                                            :display-value="(address) => address?.line_1"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                               aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <div v-if="filteredDeliveryAddress5 != null">
+                                                                            <ComboboxOptions v-if="filteredDeliveryAddress5.length > 0"
+                                                                                             class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                <ComboboxOption v-for="address in filteredDeliveryAddress5"
+                                                                                                :key="address.id" :value="address" as="template"
+                                                                                                v-slot="{ active, selected }">
+                                                                                    <ul>
+                                                                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                            <div class="flex items-center">
+                                                                                                            <span
+                                                                                                                :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                aria-hidden="true"/>
+                                                                                                <span
+                                                                                                    :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                    <span>
+                                                                                                                        {{ address.line_1 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_2">
+                                                                                                                       , {{ address.line_2 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_3">
+                                                                                                                       , {{ address.line_3 }}
+                                                                                                                    </span>
+                                                                                                             <span class="sr-only"> is {{
+                                                                                                                     address.is_primary ? 'online' : 'offline'
+                                                                                                                 }}</span> </span>
+                                                                                            </div>
+
+                                                                                            <span v-if="selected"
+                                                                                                  :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                            <CheckIcon class="h-5 w-5"
+                                                                                                                       aria-hidden="true"/> </span>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </ComboboxOption>
+                                                                            </ComboboxOptions>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </Combobox>
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div v-if="selected_transaction.deal_ticket.is_active">
+                                                            <div class="text-green-400">Deal Ticket is Active </div>
+                                                            <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                            <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_e</div>
+                                                        </div>
+
+                                                        <div v-else class="text-red-400">
+                                                            Deal Ticket Not Active
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_job_Form.customer_order_number_5" type="text" class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_job_Form.supplier_loading_number_5" type="text"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_load_Form.no_units_outgoing_5" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_finance_Form.transport_cost_5" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <input v-model="transport_finance_Form.selling_price_5" type="number"
+                                                               class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                    </td>
+
+                                                </tr>
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"></td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        Balances to allocate:
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                       <div class="m-2">{{no_units_to_allocate}}</div>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div class="m-2">{{NiceNumber(transport_cost_to_allocate)}}</div>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div class="m-2">{{NiceNumber(selling_price_to_allocate)}}</div>
+                                                    </td>
+
+                                                </tr>
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+
+                                        <ul class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8" role="list">
+
+<!--
+                                            <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Customer #2 details</div>
+                                                </div>
+
+                                                <div class="mb-2 ml-4">
+                                                    <div v-if="selected_transaction.deal_ticket.is_active" class=" mt-3">
+                                                        <div class="text-green-400">Deal Ticket is Active </div>
+                                                        <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                        <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_b</div>
+                                                    </div>
+
+                                                    <div v-else class="text-red-400 mt-3">
+                                                        Deal Ticket Not Active
+                                                    </div>
+                                                </div>
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+
+                                                                <Combobox as="div" v-model="transport_trans_Form.customer_id_2">
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="customerQuery2 = $event.target.value"
+                                                                            :display-value="(customer) => customer?.last_legal_name"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                               aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <ComboboxOptions v-if="filteredCustomers2.length > 0"
+                                                                                         class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                            <ComboboxOption v-for="customer in filteredCustomers2"
+                                                                                            :key="customer.id" :value="customer"
+                                                                                            as="template" v-slot="{ active, selected }">
+
+                                                                                <ul>
+                                                                                    <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                        <span
+                                                                                                            :class="['block truncate', selected && 'font-semibold']">
+                                                                                                          {{ customer.last_legal_name }}
+                                                                                                        </span>
+
+                                                                                        <span v-if="selected"
+                                                                                              :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                          <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                        </span>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </ComboboxOption>
+                                                                        </ComboboxOptions>
+                                                                    </div>
+                                                                </Combobox>
+
+                                                            </div>
+                                                        </dd>
+
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Customer Order number</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="transport_job_Form.customer_order_number" type="text"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Supplier loading number</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="transport_job_Form.supplier_loading_number" type="text"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">No Units</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="transport_load_Form.no_units_outgoing_2" type="number"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                </dl>
+
+                                            </li>
+                                            <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Customer #2 Account details</div>
+                                                </div>
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Delivery Address</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <div class="mt-2">
+                                                                    <Combobox as="div" v-model="transport_load_Form.delivery_address_id_2">
+
+                                                                        <div class="relative mt-2">
+                                                                            <ComboboxInput
+                                                                                class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                                @change="deliveryAddressQuery2 = $event.target.value"
+                                                                                :display-value="(address) => address?.line_1"/>
+                                                                            <ComboboxButton
+                                                                                class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                                <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                                   aria-hidden="true"/>
+                                                                            </ComboboxButton>
+
+                                                                            <div v-if="filteredDeliveryAddress2 != null">
+                                                                                <ComboboxOptions v-if="filteredDeliveryAddress2.length > 0"
+                                                                                                  class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                <ComboboxOption v-for="address in filteredDeliveryAddress2"
+                                                                                                :key="address.id" :value="address" as="template"
+                                                                                                v-slot="{ active, selected }">
+                                                                                    <ul>
+                                                                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                            <div class="flex items-center">
+                                                                                                            <span
+                                                                                                                :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                aria-hidden="true"/>
+                                                                                                <span
+                                                                                                    :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                    <span>
+                                                                                                                        {{ address.line_1 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_2">
+                                                                                                                       , {{ address.line_2 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_3">
+                                                                                                                       , {{ address.line_3 }}
+                                                                                                                    </span>
+                                                                                                             <span class="sr-only"> is {{
+                                                                                                                     address.is_primary ? 'online' : 'offline'
+                                                                                                                 }}</span> </span>
+                                                                                            </div>
+
+                                                                                            <span v-if="selected"
+                                                                                                  :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                            <CheckIcon class="h-5 w-5"
+                                                                                                                       aria-hidden="true"/> </span>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </ComboboxOption>
+                                                                            </ComboboxOptions>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </Combobox>
+                                                                </div>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <div>
+                                                            <div v-if="transport_load_Form.delivery_address_id_2">
+                                                                <h3 class="text-base font-semibold leading-7 text-indigo-400">
+                                                                    Selected Delivery Address:</h3>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Line 1</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.line_1 }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Line 2</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.line_2 }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Line 3</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.line_3 }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Country</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.country }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Code</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.code }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div v-else>
+                                                                No customer addresses loaded...
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div v-if="selected_transaction.customer_2">
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Payment Terms</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>{{selected_transaction.customer_2.terms_of_payment.value}}</div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Invoice basis</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>{{selected_transaction.customer_2.invoice_basis.value}}</div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">VAT Exempt</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>
+                                                                    <check-icon v-if="selected_transaction.customer_2.is_vat_exempt" class="w-6 h-6 fill-green-300 " />
+                                                                    <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">VAT Certificate</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>
+                                                                    <check-icon v-if="selected_transaction.customer_2.is_vat_cert_received" class="w-6 h-6 fill-green-300 " />
+                                                                    <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                    </div>
+
+                                                </dl>
+                                            </li>
+
+                                            <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Customer #3 details</div>
+                                                </div>
+
+                                                <div class="mb-2 ml-4">
+                                                    <div v-if="selected_transaction.deal_ticket.is_active" class=" mt-3">
+                                                        <div class="text-green-400">Deal Ticket is Active </div>
+                                                        <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                        <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_c</div>
+                                                    </div>
+
+                                                    <div v-else class="text-red-400 mt-3">
+                                                        Deal Ticket Not Active
+                                                    </div>
+                                                </div>
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+
+                                                                <Combobox as="div" v-model="transport_trans_Form.customer_id_3">
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="customerQuery2 = $event.target.value"
+                                                                            :display-value="(customer) => customer?.last_legal_name"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                               aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <ComboboxOptions v-if="filteredCustomers2.length > 0"
+                                                                                         class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                            <ComboboxOption v-for="customer in filteredCustomers2"
+                                                                                            :key="customer.id" :value="customer"
+                                                                                            as="template" v-slot="{ active, selected }">
+
+                                                                                <ul>
+                                                                                    <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                        <span
+                                                                                                            :class="['block truncate', selected && 'font-semibold']">
+                                                                                                          {{ customer.last_legal_name }}
+                                                                                                        </span>
+
+                                                                                        <span v-if="selected"
+                                                                                              :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                          <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                        </span>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </ComboboxOption>
+                                                                        </ComboboxOptions>
+                                                                    </div>
+                                                                </Combobox>
+
+                                                            </div>
+                                                        </dd>
+
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Customer Order number</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="transport_job_Form.customer_order_number" type="text"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Supplier loading number</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="transport_job_Form.supplier_loading_number" type="text"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">No Units</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="transport_load_Form.no_units_outgoing_3" type="number"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                </dl>
+
+                                            </li>
+                                            <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Customer #3 Account details</div>
+                                                </div>
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Delivery Address</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <div class="mt-2">
+                                                                    <Combobox as="div" v-model="transport_load_Form.delivery_address_id_3">
+
+                                                                        <div class="relative mt-2">
+                                                                            <ComboboxInput
+                                                                                class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                                @change="deliveryAddressQuery3 = $event.target.value"
+                                                                                :display-value="(address) => address?.line_1"/>
+                                                                            <ComboboxButton
+                                                                                class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                                <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                                   aria-hidden="true"/>
+                                                                            </ComboboxButton>
+
+                                                                            <div v-if="filteredDeliveryAddress3 != null">
+                                                                                <ComboboxOptions v-if="filteredDeliveryAddress3.length > 0"
+                                                                                                 class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                    <ComboboxOption v-for="address in filteredDeliveryAddress2"
+                                                                                                    :key="address.id" :value="address" as="template"
+                                                                                                    v-slot="{ active, selected }">
+                                                                                        <ul>
+                                                                                            <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                <div class="flex items-center">
+                                                                                                            <span
+                                                                                                                :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                aria-hidden="true"/>
+                                                                                                    <span
+                                                                                                        :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                    <span>
+                                                                                                                        {{ address.line_1 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_2">
+                                                                                                                       , {{ address.line_2 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_3">
+                                                                                                                       , {{ address.line_3 }}
+                                                                                                                    </span>
+                                                                                                             <span class="sr-only"> is {{
+                                                                                                                     address.is_primary ? 'online' : 'offline'
+                                                                                                                 }}</span> </span>
+                                                                                                </div>
+
+                                                                                                <span v-if="selected"
+                                                                                                      :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                            <CheckIcon class="h-5 w-5"
+                                                                                                                       aria-hidden="true"/> </span>
+                                                                                            </li>
+                                                                                        </ul>
+                                                                                    </ComboboxOption>
+                                                                                </ComboboxOptions>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </Combobox>
+                                                                </div>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <div>
+                                                            <div v-if="transport_load_Form.delivery_address_id_2">
+                                                                <h3 class="text-base font-semibold leading-7 text-indigo-400">
+                                                                    Selected Delivery Address:</h3>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Line 1</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.line_1 }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Line 2</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.line_2 }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Line 3</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.line_3 }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Country</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.country }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Code</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.code }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div v-else>
+                                                                No customer addresses loaded...
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div v-if="selected_transaction.customer_3">
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Payment Terms</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>{{selected_transaction.customer_3.terms_of_payment.value}}</div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Invoice basis</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>{{selected_transaction.customer_3.invoice_basis.value}}</div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">VAT Exempt</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>
+                                                                    <check-icon v-if="selected_transaction.customer_3.is_vat_exempt" class="w-6 h-6 fill-green-300 " />
+                                                                    <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">VAT Certificate</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>
+                                                                    <check-icon v-if="selected_transaction.customer_3.is_vat_cert_received" class="w-6 h-6 fill-green-300 " />
+                                                                    <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                    </div>
+
+                                                </dl>
+                                            </li>
+
+                                            <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Customer #3 details</div>
+                                                </div>
+
+                                                <div class="mb-2 ml-4">
+                                                    <div v-if="selected_transaction.deal_ticket.is_active" class=" mt-3">
+                                                        <div class="text-green-400">Deal Ticket is Active </div>
+                                                        <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                        <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_d</div>
+                                                    </div>
+
+                                                    <div v-else class="text-red-400 mt-3">
+                                                        Deal Ticket Not Active
+                                                    </div>
+                                                </div>
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+
+                                                                <Combobox as="div" v-model="transport_trans_Form.customer_id_4">
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="customerQuery2 = $event.target.value"
+                                                                            :display-value="(customer) => customer?.last_legal_name"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                               aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <ComboboxOptions v-if="filteredCustomers2.length > 0"
+                                                                                         class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                            <ComboboxOption v-for="customer in filteredCustomers2"
+                                                                                            :key="customer.id" :value="customer"
+                                                                                            as="template" v-slot="{ active, selected }">
+
+                                                                                <ul>
+                                                                                    <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                        <span
+                                                                                                            :class="['block truncate', selected && 'font-semibold']">
+                                                                                                          {{ customer.last_legal_name }}
+                                                                                                        </span>
+
+                                                                                        <span v-if="selected"
+                                                                                              :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                          <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                        </span>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </ComboboxOption>
+                                                                        </ComboboxOptions>
+                                                                    </div>
+                                                                </Combobox>
+
+                                                            </div>
+                                                        </dd>
+
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Customer Order number</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="transport_job_Form.customer_order_number" type="text"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Supplier loading number</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="transport_job_Form.supplier_loading_number" type="text"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">No Units</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="transport_load_Form.no_units_outgoing_4" type="number"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                </dl>
+
+                                            </li>
+                                            <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Customer #4 Account details</div>
+                                                </div>
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Delivery Address</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <div class="mt-2">
+                                                                    <Combobox as="div" v-model="transport_load_Form.delivery_address_id_4">
+
+                                                                        <div class="relative mt-2">
+                                                                            <ComboboxInput
+                                                                                class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                                @change="deliveryAddressQuery4 = $event.target.value"
+                                                                                :display-value="(address) => address?.line_1"/>
+                                                                            <ComboboxButton
+                                                                                class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                                <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                                   aria-hidden="true"/>
+                                                                            </ComboboxButton>
+
+                                                                            <div v-if="filteredDeliveryAddress4 != null">
+                                                                                <ComboboxOptions v-if="filteredDeliveryAddress3.length > 0"
+                                                                                                 class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                    <ComboboxOption v-for="address in filteredDeliveryAddress2"
+                                                                                                    :key="address.id" :value="address" as="template"
+                                                                                                    v-slot="{ active, selected }">
+                                                                                        <ul>
+                                                                                            <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                <div class="flex items-center">
+                                                                                                            <span
+                                                                                                                :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                aria-hidden="true"/>
+                                                                                                    <span
+                                                                                                        :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                    <span>
+                                                                                                                        {{ address.line_1 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_2">
+                                                                                                                       , {{ address.line_2 }}
+                                                                                                                    </span>
+                                                                                                                    <span v-if="address.line_3">
+                                                                                                                       , {{ address.line_3 }}
+                                                                                                                    </span>
+                                                                                                             <span class="sr-only"> is {{
+                                                                                                                     address.is_primary ? 'online' : 'offline'
+                                                                                                                 }}</span> </span>
+                                                                                                </div>
+
+                                                                                                <span v-if="selected"
+                                                                                                      :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                            <CheckIcon class="h-5 w-5"
+                                                                                                                       aria-hidden="true"/> </span>
+                                                                                            </li>
+                                                                                        </ul>
+                                                                                    </ComboboxOption>
+                                                                                </ComboboxOptions>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </Combobox>
+                                                                </div>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <div>
+                                                            <div v-if="transport_load_Form.delivery_address_id_2">
+                                                                <h3 class="text-base font-semibold leading-7 text-indigo-400">
+                                                                    Selected Delivery Address:</h3>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Line 1</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.line_1 }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Line 2</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.line_2 }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Line 3</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.line_3 }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Country</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.country }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                    <dt class="text-gray-500">Code</dt>
+                                                                    <dd class="text-gray-700">
+                                                                        <div>
+                                                                            {{ transport_load_Form.delivery_address_id_2.code }}
+                                                                        </div>
+                                                                    </dd>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div v-else>
+                                                                No customer addresses loaded...
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div v-if="selected_transaction.customer_4">
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Payment Terms</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>{{selected_transaction.customer_4.terms_of_payment.value}}</div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Invoice basis</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>{{selected_transaction.customer_4.invoice_basis.value}}</div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">VAT Exempt</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>
+                                                                    <check-icon v-if="selected_transaction.customer_4.is_vat_exempt" class="w-6 h-6 fill-green-300 " />
+                                                                    <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">VAT Certificate</dt>
+                                                            <dd class="text-gray-700">
+                                                                <div>
+                                                                    <check-icon v-if="selected_transaction.customer_4.is_vat_cert_received" class="w-6 h-6 fill-green-300 " />
+                                                                    <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                    </div>
+
+                                                </dl>
+                                            </li>
+-->
+
+
+
                                         </ul>
                                     </div>
 
@@ -4056,6 +5751,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="mb-2">
                                                         <div v-if="selected_transaction.deal_ticket.is_active" class=" mt-3">
                                                             <div class="text-green-400">Deal Ticket is Active </div>
+                                                            <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
                                                             <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}</div>
                                                             <div v-if="selected_transaction.contract_type_id ===4" class="mb-2 text-gray-400">OLD {{ selected_transaction.contract_type.name}}{{ selected_transaction.deal_ticket.old_id}}</div>
                                                             <div v-else class="mb-2 text-gray-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.old_id}}</div>
@@ -4515,7 +6211,7 @@ const doCreatedTrade = (_id) => {
                                                                     Unallocated
                                                                 </div>
 
-                                                                <div v-if="selected_transaction.contract_type_id === 2">
+<!--                                                                <div v-if="selected_transaction.contract_type_id === 2">
 
                                                                     <div class="text-indigo-400 font-bold">
                                                                         PC (MQ's linked to this contract)
@@ -4573,11 +6269,9 @@ const doCreatedTrade = (_id) => {
                                                                         </form>
                                                                     </div>
 
-                                                                </div>
+                                                                </div>-->
 
-                                                                <div v-if="selected_transaction.contract_type_id === 3">
-                                                                    SC
-                                                                </div>
+
 
                                                                 <div v-if="selected_transaction.contract_type_id === 4">
 
@@ -4586,7 +6280,7 @@ const doCreatedTrade = (_id) => {
                                                                     </div>
 
                                                                     <SecondaryButton class="m-1 mt-3" @click="viewContractLink">
-                                                                        Link MQ
+                                                                        Link MQ to PC
                                                                     </SecondaryButton>
 
                                                                     <ContractLinkModal
@@ -4639,11 +6333,172 @@ const doCreatedTrade = (_id) => {
                                                                                             </tbody>
                                                                                             <tfoot>
 
+                                                                                            </tfoot>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </form>
+                                                                        </div>
+
+                                                                    </div>
+
+
+
+                                                                </div>
+
+                                                            </div>
+
+
+                                                        </div>
+
+                                                    </div>
+
+
+                                                </dl>
+                                            </li>
+
+                                            <li v-if="selected_transaction.contract_type_id ===4"  class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Linked Contracts</div>
+                                                </div>
+
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+                                                    <div>
+
+                                                        <div class="">
+
+                                                            <div class="">
+
+                                                                <div v-if="selected_transaction.contract_type_id === 1">
+                                                                    Unallocated
+                                                                </div>
+
+<!--                                                                <div v-if="selected_transaction.contract_type_id === 2">
+
+                                                                    <div class="text-indigo-400 font-bold">
+                                                                        SC (MQ's linked to this contract)
+                                                                    </div>
+                                                                    <div>
+                                                                        <form class="mt-5">
+
+                                                                            <div class="px-4 sm:px-6 lg:px-8">
+                                                                                <div class="-mx-4 mt-8 flow-root sm:mx-0">
+                                                                                    <table class="min-w-full">
+                                                                                        <colgroup>
+                                                                                            <col class="w-full sm:w-1/2" />
+                                                                                            <col class="sm:w-1/6" />
+                                                                                            <col class="sm:w-1/6" />
+                                                                                            <col class="sm:w-1/6" />
+                                                                                        </colgroup>
+                                                                                        <thead class="border-b border-gray-300 text-gray-900">
+                                                                                        <tr>
+                                                                                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Parties</th>
+                                                                                            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">Product</th>
+                                                                                            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">GP</th>
+                                                                                            <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Action</th>
+                                                                                        </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                        <tr v-for="contract in filteredLinkedContractsMq" :key="contract.id" class="border-b border-gray-200">
+
+
+                                                                                            <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                                                                                <div class="font-medium text-gray-900">{{contract.transport_transaction.supplier.last_legal_name}}</div>
+                                                                                                <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction.customer.last_legal_name}}</div>
+                                                                                                <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction.transporter.last_legal_name}}</div>
+                                                                                            </td>
+                                                                                            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{contract.transport_transaction.product.name}}</td>
+                                                                                            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ NiceNumber(contract.transport_transaction.transport_finance.gross_profit)}}</td>
+                                                                                            <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
+                                                                                                <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',contract.transport_transaction.id)" >View trans</Link>
+                                                                                            </td>
+
+
+                                                                                        </tr>
+                                                                                        </tbody>
+                                                                                        <tfoot>
+
+                                                                                        <tr>
+                                                                                            <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell sm:pl-0">Total GP</th>
+                                                                                            <td class="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">{{NiceNumber(sumLinkedContractsMq)}}</td>
+                                                                                            <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden">Total</th>
+                                                                                        </tr>
+                                                                                        </tfoot>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </form>
+                                                                    </div>
+
+                                                                </div>-->
+
+                                                                <div v-if="selected_transaction.contract_type_id === 3">
+                                                                    SC
+                                                                </div>
+
+                                                                <div v-if="selected_transaction.contract_type_id === 4">
+
+                                                                    <div class="text-indigo-400 font-bold">
+                                                                        MQ
+                                                                    </div>
+
+                                                                    <SecondaryButton class="m-1 mt-3" @click="viewContractLinkSc">
+                                                                        Link MQ to SC
+                                                                    </SecondaryButton>
+
+                                                                    <ContractLinkModalSc
+                                                                        :show="viewContractLinkModalSc"
+                                                                        @close="closeContractLinkSc"
+                                                                        :mq_trans_id="selected_transaction.id"
+                                                                        :link_type_id="4"
+                                                                    />
+
+                                                                    <div class="mt-3">
+
+                                                                        <div>SC linked to this MQ:</div>
+
+                                                                        <div>
+                                                                            <form class="mt-5">
+
+                                                                                <div class="px-4 sm:px-6 lg:px-8">
+                                                                                    <div class="-mx-4 mt-8 flow-root sm:mx-0">
+                                                                                        <table class="min-w-full">
+                                                                                            <colgroup>
+                                                                                                <col class="w-full sm:w-1/2" />
+                                                                                                <col class="sm:w-1/6" />
+                                                                                                <col class="sm:w-1/6" />
+                                                                                                <col class="sm:w-1/6" />
+                                                                                            </colgroup>
+                                                                                            <thead class="border-b border-gray-300 text-gray-900">
                                                                                             <tr>
-                                                                                                <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell sm:pl-0">Total GP</th>
-                                                                                                <td class="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">{{NiceNumber(sumLinkedContractsPc)}}</td>
-                                                                                                <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden">Total</th>
+                                                                                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Parties</th>
+                                                                                                <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">Product</th>
+                                                                                                <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">GP</th>
+                                                                                                <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Action</th>
                                                                                             </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                            <tr v-for="contract in filteredLinkedContractsSc" :key="contract.id" class="border-b border-gray-200">
+
+                                                                                                <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                                                                                    <div class="font-medium text-gray-900">{{contract.transport_transaction_pc.supplier.last_legal_name}}</div>
+                                                                                                    <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction_pc.customer.last_legal_name}}</div>
+                                                                                                    <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction_pc.transporter.last_legal_name}}</div>
+                                                                                                </td>
+                                                                                                <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{contract.transport_transaction_pc.product.name}}</td>
+                                                                                                <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ NiceNumber(contract.transport_transaction_pc.transport_finance.gross_profit)}}</td>
+                                                                                                <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
+                                                                                                    <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',contract.transport_transaction_pc.id)" >View trans</Link>
+                                                                                                </td>
+
+
+                                                                                            </tr>
+                                                                                            </tbody>
+                                                                                            <tfoot>
+
                                                                                             </tfoot>
                                                                                         </table>
                                                                                     </div>
@@ -4678,6 +6533,7 @@ const doCreatedTrade = (_id) => {
                                             <li v-if="selected_transaction.contract_type_id === 4" class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Deal Ticket</div>
+                                                    <div lass="text-sm font-medium leading-6 text-gray-900"><span>Approved MQ: </span> <span v-if="selected_transaction.a_mq">{{selected_transaction.a_mq}}</span></div>
                                                 </div>
 
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
@@ -5141,6 +6997,1037 @@ const doCreatedTrade = (_id) => {
 
                                                 </dl>
                                             </li>
+
+                                            <li v-if="selected_transaction.contract_type_id === 3 || selected_transaction.contract_type_id === 4 "  class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Sales Order Confirmation Split (only)</div>
+                                                </div>
+
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+
+                                                    <div v-if="sales_order.is_active">
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Working Document</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <a :href="'/pdf_report/sales_order_confirmation_view_split/' + props.selected_transaction.id  +'/'+selectedSplitCustomer" target="_blank"
+                                                                   class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                    View
+                                                                </a>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Split Customer</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <div>
+                                                                    <select v-model="selectedSplitCustomer" id="location" name="location" class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                                        <option :value=2>Split 2</option>
+                                                                        <option :value=3>Split 3</option>
+                                                                        <option :value=4>Split 4</option>
+                                                                        <option :value=5>Split 5</option>
+                                                                    </select>
+                                                                </div>
+
+                                                            </dd>
+                                                        </div>
+                                                    </div>
+
+                                                    <div v-else>
+                                                        Sales order Not Active
+                                                    </div>
+
+                                                </dl>
+                                            </li>
+
+
+                                        </ul>
+                                    </div>
+
+                                    <div v-if="selectedTabId === 12">
+
+
+                                        <div>
+                                            <div class="font-bold text-indigo-500">Future Feature</div>
+                                            <table class="min-w-full divide-y divide-gray-300">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col" class="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Load</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Customer</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Selling Price</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Cost Price</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Transport Cost</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Total Cost Price</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">GP</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">GP/Ton</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">GP %</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-200 bg-white">
+
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">Primary</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                            {{transport_trans_Form.customer_id.last_legal_name}}
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                </tr>
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">Split 2</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                            {{transport_trans_Form.customer_id_2.last_legal_name}}
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                </tr>
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">Split 3</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                            {{transport_trans_Form.customer_id_3.last_legal_name}}
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                </tr>
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">Split 4</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                            {{transport_trans_Form.customer_id_4.last_legal_name}}
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                </tr>
+
+                                                <tr  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">Overall</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                           Overall Deal
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        0
+                                                    </td>
+
+                                                </tr>
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+
+                                        <ul class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8" role="list">
+
+                                            <!--
+                                                                                        <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                                                            <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                                                                <div class="text-sm font-medium leading-6 text-gray-900">Customer #2 details</div>
+                                                                                            </div>
+
+                                                                                            <div class="mb-2 ml-4">
+                                                                                                <div v-if="selected_transaction.deal_ticket.is_active" class=" mt-3">
+                                                                                                    <div class="text-green-400">Deal Ticket is Active </div>
+                                                                                                    <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                                                                    <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_b</div>
+                                                                                                </div>
+
+                                                                                                <div v-else class="text-red-400 mt-3">
+                                                                                                    Deal Ticket Not Active
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <div>
+
+                                                                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_2">
+                                                                                                                <div class="relative mt-2">
+                                                                                                                    <ComboboxInput
+                                                                                                                        class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                                                                        @change="customerQuery2 = $event.target.value"
+                                                                                                                        :display-value="(customer) => customer?.last_legal_name"/>
+                                                                                                                    <ComboboxButton
+                                                                                                                        class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                                                                        <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                                                                           aria-hidden="true"/>
+                                                                                                                    </ComboboxButton>
+
+                                                                                                                    <ComboboxOptions v-if="filteredCustomers2.length > 0"
+                                                                                                                                     class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                                                        <ComboboxOption v-for="customer in filteredCustomers2"
+                                                                                                                                        :key="customer.id" :value="customer"
+                                                                                                                                        as="template" v-slot="{ active, selected }">
+
+                                                                                                                            <ul>
+                                                                                                                                <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                                                                    <span
+                                                                                                                                                        :class="['block truncate', selected && 'font-semibold']">
+                                                                                                                                                      {{ customer.last_legal_name }}
+                                                                                                                                                    </span>
+
+                                                                                                                                    <span v-if="selected"
+                                                                                                                                          :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                                                                      <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                                                                    </span>
+                                                                                                                                </li>
+                                                                                                                            </ul>
+                                                                                                                        </ComboboxOption>
+                                                                                                                    </ComboboxOptions>
+                                                                                                                </div>
+                                                                                                            </Combobox>
+
+                                                                                                        </div>
+                                                                                                    </dd>
+
+                                                                                                </div>
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">Customer Order number</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <input v-model="transport_job_Form.customer_order_number" type="text"
+                                                                                                               class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                                                    </dd>
+                                                                                                </div>
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">Supplier loading number</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <input v-model="transport_job_Form.supplier_loading_number" type="text"
+                                                                                                               class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                                                    </dd>
+                                                                                                </div>
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">No Units</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <input v-model="transport_load_Form.no_units_outgoing_2" type="number"
+                                                                                                               class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                                                    </dd>
+                                                                                                </div>
+
+                                                                                            </dl>
+
+                                                                                        </li>
+                                                                                        <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                                                            <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                                                                <div class="text-sm font-medium leading-6 text-gray-900">Customer #2 Account details</div>
+                                                                                            </div>
+                                                                                            <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">Delivery Address</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <div>
+                                                                                                            <div class="mt-2">
+                                                                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_2">
+
+                                                                                                                    <div class="relative mt-2">
+                                                                                                                        <ComboboxInput
+                                                                                                                            class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                                                                            @change="deliveryAddressQuery2 = $event.target.value"
+                                                                                                                            :display-value="(address) => address?.line_1"/>
+                                                                                                                        <ComboboxButton
+                                                                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                                                                               aria-hidden="true"/>
+                                                                                                                        </ComboboxButton>
+
+                                                                                                                        <div v-if="filteredDeliveryAddress2 != null">
+                                                                                                                            <ComboboxOptions v-if="filteredDeliveryAddress2.length > 0"
+                                                                                                                                              class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                                                            <ComboboxOption v-for="address in filteredDeliveryAddress2"
+                                                                                                                                            :key="address.id" :value="address" as="template"
+                                                                                                                                            v-slot="{ active, selected }">
+                                                                                                                                <ul>
+                                                                                                                                    <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                                                        <div class="flex items-center">
+                                                                                                                                                        <span
+                                                                                                                                                            :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                                                            aria-hidden="true"/>
+                                                                                                                                            <span
+                                                                                                                                                :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                                                                <span>
+                                                                                                                                                                    {{ address.line_1 }}
+                                                                                                                                                                </span>
+                                                                                                                                                                <span v-if="address.line_2">
+                                                                                                                                                                   , {{ address.line_2 }}
+                                                                                                                                                                </span>
+                                                                                                                                                                <span v-if="address.line_3">
+                                                                                                                                                                   , {{ address.line_3 }}
+                                                                                                                                                                </span>
+                                                                                                                                                         <span class="sr-only"> is {{
+                                                                                                                                                                 address.is_primary ? 'online' : 'offline'
+                                                                                                                                                             }}</span> </span>
+                                                                                                                                        </div>
+
+                                                                                                                                        <span v-if="selected"
+                                                                                                                                              :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                                                                        <CheckIcon class="h-5 w-5"
+                                                                                                                                                                   aria-hidden="true"/> </span>
+                                                                                                                                    </li>
+                                                                                                                                </ul>
+                                                                                                                            </ComboboxOption>
+                                                                                                                        </ComboboxOptions>
+                                                                                                                        </div>
+
+                                                                                                                    </div>
+                                                                                                                </Combobox>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </dd>
+                                                                                                </div>
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <div>
+                                                                                                        <div v-if="transport_load_Form.delivery_address_id_2">
+                                                                                                            <h3 class="text-base font-semibold leading-7 text-indigo-400">
+                                                                                                                Selected Delivery Address:</h3>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Line 1</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_1 }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Line 2</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_2 }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Line 3</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_3 }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Country</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.country }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Code</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.code }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                        </div>
+
+                                                                                                        <div v-else>
+                                                                                                            No customer addresses loaded...
+                                                                                                        </div>
+
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                                <div v-if="selected_transaction.customer_2">
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">Payment Terms</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>{{selected_transaction.customer_2.terms_of_payment.value}}</div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">Invoice basis</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>{{selected_transaction.customer_2.invoice_basis.value}}</div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">VAT Exempt</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>
+                                                                                                                <check-icon v-if="selected_transaction.customer_2.is_vat_exempt" class="w-6 h-6 fill-green-300 " />
+                                                                                                                <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                                                            </div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">VAT Certificate</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>
+                                                                                                                <check-icon v-if="selected_transaction.customer_2.is_vat_cert_received" class="w-6 h-6 fill-green-300 " />
+                                                                                                                <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                                                            </div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                            </dl>
+                                                                                        </li>
+
+                                                                                        <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                                                            <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                                                                <div class="text-sm font-medium leading-6 text-gray-900">Customer #3 details</div>
+                                                                                            </div>
+
+                                                                                            <div class="mb-2 ml-4">
+                                                                                                <div v-if="selected_transaction.deal_ticket.is_active" class=" mt-3">
+                                                                                                    <div class="text-green-400">Deal Ticket is Active </div>
+                                                                                                    <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                                                                    <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_c</div>
+                                                                                                </div>
+
+                                                                                                <div v-else class="text-red-400 mt-3">
+                                                                                                    Deal Ticket Not Active
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <div>
+
+                                                                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_3">
+                                                                                                                <div class="relative mt-2">
+                                                                                                                    <ComboboxInput
+                                                                                                                        class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                                                                        @change="customerQuery2 = $event.target.value"
+                                                                                                                        :display-value="(customer) => customer?.last_legal_name"/>
+                                                                                                                    <ComboboxButton
+                                                                                                                        class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                                                                        <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                                                                           aria-hidden="true"/>
+                                                                                                                    </ComboboxButton>
+
+                                                                                                                    <ComboboxOptions v-if="filteredCustomers2.length > 0"
+                                                                                                                                     class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                                                        <ComboboxOption v-for="customer in filteredCustomers2"
+                                                                                                                                        :key="customer.id" :value="customer"
+                                                                                                                                        as="template" v-slot="{ active, selected }">
+
+                                                                                                                            <ul>
+                                                                                                                                <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                                                                    <span
+                                                                                                                                                        :class="['block truncate', selected && 'font-semibold']">
+                                                                                                                                                      {{ customer.last_legal_name }}
+                                                                                                                                                    </span>
+
+                                                                                                                                    <span v-if="selected"
+                                                                                                                                          :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                                                                      <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                                                                    </span>
+                                                                                                                                </li>
+                                                                                                                            </ul>
+                                                                                                                        </ComboboxOption>
+                                                                                                                    </ComboboxOptions>
+                                                                                                                </div>
+                                                                                                            </Combobox>
+
+                                                                                                        </div>
+                                                                                                    </dd>
+
+                                                                                                </div>
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">Customer Order number</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <input v-model="transport_job_Form.customer_order_number" type="text"
+                                                                                                               class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                                                    </dd>
+                                                                                                </div>
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">Supplier loading number</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <input v-model="transport_job_Form.supplier_loading_number" type="text"
+                                                                                                               class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                                                    </dd>
+                                                                                                </div>
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">No Units</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <input v-model="transport_load_Form.no_units_outgoing_3" type="number"
+                                                                                                               class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                                                    </dd>
+                                                                                                </div>
+
+                                                                                            </dl>
+
+                                                                                        </li>
+                                                                                        <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                                                            <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                                                                <div class="text-sm font-medium leading-6 text-gray-900">Customer #3 Account details</div>
+                                                                                            </div>
+                                                                                            <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">Delivery Address</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <div>
+                                                                                                            <div class="mt-2">
+                                                                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_3">
+
+                                                                                                                    <div class="relative mt-2">
+                                                                                                                        <ComboboxInput
+                                                                                                                            class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                                                                            @change="deliveryAddressQuery3 = $event.target.value"
+                                                                                                                            :display-value="(address) => address?.line_1"/>
+                                                                                                                        <ComboboxButton
+                                                                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                                                                               aria-hidden="true"/>
+                                                                                                                        </ComboboxButton>
+
+                                                                                                                        <div v-if="filteredDeliveryAddress3 != null">
+                                                                                                                            <ComboboxOptions v-if="filteredDeliveryAddress3.length > 0"
+                                                                                                                                             class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                                                                <ComboboxOption v-for="address in filteredDeliveryAddress2"
+                                                                                                                                                :key="address.id" :value="address" as="template"
+                                                                                                                                                v-slot="{ active, selected }">
+                                                                                                                                    <ul>
+                                                                                                                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                                                            <div class="flex items-center">
+                                                                                                                                                        <span
+                                                                                                                                                            :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                                                            aria-hidden="true"/>
+                                                                                                                                                <span
+                                                                                                                                                    :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                                                                <span>
+                                                                                                                                                                    {{ address.line_1 }}
+                                                                                                                                                                </span>
+                                                                                                                                                                <span v-if="address.line_2">
+                                                                                                                                                                   , {{ address.line_2 }}
+                                                                                                                                                                </span>
+                                                                                                                                                                <span v-if="address.line_3">
+                                                                                                                                                                   , {{ address.line_3 }}
+                                                                                                                                                                </span>
+                                                                                                                                                         <span class="sr-only"> is {{
+                                                                                                                                                                 address.is_primary ? 'online' : 'offline'
+                                                                                                                                                             }}</span> </span>
+                                                                                                                                            </div>
+
+                                                                                                                                            <span v-if="selected"
+                                                                                                                                                  :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                                                                        <CheckIcon class="h-5 w-5"
+                                                                                                                                                                   aria-hidden="true"/> </span>
+                                                                                                                                        </li>
+                                                                                                                                    </ul>
+                                                                                                                                </ComboboxOption>
+                                                                                                                            </ComboboxOptions>
+                                                                                                                        </div>
+
+                                                                                                                    </div>
+                                                                                                                </Combobox>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </dd>
+                                                                                                </div>
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <div>
+                                                                                                        <div v-if="transport_load_Form.delivery_address_id_2">
+                                                                                                            <h3 class="text-base font-semibold leading-7 text-indigo-400">
+                                                                                                                Selected Delivery Address:</h3>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Line 1</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_1 }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Line 2</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_2 }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Line 3</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_3 }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Country</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.country }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Code</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.code }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                        </div>
+
+                                                                                                        <div v-else>
+                                                                                                            No customer addresses loaded...
+                                                                                                        </div>
+
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                                <div v-if="selected_transaction.customer_3">
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">Payment Terms</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>{{selected_transaction.customer_3.terms_of_payment.value}}</div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">Invoice basis</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>{{selected_transaction.customer_3.invoice_basis.value}}</div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">VAT Exempt</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>
+                                                                                                                <check-icon v-if="selected_transaction.customer_3.is_vat_exempt" class="w-6 h-6 fill-green-300 " />
+                                                                                                                <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                                                            </div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">VAT Certificate</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>
+                                                                                                                <check-icon v-if="selected_transaction.customer_3.is_vat_cert_received" class="w-6 h-6 fill-green-300 " />
+                                                                                                                <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                                                            </div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                            </dl>
+                                                                                        </li>
+
+                                                                                        <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                                                            <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                                                                <div class="text-sm font-medium leading-6 text-gray-900">Customer #3 details</div>
+                                                                                            </div>
+
+                                                                                            <div class="mb-2 ml-4">
+                                                                                                <div v-if="selected_transaction.deal_ticket.is_active" class=" mt-3">
+                                                                                                    <div class="text-green-400">Deal Ticket is Active </div>
+                                                                                                    <div v-if="selected_transaction.a_mq" class="font-bold text-indigo-400">Approved MQ: {{ selected_transaction.a_mq}}</div>
+                                                                                                    <div class=" text-indigo-400">{{ selected_transaction.contract_type.name}}{{ selected_transaction.id}}_d</div>
+                                                                                                </div>
+
+                                                                                                <div v-else class="text-red-400 mt-3">
+                                                                                                    Deal Ticket Not Active
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <div>
+
+                                                                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_4">
+                                                                                                                <div class="relative mt-2">
+                                                                                                                    <ComboboxInput
+                                                                                                                        class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                                                                        @change="customerQuery2 = $event.target.value"
+                                                                                                                        :display-value="(customer) => customer?.last_legal_name"/>
+                                                                                                                    <ComboboxButton
+                                                                                                                        class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                                                                        <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                                                                           aria-hidden="true"/>
+                                                                                                                    </ComboboxButton>
+
+                                                                                                                    <ComboboxOptions v-if="filteredCustomers2.length > 0"
+                                                                                                                                     class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                                                        <ComboboxOption v-for="customer in filteredCustomers2"
+                                                                                                                                        :key="customer.id" :value="customer"
+                                                                                                                                        as="template" v-slot="{ active, selected }">
+
+                                                                                                                            <ul>
+                                                                                                                                <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                                                                    <span
+                                                                                                                                                        :class="['block truncate', selected && 'font-semibold']">
+                                                                                                                                                      {{ customer.last_legal_name }}
+                                                                                                                                                    </span>
+
+                                                                                                                                    <span v-if="selected"
+                                                                                                                                          :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                                                                      <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                                                                                    </span>
+                                                                                                                                </li>
+                                                                                                                            </ul>
+                                                                                                                        </ComboboxOption>
+                                                                                                                    </ComboboxOptions>
+                                                                                                                </div>
+                                                                                                            </Combobox>
+
+                                                                                                        </div>
+                                                                                                    </dd>
+
+                                                                                                </div>
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">Customer Order number</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <input v-model="transport_job_Form.customer_order_number" type="text"
+                                                                                                               class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                                                    </dd>
+                                                                                                </div>
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">Supplier loading number</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <input v-model="transport_job_Form.supplier_loading_number" type="text"
+                                                                                                               class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                                                    </dd>
+                                                                                                </div>
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">No Units</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <input v-model="transport_load_Form.no_units_outgoing_4" type="number"
+                                                                                                               class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                                                    </dd>
+                                                                                                </div>
+
+                                                                                            </dl>
+
+                                                                                        </li>
+                                                                                        <li  class="overflow-hidden rounded-xl border border-gray-200">
+                                                                                            <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                                                                <div class="text-sm font-medium leading-6 text-gray-900">Customer #4 Account details</div>
+                                                                                            </div>
+                                                                                            <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <dt class="text-gray-500">Delivery Address</dt>
+                                                                                                    <dd class="flex items-start gap-x-2">
+                                                                                                        <div>
+                                                                                                            <div class="mt-2">
+                                                                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_4">
+
+                                                                                                                    <div class="relative mt-2">
+                                                                                                                        <ComboboxInput
+                                                                                                                            class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                                                                            @change="deliveryAddressQuery4 = $event.target.value"
+                                                                                                                            :display-value="(address) => address?.line_1"/>
+                                                                                                                        <ComboboxButton
+                                                                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                                                                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                                                                                                               aria-hidden="true"/>
+                                                                                                                        </ComboboxButton>
+
+                                                                                                                        <div v-if="filteredDeliveryAddress4 != null">
+                                                                                                                            <ComboboxOptions v-if="filteredDeliveryAddress3.length > 0"
+                                                                                                                                             class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                                                                                <ComboboxOption v-for="address in filteredDeliveryAddress2"
+                                                                                                                                                :key="address.id" :value="address" as="template"
+                                                                                                                                                v-slot="{ active, selected }">
+                                                                                                                                    <ul>
+                                                                                                                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                                                                            <div class="flex items-center">
+                                                                                                                                                        <span
+                                                                                                                                                            :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', address.is_primary ? 'bg-green-400' : 'bg-gray-200']"
+                                                                                                                                                            aria-hidden="true"/>
+                                                                                                                                                <span
+                                                                                                                                                    :class="['ml-3 truncate', selected && 'font-semibold']">
+                                                                                                                                                                <span>
+                                                                                                                                                                    {{ address.line_1 }}
+                                                                                                                                                                </span>
+                                                                                                                                                                <span v-if="address.line_2">
+                                                                                                                                                                   , {{ address.line_2 }}
+                                                                                                                                                                </span>
+                                                                                                                                                                <span v-if="address.line_3">
+                                                                                                                                                                   , {{ address.line_3 }}
+                                                                                                                                                                </span>
+                                                                                                                                                         <span class="sr-only"> is {{
+                                                                                                                                                                 address.is_primary ? 'online' : 'offline'
+                                                                                                                                                             }}</span> </span>
+                                                                                                                                            </div>
+
+                                                                                                                                            <span v-if="selected"
+                                                                                                                                                  :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                                                                                        <CheckIcon class="h-5 w-5"
+                                                                                                                                                                   aria-hidden="true"/> </span>
+                                                                                                                                        </li>
+                                                                                                                                    </ul>
+                                                                                                                                </ComboboxOption>
+                                                                                                                            </ComboboxOptions>
+                                                                                                                        </div>
+
+                                                                                                                    </div>
+                                                                                                                </Combobox>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </dd>
+                                                                                                </div>
+                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                                                                    <div>
+                                                                                                        <div v-if="transport_load_Form.delivery_address_id_2">
+                                                                                                            <h3 class="text-base font-semibold leading-7 text-indigo-400">
+                                                                                                                Selected Delivery Address:</h3>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Line 1</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_1 }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Line 2</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_2 }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Line 3</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_3 }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Country</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.country }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                <dt class="text-gray-500">Code</dt>
+                                                                                                                <dd class="text-gray-700">
+                                                                                                                    <div>
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.code }}
+                                                                                                                    </div>
+                                                                                                                </dd>
+                                                                                                            </div>
+
+                                                                                                        </div>
+
+                                                                                                        <div v-else>
+                                                                                                            No customer addresses loaded...
+                                                                                                        </div>
+
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                                <div v-if="selected_transaction.customer_4">
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">Payment Terms</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>{{selected_transaction.customer_4.terms_of_payment.value}}</div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">Invoice basis</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>{{selected_transaction.customer_4.invoice_basis.value}}</div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">VAT Exempt</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>
+                                                                                                                <check-icon v-if="selected_transaction.customer_4.is_vat_exempt" class="w-6 h-6 fill-green-300 " />
+                                                                                                                <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                                                            </div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                        <dt class="text-gray-500">VAT Certificate</dt>
+                                                                                                        <dd class="text-gray-700">
+                                                                                                            <div>
+                                                                                                                <check-icon v-if="selected_transaction.customer_4.is_vat_cert_received" class="w-6 h-6 fill-green-300 " />
+                                                                                                                <XCircleIcon v-else class="w-6 h-6 fill-red-400 " />
+                                                                                                            </div>
+                                                                                                        </dd>
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                            </dl>
+                                                                                        </li>
+                                            -->
+
 
 
                                         </ul>

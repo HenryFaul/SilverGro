@@ -320,6 +320,9 @@ class TransportTransactionController extends Controller
             'contract_type_id' => $trans_to_clone->contract_type_id,
             'supplier_id' => $trans_to_clone->supplier_id,
             'customer_id' => $trans_to_clone->customer_id,
+            'customer_id_2' => $trans_to_clone->customer_id_2,
+            'customer_id_3' => $trans_to_clone->customer_id_3,
+            'customer_id_4' => $trans_to_clone->customer_id_4,
             'transporter_id' => $trans_to_clone->transporter_id,
             'product_id' => $trans_to_clone->product_id,
             'transport_date_earliest' => $trans_to_clone->transport_date_earliest,
@@ -504,12 +507,24 @@ class TransportTransactionController extends Controller
 
     public function getPcs(): array
     {
-        $transport_trans = TransportTransaction::where('contract_type_id', 2)->with('Product')->with('TransportLoad')->orderBy('transport_date_earliest', 'desc')->get();
+        $transport_trans = TransportTransaction::where('contract_type_id', 2)->with('Product')->with('TransportLoad')->with('Customer')->with('Supplier')
+            ->orderBy('transport_date_earliest', 'desc')->get();
         $contract_types = ContractType::all();
 
         return array("transport_trans" => $transport_trans, "contract_types" => $contract_types);
 
     }
+
+    public function getScs(): array
+    {
+        $transport_trans = TransportTransaction::where('contract_type_id', 3)->with('Product')->with('TransportLoad')->with('Customer')->with('Supplier')
+            ->orderBy('transport_date_earliest', 'desc')->get();
+        $contract_types = ContractType::all();
+
+        return array("transport_trans" => $transport_trans, "contract_types" => $contract_types);
+
+    }
+
 
 
     /**
@@ -519,7 +534,7 @@ class TransportTransactionController extends Controller
     {
 
         $transportTransaction = TransportTransaction::where('id', $transportTransaction->id)->with('ContractType')->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
-            ->with('TransportLoad')->with('DealTicket')
+            ->with('TransportLoad')->with('DealTicket')->with('Customer_2')
             ->with('TransportFinance')->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))->with('AssignedUserComm', fn($query) => $query->with('AssignedUserSupplier')->with('AssignedUserCustomer'))
             ->with('TransportJob', fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo')
                 ->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle', fn($query) => $query->with('VehicleType'))))->first();
@@ -650,7 +665,11 @@ class TransportTransactionController extends Controller
             [
                 'contract_type_id' => $request->contract_type_id['id'],
                 'supplier_id' => $request->supplier_id['id'],
-                'customer_id' => $request->customer_id['id'],
+                'customer_id' => $request->is_split_load? 2 : $request->customer_id['id'],
+                'customer_id_2' => isset($request->customer_id_2)? $request->customer_id_2['id']: null,
+                'customer_id_3' => isset($request->customer_id_3)? $request->customer_id_3['id']: null,
+                'customer_id_4' => isset($request->customer_id_4)? $request->customer_id_4['id']: null,
+                'customer_id_5' => isset($request->customer_id_5)? $request->customer_id_5['id']: null,
                 'transporter_id' => $request->transporter_id['id'],
                 'product_id' => $request->product_id['id'],
                 'include_in_calculations' => $request->include_in_calculations,
@@ -670,6 +689,7 @@ class TransportTransactionController extends Controller
                 'traders_notes_customer' => $request->traders_notes_customer,
                 'traders_notes_transport' => $request->traders_notes_transport,
                 'is_transaction_done' => $request->is_transaction_done,
+                'is_split_load' => $request->is_split_load,
             ]
         );
 

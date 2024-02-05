@@ -103,6 +103,52 @@ class SalesOrderController extends Controller
 
     }
 
+    public function viewConfirmationPDFSplit(Request $request, $id,$client_id): \Illuminate\Http\Response
+    {
+
+        $final_sales_order = false;
+        $path = 'images/pdflogo.jpg';
+        $type = pathinfo($path, PATHINFO_EXTENSION);
+        $file_data = file_get_contents($path);
+        $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
+
+        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
+            ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
+            ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
+            ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
+
+        $deal_ticket = $transport_trans->DealTicket;
+        $sales_order = $transport_trans->SalesOrder;
+        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+
+
+        $rules_with_approvals = $deal_ticket->getAppliedRules();
+        $user_name = Auth::user()->name;
+        $now = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
+        $app_version = env("APP_VERSION_REP", "1");;
+
+
+        $data = [
+            'client_id'=>$client_id,
+            'logo' => $logo,
+            'final_sales_order'=>$final_sales_order,
+            'transport_trans'=>$transport_trans,
+            'deal_ticket'=>$deal_ticket,
+            'sales_order'=>$sales_order,
+            'purchase_order'=>$purchase_order,
+            'rules_with_approvals'=>$rules_with_approvals,
+            'user_name'=>$user_name,
+            'now'=>$now,
+            'app_version'=>$app_version
+        ];
+
+        $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_split',$data);
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream();
+
+    }
+
     public function activate(Request $request): \Illuminate\Http\RedirectResponse
     {
 

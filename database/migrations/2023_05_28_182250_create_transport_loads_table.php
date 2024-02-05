@@ -49,6 +49,10 @@ return new class extends Migration
 
             $table->double('no_units_incoming')->default(0);
             $table->double('no_units_outgoing')->default(0);
+            $table->double('no_units_outgoing_2')->default(0);
+            $table->double('no_units_outgoing_3')->default(0);
+            $table->double('no_units_outgoing_4')->default(0);
+            $table->double('no_units_outgoing_5')->default(0);
 
             $table->bigInteger('billing_units_incoming_id')->unsigned();
             $table->foreign('billing_units_incoming_id')
@@ -70,6 +74,22 @@ return new class extends Migration
 
             $table->bigInteger('delivery_address_id')->unsigned()->nullable();
             $table->foreign('delivery_address_id')
+                ->references('id')->on('addresses')->onDelete('cascade');
+
+            $table->bigInteger('delivery_address_id_2')->unsigned()->nullable();
+            $table->foreign('delivery_address_id_2')
+                ->references('id')->on('addresses')->onDelete('cascade');
+
+            $table->bigInteger('delivery_address_id_3')->unsigned()->nullable();
+            $table->foreign('delivery_address_id_3')
+                ->references('id')->on('addresses')->onDelete('cascade');
+
+            $table->bigInteger('delivery_address_id_4')->unsigned()->nullable();
+            $table->foreign('delivery_address_id_4')
+                ->references('id')->on('addresses')->onDelete('cascade');
+
+            $table->bigInteger('delivery_address_id_5')->unsigned()->nullable();
+            $table->foreign('delivery_address_id_5')
                 ->references('id')->on('addresses')->onDelete('cascade');
 
             $table->softDeletes();
