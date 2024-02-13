@@ -99,7 +99,7 @@ class StaffController extends Controller
         $staff = User::where('id','=',$staff->user_id)->with('roles')->with('Staff')->first();
 
         $all_roles_in_database = Role::all();
-        $permissions = $staff?->getPermissionsViaRoles()->pluck('name');
+        $permissions = $staff?->getPermissionsViaRoles()->unique('name')->pluck('name');
 
         return inertia(
             'Staff/Show',
