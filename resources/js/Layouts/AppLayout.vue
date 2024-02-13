@@ -489,7 +489,13 @@ const logout = () => {
             <!-- Page Heading -->
             <header v-if="$slots.header" class="bg-white shadow">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
+                    <div class="flex">
+                        <div class="mr-4">
+                            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="#" onclick="history.back();return false;">Go Back</a>
+                        </div>
+                        <slot name="header" />
+                    </div>
+
                 </div>
             </header>
 
