@@ -181,7 +181,7 @@ const logout = () => {
                                                 </div>
 
                                                 <DropdownLink :href="route('transport_transaction.index')">
-                                                    Detail view
+                                                    Report Exporter
                                                 </DropdownLink>
 
                                                 <DropdownLink :href="route('transaction_summary.index')">
@@ -198,6 +198,22 @@ const logout = () => {
 
                                                 <DropdownLink :href="route('debtor.index')">
                                                     Debtor Standing
+                                                </DropdownLink>
+
+                                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                                    Dedicated Views
+                                                </div>
+
+                                                <DropdownLink :href="route('pc_overview.index')">
+                                                    PC Overview
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('sc_overview.index')">
+                                                    SC Overview
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('home_overview.index')">
+                                                    Home Overview
                                                 </DropdownLink>
 
 
@@ -224,6 +240,7 @@ const logout = () => {
                                                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                                 </svg>
 
+
                                             </button>
                                         </span>
                                             </template>
@@ -236,6 +253,10 @@ const logout = () => {
 
 
                                                 <div class="border-t border-gray-100" />
+
+                                                <DropdownLink :href="route('custom_report.index')">
+                                                    Report Setup
+                                                </DropdownLink>
 
                                             </template>
                                         </Dropdown>

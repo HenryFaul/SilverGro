@@ -6,12 +6,16 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContactDetailController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerParentController;
+use App\Http\Controllers\CustomReportController;
+use App\Http\Controllers\CustomReportModelController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataImports\DataImportController;
 use App\Http\Controllers\DealTicketController;
 use App\Http\Controllers\DebtorStandingController;
 use App\Http\Controllers\EmailContactDetailController;
+use App\Http\Controllers\HomeOverviewController;
 use App\Http\Controllers\NumberContactDetailController;
+use App\Http\Controllers\PcOverviewController;
 use App\Http\Controllers\PlanningDiaryController;
 use App\Http\Controllers\PlanningWeekController;
 use App\Http\Controllers\ProductController;
@@ -20,6 +24,7 @@ use App\Http\Controllers\RegularDriverController;
 use App\Http\Controllers\RegularVehicleController;
 use App\Http\Controllers\RoleModifyController;
 use App\Http\Controllers\SalesOrderController;
+use App\Http\Controllers\ScOverviewController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffLinkController;
 use App\Http\Controllers\SupplierController;
@@ -131,6 +136,31 @@ Route::middleware([
     Route::resource('transaction_summary', TransactionSummaryController::class)->middleware('auth')
         ->only(['index']);
 
+    //Pc Overview
+
+    Route::resource('pc_overview', PcOverviewController::class)->middleware('auth')
+        ->only(['index']);
+
+    //Sc Overview
+
+    Route::resource('sc_overview', ScOverviewController::class)->middleware('auth')
+        ->only(['index']);
+
+    //Home Overview
+
+    Route::resource('home_overview', HomeOverviewController::class)->middleware('auth')
+        ->only(['index']);
+
+    //CustomReport
+
+    Route::resource('custom_report', CustomReportController::class)->middleware('auth')
+        ->only(['index','store']);
+
+    //Custom Report Model
+
+    Route::resource('custom_report_model', CustomReportModelController::class)->middleware('auth')
+        ->only(['store']);
+
     //Transaction Spreadhseet
 
     Route::resource('transaction_spreadsheet', TransactionSpreadSheetController::class)->middleware('auth')
@@ -151,7 +181,6 @@ Route::middleware([
     //Transport SC trans Modal Props
 
     Route::get('/props/contract_link_sc_modal', [TransportTransactionController::class, 'getScs'])->middleware('auth')->name('props.contract_link_sc_modal');
-
 
     //Transport Load
 

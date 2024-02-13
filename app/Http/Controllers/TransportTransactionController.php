@@ -7,6 +7,9 @@ use App\Models\BillingUnits;
 use App\Models\ConfirmationTypes;
 use App\Models\ContractType;
 use App\Models\Customer;
+use App\Models\CustomerParent;
+use App\Models\CustomReport;
+use App\Models\CustomReportModel;
 use App\Models\DealTicket;
 use App\Models\InvoiceBasis;
 use App\Models\InvoiceStatus;
@@ -90,6 +93,8 @@ class TransportTransactionController extends Controller
         $start_date = (Carbon::now()->tz('Africa/Johannesburg')->startOfMonth())->toDateString();
         $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
         $contract_types = ContractType::all();
+        $custom_reports = CustomReport::with('CustomReportModels')->get();
+
 
 
         //dd($end_date);
@@ -102,7 +107,8 @@ class TransportTransactionController extends Controller
                 'start_date' => $start_date,
                 'end_date' => $end_date,
                 'contract_types' => $contract_types,
-                'download_url' => null
+                'download_url' => null,
+                'custom_reports'=>$custom_reports
 
             ]
         );
@@ -774,8 +780,10 @@ class TransportTransactionController extends Controller
             'start_date',
             'end_date',
             'contract_type_id',
-            'id'
+            'id',
+            'custom_report_id'
         ]);
+
 
         $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
             ->index($filters)
@@ -784,13 +792,15 @@ class TransportTransactionController extends Controller
 
         if ($transactions != null) {
 
+            $customer_report= CustomReport::where('id',$request->custom_report_id)->first();
+
             $datestamp = time();
             $file_name = ':nam_silvergrow_:dat.xlsx';
-            $file_name = str_ireplace(':nam', "trades_export", $file_name);
+            $file_name = str_ireplace(':nam', $customer_report->name, $file_name);
             $file_name = str_ireplace(':dat', $datestamp, $file_name);
 
             try {
-                $spreadsheet = $this->makeExcel($transactions);
+                $spreadsheet = $this->makeExcelDynamic($transactions,$request->custom_report_id);
 
                 if ($spreadsheet != null) {
                     $spreadsheet->getProperties()
@@ -938,6 +948,249 @@ class TransportTransactionController extends Controller
 
         return null;
     }
+
+    public function makeExcelDynamic($transactions,$custom_report_id): ?Spreadsheet
+    {
+
+        try {
+
+            $custom_report = CustomReport::where('id',$custom_report_id)->first();
+            $custom_report_model = $custom_report->CustomReportModels;
+
+
+            $transport_transaction = TransportTransaction::first();
+            $customer = Customer::first();
+            $customer_parent = CustomerParent::first();
+            $deal_ticket = DealTicket::first();
+            $product = Product::first();
+            $regular_driver = RegularDriver::first();
+            $regular_vehicle = RegularVehicle::first();
+            $supplier = Supplier::first();
+            $transporter = Transporter::first();
+            $transport_finance = TransportFinance::first();
+            $transport_invoice = TransportInvoice::first();
+            $transport_invoice_details = TransportInvoiceDetails::first();
+            $transport_job = TransportJob::first();
+            $transport_load = TransportLoad::first();
+
+
+            $model_transport_transactions = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_transaction))->get();
+            $model_deal_ticket = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($deal_ticket))->get();
+            $model_transport_finance = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_finance))->get();
+            $model_transport_invoice = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_invoice))->get();
+            $model_transport_invoice_details = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_invoice_details))->get();
+            $model_transport_job= CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_job))->get();
+            $transport_load = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_load))->get();
+            $model_customer = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($customer))->get();
+            $model_customer_parent = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($customer_parent))->get();
+            $model_product = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($product))->get();
+            $model_regular_driver = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($regular_driver))->get();
+            $model_regular_vehicle = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($regular_vehicle))->get();
+            $model_supplier = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($supplier))->get();
+            $model_transporter = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transporter))->get();
+
+
+
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet()->setTitle('report');
+
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true
+                )
+            );
+            $styleArray1 = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN
+                    ]
+                ],
+                'font' => array(
+                    'bold' => true
+                )
+            ];
+
+            $styleArray2 = array(
+                'font' => array(
+                    'bold' => true,
+                    'size' => '13'
+                ),
+                'alignment' => [
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                ],
+            );
+
+            $row_for_heading = 1;
+
+            foreach ($custom_report_model as $model){
+                $sheet->setCellValue([$row_for_heading,1], $model->attribute_name);
+                $row_for_heading++;
+            }
+
+
+            for ($x = 1; $x < $row_for_heading; $x++) {
+                $sheet->getStyleByColumnAndRow($x, 1)->applyFromArray($styleArray1);
+            }
+
+            //loop over trans
+
+            $row_count = 2;
+
+           if ($transactions != null) {
+
+                $pos = 0;
+                $col = 1;
+
+                for ($r = $row_count; $r < count($transactions) + $row_count; $r++) {
+
+                    $trans = $transactions[$pos];
+
+                    //trans
+                    foreach ($model_transport_transactions as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->$attribute);
+                        $col++;
+                    }
+
+                    //deal ticket
+                    foreach ($model_deal_ticket as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->DealTicket->$attribute);
+                        $col++;
+                    }
+
+                    //transport finance
+                    foreach ($model_transport_finance as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->TransportFinance->$attribute);
+                        $col++;
+                    }
+
+                    //$model_transport_invoice
+                    foreach ($model_transport_invoice as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->TransportInvoice->$attribute);
+                        $col++;
+                    }
+
+                    //$model_transport_invoice_details
+                    foreach ($model_transport_invoice_details as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->TransportInvoice->TransportInvoiceDetails->$attribute);
+                        $col++;
+                    }
+
+                    //$model_transport_job
+                    foreach ($model_transport_job as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->TransportJob->$attribute);
+                        $col++;
+                    }
+
+                    //$transport_load
+                    foreach ($transport_load as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->TransportLoad->$attribute);
+                        $col++;
+                    }
+
+                    //$model_customer
+                    foreach ($model_customer as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->Customer->$attribute);
+                        $col++;
+                    }
+
+                    //$model_customer
+                    foreach ($model_customer_parent as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->CustomerParent->$attribute);
+                        $col++;
+                    }
+
+
+                    //$model_product
+                    foreach ($model_product as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->Product->$attribute);
+                        $col++;
+                    }
+
+                   /* //$model_regular_driver
+                    foreach ($model_regular_driver as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->TransportFinance->$attribute);
+                        $col++;
+                    }
+
+                    //$model_regular_vehicle
+                    foreach ($model_regular_vehicle as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->TransportFinance->$attribute);
+                        $col++;
+                    }*/
+
+
+                    //$model_supplier
+                    foreach ($model_supplier as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->Supplier->$attribute);
+                        $col++;
+                    }
+
+                    //$model_transporter
+                    foreach ($model_transporter as $model){
+                        $attribute = $model->attribute_name;
+                        $sheet->setCellValue([$col, $r], $trans->Transporter->$attribute);
+                        $col++;
+                    }
+
+
+
+
+
+                    $col = 1;
+
+
+                    $sheet
+                        ->getStyle([11, $r])
+                        ->getNumberFormat()
+                        ->setFormatCode(NumberFormat::FORMAT_ACCOUNTING_USD);
+
+                    // $sheet->setCellValueByColumnAndRow(1,$r,$investor->acc_num);
+
+                    $pos++;
+                }
+                $row_count += count($transactions) + 1;
+
+            }
+
+
+            foreach ($sheet->getColumnIterator() as $column) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            }
+
+            $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+            $sheet->getPageSetup()->setFitToPage(true);
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+
+
+            return $spreadsheet;
+
+
+        } catch (\Error $e) {
+
+            return null;
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+        }
+
+
+        return null;
+    }
+
 
     public function download($file_name): \Symfony\Component\HttpFoundation\StreamedResponse
     {

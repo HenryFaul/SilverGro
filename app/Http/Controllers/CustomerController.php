@@ -6,9 +6,7 @@ use App\Models\ContactType;
 use App\Models\Customer;
 use App\Models\CustomerParent;
 use App\Models\CustomerRating;
-use App\Models\FlexType;
 use App\Models\InvoiceBasis;
-use App\Models\ProductionModel;
 use App\Models\Staff;
 use App\Models\TermsOfPayment;
 use App\Models\TermsOfPaymentBasis;
@@ -195,7 +193,7 @@ class CustomerController extends Controller
     {
         //
 
-        $customer->load('staff')->load('addressable')->load('contactable');
+        $customer->load('staff')->load('addressable')->load('contactable')->append('trades_count');
         $invoice_basis = InvoiceBasis::all();
         $customer_rating = CustomerRating::all();
         $terms_of_payment_basis = TermsOfPaymentBasis::all();

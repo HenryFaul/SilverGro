@@ -9,9 +9,10 @@ use App\Models\BillingUnits;
 use App\Models\ConfirmationTypes;
 use App\Models\ContractType;
 use App\Models\Customer;
-use App\Models\CustomerDetail;
 use App\Models\CustomerParent;
 use App\Models\CustomerRating;
+use App\Models\CustomReport;
+use App\Models\CustomReportModel;
 use App\Models\InvoiceBasis;
 use App\Models\InvoiceStatus;
 use App\Models\LoadingHourOption;
@@ -23,9 +24,7 @@ use App\Models\Staff;
 use App\Models\StatusEntity;
 use App\Models\StatusType;
 use App\Models\Supplier;
-use App\Models\SystemPlayer;
 use App\Models\ContactType;
-use App\Models\SystemPlayerType;
 use App\Models\TermsOfPayment;
 use App\Models\TermsOfPaymentBasis;
 use App\Models\TradeRule;
@@ -1209,6 +1208,54 @@ class DatabaseSeeder extends Seeder
         InvoiceStatus::create([
             'name' => 'Customer Required',
         ]);
+
+
+        //custom report
+
+        CustomReport::create([
+            'created_by_id'=>1,
+            'name' => 'Demo Report',
+            'comment' => 'Demo Report to test',
+        ]);
+
+
+      //['id','old_id','old_deal_ticket','a_mq','contract_type_id','contract_no','supplier_id','customer_id','customer_id_2','customer_id_3','customer_id_4','customer_id_5','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes', 'product_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes', 'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at','is_split_load'];
+
+        CustomReportModel::create([
+            'created_by_id'=>1,
+            'report_id'=>1,
+            'class_name' => 'App\Models\TransportTransaction',
+            'attribute_name'=>'id'
+        ]);
+
+        CustomReportModel::create([
+            'created_by_id'=>1,
+            'report_id'=>1,
+            'class_name' => 'App\Models\TransportTransaction',
+            'attribute_name'=>'old_id'
+        ]);
+
+        CustomReportModel::create([
+            'created_by_id'=>1,
+            'report_id'=>1,
+            'class_name' => 'App\Models\TransportTransaction',
+            'attribute_name'=>'old_deal_ticket'
+        ]);
+
+        CustomReportModel::create([
+            'created_by_id'=>1,
+            'report_id'=>1,
+            'class_name' => 'App\Models\TransportTransaction',
+            'attribute_name'=>'a_mq'
+        ]);
+
+        CustomReportModel::create([
+            'created_by_id'=>1,
+            'report_id'=>1,
+            'class_name' => 'App\Models\TransportTransaction',
+            'attribute_name'=>'contract_type_id'
+        ]);
+
 
     }
 }

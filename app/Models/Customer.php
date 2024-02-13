@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -21,6 +23,22 @@ class Customer extends Model
 
     public $fillable = ['id','first_name','customer_parent_id','last_legal_name','nickname','title','id_reg_no','is_active','terms_of_payment_basis_id','terms_of_payment_id','invoice_basis_id','customer_rating_id','is_vat_exempt','is_vat_cert_received',
         'credit_limit','credit_limit_hard','comment'];
+
+    protected $appends = [
+        'trades_count'
+    ];
+
+    protected function tradesCount(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->TransportTransaction()->where('is_transaction_done','=',false)->where('include_in_calculations','=',true)->count()
+        );
+    }
+
+    public function TransportTransaction(): HasMany
+    {
+        return $this->hasMany(TransportTransaction::class);
+    }
 
 
     public function CustomerParent(): BelongsTo
@@ -83,4 +101,6 @@ class Customer extends Model
         );
 
     }
+
+
 }

@@ -74,12 +74,71 @@ const form = useForm({
 
 });
 
+let showDriver = ref(false);
+let showVehicle = ref(false);
+
+const toggleShowDriver = () => {
+    showDriver.value =  !showDriver.value;
+}
+
+const toggleShowVehicle = () => {
+    showVehicle.value =  !showVehicle.value;
+}
+
+
 let driverForm = useForm({
     first_name:  null,
     last_name:  null,
     cell_no:  null,
     comment: null,
 });
+
+let vehicleForm = useForm({
+    vehicle_type_id:  1,
+    comment: null,
+    reg_no: null,
+});
+
+let vehicleSlideProps = ref(null);
+
+const getComponentProps = () => {
+
+    axios.get(route('props.vehicle_slide_over'),).then((res) => {
+        vehicleSlideProps.value = res.data['vehicle_types'];
+
+    });
+
+};
+
+const createProduct = () => {
+
+    driverForm.post(route('regular_driver.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            driverForm.first_name = null;
+            driverForm.last_name = null;
+            driverForm.cell_no = null;
+            driverForm.comment = null;
+            toggleShowDriver();
+        },
+        onError: (e) => {
+            console.log(e);
+        },
+    });
+};
+
+const createProductVehicle = () => {
+
+    vehicleForm.post(route('regular_vehicle.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+           toggleShowVehicle()
+        },
+        onError: (e) => {
+            console.log(e);
+        },
+    });
+};
 
 const deleteDriverVehicle = () => {
 
@@ -133,6 +192,11 @@ const createDriverVehicle = () => {
           },
       });
 };
+
+onBeforeMount(async () => {
+
+    await getComponentProps();
+});
 
 let emptyErrors = computed(() => Object.keys(form.errors).length === 0 && form.errors.constructor === Object)
 let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border-solid border-2 border-red-500' : 'ml-4 mt-4 p-4 rounded-md border-solid border-2 border-gray')
@@ -298,9 +362,10 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                     </select>
 
                                     <InputError class="mt-2" :message="form.errors.regular_driver_id"/>
-                                    <div class=" mt-1 ml-2 underline button text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">+ Add driver</div>
+                                    <div @click="toggleShowDriver" class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">+ Add driver</div>
 
-                                    <div class="m-2 p-2 border-gray-200">
+                                    <div v-if="showDriver" class="m-4 p-4 border-solid border-2 border-green-500">
+
                                         <div
                                             class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
                                             <!-- First name -->
@@ -313,8 +378,6 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                 <div class="sm:col-span-2">
                                                     <input v-model="driverForm.first_name" type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                                                     <InputError class="mt-2" :message="driverForm.errors.first_name"/>
-
-
                                                 </div>
                                             </div>
 
@@ -358,7 +421,7 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                 </div>
                                                 <div class="sm:col-span-2">
                                                     <AreaInput
-                                                        id="comments"
+                                                        id="comments2"
                                                         :rows=6
                                                         placeholder="Optional comments..."
                                                         v-model="driverForm.comment"
@@ -367,6 +430,20 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                     />
                                                     <InputError class="mt-2" :message="driverForm.errors.comment"/>
 
+                                                </div>
+                                            </div>
+
+                                            <!-- Action buttons -->
+                                            <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                                                <div class="flex justify-end space-x-3">
+                                                    <button type="button"
+                                                            class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                            @click="toggleShowDriverVehicle">Cancel
+                                                    </button>
+                                                    <button type="button" @click="createProduct"
+                                                            class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                        Create
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -388,6 +465,96 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                     </select>
 
                                     <InputError class="mt-2" :message="form.errors.regular_driver_id"/>
+
+                                    <div @click="toggleShowVehicle" class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">+ Add vehicle</div>
+
+                                    <div v-if="showVehicle" class="m-4 p-4 border-solid border-2 border-green-500">
+
+                                        <div
+                                            class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+
+                                            <!-- Divider container -->
+                                            <div
+                                                class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+                                                <!--  reg no -->
+                                                <div
+                                                    class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                    <div>
+                                                        <label
+                                                            class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Reg no</label>
+                                                    </div>
+                                                    <div class="sm:col-span-2">
+                                                        <input v-model="vehicleForm.reg_no" type="text" name="reg_no" id="reg_no" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                        <InputError class="mt-2" :message="vehicleForm.errors.reg_no"/>
+                                                    </div>
+                                                </div>
+
+                                                <!--  vehicle type -->
+                                                <div
+                                                    class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                    <div>
+                                                        <label
+                                                            class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Vehicle type</label>
+                                                    </div>
+                                                    <div class="sm:col-span-2">
+                                                        <select v-model="vehicleForm.vehicle_type_id"
+                                                                class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                            <option v-for="n in vehicleSlideProps" :key="n.id" :value="n.id">{{
+                                                                    n.name
+                                                                }}
+                                                            </option>
+
+                                                        </select>
+                                                        <InputError class="mt-2" :message="vehicleForm.errors.vehicle_type_id"/>
+                                                    </div>
+                                                </div>
+
+
+
+                                                <!-- Comment -->
+                                                <div
+                                                    class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                    <div>
+                                                        <label
+                                                            class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Comments</label>
+                                                    </div>
+                                                    <div class="sm:col-span-2">
+                                                        <AreaInput
+                                                            id="comments"
+                                                            :rows=6
+                                                            placeholder="Optional comments..."
+                                                            v-model="vehicleForm.comment"
+                                                            type="text"
+                                                            class="mt-1 block w-full"
+                                                        />
+                                                        <InputError class="mt-2" :message="vehicleForm.errors.comment"/>
+
+                                                    </div>
+                                                </div>
+
+
+
+                                            </div>
+
+
+                                            <!-- Action buttons -->
+                                            <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                                                <div class="flex justify-end space-x-3">
+                                                    <button type="button"
+                                                            class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                            @click="toggleShowVehicle">Cancel
+                                                    </button>
+                                                    <button type="button" @click="createProductVehicle"
+                                                            class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                        Create
+                                                    </button>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
 
 
                                 </div>
@@ -422,10 +589,13 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                     />
 
                                     <InputError class="mt-2" :message="form.errors.operations_alert_notes"/>
+
                                 </div>
 
 
                             </div>
+
+
 
 
                         </form>

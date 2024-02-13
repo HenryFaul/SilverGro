@@ -41,7 +41,8 @@ const props = defineProps({
     start_date: String,
     end_date: String,
     contract_types:Object,
-    download_url:Object
+    download_url:Object,
+    custom_reports:Object
 });
 const roles_permissions = computed(() => usePage().props.roles_permissions)
 
@@ -68,6 +69,7 @@ const filterForm = useForm({
     end_date:props.filters.end_date ?? null,
     contract_type_id:props.filters.contract_type_id ?? null,
     id:props.filters.id ?? null,
+    custom_report_id:1
 })
 
 let curClient = ref(null);
@@ -186,7 +188,7 @@ const clear = () => {
 }
 
 const edit = (id) => {
-    router.get('transport_transaction/'+id);
+   // router.get('transport_transaction/'+id);
 }
 
 const viewTradeSlideOver = ref(false);
@@ -278,7 +280,7 @@ let filteredTrans = computed(() =>
 const generateExcel = () => {
     filterForm.get(route('excel_report.transactions.generate'),
         {
-            only: ['download_url'],
+            only: ['download_url','custom_report_id'],
             preserveScroll: true,
             onSuccess: (res) => {
                // console.log(res);
@@ -293,7 +295,7 @@ const generateExcel = () => {
     <AppLayout title="Transactions">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Transactions
+                Report Exporter
             </h2>
         </template>
 
@@ -384,6 +386,21 @@ const generateExcel = () => {
                                     <secondary-button class=" ml-1" @click="clear">Clear</secondary-button>
                                     <secondary-button class=" ml-1"  @click="showTradeSlideOver">Add (+)</secondary-button>
                                     <secondary-button class=" ml-1"  @click="generateExcel">Export</secondary-button>
+
+                                    <div class=" mt-3 w-72">
+                                        <div v-if="custom_reports != null" class="mt-2">
+
+                                            <select v-model="filterForm.custom_report_id"
+                                                    class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                <option
+                                                    v-for="n in custom_reports"
+                                                    :key="n.id" :value="n.id">
+                                                    {{ n.name }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div v-else> null</div>
+                                    </div>
 
                                     <div class="m-2 p-2" v-if="download_url">
                                         <a :href="route('excel_report.transactions.download',download_url)" target="_blank"
@@ -484,7 +501,9 @@ const generateExcel = () => {
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Transporter</th>
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Product</th>
 
+<!--
                                         <th scope="col" class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">Actions</th>
+-->
                                     </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
@@ -494,7 +513,7 @@ const generateExcel = () => {
                                     'product_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes',
                                     'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at'-->
 
-                                    <tr @click="edit(transaction.id)"  v-for="(transaction, index) in filteredTrans"
+                                    <tr  v-for="(transaction, index) in filteredTrans"
                                         :key="transaction.id" class="hover:bg-gray-100 text-sm focus-within:bg-gray-100 ">
 
                                         <td class="py-4 px-6 whitespace-nowrap">
@@ -522,9 +541,9 @@ const generateExcel = () => {
                                             {{transaction.product.name}}
                                         </td>
 
-                                        <td class="py-4 px-6 whitespace-nowrap">
+<!--                                        <td class="py-4 px-6 whitespace-nowrap">
                                             <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',transaction.id)" >View trans</Link>
-                                        </td>
+                                        </td>-->
 
                                     </tr>
 

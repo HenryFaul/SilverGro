@@ -146,8 +146,6 @@ class DashboardController extends Controller
 
         $trans_data = TransportTransaction::where('contract_type_id', '=', 2)->with('TransportFinance')->with('TransportDriverVehicle')->with('TransportJob')->get();
 
-
-
         foreach ($trans_data as $trans) {
             $transport_finance = $trans->TransportFinance;
             $transport_job = $trans->TransportJob;

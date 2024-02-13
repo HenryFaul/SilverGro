@@ -176,6 +176,7 @@ const edit = (id) => {
                                         </th>
                                         <th scope="col" class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase">Reg no</th>
                                         <th scope="col" class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase">Active</th>
+                                        <th scope="col" class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase">Trades</th>
                                         <th scope="col" class="w-1/12 text-xs font-semibold tracking-wider text-left text-white uppercase">Actions</th>
                                     </tr>
                                     </thead>
@@ -216,6 +217,11 @@ const edit = (id) => {
                                                 </svg>
                                             </div>
 
+
+                                        </td>
+
+                                        <td class="py-4 px-6 whitespace-nowrap">
+                                            <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10"> {{transporter.trades_count}}</span>
 
                                         </td>
 
