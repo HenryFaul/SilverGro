@@ -1864,7 +1864,7 @@ const doCreatedTrade = (_id) => {
 
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
-                                                                            class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                                                             @change="supplierQuery = $event.target.value"
                                                                             :display-value="(supplier) => supplier?.last_legal_name"/>
                                                                         <ComboboxButton
@@ -2622,7 +2622,7 @@ const doCreatedTrade = (_id) => {
                                                                 <Combobox as="div" v-model="transport_trans_Form.customer_id">
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
-                                                                            class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                                                             @change="customerQuery = $event.target.value"
                                                                             :display-value="(customer) => customer?.last_legal_name"/>
                                                                         <ComboboxButton
@@ -4409,7 +4409,7 @@ const doCreatedTrade = (_id) => {
 
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
-                                                                            class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                                                             @change="transporterQuery = $event.target.value"
                                                                             :display-value="(transporter) => transporter?.last_legal_name"/>
                                                                         <ComboboxButton
@@ -4451,7 +4451,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dd class="flex items-start gap-x-2">
 
-                                                            <div class="w-80">
+                                                            <div class="w-70">
                                                                 <VueDatePicker
                                                                     v-model="transport_trans_Form.transport_date_earliest"
                                                                     :format="formatEarly"
@@ -4468,7 +4468,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dd class="flex items-start gap-x-2">
 
-                                                            <div class="w-80">
+                                                            <div class="w-70">
                                                                 <VueDatePicker
                                                                     v-model="transport_trans_Form.transport_date_latest"
                                                                     :format="formatLate"
