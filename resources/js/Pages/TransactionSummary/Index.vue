@@ -187,7 +187,7 @@ const tabs_split = [
     { id:4, name: 'Pricing',  current: false },
     { id:5, name: 'Invoice',  current: false },
     { id:6, name: 'Process Control', current: false },
-    { id:7, name: 'Linked Contracts',  current: false },
+    { id:7, name: 'Linked Trades',  current: false },
     { id:8, name: 'Contracts',  current: false },
     { id:9,name: 'Log', current: false },
     { id:10,name: 'Admin', current: false },
@@ -202,7 +202,7 @@ const tabs_non_split = [
     { id:4, name: 'Pricing',  current: false },
     { id:5, name: 'Invoice',  current: false },
     { id:6, name: 'Process Control', current: false },
-    { id:7, name: 'Linked Contracts',  current: false },
+    { id:7, name: 'Linked Trades',  current: false },
     { id:8, name: 'Contracts',  current: false },
     { id:9,name: 'Log', current: false },
     { id:10,name: 'Admin', current: false },
@@ -6646,7 +6646,7 @@ const doCreatedTrade = (_id) => {
                                                                 </a>
                                                             </dd>
                                                         </div>
-                                                        <div class="flex justify-between gap-x-4 py-3">
+<!--                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Generate Final</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <SecondaryButton @click="">
@@ -6674,7 +6674,7 @@ const doCreatedTrade = (_id) => {
                                                             </dd>
 
 
-                                                        </div>
+                                                        </div>-->
                                                     </div>
 
                                                     <div v-else>
@@ -6745,7 +6745,7 @@ const doCreatedTrade = (_id) => {
                                                                 </a>
                                                             </dd>
                                                         </div>
-                                                        <div class="flex justify-between gap-x-4 py-3">
+<!--                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Generate Final</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <SecondaryButton @click="">
@@ -6773,7 +6773,7 @@ const doCreatedTrade = (_id) => {
                                                             </dd>
 
 
-                                                        </div>
+                                                        </div>-->
                                                     </div>
 
                                                     <div v-else>
@@ -6811,7 +6811,7 @@ const doCreatedTrade = (_id) => {
                                                                 </a>
                                                             </dd>
                                                         </div>
-                                                        <div class="flex justify-between gap-x-4 py-3">
+<!--                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Generate Final</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <SecondaryButton @click="">
@@ -6836,7 +6836,7 @@ const doCreatedTrade = (_id) => {
                                                                 </div>
 
                                                             </dd>
-                                                        </div>
+                                                        </div>-->
                                                     </div>
 
                                                     <div v-else>
@@ -6897,7 +6897,7 @@ const doCreatedTrade = (_id) => {
                                                                 </a>
                                                             </dd>
                                                         </div>
-                                                        <div class="flex justify-between gap-x-4 py-3">
+<!--                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Generate Final</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <SecondaryButton @click="">
@@ -6925,7 +6925,7 @@ const doCreatedTrade = (_id) => {
                                                             </dd>
 
 
-                                                        </div>
+                                                        </div>-->
                                                     </div>
 
                                                     <div v-else>
@@ -6963,7 +6963,7 @@ const doCreatedTrade = (_id) => {
                                                                 </a>
                                                             </dd>
                                                         </div>
-                                                        <div class="flex justify-between gap-x-4 py-3">
+<!--                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Generate Final</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <SecondaryButton @click="">
@@ -6988,7 +6988,7 @@ const doCreatedTrade = (_id) => {
                                                                 </div>
 
                                                             </dd>
-                                                        </div>
+                                                        </div>-->
                                                     </div>
 
                                                     <div v-else>
@@ -7006,35 +7006,41 @@ const doCreatedTrade = (_id) => {
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
 
-                                                    <div v-if="sales_order.is_active">
-                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                            <dt class="text-gray-500">Working Document</dt>
-                                                            <dd class="flex items-start gap-x-2">
-                                                                <a :href="'/pdf_report/sales_order_confirmation_view_split/' + props.selected_transaction.id  +'/'+selectedSplitCustomer" target="_blank"
-                                                                   class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                                                    View
-                                                                </a>
-                                                            </dd>
-                                                        </div>
-                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                            <dt class="text-gray-500">Split Customer</dt>
-                                                            <dd class="flex items-start gap-x-2">
-                                                                <div>
-                                                                    <select v-model="selectedSplitCustomer" id="location" name="location" class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                                        <option :value=2>Split 2</option>
-                                                                        <option :value=3>Split 3</option>
-                                                                        <option :value=4>Split 4</option>
-                                                                        <option :value=5>Split 5</option>
-                                                                    </select>
-                                                                </div>
+                                                    <div v-if="selected_transaction.is_split_load === true" >
+                                                        <div v-if="sales_order.is_active">
+                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">Working Document</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <a :href="'/pdf_report/sales_order_confirmation_view_split/' + props.selected_transaction.id  +'/'+selectedSplitCustomer" target="_blank"
+                                                                       class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                        View
+                                                                    </a>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">Split Customer</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <div>
+                                                                        <select v-model="selectedSplitCustomer" id="location" name="location" class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                                            <option :value=2>Split 2</option>
+                                                                            <option :value=3>Split 3</option>
+                                                                            <option :value=4>Split 4</option>
+                                                                            <option :value=5>Split 5</option>
+                                                                        </select>
+                                                                    </div>
 
-                                                            </dd>
+                                                                </dd>
+                                                            </div>
+                                                        </div>
+
+                                                        <div v-else>
+                                                            Sales order Not Active
                                                         </div>
                                                     </div>
-
                                                     <div v-else>
-                                                        Sales order Not Active
+                                                        Not split load
                                                     </div>
+
 
                                                 </dl>
                                             </li>

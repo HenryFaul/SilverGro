@@ -162,6 +162,7 @@ const edit = (id) => {
                             </div>
 
                             <div class="bg-white rounded-md shadow overflow-x-auto">
+
                                 <table class="min-w-full divide-y divide-gray-200 table-fixed">
                                     <thead class="bg-indigo-400">
                                     <tr class="text-left font-bold">

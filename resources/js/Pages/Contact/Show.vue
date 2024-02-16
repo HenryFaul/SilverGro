@@ -2,7 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {computed, ref, watch, inject} from 'vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import {router, useForm, usePage} from "@inertiajs/vue3";
+import {router, useForm, usePage,Link} from "@inertiajs/vue3";
 import Icon from "@/Components/Icon.vue";
 import InputError from '@/Components/InputError.vue';
 import AreaInput from '@/Components/AreaInput.vue';
@@ -18,7 +18,10 @@ const swal = inject('$swal');
 
 const props = defineProps({
     contact: Object,
-    contact_type: Object
+    contact_type: Object,
+    linked_customer: Object,
+    linked_supplier: Object,
+    linked_transporter: Object
 });
 const permissions = computed(() => usePage().props.permissions)
 
@@ -228,6 +231,91 @@ const can_update_contact = computed(() => usePage().props.roles_permissions.perm
 
 
 
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
+                                        <div>
+                                            <h2 class="text-base font-semibold leading-7 text-gray-900">Linked to contact</h2>
+                                            <p class="mt-1 text-sm leading-6 text-gray-600">Parties Linked.</p>
+                                        </div>
+
+                                        <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+                                            <div v-if="linked_customer" class="sm:col-span-3">
+                                                <div class="mt-2">
+                                                    <div>
+                                                        <div class="px-4 sm:px-0">
+                                                            <h3 class="text-base font-semibold leading-7 text-gray-900">Customer</h3>
+                                                            <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Customer Linked</p>
+                                                        </div>
+                                                        <div class="mt-6 border-t border-gray-100">
+                                                            <dl class="divide-y divide-gray-100">
+                                                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                                                    <dt class="text-sm font-medium leading-6 text-gray-900">Name</dt>
+                                                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{linked_customer.last_legal_name}}</dd>
+                                                                </div>
+                                                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                                                    <dt class="text-sm font-medium leading-6 text-gray-900">Access</dt>
+                                                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('customer.show',linked_customer.id)" >view</Link>
+
+                                                                    </dd>
+                                                                </div>
+                                                            </dl>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div v-if="linked_supplier" class="sm:col-span-3">
+                                                <div class="mt-2">
+                                                    <div>
+                                                        <div class="px-4 sm:px-0">
+                                                            <h3 class="text-base font-semibold leading-7 text-gray-900">Supplier</h3>
+                                                            <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Supplier Linked</p>
+                                                        </div>
+                                                        <div class="mt-6 border-t border-gray-100">
+                                                            <dl class="divide-y divide-gray-100">
+                                                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                                                    <dt class="text-sm font-medium leading-6 text-gray-900">Name</dt>
+                                                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{linked_supplier.last_legal_name}}</dd>
+                                                                </div>
+                                                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                                                    <dt class="text-sm font-medium leading-6 text-gray-900">Access</dt>
+                                                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('supplier.show',linked_supplier.id)" >view</Link>
+
+                                                                    </dd>
+                                                                </div>
+                                                            </dl>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div v-if="linked_transporter" class="sm:col-span-3">
+                                                <div class="mt-2">
+                                                    <div>
+                                                        <div class="px-4 sm:px-0">
+                                                            <h3 class="text-base font-semibold leading-7 text-gray-900">Transporter</h3>
+                                                            <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Transporter Linked</p>
+                                                        </div>
+                                                        <div class="mt-6 border-t border-gray-100">
+                                                            <dl class="divide-y divide-gray-100">
+                                                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                                                    <dt class="text-sm font-medium leading-6 text-gray-900">Name</dt>
+                                                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{linked_transporter.last_legal_name}}</dd>
+                                                                </div>
+                                                                <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                                                    <dt class="text-sm font-medium leading-6 text-gray-900">Access</dt>
+                                                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transporter.show',linked_transporter.id)" >view</Link>
+
+                                                                    </dd>
+                                                                </div>
+                                                            </dl>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 

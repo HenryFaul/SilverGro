@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use App\Models\ContactType;
 use App\Models\Customer;
+use App\Models\Supplier;
+use App\Models\Transporter;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -24,7 +26,7 @@ class ContactController extends Controller
 
         $paginate = $request['show'] ?? 10;
 
-        $contacts = Contact::with('emailable')->filter($filters)
+        $contacts = Contact::with('emailable')->with('contactable')->filter($filters)
             ->paginate($paginate)
             ->withQueryString();
 
@@ -87,7 +89,6 @@ class ContactController extends Controller
         ]);
 
 
-
         $request->session()->flash('flash.bannerStyle', 'success');
         $request->session()->flash('flash.banner', 'Contact created');
         return redirect()->back();
@@ -102,6 +103,24 @@ class ContactController extends Controller
        // $customer->load('staff')->load('addressable')->load('contactable');
 
         $contact->load('emailable')->load('numberable');
+        $linked_supplier = null;
+        $linked_customer =null;
+        $linked_transporter = null;
+
+
+
+        switch ($contact->poly_contact_type) {
+            case  'App\Models\Customer':
+                $linked_customer = Customer::where('id',$contact->poly_contact_id)->first();
+                break;
+            case 'App\Models\Supplier':
+                $linked_supplier = Supplier::where('id',$contact->poly_contact_id)->first();
+                break;
+            case 'App\Models\Transporter':
+                $linked_transporter =  Transporter::where('id',$contact->poly_contact_id)->first();
+                break;
+        }
+
 
         $contact_type = ContactType::all();
 
@@ -109,7 +128,10 @@ class ContactController extends Controller
             'Contact/Show',
             [
                 'contact' => $contact,
-                'contact_type'=>$contact_type
+                'contact_type'=>$contact_type,
+                'linked_supplier ' => $linked_supplier,
+                'linked_customer' =>$linked_customer,
+                'linked_transporter' =>$linked_transporter
             ]
         );
 
