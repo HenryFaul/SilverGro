@@ -29,6 +29,7 @@ use App\Models\TermsOfPayment;
 use App\Models\TradeRule;
 use App\Models\TransLink;
 use App\Models\TransportApproval;
+use App\Models\TransportDriverVehicle;
 use App\Models\Transporter;
 use App\Models\TransportFinance;
 use App\Models\TransportInvoice;
@@ -96,7 +97,6 @@ class TransportTransactionController extends Controller
         $custom_reports = CustomReport::with('CustomReportModels')->get();
 
 
-
         //dd($end_date);
 
         return inertia(
@@ -108,7 +108,7 @@ class TransportTransactionController extends Controller
                 'end_date' => $end_date,
                 'contract_types' => $contract_types,
                 'download_url' => null,
-                'custom_reports'=>$custom_reports
+                'custom_reports' => $custom_reports
 
             ]
         );
@@ -262,7 +262,6 @@ class TransportTransactionController extends Controller
         $invoice_pay_by_date = $invoice_date->addDays($terms_of_payment_days);
 
 
-
         $transport_invoice_details = TransportInvoiceDetails::create([
             'transport_trans_id' => $transport_trans->id,
             'invoice_id' => $transport_invoice->id,
@@ -305,7 +304,7 @@ class TransportTransactionController extends Controller
 
 
         $request->session()->flash('flash.bannerStyle', 'success');
-        $request->session()->flash('flash.banner', 'Created:'.$transport_trans->id);
+        $request->session()->flash('flash.banner', 'Created:' . $transport_trans->id);
         return redirect()->back();
     }
 
@@ -349,7 +348,6 @@ class TransportTransactionController extends Controller
 
 
         $transport_load_to_clone = $trans_to_clone->TransportLoad;
-
 
 
         $transport_load = TransportLoad::create([
@@ -478,7 +476,7 @@ class TransportTransactionController extends Controller
 
 
         $request->session()->flash('flash.bannerStyle', 'success');
-        $request->session()->flash('flash.banner', 'Cloned:'.$transport_trans->id);
+        $request->session()->flash('flash.banner', 'Cloned:' . $transport_trans->id);
         return redirect()->back();
     }
 
@@ -530,7 +528,6 @@ class TransportTransactionController extends Controller
         return array("transport_trans" => $transport_trans, "contract_types" => $contract_types);
 
     }
-
 
 
     /**
@@ -611,7 +608,7 @@ class TransportTransactionController extends Controller
                 'all_invoice_statuses' => $all_invoice_statuses,
                 'linked_trans' => $linked_trans,
                 'rules_with_approvals' => $rules_with_approvals,
-                'all_terms_of_payments'=>$all_terms_of_payments
+                'all_terms_of_payments' => $all_terms_of_payments
             ]
         );
     }
@@ -671,11 +668,11 @@ class TransportTransactionController extends Controller
             [
                 'contract_type_id' => $request->contract_type_id['id'],
                 'supplier_id' => $request->supplier_id['id'],
-                'customer_id' => $request->is_split_load? 2 : $request->customer_id['id'],
-                'customer_id_2' => isset($request->customer_id_2)? $request->customer_id_2['id']: null,
-                'customer_id_3' => isset($request->customer_id_3)? $request->customer_id_3['id']: null,
-                'customer_id_4' => isset($request->customer_id_4)? $request->customer_id_4['id']: null,
-                'customer_id_5' => isset($request->customer_id_5)? $request->customer_id_5['id']: null,
+                'customer_id' => $request->is_split_load ? 2 : $request->customer_id['id'],
+                'customer_id_2' => isset($request->customer_id_2) ? $request->customer_id_2['id'] : null,
+                'customer_id_3' => isset($request->customer_id_3) ? $request->customer_id_3['id'] : null,
+                'customer_id_4' => isset($request->customer_id_4) ? $request->customer_id_4['id'] : null,
+                'customer_id_5' => isset($request->customer_id_5) ? $request->customer_id_5['id'] : null,
                 'transporter_id' => $request->transporter_id['id'],
                 'product_id' => $request->product_id['id'],
                 'include_in_calculations' => $request->include_in_calculations,
@@ -792,7 +789,7 @@ class TransportTransactionController extends Controller
 
         if ($transactions != null) {
 
-            $customer_report= CustomReport::where('id',$request->custom_report_id)->first();
+            $customer_report = CustomReport::where('id', $request->custom_report_id)->first();
 
             $datestamp = time();
             $file_name = ':nam_silvergrow_:dat.xlsx';
@@ -800,7 +797,7 @@ class TransportTransactionController extends Controller
             $file_name = str_ireplace(':dat', $datestamp, $file_name);
 
             try {
-                $spreadsheet = $this->makeExcelDynamic($transactions,$request->custom_report_id);
+                $spreadsheet = $this->makeExcelDynamic($transactions, $request->custom_report_id);
 
                 if ($spreadsheet != null) {
                     $spreadsheet->getProperties()
@@ -949,12 +946,12 @@ class TransportTransactionController extends Controller
         return null;
     }
 
-    public function makeExcelDynamic($transactions,$custom_report_id): ?Spreadsheet
+    public function makeExcelDynamic($transactions, $custom_report_id): ?Spreadsheet
     {
 
         try {
 
-            $custom_report = CustomReport::where('id',$custom_report_id)->first();
+            $custom_report = CustomReport::where('id', $custom_report_id)->first();
             $custom_report_model = $custom_report->CustomReportModels;
 
 
@@ -965,6 +962,7 @@ class TransportTransactionController extends Controller
             $product = Product::first();
             $regular_driver = RegularDriver::first();
             $regular_vehicle = RegularVehicle::first();
+            $transport_driver_vehicle = TransportDriverVehicle::first();
             $supplier = Supplier::first();
             $transporter = Transporter::first();
             $transport_finance = TransportFinance::first();
@@ -974,25 +972,26 @@ class TransportTransactionController extends Controller
             $transport_load = TransportLoad::first();
 
 
-            $model_transport_transactions = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_transaction))->get();
-            $model_deal_ticket = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($deal_ticket))->get();
-            $model_transport_finance = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_finance))->get();
-            $model_transport_invoice = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_invoice))->get();
-            $model_transport_invoice_details = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_invoice_details))->get();
-            $model_transport_job= CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_job))->get();
-            $transport_load = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transport_load))->get();
-            $model_customer = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($customer))->get();
-            $model_customer_parent = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($customer_parent))->get();
-            $model_product = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($product))->get();
-            $model_regular_driver = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($regular_driver))->get();
-            $model_regular_vehicle = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($regular_vehicle))->get();
-            $model_supplier = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($supplier))->get();
-            $model_transporter = CustomReportModel::where('report_id',$custom_report->id)->where('class_name',get_class($transporter))->get();
+            $model_transport_transactions = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_transaction))->get();
+            $model_deal_ticket = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($deal_ticket))->get();
+            $model_transport_finance = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_finance))->get();
+            $model_transport_invoice = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_invoice))->get();
+            $model_transport_invoice_details = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_invoice_details))->get();
+            $model_transport_job = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_job))->get();
+            $model_transport_load = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_load))->get();
+            $model_customer = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($customer))->get();
+            $model_customer_parent = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($customer_parent))->get();
+            $model_product = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($product))->get();
+            $model_supplier = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($supplier))->get();
+            $model_transporter = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transporter))->get();
 
+            $model_regular_driver = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($regular_driver))->get();
+            $model_regular_vehicle = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($regular_vehicle))->get();
+            $model_transport_driver_vehicle = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_driver_vehicle))->get();
 
 
             $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet()->setTitle('report');
+            $sheet = $spreadsheet->getActiveSheet()->setTitle($custom_report->name);
 
             $styleArray = array(
                 'font' => array(
@@ -1021,151 +1020,658 @@ class TransportTransactionController extends Controller
                 ],
             );
 
-            $row_for_heading = 1;
 
-            foreach ($custom_report_model as $model){
-                $sheet->setCellValue([$row_for_heading,1], $model->attribute_name);
-                $row_for_heading++;
-            }
+            $col_for_heading = 1;
+            $global_col = 1;
+
+            //trans
+            //For all specific models loop over each
+            foreach ($model_transport_transactions as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transport_transaction)) {
 
 
-            for ($x = 1; $x < $row_for_heading; $x++) {
-                $sheet->getStyleByColumnAndRow($x, 1)->applyFromArray($styleArray1);
-            }
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'trans_' . $custom_model->attribute_name);
 
-            //loop over trans
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
 
-            $row_count = 2;
+                        $pos = 0;
+                        $col = 1;
 
-           if ($transactions != null) {
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
 
-                $pos = 0;
-                $col = 1;
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+                            $sheet->setCellValue([$global_col, $r], $trans->$attribute);
+                            $pos++;
+                        }
 
-                for ($r = $row_count; $r < count($transactions) + $row_count; $r++) {
-
-                    $trans = $transactions[$pos];
-
-                    //trans
-                    foreach ($model_transport_transactions as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->$attribute);
-                        $col++;
                     }
 
-                    //deal ticket
-                    foreach ($model_deal_ticket as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->DealTicket->$attribute);
-                        $col++;
-                    }
+                    //increment the global column
+                    $global_col++;
 
-                    //transport finance
-                    foreach ($model_transport_finance as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->TransportFinance->$attribute);
-                        $col++;
-                    }
-
-                    //$model_transport_invoice
-                    foreach ($model_transport_invoice as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->TransportInvoice->$attribute);
-                        $col++;
-                    }
-
-                    //$model_transport_invoice_details
-                    foreach ($model_transport_invoice_details as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->TransportInvoice->TransportInvoiceDetails->$attribute);
-                        $col++;
-                    }
-
-                    //$model_transport_job
-                    foreach ($model_transport_job as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->TransportJob->$attribute);
-                        $col++;
-                    }
-
-                    //$transport_load
-                    foreach ($transport_load as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->TransportLoad->$attribute);
-                        $col++;
-                    }
-
-                    //$model_customer
-                    foreach ($model_customer as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->Customer->$attribute);
-                        $col++;
-                    }
-
-                    //$model_customer
-                    foreach ($model_customer_parent as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->CustomerParent->$attribute);
-                        $col++;
-                    }
-
-
-                    //$model_product
-                    foreach ($model_product as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->Product->$attribute);
-                        $col++;
-                    }
-
-                   /* //$model_regular_driver
-                    foreach ($model_regular_driver as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->TransportFinance->$attribute);
-                        $col++;
-                    }
-
-                    //$model_regular_vehicle
-                    foreach ($model_regular_vehicle as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->TransportFinance->$attribute);
-                        $col++;
-                    }*/
-
-
-                    //$model_supplier
-                    foreach ($model_supplier as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->Supplier->$attribute);
-                        $col++;
-                    }
-
-                    //$model_transporter
-                    foreach ($model_transporter as $model){
-                        $attribute = $model->attribute_name;
-                        $sheet->setCellValue([$col, $r], $trans->Transporter->$attribute);
-                        $col++;
-                    }
-
-
-
-
-
-                    $col = 1;
-
-
-                    $sheet
-                        ->getStyle([11, $r])
-                        ->getNumberFormat()
-                        ->setFormatCode(NumberFormat::FORMAT_ACCOUNTING_USD);
-
-                    // $sheet->setCellValueByColumnAndRow(1,$r,$investor->acc_num);
-
-                    $pos++;
                 }
-                $row_count += count($transactions) + 1;
+
 
             }
 
+            //deal ticket
+            //For all specific models loop over each
+            foreach ($model_deal_ticket as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($deal_ticket)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'deal_ticket_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+                            //dd($trans->DealTicket);
+
+                            if (isset($trans->DealTicket->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->DealTicket->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //transport finance
+            //For all specific models loop over each
+            foreach ($model_transport_finance as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transport_finance)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'trans_finance_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+                            //dd($trans->DealTicket);
+
+                            if (isset($trans->TransportFinance->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->TransportFinance->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //transport invoice
+            //For all specific models loop over each
+            foreach ($model_transport_invoice as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transport_invoice)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'trans_invoice_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+
+                            if (isset($trans->TransportInvoice->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->TransportInvoice->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //transport invoice details
+            //For all specific models loop over each
+            foreach ($model_transport_invoice_details as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transport_invoice_details)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'trans_invoice_details_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+
+                            if (isset($trans->TransportInvoice->TransportInvoiceDetails->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->TransportInvoice->TransportInvoiceDetails->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //transport invoice details
+            //For all specific models loop over each
+            foreach ($model_transport_invoice_details as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transport_invoice_details)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'trans_invoice_details_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+
+                            if (isset($trans->TransportInvoice->TransportInvoiceDetails->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->TransportInvoice->TransportInvoiceDetails->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //transport job
+            //For all specific models loop over each
+            foreach ($model_transport_job as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transport_job)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'trans_job_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+
+                            if (isset($trans->TransportJob->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->TransportJob->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //transport load
+            //For all specific models loop over each
+            foreach ($model_transport_load as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transport_load)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'trans_load_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+
+                            if (isset($trans->TransportLoad->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->TransportLoad->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //customer
+            //For all specific models loop over each
+            foreach ($model_customer as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($customer)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'customer_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+
+                            if (isset($trans->Customer->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->Customer->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //customer parent
+            //For all specific models loop over each
+            foreach ($model_customer_parent as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($customer_parent)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'customer_parent_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+
+                            if (isset($trans->Customer->CustomerParent->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->Customer->CustomerParent->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //product
+            //For all specific models loop over each
+            foreach ($model_product as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($product)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'product_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+
+                            if (isset($trans->Product->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->Product->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //supplier
+            //For all specific models loop over each
+            foreach ($model_supplier as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($supplier)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'supplier_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+                            if (isset($trans->Supplier->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->Supplier->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //transporter
+            //For all specific models loop over each
+            foreach ($model_transporter as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transporter)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'transporter_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+                            if (isset($trans->Transporter->$attribute)){
+                                $sheet->setCellValue([$global_col, $r], $trans->Transporter->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //driver vehicle
+            //For all specific models loop over each
+            foreach ($model_transport_driver_vehicle as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transport_driver_vehicle)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'driver_vehicle_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+                            if (isset($trans->TransportJob->TransportDriverVehicle[0])){
+
+                                $sheet->setCellValue([$global_col, $r], $trans->TransportJob->TransportDriverVehicle[0]->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+            //driver
+            //For all specific models loop over each
+            foreach ($model_regular_driver as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($regular_driver)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'driver_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+                            if (isset($trans->TransportJob->TransportDriverVehicle[0]->Driver)){
+
+                                $sheet->setCellValue([$global_col, $r], $trans->TransportJob->TransportDriverVehicle[0]->Driver->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+
+            //vehicle
+            //For all specific models loop over each
+            foreach ($model_regular_vehicle as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($regular_vehicle)) {
+
+                    //only once set the column name
+                    $sheet->setCellValue([$global_col, 1], 'vehicle_'. $custom_model->attribute_name);
+
+                    //extract transactions for that attribute
+                    //loop over trans
+                    if ($transactions != null) {
+
+                        $pos = 0;
+                        $col = 1;
+
+                        for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                            $trans = $transactions[$pos];
+                            $attribute = $custom_model->attribute_name;
+
+                            if (isset($trans->TransportJob->TransportDriverVehicle[0]->Vehicle)){
+
+                                $sheet->setCellValue([$global_col, $r], $trans->TransportJob->TransportDriverVehicle[0]->Vehicle->$attribute);
+                            }
+
+                            $pos++;
+                        }
+
+                    }
+
+                    //increment the global column
+                    $global_col++;
+
+                }
+
+
+            }
+
+
+
+             for ($x = 1; $x < $global_col; $x++) {
+                 $sheet->getStyleByColumnAndRow($x, 1)->applyFromArray($styleArray1);
+             }
+
+
+            /*   $sheet
+                   ->getStyle([11, $r])
+                   ->getNumberFormat()
+                   ->setFormatCode(NumberFormat::FORMAT_ACCOUNTING_USD);*/
 
             foreach ($sheet->getColumnIterator() as $column) {
                 $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);

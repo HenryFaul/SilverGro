@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\RegularDriver;
 use App\Models\RegularVehicle;
 use App\Models\Supplier;
+use App\Models\TransportDriverVehicle;
 use App\Models\Transporter;
 use App\Models\TransportFinance;
 use App\Models\TransportInvoice;
@@ -57,6 +58,7 @@ class CustomReportController extends Controller
         $product = Product::first();
         $regular_driver = RegularDriver::first();
         $regular_vehicle = RegularVehicle::first();
+        $transport_driver_vehicle = TransportDriverVehicle::first();
         $supplier = Supplier::first();
         $transporter = Transporter::first();
         $transport_finance = TransportFinance::first();
@@ -75,6 +77,7 @@ class CustomReportController extends Controller
                ['name'=>get_class($product),'attributes'=> array_keys($product->getAttributes())],
                ['name'=>get_class($regular_driver),'attributes'=> array_keys($regular_driver->getAttributes())],
                ['name'=>get_class($regular_vehicle),'attributes'=> array_keys($regular_vehicle->getAttributes())],
+               ['name'=>get_class($transport_driver_vehicle),'attributes'=> array_keys($transport_driver_vehicle->getAttributes())],
                ['name'=>get_class($supplier),'attributes'=> array_keys($supplier->getAttributes())],
                ['name'=>get_class($transporter),'attributes'=> array_keys($transporter->getAttributes())],
                ['name'=>get_class($transport_finance),'attributes'=> array_keys($transport_finance->getAttributes())],
