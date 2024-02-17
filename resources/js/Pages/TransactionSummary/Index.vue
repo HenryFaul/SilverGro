@@ -1813,6 +1813,7 @@ const doCreatedTrade = (_id) => {
                                                 <InputError class="mt-2" :message="transport_load_Form.errors['billing_units_outgoing_id.id']"/>
                                                 <InputError class="mt-2" :message="transport_load_Form.errors['collection_address_id.id']"/>
                                                 <InputError class="mt-2" :message="transport_load_Form.errors['delivery_address_id.id']"/>
+                                                <InputError class="mt-2" :message="transport_load_Form.errors['product_source_id.id']"/>
 
                                                 <InputError class="mt-2" :message="transport_load_Form.errors.product_grade_perc"/>
                                                 <InputError class="mt-2" :message="transport_load_Form.errors.no_units_incoming"/>
@@ -2368,6 +2369,7 @@ const doCreatedTrade = (_id) => {
                                                                             </ul>
                                                                         </ComboboxOption>
                                                                     </ComboboxOptions>
+
                                                                 </div>
                                                             </Combobox>
 
@@ -2742,7 +2744,7 @@ const doCreatedTrade = (_id) => {
                                                                     </Combobox>
                                                                 </div>
                                                                 <div class="mt-2">
-                                                                    <Link class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('supplier.show',transport_trans_Form.customer_id)" >+ Add customer address</Link>
+                                                                    <Link class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('customer.show',transport_trans_Form.customer_id)" >+ Add customer address</Link>
                                                                 </div>
                                                             </div>
                                                         </dd>
