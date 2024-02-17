@@ -73,7 +73,7 @@ class TransportOrderController extends Controller
 
         $request->validate([
             'is_active'=>['nullable','boolean',Rule::prohibitedIf(!$can_approve)],
-        ],['is_active'=>'You need permissions to activate a Sales Order']);
+        ],['is_active'=>'You need permissions to activate a Transport Order']);
 
         $is_updated = false;
 

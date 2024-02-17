@@ -512,6 +512,14 @@ let updateSelectValues = () => {
     purchaseOrder_Form.is_po_sent= props.purchase_order.is_po_sent;
     purchaseOrder_Form.is_po_received= props.purchase_order.is_po_received;
 
+    //Transport Order
+
+    transportOrder_Form.transport_trans_id= props.transport_order.transport_trans_id;
+    transportOrder_Form.confirmed_by_type_id= props.transport_order.confirmed_by_type_id;
+    transportOrder_Form.is_active= props.transport_order.is_active;
+    transportOrder_Form.is_to_sent= props.transport_order.is_to_sent;
+    transportOrder_Form.is_to_received= props.transport_order.is_to_received;
+
     //transport_job_Form
 
         transport_job_Form.customer_order_number= props.selected_transaction.transport_job.customer_order_number;
@@ -798,6 +806,7 @@ const updateTransportTrans = () => {
             preserveScroll: true,
             onSuccess: () => {
                 updateTransportLoad();
+
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -900,6 +909,7 @@ const activateSalesOrder = () => {
             preserveScroll: true,
             onSuccess: () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
+                isUpdating.value = false;
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -918,6 +928,7 @@ const activatePurchaseOrder = () => {
             preserveScroll: true,
             onSuccess: () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
+                isUpdating.value = false;
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -936,6 +947,7 @@ const activateTransportOrder = () => {
             preserveScroll: true,
             onSuccess: () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
+                isUpdating.value = false;
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -954,6 +966,7 @@ const sendSalesOrder = () => {
             preserveScroll: true,
             onSuccess: () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
+                isUpdating.value = false;
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -972,6 +985,7 @@ const sendPurchaseOrder = () => {
             preserveScroll: true,
             onSuccess: () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
+                isUpdating.value = false;
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -990,6 +1004,7 @@ const sendTransportOrder = () => {
             preserveScroll: true,
             onSuccess: () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
+                isUpdating.value = false;
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -1008,6 +1023,7 @@ const receiveSalesOrder = () => {
             preserveScroll: true,
             onSuccess: () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
+                isUpdating.value = false;
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -1026,6 +1042,7 @@ const receivePurchaseOrder = () => {
             preserveScroll: true,
             onSuccess: () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
+                isUpdating.value = false;
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -1044,6 +1061,7 @@ const receiveTransportOrder = () => {
             preserveScroll: true,
             onSuccess: () => {
                 swal(usePage().props.jetstream.flash?.banner || '');
+                isUpdating.value = false;
             },
             onError: (error) => {
                 isUpdating.value = false;
@@ -6602,7 +6620,6 @@ const doCreatedTrade = (_id) => {
                                                 </div>
 
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-
                                                     <div v-if="transport_order.is_active">
                                                         <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Confirmation Sent</dt>

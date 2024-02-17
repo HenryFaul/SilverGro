@@ -132,7 +132,7 @@ let customerQuery = ref('');
 const filteredCustomers = computed(() =>
     customerQuery.value === ''
         ? tradeSlideProps.value['customers']
-        : tradeSlideProps.value['suppliers'].filter((customer) => {
+        : tradeSlideProps.value['customers'].filter((customer) => {
             return customer.last_legal_name.toLowerCase().includes(customerQuery.value.toLowerCase())
         })
 );
