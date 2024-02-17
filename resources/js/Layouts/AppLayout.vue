@@ -185,7 +185,7 @@ const logout = () => {
                                                 </DropdownLink>
 
                                                 <DropdownLink :href="route('transaction_summary.index')">
-                                                    Summary view
+                                                    Trade view
                                                 </DropdownLink>
 
                                                 <DropdownLink :href="route('transaction_spreadsheet.index')">
