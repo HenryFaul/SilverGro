@@ -1660,9 +1660,9 @@ const doCreatedTrade = (_id) => {
                                                     >
 
                                                         <td :class="row_styler" >
-                                                            <div class="font-bold">{{transaction.id}}</div>
-                                                            <div>{{transaction.old_id}}</div>
-                                                            <div class="text-indigo-500" v-if="transaction.a_mq">{{transaction.a_mq}}</div>
+                                                            <div class="font-bold">id:{{transaction.id}}</div>
+                                                            <div>old:{{transaction.old_id}}</div>
+                                                            <div class="text-indigo-500" v-if="transaction.a_mq">a_mq:{{transaction.a_mq}}</div>
 
                                                         </td>
                                                         <td :class="row_styler">
