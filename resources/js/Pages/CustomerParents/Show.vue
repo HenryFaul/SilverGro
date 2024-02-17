@@ -615,7 +615,7 @@ const can_update_customer = computed(() => usePage().props.roles_permissions.per
                                     <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{customer.last_legal_name}}</td>
                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">{{customer.id_reg_no}}</td>
                                     <td class="whitespace-nowrap  py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('customer_parent.show',customer.id)" >View</Link>
+                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('customer.show',customer.id)" >View</Link>
                                     </td>
                                </tr>
 
