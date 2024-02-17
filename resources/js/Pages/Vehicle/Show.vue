@@ -63,10 +63,10 @@ const can_update_product = computed(() => usePage().props.roles_permissions.perm
 </script>
 
 <template>
-    <AppLayout title="Driver">
+    <AppLayout title="Vehicle">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Driver / <span class="text-indigo-400">{{ vehicleForm.reg_no }}</span>
+                Vehicle / <span class="text-indigo-400">{{ vehicleForm.reg_no }}</span>
             </h2>
         </template>
 

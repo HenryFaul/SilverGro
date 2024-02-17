@@ -128,14 +128,13 @@ class StaffController extends Controller
         //Update the system user first name field to align with staff
         $user = $staff->User()->first();
 
-
         if ($request->email != $user->email){
             $request->validate([
                 'email'=> ['required', 'string', 'email', 'max:255', 'unique:users'],
             ]);
         }
 
-        if ($request->password != null){
+        if ($request->password != null || $request->password !=''){
             $request->validate([
                 'password'=> ['required', 'string', new Password],
             ]);
@@ -155,12 +154,21 @@ class StaffController extends Controller
 
 
 
-        if($user->exists()){
-            $user->update([
-                'name' => $request->first_name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password)
-            ]);
+        if($user->exists() ){
+            if($request->password != null && $request->password != ''){
+                $user->update([
+                    'name' => $request->first_name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password)
+                ]);
+            }else{
+                $user->update([
+                    'name' => $request->first_name,
+                    'email' => $request->email
+                ]);
+            }
+
+
         }
 
         $request->session()->flash('flash.bannerStyle', 'success');
