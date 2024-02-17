@@ -3,8 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,6 +20,23 @@ class Contact extends Model
 
     public $fillable = ['first_name','last_legal_name','nickname','title','job_description','id_reg_no','is_active',
         'branch','department','comment','poly_contact_type','poly_contact_id'];
+
+
+//    protected $appends = [
+//        'related_customer'
+//    ];
+//
+//    protected function relatedCustomer(): Attribute
+//    {
+//        return new Attribute(
+//            get: fn () => $this->Customer()->where('is_transaction_done','=',false)->where('include_in_calculations','=',true)->count()
+//        );
+//    }
+
+    public function Customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class,'poly_contact_id');
+    }
 
     public function contactable(): MorphTo
     {

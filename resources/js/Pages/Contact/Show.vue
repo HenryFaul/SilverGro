@@ -241,6 +241,8 @@ const can_update_contact = computed(() => usePage().props.roles_permissions.perm
                                         </div>
 
                                         <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
+
+                                            {{linked_supplier}}
                                             <div v-if="linked_customer" class="sm:col-span-3">
                                                 <div class="mt-2">
                                                     <div>

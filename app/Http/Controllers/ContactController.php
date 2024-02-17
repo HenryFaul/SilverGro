@@ -26,7 +26,7 @@ class ContactController extends Controller
 
         $paginate = $request['show'] ?? 10;
 
-        $contacts = Contact::with('emailable')->with('contactable')->filter($filters)
+        $contacts = Contact::with('emailable')->with('contactable')->with('Customer')->filter($filters)
             ->paginate($paginate)
             ->withQueryString();
 
@@ -112,6 +112,9 @@ class ContactController extends Controller
         switch ($contact->poly_contact_type) {
             case  'App\Models\Customer':
                 $linked_customer = Customer::where('id',$contact->poly_contact_id)->first();
+                break;
+            case 'App\Models\supplier':
+                $linked_supplier = Supplier::where('id',$contact->poly_contact_id)->first();
                 break;
             case 'App\Models\Supplier':
                 $linked_supplier = Supplier::where('id',$contact->poly_contact_id)->first();
