@@ -17,6 +17,13 @@ class RoleModifyController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
+
+        $manage_users = $user->can('manage_users');
+
+        if (!$manage_users) {
+            return to_route('no_permission');
+        }
 
         $request->validate([
             'user_id' => ['required','integer','exists:users,id'],
@@ -35,6 +42,14 @@ class RoleModifyController extends Controller
      */
     public function destroy(Request $request)
     {
+
+        $user = auth()->user();
+
+        $manage_users = $user->can('manage_users');
+
+        if (!$manage_users) {
+            return to_route('no_permission');
+        }
 
         $request->validate([
             'user_id' => ['required','integer','exists:users,id'],

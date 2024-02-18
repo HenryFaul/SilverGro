@@ -234,11 +234,10 @@ const can_manage_users = computed(() => usePage().props.roles_permissions.permis
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
 
                     <div class="m-2 p-2">
-
-                        <div class="">
+                        <div  class="">
                             <div class="text-lg mb-2 text-indigo-400">Roles allocated</div>
 
-                            <div>
+                            <div v-if="can_manage_users">
                                 <div class="col-span-4">
                                     <label class="block text-sm font-medium leading-6 text-gray-900">Available
                                         roles:</label>
@@ -252,7 +251,7 @@ const can_manage_users = computed(() => usePage().props.roles_permissions.permis
                                         </select>
 
 
-                                        <SecondaryButton @click="addRole()" class="mt-2">
+                                        <SecondaryButton v-if="can_manage_users" @click="addRole()" class="mt-2">
                                             Link (+)
                                         </SecondaryButton>
 
@@ -292,7 +291,7 @@ const can_manage_users = computed(() => usePage().props.roles_permissions.permis
                                                         <span v-if="n.id > 7" class="inline-flex items-center rounded-md bg-orange-100 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">{{n.name}}</span>
                                                     </div>
                                                     <div class="flex-auto w-1/3">
-                                                        <SecondaryButton @click="deleteRole(n.id, n.name)" >
+                                                        <SecondaryButton v-if="can_manage_users" @click="deleteRole(n.id, n.name)" >
                                                             UNLINK (-)
                                                         </SecondaryButton>
                                                     </div>
