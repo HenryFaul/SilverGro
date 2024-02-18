@@ -171,7 +171,8 @@ const props = defineProps({
     all_terms_of_payments:Object,
     linked_trans_sc:Object,
     linked_trans_pc:Object,
-    linked_trans_other:Object
+    linked_trans_other:Object,
+    model_activity:Object
 });
 
 onBeforeMount(async () => {
@@ -190,7 +191,6 @@ const tabs_split = [
     { id:7, name: 'Linked Trades',  current: false },
     { id:8, name: 'Contracts',  current: false },
     { id:9,name: 'Log', current: false },
-    { id:10,name: 'Admin', current: false },
     { id:11,name: 'Split Customers', current: false },
 ];
 
@@ -205,7 +205,6 @@ const tabs_non_split = [
     { id:7, name: 'Linked Trades',  current: false },
     { id:8, name: 'Contracts',  current: false },
     { id:9,name: 'Log', current: false },
-    { id:10,name: 'Admin', current: false },
 ];
 
 let tabs = computed(()=>props.selected_transaction.is_split_load ? tabs_split:tabs_non_split) ;
@@ -8056,6 +8055,63 @@ const doCreatedTrade = (_id) => {
 
 
                                         </ul>
+                                    </div>
+
+                                    <div v-if="selectedTabId === 9">
+
+
+<!--                                        "id": 26921, "log_name": "default", "description": "created", "subject_type": "App\\Models\\TransportTransaction", "event": "created", "subject_id": 26456, "causer_type": "App\\Models\\User", "causer_id": 10,-->
+
+                                        <div>
+                                            <div class="font-bold text-indigo-500">Model Activity</div>
+                                            <table class="min-w-full divide-y divide-gray-300">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col" class="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Id</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Event</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Subject ID</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Causer Type</th>
+                                                    <th scope="col" class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Causer ID</th>
+
+                                                </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-200 bg-white">
+
+
+                                                <tr v-for="(activity, index) in model_activity"
+                                                    :key="activity.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                                        {{ activity.id }}</td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        {{ activity.created_at}}
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        {{ activity.event }}
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        {{ activity.subject_id }}
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        {{ activity.causer_type }}
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        {{ activity.causer_id }}
+                                                    </td>
+
+
+                                                </tr>
+
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+
                                     </div>
                                 </div>
 

@@ -26,6 +26,7 @@ use App\Models\TransportRateBasis;
 use App\Models\TransportTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Spatie\Activitylog\Models\Activity;
 
 class TransactionSummaryController extends Controller
 {
@@ -81,6 +82,7 @@ class TransactionSummaryController extends Controller
         $purchase_order = $transportTransaction?->PurchaseOrder;
         $transport_order = $transportTransaction?->TransportOrder;
         $sales_order = $transportTransaction?->SalesOrder;
+        $model_activity = Activity::where('subject_type','App\Models\TransportTransaction')->where('subject_id',$transportTransaction?->id)->get();
 
         $rules_with_approvals = null;
 
@@ -170,7 +172,8 @@ class TransactionSummaryController extends Controller
                 'all_terms_of_payments'=>$all_terms_of_payments,
                 'linked_trans_sc'=>$linked_trans_sc,
                 'linked_trans_pc'=>$linked_trans_pc,
-                'linked_trans_other'=>$linked_trans_other
+                'linked_trans_other'=>$linked_trans_other,
+                'model_activity'=>$model_activity
 
 
             ]

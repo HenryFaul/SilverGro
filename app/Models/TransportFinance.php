@@ -8,12 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class TransportFinance extends Model
 {
     use HasFactory;
 
     use SoftDeletes;
+
+    use LogsActivity;
+
 
     public $fillable = ['transport_trans_id', 'transport_load_id', 'transport_rate_basis_id', 'cost_price_per_unit', 'cost_price_per_ton', 'cost_price',
         'selling_price','selling_price_2','selling_price_3','selling_price_4','selling_price_5', 'selling_price_per_ton', 'selling_price_per_unit', 'transport_rate_per_ton', 'transport_rate', 'transport_price', 'load_insurance_per_ton',
@@ -195,6 +200,19 @@ class TransportFinance extends Model
 
         $this->save();
 
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        // TODO: Implement getActivitylogOptions() method.
+
+        return LogOptions::defaults()
+            ->logOnly(['transport_trans_id', 'transport_load_id', 'transport_rate_basis_id', 'cost_price_per_unit', 'cost_price_per_ton', 'cost_price',
+                'selling_price','selling_price_2','selling_price_3','selling_price_4','selling_price_5', 'selling_price_per_ton', 'selling_price_per_unit', 'transport_rate_per_ton', 'transport_rate', 'transport_price', 'load_insurance_per_ton',
+                'comms_due_per_ton', 'weight_ton_incoming', 'weight_ton_outgoing', 'is_transport_costs_inc_price', 'transport_cost','transport_cost_2','transport_cost_3',
+                'transport_cost_4','transport_cost_5', 'total_cost_price', 'additional_cost_1', 'additional_cost_2', 'additional_cost_3',
+                'additional_cost_desc_1', 'additional_cost_desc_2', 'additional_cost_desc_3', 'gross_profit', 'gross_profit_percent',
+                'gross_profit_per_ton', 'total_supplier_comm', 'total_customer_comm', 'total_comm', 'adjusted_gp', 'adjusted_gp_notes']);
     }
 
     public static function boot()
