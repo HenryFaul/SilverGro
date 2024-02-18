@@ -7023,8 +7023,7 @@ const doCreatedTrade = (_id) => {
 
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
-
-                                                    <div v-if="selected_transaction.is_split_load === true" >
+                                                    <div v-if="selected_transaction.is_split_load" >
                                                         <div v-if="sales_order.is_active">
                                                             <div class="flex justify-between gap-x-4 py-3">
                                                                 <dt class="text-gray-500">Working Document</dt>
@@ -7058,7 +7057,6 @@ const doCreatedTrade = (_id) => {
                                                     <div v-else>
                                                         Not split load
                                                     </div>
-
 
                                                 </dl>
                                             </li>
@@ -8058,9 +8056,6 @@ const doCreatedTrade = (_id) => {
                                     </div>
 
                                     <div v-if="selectedTabId === 9">
-
-
-<!--                                        "id": 26921, "log_name": "default", "description": "created", "subject_type": "App\\Models\\TransportTransaction", "event": "created", "subject_id": 26456, "causer_type": "App\\Models\\User", "causer_id": 10,-->
 
                                         <div>
                                             <div class="font-bold text-indigo-500">Model Activity</div>
