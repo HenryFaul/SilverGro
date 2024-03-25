@@ -36,7 +36,7 @@ class TransactionSummaryController extends Controller
     public function index(Request $request)
     {
 
-        error_log('Some message here.');
+       // error_log('Some message here.');
 
         $filters = $request->only([
             'supplier_name',
