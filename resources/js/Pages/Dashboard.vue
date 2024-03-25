@@ -117,7 +117,7 @@ let NiceNumber = (_number) => {
 
                                 </div>
 
-                                <div v-if="true" class="shadow-2xl m-10 p-10">
+                                <div v-if="false" class="shadow-2xl m-10 p-10">
 
                                     <div>
                                         <apexchart :width="chart.width" :height="chart.height" :type="chart.type" :options="chart.options" :series="chart.series" />
@@ -128,11 +128,6 @@ let NiceNumber = (_number) => {
                     </div>
 
 
-                    <div class="m-3 mt-5 bg-white shadow-2xl rounded">
-
-
-
-                    </div>
 
                 </div>
             </div>

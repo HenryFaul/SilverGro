@@ -13,11 +13,73 @@ defineProps({
 });
 
 
+const classesCustomers = computed(() => {
+    return route().current('customer.*') || route().current('customer_parent.*')
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
+const classesSuppliers = computed(() => {
+    return route().current('supplier.*')
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
+const classesProducts = computed(() => {
+    return route().current('product.*')
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
+const classesContact = computed(() => {
+    return route().current('contact.*')
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
+
+const classesTransSummary = computed(() => {
+    return route().current('transaction_summary.*')
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
+const classesTransporters = computed(() => {
+    return route().current('regular_driver.*') || route().current('transporter.*')  || route().current('regular_vehicle.*')
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
+
 const classesSystemPlayer = computed(() => {
     return route().current('customer.*') || route().current('contact.*') || route().current('supplier.*') || route().current('transporter.*') || route().current('customer_parent.*')
         ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
         : '';
 });
+
+const classesViews = computed(() => {
+    return route().current('planning.diary') ||route().current('planning.week') ||route().current('transaction_spreadsheet.index')
+    ||route().current('debtor.*')  || route().current('pc_overview.index')
+    || route().current('sc_overview.index')  || route().current('home_overview.index')
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
+
+const classesAdmin= computed(() => {
+    return route().current('staff.*')
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
+const classesReports = computed(() => {
+    return route().current('custom_report.*') || route().current('transport_transaction.*')
+        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+        : '';
+});
+
+
+
 const classesPlanning = computed(() => {
     return route().current('planning.*') || route().current('transport_transaction.*')
         ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
@@ -68,204 +130,10 @@ const logout = () => {
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
+                                    Home
                                 </NavLink>
                             </div>
 
-                            <div class="hidden sm:flex sm:items-center sm:ml-6">
-
-                                <!-- Data Dropdown -->
-                                <div class="ml-3 relative">
-                                    <div :class="classesSystemPlayer">
-                                        <Dropdown align="right" width="48">
-                                            <template #trigger>
-                                            <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
-                                                System Players
-
-                                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                                </svg>
-
-                                            </button>
-                                        </span>
-                                            </template>
-
-                                            <template #content>
-                                                <!-- Account Management -->
-                                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                                   Manage System Players
-                                                </div>
-
-                                                <DropdownLink :href="route('customer_parent.index')">
-                                                    Customer Parents
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('customer.index')">
-                                                    Customers
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('supplier.index')">
-                                                    Suppliers
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('contact.index')">
-                                                     Contacts
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('transporter.index')">
-                                                    Transporters
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('regular_driver.index')">
-                                                    Regular Drivers
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('regular_vehicle.index')">
-                                                    Regular Vehicles
-                                                </DropdownLink>
-
-                                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                                    Manage Staff
-                                                </div>
-
-                                                <DropdownLink :href="route('staff.index')">
-                                                    Staff
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('product.index')">
-                                                    Products
-                                                </DropdownLink>
-
-                                                <div class="border-t border-gray-100" />
-
-                                            </template>
-                                        </Dropdown>
-                                    </div>
-                                </div>
-
-                                <!-- Data Dropdown -->
-                                <div class="ml-3 relative">
-
-                                    <div :class="classesPlanning">
-                                        <Dropdown align="right" width="48">
-                                            <template #trigger>
-                                            <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
-                                                Planning
-
-                                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                                </svg>
-
-                                            </button>
-                                        </span>
-                                            </template>
-
-                                            <template #content>
-                                                <!-- Account Management -->
-                                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                                    Manage Workflow
-                                                </div>
-
-                                                <DropdownLink :href="route('planning.diary')">
-                                                    Diary
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('planning.week')">
-                                                    Week view
-                                                </DropdownLink>
-
-                                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                                    Manage Trades
-                                                </div>
-
-                                                <DropdownLink :href="route('transport_transaction.index')">
-                                                    Report Exporter
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('transaction_summary.index')">
-                                                    Trade view
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('transaction_spreadsheet.index')">
-                                                    Spreadsheet view
-                                                </DropdownLink>
-
-                                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                                    Manage Debtors
-                                                </div>
-
-                                                <DropdownLink :href="route('debtor.index')">
-                                                    Debtor Standing
-                                                </DropdownLink>
-
-                                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                                    Dedicated Views
-                                                </div>
-
-                                                <DropdownLink :href="route('pc_overview.index')">
-                                                    PC Overview
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('sc_overview.index')">
-                                                    SC Overview
-                                                </DropdownLink>
-
-                                                <DropdownLink :href="route('home_overview.index')">
-                                                    Home Overview
-                                                </DropdownLink>
-
-
-                                                <div class="border-t border-gray-100" />
-
-                                            </template>
-                                        </Dropdown>
-                                    </div>
-
-
-                                </div>
-
-                                <!-- Data Dropdown -->
-                                <div class="ml-3 relative">
-
-                                    <div :class="classesSetup">
-                                        <Dropdown align="right" width="48">
-                                            <template #trigger>
-                                            <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
-                                                Setup
-
-                                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                                </svg>
-
-
-                                            </button>
-                                        </span>
-                                            </template>
-
-                                            <template #content>
-                                                <!-- Account Management -->
-                                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                                    Manage System
-                                                </div>
-
-
-                                                <div class="border-t border-gray-100" />
-
-                                                <DropdownLink :href="route('custom_report.index')">
-                                                    Report Setup
-                                                </DropdownLink>
-
-                                            </template>
-                                        </Dropdown>
-                                    </div>
-
-
-                                </div>
-
-                            </div>
 
                         </div>
 
@@ -494,6 +362,258 @@ const logout = () => {
                             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="#" onclick="history.back();return false;">Go Back</a>
                         </div>
                         <slot name="header" />
+
+                        <div >
+                            <div class="hidden sm:flex sm:items-center sm:ml-6">
+
+                                <!-- Customers -->
+                                <div class="ml-3 relative">
+                                    <div :class="classesCustomers">
+                                        <Dropdown align="right" width="48">
+                                            <template #trigger>
+                                            <span  class="inline-flex rounded-md">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            Customers
+
+                                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                                </svg>
+
+                                            </button>
+                                        </span>
+                                            </template>
+
+                                            <template #content>
+                                                <!-- Account Management -->
+                                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                                    Manage Customers
+                                                </div>
+
+                                                <DropdownLink :href="route('customer_parent.index')">
+                                                    Customer Parents
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('customer.index')">
+                                                    Customers
+                                                </DropdownLink>
+
+                                                <div class="border-t border-gray-100" />
+
+                                            </template>
+                                        </Dropdown>
+                                    </div>
+                                </div>
+
+                                <div :class="classesSuppliers">
+                                    <DropdownLink  :href="route('supplier.index')">
+                                        Suppliers
+                                    </DropdownLink>
+                                </div>
+
+                                <!-- Transporters -->
+                                <div class="ml-3 relative">
+                                    <div :class="classesTransporters">
+                                        <Dropdown align="right" width="48">
+                                            <template #trigger>
+                                            <span  class="inline-flex rounded-md">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                                Transporters
+
+                                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                                </svg>
+
+                                            </button>
+                                        </span>
+                                            </template>
+
+                                            <template #content>
+                                                <!-- Account Management -->
+                                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                                    Manage Transporters
+                                                </div>
+
+                                                <DropdownLink :href="route('transporter.index')">
+                                                    Transporters
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('regular_driver.index')">
+                                                    Regular Drivers
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('regular_vehicle.index')">
+                                                    Regular Vehicles
+                                                </DropdownLink>
+
+                                                <div class="border-t border-gray-100" />
+
+                                            </template>
+                                        </Dropdown>
+                                    </div>
+                                </div>
+
+                                <div :class="classesProducts">
+                                    <DropdownLink :href="route('product.index')">
+                                        Products
+                                    </DropdownLink>
+                                </div>
+
+                                <div :class="classesTransSummary">
+                                    <DropdownLink :href="route('transaction_summary.index')">
+                                        Trades
+                                    </DropdownLink>
+
+                                </div>
+
+
+                                <!-- Views -->
+                                <div class="ml-3 relative">
+
+                                    <div :class="classesViews">
+                                        <Dropdown align="right" width="48">
+                                            <template #trigger>
+                                            <span  class="inline-flex rounded-md">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                                Views
+
+                                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                                </svg>
+
+                                            </button>
+                                        </span>
+                                            </template>
+
+                                            <template #content>
+                                                <!-- Account Management -->
+                                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                                    Views
+                                                </div>
+
+                                                <DropdownLink :href="route('planning.diary')">
+                                                    Diary View
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('planning.week')">
+                                                    Week view
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('transaction_summary.index')">
+                                                    Trade view
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('transaction_spreadsheet.index')">
+                                                    Spreadsheet view
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('debtor.index')">
+                                                    Debtor Standing
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('pc_overview.index')">
+                                                    PC Overview
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('sc_overview.index')">
+                                                    SC Overview
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('home_overview.index')">
+                                                    Home Overview
+                                                </DropdownLink>
+
+
+                                                <div class="border-t border-gray-100" />
+
+                                            </template>
+                                        </Dropdown>
+                                    </div>
+
+
+                                </div>
+
+                                <div :class="classesContact">
+                                    <DropdownLink :href="route('contact.index')">
+                                        Contacts
+                                    </DropdownLink>
+                                </div>
+
+
+                                <!-- Admin Dropdown -->
+                                <div class="ml-3 relative">
+                                    <div :class="classesAdmin">
+                                        <Dropdown align="right" width="48">
+                                            <template #trigger>
+                                            <span  class="inline-flex rounded-md">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            Admin
+
+                                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                                </svg>
+
+                                            </button>
+                                        </span>
+                                            </template>
+
+                                            <template #content>
+                                                <!-- Account Management -->
+                                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                                    Admin
+                                                </div>
+                                                <DropdownLink :href="route('staff.index')">
+                                                    Staff
+                                                </DropdownLink>
+
+                                                <div class="border-t border-gray-100" />
+
+                                            </template>
+                                        </Dropdown>
+                                    </div>
+                                </div>
+
+                                <!-- Reports Dropdown -->
+                                <div class="ml-3 relative">
+
+                                    <div :class="classesReports">
+                                        <Dropdown align="right" width="48">
+                                            <template #trigger>
+                                            <span  class="inline-flex rounded-md">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                                Reports
+                                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                                </svg>
+
+                                            </button>
+                                        </span>
+                                            </template>
+
+                                            <template #content>
+                                                <!-- Account Management -->
+                                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                                    Manage Workflow
+                                                </div>
+
+                                                <DropdownLink :href="route('custom_report.index')">
+                                                    Report Setup
+                                                </DropdownLink>
+
+                                                <DropdownLink :href="route('transport_transaction.index')">
+                                                    Report Exporter
+                                                </DropdownLink>
+
+                                                <div class="border-t border-gray-100" />
+
+                                            </template>
+                                        </Dropdown>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
                     </div>
 
                 </div>

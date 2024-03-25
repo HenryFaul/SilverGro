@@ -308,6 +308,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                         $notes = trim($row['notes']) === '' || trim($row['notes']) === 'NULL' ? null : trim($row['notes']);
 
+                        $is_before_ded_23 = $transport_date_earliest < date('2023-12-01');
 
                         $transport_invoice_details = TransportInvoiceDetails::create([
                             'transport_trans_id' => $transport_trans->id,
@@ -318,8 +319,8 @@ class NewTransaction implements ToCollection, WithHeadingRow
                             'invoice_paid_date' => $invoice_paid_date,
                             'invoice_pay_by_date' => $invoice_pay_by_date,
                             'invoice_date' => $invoice_date,
-                            'invoice_amount' => $invoice_amount,
-                            'invoice_amount_paid'=>$invoice_amount_paid,
+                            'invoice_amount' => $is_before_ded_23?0: $invoice_amount,
+                            'invoice_amount_paid'=>$is_before_ded_23?0: $invoice_amount_paid,
                             'cost_price' => $cost_price,
                             'selling_price' => $selling_price,
                             'status_id' => $status_id,
@@ -584,7 +585,6 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         $deal_ticket = DealTicket::create([
                             'transport_trans_id' => $transport_trans->id,
                             'old_id' => $deal_ticket,
-                            'trade_value'=>$selling_price,
                             'is_printed' => $dealticketprinted,
                             'trade_value'=>$cost_price,
                             'stamp_printed' => $ts_dealticketprinted,

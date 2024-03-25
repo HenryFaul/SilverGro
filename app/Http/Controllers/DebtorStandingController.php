@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\DebtorStanding;
 use App\Models\TransportInvoice;
+use App\Models\TransportTransaction;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class DebtorStandingController extends Controller
@@ -49,6 +51,7 @@ class DebtorStandingController extends Controller
                         $counter++;
 
                         $invoice_balance = ($invoice_detail->invoice_amount - $invoice_detail->invoice_amount_paid);
+                        $invoice_detail->outstanding = $invoice_balance;
                         $customer_total_outstanding += $invoice_balance;
 
                         $day_to_add = $customer->TermsOfPayment->days;
@@ -57,7 +60,10 @@ class DebtorStandingController extends Controller
 
                         if($adjusted_date < $cur_date){
                             $customer_total_overdue += $invoice_balance;
+                            $invoice_detail->overdue = $invoice_balance;
                         }
+
+                        $invoice_detail->save();
 
                     }
                 }
@@ -103,10 +109,11 @@ class DebtorStandingController extends Controller
             'field',
             'direction',
             'show',
-            'hasBalance'
+            'hasBalance',
+            'selected_client_id'
         ]);
 
-        $paginate = $request['show'] ?? 10;
+        $paginate = $request['show'] ?? 5;
 
         $debtors_standings = DebtorStanding::filter($filters)
             ->paginate($paginate)
@@ -114,13 +121,39 @@ class DebtorStandingController extends Controller
 
         $max_date = DebtorStanding::max('updated_at');
 
+        $selected_client_id = $filters['selected_client_id'] ?? null;
+
+        $customer = null;
+
+        if ($selected_client_id != null){
+            $customer = Customer::find($selected_client_id);
+        }
+
+        $invoices=null;
+
+        if($customer != null){
+
+
+           // $invoices = TransportInvoice::where('customer_id',$selected_client_id)->with('TransportInvoiceDetails')->get();
+
+
+            $invoices = TransportInvoice::where('customer_id',$selected_client_id)->with('TransportInvoiceDetails')
+                ->whereHas('TransportInvoiceDetails', function (Builder $query) {
+                    $query->where('outstanding', '>', 0);
+                })
+                ->get();
+        }
+
 
         return inertia(
             'Customer/DebtorStanding',
             [
                 'filters' => $filters,
                 'debtors_standings' => $debtors_standings,
-                'max_date'=>$max_date
+                'max_date'=>$max_date,
+                'selected_client_id'=>$selected_client_id,
+                'invoices'=>$invoices,
+                'selected_client'=>$customer
 
             ]
         );

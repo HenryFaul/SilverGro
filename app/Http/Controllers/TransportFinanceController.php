@@ -67,6 +67,12 @@ class TransportFinanceController extends Controller
 
         $can_edit_adjusted_gp = $user->can('edit_adjusted_gp');
 
+        $update_related_models = 1;
+
+        if (isset($request->update_related_models)){
+            $update_related_models=$request->update_related_models;
+        }
+
 
         if($can_edit_adjusted_gp){
 
@@ -120,6 +126,10 @@ class TransportFinanceController extends Controller
             );
         }
 
+
+        if($update_related_models==1){
+
+        }
 
         $transportFinance->CalculateFields();
 

@@ -627,15 +627,38 @@ class TransportTransactionController extends Controller
     public function update(Request $request, TransportTransaction $transportTransaction)
     {
 
-        /*  ['id','old_id','contract_type_id','contract_no','supplier_id','customer_id','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
-              'product_notes','supplier_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes',
-              'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at'];*/
+        $update_related_models = 1;
 
-        // dd($request->transport_date_earliest);
-        //dd(Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg'));
-
+        if (isset($request->update_related_models)){
+            $update_related_models=$request->update_related_models;
+        }
 
         $request->validate([
+            'contract_type_id.id' => ['required', 'integer'],
+            'supplier_id.id' => ['required', 'integer'],
+            'customer_id.id' => ['required', 'integer'],
+            'transporter_id.id' => ['required', 'integer'],
+            'product_id.id' => ['required', 'integer'],
+            'include_in_calculations' => ['nullable', 'boolean'],
+            'transport_date_earliest' => ['required', 'date'],
+            'transport_date_latest' => ['required', 'date'],
+            'delivery_notes' => ['nullable'],
+            'product_notes' => ['nullable'],
+            'customer_notes' => ['nullable'],
+            'suppliers_notes' => ['nullable'],
+            'traders_notes' => ['nullable'],
+            'transport_notes' => ['nullable'],
+            'pricing_notes' => ['nullable'],
+            'process_notes' => ['nullable'],
+            'document_notes' => ['nullable'],
+            'transaction_notes' => ['nullable'],
+            'traders_notes_supplier' => ['nullable'],
+            'traders_notes_customer' => ['nullable'],
+            'traders_notes_transport' => ['nullable'],
+            'is_transaction_done' => ['nullable', 'boolean'],
+        ]);
+
+    /*    $request->validate([
             'contract_type_id.id' => ['required', 'integer', 'exists:contract_types,id'],
             'supplier_id.id' => ['required', 'integer', 'exists:suppliers,id'],
             'customer_id.id' => ['required', 'integer', 'exists:customers,id'],
@@ -658,11 +681,9 @@ class TransportTransactionController extends Controller
             'traders_notes_customer' => ['nullable'],
             'traders_notes_transport' => ['nullable'],
             'is_transaction_done' => ['nullable', 'boolean'],
-        ]);
+        ]);*/
 
-        //->toDateTimeString()
 
-        //dd($request->process_notes);
 
         $is_updated = $transportTransaction->update(
             [
@@ -700,20 +721,23 @@ class TransportTransactionController extends Controller
 
         $transport_invoice = $transportTransaction->TransportInvoice;
         $transport_invoice->customer_id = $request->customer_id['id'];
-
         $transport_invoice->save();
 
 
-        $transport_finance = ($transportTransaction->TransportFinance);
-        $transport_finance->CalculateFields();
 
-        if ($is_updated) {
-            $request->session()->flash('flash.bannerStyle', 'success');
-            $request->session()->flash('flash.banner', 'Transport Transaction updated');
-        } else {
-            $request->session()->flash('flash.bannerStyle', 'danger');
-            $request->session()->flash('flash.banner', 'Transport NOT updated');
+        if($update_related_models==1){
+            $transport_finance = ($transportTransaction->TransportFinance);
+            $transport_finance->CalculateFields();
+
+            if ($is_updated) {
+                $request->session()->flash('flash.bannerStyle', 'success');
+                $request->session()->flash('flash.banner', 'Transport Transaction updated');
+            } else {
+                $request->session()->flash('flash.bannerStyle', 'danger');
+                $request->session()->flash('flash.banner', 'Transport NOT updated');
+            }
         }
+
 
         return redirect()->back();
     }

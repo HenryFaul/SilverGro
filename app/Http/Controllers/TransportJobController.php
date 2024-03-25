@@ -58,6 +58,12 @@ class TransportJobController extends Controller
         'loading_hours_from_id','loading_hours_to_id','offloading_hours_from_id','offloading_hours_to_id','load_insurance_per_ton',
         'total_load_insurance','number_loads','loading_instructions','offloading_instructions','comments'*/
 
+        $update_related_models = 1;
+
+        if (isset($request->update_related_models)){
+            $update_related_models=$request->update_related_models;
+        }
+
         $transportJob->update(
             $request->validate([
                 'supplier_loading_number'=>['nullable','string'],

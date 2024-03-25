@@ -134,7 +134,7 @@ Route::middleware([
     //Transaction Summary
 
     Route::resource('transaction_summary', TransactionSummaryController::class)->middleware('auth')
-        ->only(['index']);
+        ->only(['index','update']);
 
     //Pc Overview
 

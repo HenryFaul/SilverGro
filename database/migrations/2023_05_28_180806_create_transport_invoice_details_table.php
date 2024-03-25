@@ -34,6 +34,8 @@ return new class extends Migration
             $table->double('invoice_amount')->default(0);
             $table->double('cost_price')->default(0);
             $table->double('invoice_amount_paid')->default(0);
+            $table->double('outstanding')->default(0);
+            $table->double('overdue')->default(0);
             $table->double('selling_price')->default(0);
             $table->bigInteger('status_id')->unsigned();
             $table->foreign('status_id')

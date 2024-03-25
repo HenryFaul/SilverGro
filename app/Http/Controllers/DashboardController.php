@@ -10,7 +10,8 @@ use App\Models\TransportTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class
+DashboardController extends Controller
 {
     //
 

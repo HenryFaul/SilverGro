@@ -472,11 +472,19 @@ const updateTransportJob = () => {
     );
 }
 
+let startTime = 0;
+let endTime = 0;
+
 const updateTransportFinance = () => {
+    startTime = performance.now()
     transport_finance_Form.put(route('transport_finance.update', props.transaction.transport_finance.id),
         {
             preserveScroll: true,
             onSuccess: () => {
+                endTime = performance.now()
+                console.log(`Call to transport Finance took ${(endTime - startTime)/1000} seconds`);
+                startTime =0;
+                endTime =0;
                 swal(usePage().props.jetstream.flash?.banner || '');
             },
             onError: (error) => {

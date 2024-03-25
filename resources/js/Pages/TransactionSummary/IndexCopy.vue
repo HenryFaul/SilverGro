@@ -112,7 +112,7 @@ let NiceNumber = (_number) => {
 }
 
 const formatEarly = () => {
-    const _date = new Date(combined_Form.transport_date_earliest);
+    const _date = new Date(transport_trans_Form.transport_date_earliest);
     const day = _date.getDate();
     const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
@@ -120,7 +120,7 @@ const formatEarly = () => {
 }
 
 const formatLate = () => {
-    const _date = new Date(combined_Form.transport_date_latest);
+    const _date = new Date(transport_trans_Form.transport_date_latest);
     const day = _date.getDate();
     const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
@@ -128,7 +128,7 @@ const formatLate = () => {
 }
 
 const formatInvoicePdDay = () => {
-    const _date = new Date(combined_Form.invoice_paid_date);
+    const _date = new Date(transport_invoice_Form.invoice_paid_date);
     const day = _date.getDate();
     const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
@@ -136,7 +136,7 @@ const formatInvoicePdDay = () => {
 }
 
 const formatInvoicePayByDay = () => {
-    const _date = new Date(combined_Form.invoice_pay_by_date);
+    const _date = new Date(transport_invoice_Form.invoice_pay_by_date);
     const day = _date.getDate();
     const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
@@ -144,7 +144,7 @@ const formatInvoicePayByDay = () => {
 }
 
 const formatInvoiceDate = () => {
-    const _date = new Date(combined_Form.invoice_date);
+    const _date = new Date(transport_invoice_Form.invoice_date);
     const day = _date.getDate();
     const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
@@ -448,66 +448,69 @@ let updateSelectValues = () => {
     //status form
     status_Form.transport_trans_id = props.selected_transaction.id;
 
-    //combined_Form
-    combined_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
-    combined_Form.product_id = props.all_products.find(element => element.id === props.selected_transaction.product_id);
-    combined_Form.supplier_id = props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id);
-    combined_Form.customer_id = props.all_customers.find(element => element.id === props.selected_transaction.customer_id);
-    combined_Form.customer_id_2 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_2);
-    combined_Form.customer_id_3 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3);
-    combined_Form.customer_id_4 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4);
+    //transport_trans_Form
+    transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
+    transport_trans_Form.product_id = props.all_products.find(element => element.id === props.selected_transaction.product_id);
+    transport_trans_Form.supplier_id = props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id);
+    transport_trans_Form.customer_id = props.all_customers.find(element => element.id === props.selected_transaction.customer_id);
+    transport_trans_Form.customer_id_2 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_2);
+    transport_trans_Form.customer_id_3 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3);
+    transport_trans_Form.customer_id_4 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4);
 
 
-    combined_Form.transporter_id = props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id);
-    combined_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
-    combined_Form.contract_no = props.selected_transaction.contract_no;
-    combined_Form.old_id = props.selected_transaction.old_id;
-    combined_Form.include_in_calculations = props.selected_transaction.include_in_calculations;
-    combined_Form.transport_date_earliest = props.selected_transaction.transport_date_earliest;
-    combined_Form.transport_date_latest = props.selected_transaction.transport_date_latest;
-    combined_Form.suppliers_notes = props.selected_transaction.suppliers_notes;
-    combined_Form.delivery_notes = props.selected_transaction.delivery_notes;
-    combined_Form.product_notes = props.selected_transaction.product_notes;
-    combined_Form.customer_notes = props.selected_transaction.customer_notes;
-    combined_Form.traders_notes = props.selected_transaction.traders_notes;
-    combined_Form.transport_notes = props.selected_transaction.transport_notes;
-    combined_Form.pricing_notes = props.selected_transaction.pricing_notes;
-    combined_Form.process_notes = props.selected_transaction.process_notes;
-    combined_Form.document_notes = props.selected_transaction.document_notes;
-    combined_Form.transaction_notes = props.selected_transaction.transaction_notes;
-    combined_Form.traders_notes_supplier = props.selected_transaction.traders_notes_supplier;
-    combined_Form.traders_notes_customer = props.selected_transaction.traders_notes_customer;
-    combined_Form.traders_notes_transport = props.selected_transaction.traders_notes_transport;
-    combined_Form.is_transaction_done = props.selected_transaction.is_transaction_done;
-    combined_Form.is_split_load = props.selected_transaction.is_split_load;
-
-    //combined_Form
-    combined_Form.confirmed_by_id = props.all_staff.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_id);
-    combined_Form.confirmed_by_type_id = props.confirmation_types.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_type_id);
-    combined_Form.packaging_incoming_id = props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_incoming_id);
-    combined_Form.packaging_outgoing_id = props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_outgoing_id);
-    combined_Form.product_source_id = props.all_product_sources.find(element => element.id === props.selected_transaction.transport_load.product_source_id);
-    combined_Form.billing_units_incoming_id = props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_incoming_id);
-    combined_Form.billing_units_outgoing_id = props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_outgoing_id);
-    combined_Form.collection_address_id = props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id).addressable.find(element => element.id === props.selected_transaction.transport_load.collection_address_id);
-    combined_Form.delivery_address_id = props.all_customers.find(element => element.id === props.selected_transaction.customer_id).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id);
-    combined_Form.delivery_address_id_2 = props.selected_transaction.transport_load.delivery_address_id_2 === null ? null : props.all_customers.find(element => element.id === props.selected_transaction.customer_id_2).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_2);
-    combined_Form.delivery_address_id_3 = props.selected_transaction.transport_load.delivery_address_id_3 === null ? null : props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_3);
-    combined_Form.delivery_address_id_4 = props.selected_transaction.transport_load.delivery_address_id_4 === null ? null :  props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_4);
+    transport_trans_Form.transporter_id = props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id);
+    transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
+    transport_trans_Form.contract_no = props.selected_transaction.contract_no;
+    transport_trans_Form.old_id = props.selected_transaction.old_id;
+    transport_trans_Form.include_in_calculations = props.selected_transaction.include_in_calculations;
+    transport_trans_Form.transport_date_earliest = props.selected_transaction.transport_date_earliest;
+    transport_trans_Form.transport_date_latest = props.selected_transaction.transport_date_latest;
+    transport_trans_Form.suppliers_notes = props.selected_transaction.suppliers_notes;
+    transport_trans_Form.delivery_notes = props.selected_transaction.delivery_notes;
+    transport_trans_Form.product_notes = props.selected_transaction.product_notes;
+    transport_trans_Form.customer_notes = props.selected_transaction.customer_notes;
+    transport_trans_Form.traders_notes = props.selected_transaction.traders_notes;
+    transport_trans_Form.transport_notes = props.selected_transaction.transport_notes;
+    transport_trans_Form.pricing_notes = props.selected_transaction.pricing_notes;
+    transport_trans_Form.process_notes = props.selected_transaction.process_notes;
+    transport_trans_Form.document_notes = props.selected_transaction.document_notes;
+    transport_trans_Form.transaction_notes = props.selected_transaction.transaction_notes;
+    transport_trans_Form.traders_notes_supplier = props.selected_transaction.traders_notes_supplier;
+    transport_trans_Form.traders_notes_customer = props.selected_transaction.traders_notes_customer;
+    transport_trans_Form.traders_notes_transport = props.selected_transaction.traders_notes_transport;
+    transport_trans_Form.is_transaction_done = props.selected_transaction.is_transaction_done;
+    transport_trans_Form.is_split_load = props.selected_transaction.is_split_load;
+    transport_trans_Form.clearErrors();
 
 
-    combined_Form.product_grade_perc = props.selected_transaction.transport_load.product_grade_perc;
-    combined_Form.no_units_incoming = props.selected_transaction.transport_load.no_units_incoming;
-    combined_Form.no_units_outgoing = props.selected_transaction.transport_load.no_units_outgoing;
+    //transport_load_Form
+    transport_load_Form.confirmed_by_id = props.all_staff.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_id);
+    transport_load_Form.confirmed_by_type_id = props.confirmation_types.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_type_id);
+    transport_load_Form.packaging_incoming_id = props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_incoming_id);
+    transport_load_Form.packaging_outgoing_id = props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_outgoing_id);
+    transport_load_Form.product_source_id = props.all_product_sources.find(element => element.id === props.selected_transaction.transport_load.product_source_id);
+    transport_load_Form.billing_units_incoming_id = props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_incoming_id);
+    transport_load_Form.billing_units_outgoing_id = props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_outgoing_id);
+    transport_load_Form.collection_address_id = transport_trans_Form.supplier_id.addressable.find(element => element.id === props.selected_transaction.transport_load.collection_address_id);
+    transport_load_Form.delivery_address_id = transport_trans_Form.customer_id.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id);
+    transport_load_Form.delivery_address_id_2 = props.selected_transaction.transport_load.delivery_address_id_2 === null ? null : transport_trans_Form.customer_id_2.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_2);
+    transport_load_Form.delivery_address_id_3 = props.selected_transaction.transport_load.delivery_address_id_3 === null ? null : transport_trans_Form.customer_id_3.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_3);
+    transport_load_Form.delivery_address_id_4 = props.selected_transaction.transport_load.delivery_address_id_4 === null ? null : transport_trans_Form.customer_id_4.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_4);
 
-    combined_Form.no_units_outgoing_2 = props.selected_transaction.transport_load.no_units_outgoing_2;
-    combined_Form.no_units_outgoing_3 = props.selected_transaction.transport_load.no_units_outgoing_3;
-    combined_Form.no_units_outgoing_4 = props.selected_transaction.transport_load.no_units_outgoing_4;
-    combined_Form.no_units_outgoing_total = props.selected_transaction.transport_load.no_units_outgoing_total;
 
-    combined_Form.is_weighbridge_certificate_received = props.selected_transaction.transport_load.is_weighbridge_certificate_received;
-    combined_Form.delivery_note = props.selected_transaction.transport_load.delivery_note;
-    combined_Form.calculated_route_distance = props.selected_transaction.transport_load.calculated_route_distance;
+    transport_load_Form.product_grade_perc = props.selected_transaction.transport_load.product_grade_perc;
+    transport_load_Form.no_units_incoming = props.selected_transaction.transport_load.no_units_incoming;
+    transport_load_Form.no_units_outgoing = props.selected_transaction.transport_load.no_units_outgoing;
+
+    transport_load_Form.no_units_outgoing_2 = props.selected_transaction.transport_load.no_units_outgoing_2;
+    transport_load_Form.no_units_outgoing_3 = props.selected_transaction.transport_load.no_units_outgoing_3;
+    transport_load_Form.no_units_outgoing_4 = props.selected_transaction.transport_load.no_units_outgoing_4;
+    transport_load_Form.no_units_outgoing_total = props.selected_transaction.transport_load.no_units_outgoing_total;
+
+    transport_load_Form.is_weighbridge_certificate_received = props.selected_transaction.transport_load.is_weighbridge_certificate_received;
+    transport_load_Form.delivery_note = props.selected_transaction.transport_load.delivery_note;
+    transport_load_Form.calculated_route_distance = props.selected_transaction.transport_load.calculated_route_distance;
+    transport_load_Form.clearErrors();
 
     //Sales Order
 
@@ -532,80 +535,221 @@ let updateSelectValues = () => {
     transportOrder_Form.is_to_sent = props.transport_order.is_to_sent;
     transportOrder_Form.is_to_received = props.transport_order.is_to_received;
 
-    //combined_Form
+    //transport_job_Form
 
-    combined_Form.customer_order_number = props.selected_transaction.transport_job.customer_order_number;
-    combined_Form.supplier_loading_number = props.selected_transaction.transport_job.supplier_loading_number;
-    combined_Form.customer_order_number_2 = props.selected_transaction.transport_job.customer_order_number_2;
-    combined_Form.supplier_loading_number_2 = props.selected_transaction.transport_job.supplier_loading_number_2;
-    combined_Form.customer_order_number_3 = props.selected_transaction.transport_job.customer_order_number_3;
-    combined_Form.supplier_loading_number_3 = props.selected_transaction.transport_job.supplier_loading_number_3;
-    combined_Form.customer_order_number_4 = props.selected_transaction.transport_job.customer_order_number_4;
-    combined_Form.supplier_loading_number_4 = props.selected_transaction.transport_job.supplier_loading_number_4;
-
-
-    combined_Form.is_multi_loads = props.selected_transaction.transport_job.is_multi_loads;
-    combined_Form.is_approved = props.selected_transaction.transport_job.is_approved;
-    combined_Form.is_transport_costs_inc_price = props.selected_transaction.transport_job.is_transport_costs_inc_price;
-    combined_Form.is_product_zero_rated = props.selected_transaction.transport_job.is_product_zero_rated;
-    combined_Form.offloading_hours_from_id = props.selected_transaction.transport_job.offloading_hours_from_id;
-    combined_Form.offloading_hours_to_id = props.selected_transaction.transport_job.offloading_hours_to_id;
-    combined_Form.loading_hours_from_id = props.selected_transaction.transport_job.loading_hours_from_id;
-    combined_Form.loading_hours_to_id = props.selected_transaction.transport_job.loading_hours_to_id;
-    combined_Form.load_insurance_per_ton = props.selected_transaction.transport_job.load_insurance_per_ton;
-    combined_Form.total_load_insurance = props.selected_transaction.transport_job.total_load_insurance;
-    combined_Form.number_loads = props.selected_transaction.transport_job.number_loads;
-    combined_Form.loading_instructions = props.selected_transaction.transport_job.loading_instructions;
-    combined_Form.offloading_instructions = props.selected_transaction.transport_job.offloading_instructions;
+    transport_job_Form.customer_order_number = props.selected_transaction.transport_job.customer_order_number;
+    transport_job_Form.supplier_loading_number = props.selected_transaction.transport_job.supplier_loading_number;
+    transport_job_Form.customer_order_number_2 = props.selected_transaction.transport_job.customer_order_number_2;
+    transport_job_Form.supplier_loading_number_2 = props.selected_transaction.transport_job.supplier_loading_number_2;
+    transport_job_Form.customer_order_number_3 = props.selected_transaction.transport_job.customer_order_number_3;
+    transport_job_Form.supplier_loading_number_3 = props.selected_transaction.transport_job.supplier_loading_number_3;
+    transport_job_Form.customer_order_number_4 = props.selected_transaction.transport_job.customer_order_number_4;
+    transport_job_Form.supplier_loading_number_4 = props.selected_transaction.transport_job.supplier_loading_number_4;
 
 
-    //combined_Form
+    transport_job_Form.is_multi_loads = props.selected_transaction.transport_job.is_multi_loads;
+    transport_job_Form.is_approved = props.selected_transaction.transport_job.is_approved;
+    transport_job_Form.is_transport_costs_inc_price = props.selected_transaction.transport_job.is_transport_costs_inc_price;
+    transport_job_Form.is_product_zero_rated = props.selected_transaction.transport_job.is_product_zero_rated;
+    transport_job_Form.offloading_hours_from_id = props.selected_transaction.transport_job.offloading_hours_from_id;
+    transport_job_Form.offloading_hours_to_id = props.selected_transaction.transport_job.offloading_hours_to_id;
+    transport_job_Form.loading_hours_from_id = props.selected_transaction.transport_job.loading_hours_from_id;
+    transport_job_Form.loading_hours_to_id = props.selected_transaction.transport_job.loading_hours_to_id;
+    transport_job_Form.load_insurance_per_ton = props.selected_transaction.transport_job.load_insurance_per_ton;
+    transport_job_Form.total_load_insurance = props.selected_transaction.transport_job.total_load_insurance;
+    transport_job_Form.number_loads = props.selected_transaction.transport_job.number_loads;
+    transport_job_Form.loading_instructions = props.selected_transaction.transport_job.loading_instructions;
+    transport_job_Form.offloading_instructions = props.selected_transaction.transport_job.offloading_instructions;
+    transport_job_Form.clearErrors();
 
-    combined_Form.transport_rate_basis_id = props.selected_transaction.transport_finance.transport_rate_basis_id;
-    combined_Form.cost_price_per_unit = props.selected_transaction.transport_finance.cost_price_per_unit;
-    combined_Form.selling_price_per_unit = props.selected_transaction.transport_finance.selling_price_per_unit;
-    combined_Form.transport_rate = props.selected_transaction.transport_finance.transport_rate;
-    combined_Form.transport_cost_2 = props.selected_transaction.transport_finance.transport_cost_2;
-    combined_Form.transport_cost_3 = props.selected_transaction.transport_finance.transport_cost_3;
-    combined_Form.transport_cost_4 = props.selected_transaction.transport_finance.transport_cost_4;
+    //transport_finance_Form
 
-    combined_Form.selling_price_2 = props.selected_transaction.transport_finance.selling_price_2;
-    combined_Form.selling_price_3 = props.selected_transaction.transport_finance.selling_price_3;
-    combined_Form.selling_price_4 = props.selected_transaction.transport_finance.selling_price_4;
+    transport_finance_Form.transport_rate_basis_id = props.selected_transaction.transport_finance.transport_rate_basis_id;
+    transport_finance_Form.cost_price_per_unit = props.selected_transaction.transport_finance.cost_price_per_unit;
+    transport_finance_Form.selling_price_per_unit = props.selected_transaction.transport_finance.selling_price_per_unit;
+    transport_finance_Form.transport_rate = props.selected_transaction.transport_finance.transport_rate;
+    transport_finance_Form.transport_cost_2 = props.selected_transaction.transport_finance.transport_cost_2;
+    transport_finance_Form.transport_cost_3 = props.selected_transaction.transport_finance.transport_cost_3;
+    transport_finance_Form.transport_cost_4 = props.selected_transaction.transport_finance.transport_cost_4;
 
-    combined_Form.additional_cost_1 = props.selected_transaction.transport_finance.additional_cost_1;
-    combined_Form.additional_cost_2 = props.selected_transaction.transport_finance.additional_cost_2;
-    combined_Form.additional_cost_3 = props.selected_transaction.transport_finance.additional_cost_3;
-    combined_Form.additional_cost_desc_1 = props.selected_transaction.transport_finance.additional_cost_desc_1;
-    combined_Form.additional_cost_desc_2 = props.selected_transaction.transport_finance.additional_cost_desc_2;
-    combined_Form.additional_cost_desc_3 = props.selected_transaction.transport_finance.additional_cost_desc_3;
-    combined_Form.adjusted_gp = props.selected_transaction.transport_finance.adjusted_gp;
-    combined_Form.adjusted_gp_notes = props.selected_transaction.transport_finance.adjusted_gp_notes;
+    transport_finance_Form.selling_price_2 = props.selected_transaction.transport_finance.selling_price_2;
+    transport_finance_Form.selling_price_3 = props.selected_transaction.transport_finance.selling_price_3;
+    transport_finance_Form.selling_price_4 = props.selected_transaction.transport_finance.selling_price_4;
 
-    //combined_Form
-    combined_Form.transport_trans_id = props.selected_transaction.id;
-    combined_Form.old_id = props.selected_transaction.transport_invoice.old_id;
-    combined_Form.is_active = props.selected_transaction.transport_invoice.is_active;
-    combined_Form.is_printed = props.selected_transaction.transport_invoice.is_printed;
-    combined_Form.invoice_id = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_id;
-    combined_Form.is_invoiced = props.selected_transaction.transport_invoice.transport_invoice_details.is_invoiced;
-    combined_Form.is_invoice_paid = props.selected_transaction.transport_invoice.transport_invoice_details.is_invoice_paid;
-    combined_Form.invoice_no = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_no;
-    combined_Form.invoice_paid_date = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_paid_date;
-    combined_Form.invoice_pay_by_date = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_pay_by_date;
-    combined_Form.invoice_date = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_date;
-    combined_Form.invoice_amount = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount;
-    combined_Form.invoice_amount_paid = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount_paid;
-    combined_Form.status_id = props.selected_transaction.transport_invoice.transport_invoice_details.status_id;
-    combined_Form.notes = props.selected_transaction.transport_invoice.transport_invoice_details.notes;
-    combined_Form.clearErrors();
+    transport_finance_Form.additional_cost_1 = props.selected_transaction.transport_finance.additional_cost_1;
+    transport_finance_Form.additional_cost_2 = props.selected_transaction.transport_finance.additional_cost_2;
+    transport_finance_Form.additional_cost_3 = props.selected_transaction.transport_finance.additional_cost_3;
+    transport_finance_Form.additional_cost_desc_1 = props.selected_transaction.transport_finance.additional_cost_desc_1;
+    transport_finance_Form.additional_cost_desc_2 = props.selected_transaction.transport_finance.additional_cost_desc_2;
+    transport_finance_Form.additional_cost_desc_3 = props.selected_transaction.transport_finance.additional_cost_desc_3;
+    transport_finance_Form.adjusted_gp = props.selected_transaction.transport_finance.adjusted_gp;
+    transport_finance_Form.adjusted_gp_notes = props.selected_transaction.transport_finance.adjusted_gp_notes;
+    transport_finance_Form.clearErrors();
+
+    //transport_invoice_Form
+    transport_invoice_Form.transport_trans_id = props.selected_transaction.id;
+    transport_invoice_Form.old_id = props.selected_transaction.transport_invoice.old_id;
+    transport_invoice_Form.is_active = props.selected_transaction.transport_invoice.is_active;
+    transport_invoice_Form.is_printed = props.selected_transaction.transport_invoice.is_printed;
+    transport_invoice_Form.invoice_id = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_id;
+    transport_invoice_Form.is_invoiced = props.selected_transaction.transport_invoice.transport_invoice_details.is_invoiced;
+    transport_invoice_Form.is_invoice_paid = props.selected_transaction.transport_invoice.transport_invoice_details.is_invoice_paid;
+    transport_invoice_Form.invoice_no = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_no;
+    transport_invoice_Form.invoice_paid_date = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_paid_date;
+    transport_invoice_Form.invoice_pay_by_date = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_pay_by_date;
+    transport_invoice_Form.invoice_date = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_date;
+    transport_invoice_Form.invoice_amount = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount;
+    transport_invoice_Form.invoice_amount_paid = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount_paid;
+    transport_invoice_Form.status_id = props.selected_transaction.transport_invoice.transport_invoice_details.status_id;
+    transport_invoice_Form.notes = props.selected_transaction.transport_invoice.transport_invoice_details.notes;
+    transport_invoice_Form.clearErrors();
 }
 
-let no_units_to_allocate = computed(() => combined_Form.no_units_outgoing - combined_Form.no_units_outgoing_2 - combined_Form.no_units_outgoing_3 - combined_Form.no_units_outgoing_4 - combined_Form.no_units_outgoing_5);
 
-let selling_price_to_allocate = computed(() => props.selected_transaction.transport_finance.selling_price - combined_Form.selling_price_2 - combined_Form.selling_price_3 - combined_Form.selling_price_4 - combined_Form.selling_price_5);
-let transport_cost_to_allocate = computed(() => props.selected_transaction.transport_finance.transport_cost - combined_Form.transport_cost_2 - combined_Form.transport_cost_3 - combined_Form.transport_cost_4 - combined_Form.transport_cost_5);
+let transport_trans_Form = useForm({
 
+    product_id: props.all_products.find(element => element.id === props.selected_transaction.product_id),
+    supplier_id: props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id),
+    customer_id: props.all_customers.find(element => element.id === props.selected_transaction.customer_id),
+    customer_id_2: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_2),
+    customer_id_3: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3),
+    customer_id_4: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4),
+    customer_id_5: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_5),
+
+    transporter_id: props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id),
+    contract_type_id: props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id),
+    contract_no: props.selected_transaction.contract_no,
+    old_id: props.selected_transaction.old_id,
+    include_in_calculations: props.selected_transaction.include_in_calculations,
+    transport_date_earliest: props.selected_transaction.transport_date_earliest,
+    transport_date_latest: props.selected_transaction.transport_date_latest,
+    suppliers_notes: props.selected_transaction.suppliers_notes,
+    delivery_notes: props.selected_transaction.delivery_notes,
+    product_notes: props.selected_transaction.product_notes,
+    customer_notes: props.selected_transaction.customer_notes,
+    traders_notes: props.selected_transaction.traders_notes,
+    transport_notes: props.selected_transaction.transport_notes,
+    pricing_notes: props.selected_transaction.pricing_notes,
+    process_notes: props.selected_transaction.process_notes,
+    document_notes: props.selected_transaction.document_notes,
+    transaction_notes: props.selected_transaction.transaction_notes,
+    traders_notes_supplier: props.selected_transaction.traders_notes_supplier,
+    traders_notes_customer: props.selected_transaction.traders_notes_customer,
+    traders_notes_transport: props.selected_transaction.traders_notes_transport,
+    is_transaction_done: props.selected_transaction.is_transaction_done,
+    is_split_load: props.selected_transaction.is_split_load,
+    update_related_models: 0
+});
+
+let transport_load_Form = useForm({
+    confirmed_by_id: props.all_staff.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_id),
+    confirmed_by_type_id: props.confirmation_types.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_type_id),
+    packaging_incoming_id: props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_incoming_id),
+    packaging_outgoing_id: props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_outgoing_id),
+    product_source_id: props.all_product_sources.find(element => element.id === props.selected_transaction.transport_load.product_source_id),
+    billing_units_incoming_id: props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_incoming_id),
+    billing_units_outgoing_id: props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_outgoing_id),
+    collection_address_id: transport_trans_Form.supplier_id.addressable.find(element => element.id === props.selected_transaction.transport_load.collection_address_id),
+    delivery_address_id: transport_trans_Form.customer_id.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id),
+
+    delivery_address_id_2: transport_trans_Form.customer_id_2.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_2),
+    delivery_address_id_3: props.selected_transaction.transport_load.delivery_address_id_3 === null ? null : transport_trans_Form.customer_id_3.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_3),
+    delivery_address_id_4: props.selected_transaction.transport_load.delivery_address_id_4 === null ? null : transport_trans_Form.customer_id_4.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_4),
+    delivery_address_id_5: props.selected_transaction.transport_load.delivery_address_id_5 === null ? null : transport_trans_Form.customer_id_5.addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_5),
+
+    product_grade_perc: props.selected_transaction.transport_load.product_grade_perc,
+    no_units_incoming: props.selected_transaction.transport_load.no_units_incoming,
+    no_units_outgoing: props.selected_transaction.transport_load.no_units_outgoing,
+    no_units_outgoing_2: props.selected_transaction.transport_load.no_units_outgoing_2,
+    no_units_outgoing_3: props.selected_transaction.transport_load.no_units_outgoing_3,
+    no_units_outgoing_4: props.selected_transaction.transport_load.no_units_outgoing_4,
+    no_units_outgoing_5: props.selected_transaction.transport_load.no_units_outgoing_5,
+    is_weighbridge_certificate_received: props.selected_transaction.transport_load.is_weighbridge_certificate_received,
+    delivery_note: props.selected_transaction.transport_load.delivery_note,
+    calculated_route_distance: props.selected_transaction.transport_load.calculated_route_distance,
+    update_related_models: 0
+
+});
+
+let no_units_to_allocate = computed(() => transport_load_Form.no_units_outgoing - transport_load_Form.no_units_outgoing_2 - transport_load_Form.no_units_outgoing_3 - transport_load_Form.no_units_outgoing_4 - transport_load_Form.no_units_outgoing_5);
+
+
+let transport_job_Form = useForm({
+    customer_order_number: props.selected_transaction.transport_job.customer_order_number,
+    supplier_loading_number: props.selected_transaction.transport_job.supplier_loading_number,
+
+    customer_order_number_2: props.selected_transaction.transport_job.customer_order_number_2,
+    supplier_loading_number_2: props.selected_transaction.transport_job.supplier_loading_number_2,
+    customer_order_number_3: props.selected_transaction.transport_job.customer_order_number_3,
+    supplier_loading_number_3: props.selected_transaction.transport_job.supplier_loading_number_3,
+    customer_order_number_4: props.selected_transaction.transport_job.customer_order_number_4,
+    supplier_loading_number_4: props.selected_transaction.transport_job.supplier_loading_number_4,
+    customer_order_number_5: props.selected_transaction.transport_job.customer_order_number_5,
+    supplier_loading_number_5: props.selected_transaction.transport_job.supplier_loading_number_5,
+
+    is_multi_loads: props.selected_transaction.transport_job.is_multi_loads,
+    is_approved: props.selected_transaction.transport_job.is_approved,
+    is_transport_costs_inc_price: props.selected_transaction.transport_job.is_transport_costs_inc_price,
+    is_product_zero_rated: props.selected_transaction.transport_job.is_product_zero_rated,
+    offloading_hours_from_id: props.selected_transaction.transport_job.offloading_hours_from_id,
+    offloading_hours_to_id: props.selected_transaction.transport_job.offloading_hours_to_id,
+    loading_hours_from_id: props.selected_transaction.transport_job.loading_hours_from_id,
+    loading_hours_to_id: props.selected_transaction.transport_job.loading_hours_to_id,
+    load_insurance_per_ton: props.selected_transaction.transport_job.load_insurance_per_ton,
+    total_load_insurance: props.selected_transaction.transport_job.total_load_insurance,
+    number_loads: props.selected_transaction.transport_job.number_loads,
+    loading_instructions: props.selected_transaction.transport_job.loading_instructions,
+    offloading_instructions: props.selected_transaction.transport_job.offloading_instructions,
+    update_related_models: 0
+});
+
+let transport_finance_Form = useForm({
+    transport_rate_basis_id: props.selected_transaction.transport_finance.transport_rate_basis_id,
+    cost_price_per_unit: props.selected_transaction.transport_finance.cost_price_per_unit,
+    selling_price_per_unit: props.selected_transaction.transport_finance.selling_price_per_unit,
+    transport_rate: props.selected_transaction.transport_finance.transport_rate,
+    transport_cost_2: props.selected_transaction.transport_finance.transport_cost_2,
+    transport_cost_3: props.selected_transaction.transport_finance.transport_cost_3,
+    transport_cost_4: props.selected_transaction.transport_finance.transport_cost_4,
+    transport_cost_5: props.selected_transaction.transport_finance.transport_cost_5,
+    selling_price_2: props.selected_transaction.transport_finance.selling_price_2,
+    selling_price_3: props.selected_transaction.transport_finance.selling_price_3,
+    selling_price_4: props.selected_transaction.transport_finance.selling_price_4,
+    selling_price_5: props.selected_transaction.transport_finance.selling_price_5,
+    additional_cost_1: props.selected_transaction.transport_finance.additional_cost_1,
+    additional_cost_2: props.selected_transaction.transport_finance.additional_cost_2,
+    additional_cost_3: props.selected_transaction.transport_finance.additional_cost_3,
+    additional_cost_desc_1: props.selected_transaction.transport_finance.additional_cost_desc_1,
+    additional_cost_desc_2: props.selected_transaction.transport_finance.additional_cost_desc_2,
+    additional_cost_desc_3: props.selected_transaction.transport_finance.additional_cost_desc_3,
+    adjusted_gp: props.selected_transaction.transport_finance.adjusted_gp,
+    adjusted_gp_notes: props.selected_transaction.transport_finance.adjusted_gp_notes,
+    update_related_models: 0
+
+});
+
+let selling_price_to_allocate = computed(() => props.selected_transaction.transport_finance.selling_price - transport_finance_Form.selling_price_2 - transport_finance_Form.selling_price_3 - transport_finance_Form.selling_price_4 - transport_finance_Form.selling_price_5);
+let transport_cost_to_allocate = computed(() => props.selected_transaction.transport_finance.transport_cost - transport_finance_Form.transport_cost_2 - transport_finance_Form.transport_cost_3 - transport_finance_Form.transport_cost_4 - transport_finance_Form.transport_cost_5);
+
+
+let transport_invoice_Form = useForm({
+    transport_trans_id: props.selected_transaction.id,
+    old_id: props.selected_transaction.transport_invoice.old_id,
+    is_active: props.selected_transaction.transport_invoice.is_active,
+    is_printed: props.selected_transaction.transport_invoice.is_printed,
+    invoice_id: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_id,
+    is_invoiced: props.selected_transaction.transport_invoice.transport_invoice_details.is_invoiced,
+    is_invoice_paid: props.selected_transaction.transport_invoice.transport_invoice_details.is_invoice_paid,
+    invoice_no: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_no,
+    invoice_paid_date: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_paid_date,
+    invoice_pay_by_date: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_pay_by_date,
+    invoice_date: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_date,
+    invoice_amount: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount,
+    invoice_amount_paid: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount_paid,
+    status_id: props.selected_transaction.transport_invoice.transport_invoice_details.status_id,
+    notes: props.selected_transaction.transport_invoice.transport_invoice_details.notes,
+    update_related_models: 0
+});
 
 let status_Form = useForm({
     transport_trans_id: props.selected_transaction.id,
@@ -655,6 +799,7 @@ let combined_Form = useForm({
     customer_id_3: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3),
     customer_id_4: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4),
     customer_id_5: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_5),
+
     transporter_id: props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id),
     contract_type_id: props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id),
     contract_no: props.selected_transaction.contract_no,
@@ -677,101 +822,6 @@ let combined_Form = useForm({
     traders_notes_transport: props.selected_transaction.traders_notes_transport,
     is_transaction_done: props.selected_transaction.is_transaction_done,
     is_split_load: props.selected_transaction.is_split_load,
-
-
-    //TransportLoad
-
-    confirmed_by_id: props.all_staff.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_id),
-    confirmed_by_type_id: props.confirmation_types.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_type_id),
-    packaging_incoming_id: props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_incoming_id),
-    packaging_outgoing_id: props.all_packaging.find(element => element.id === props.selected_transaction.transport_load.packaging_outgoing_id),
-    product_source_id: props.all_product_sources.find(element => element.id === props.selected_transaction.transport_load.product_source_id),
-    billing_units_incoming_id: props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_incoming_id),
-    billing_units_outgoing_id: props.all_billing_units.find(element => element.id === props.selected_transaction.transport_load.billing_units_outgoing_id),
-    collection_address_id: props.all_suppliers.find(element => element.id === props.selected_transaction.supplier_id).addressable.find(element => element.id === props.selected_transaction.transport_load.collection_address_id),
-    delivery_address_id: props.all_customers.find(element => element.id === props.selected_transaction.customer_id).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id),
-    delivery_address_id_2: props.all_customers.find(element => element.id === props.selected_transaction.customer_id_2).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_2),
-    delivery_address_id_3: props.selected_transaction.transport_load.delivery_address_id_3 === null ? null : props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_3),
-    delivery_address_id_4: props.selected_transaction.transport_load.delivery_address_id_4 === null ? null : props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_4),
-    delivery_address_id_5: props.selected_transaction.transport_load.delivery_address_id_5 === null ? null : props.all_customers.find(element => element.id === props.selected_transaction.customer_id_5).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_5),
-    product_grade_perc: props.selected_transaction.transport_load.product_grade_perc,
-    no_units_incoming: props.selected_transaction.transport_load.no_units_incoming,
-    no_units_outgoing: props.selected_transaction.transport_load.no_units_outgoing,
-    no_units_outgoing_2: props.selected_transaction.transport_load.no_units_outgoing_2,
-    no_units_outgoing_3: props.selected_transaction.transport_load.no_units_outgoing_3,
-    no_units_outgoing_4: props.selected_transaction.transport_load.no_units_outgoing_4,
-    no_units_outgoing_5: props.selected_transaction.transport_load.no_units_outgoing_5,
-    is_weighbridge_certificate_received: props.selected_transaction.transport_load.is_weighbridge_certificate_received,
-    delivery_note: props.selected_transaction.transport_load.delivery_note,
-    calculated_route_distance: props.selected_transaction.transport_load.calculated_route_distance,
-
-    //TransportJob
-
-    customer_order_number: props.selected_transaction.transport_job.customer_order_number,
-    supplier_loading_number: props.selected_transaction.transport_job.supplier_loading_number,
-    customer_order_number_2: props.selected_transaction.transport_job.customer_order_number_2,
-    supplier_loading_number_2: props.selected_transaction.transport_job.supplier_loading_number_2,
-    customer_order_number_3: props.selected_transaction.transport_job.customer_order_number_3,
-    supplier_loading_number_3: props.selected_transaction.transport_job.supplier_loading_number_3,
-    customer_order_number_4: props.selected_transaction.transport_job.customer_order_number_4,
-    supplier_loading_number_4: props.selected_transaction.transport_job.supplier_loading_number_4,
-    customer_order_number_5: props.selected_transaction.transport_job.customer_order_number_5,
-    supplier_loading_number_5: props.selected_transaction.transport_job.supplier_loading_number_5,
-    is_multi_loads: props.selected_transaction.transport_job.is_multi_loads,
-    is_approved: props.selected_transaction.transport_job.is_approved,
-    is_transport_costs_inc_price: props.selected_transaction.transport_job.is_transport_costs_inc_price,
-    is_product_zero_rated: props.selected_transaction.transport_job.is_product_zero_rated,
-    offloading_hours_from_id: props.selected_transaction.transport_job.offloading_hours_from_id,
-    offloading_hours_to_id: props.selected_transaction.transport_job.offloading_hours_to_id,
-    loading_hours_from_id: props.selected_transaction.transport_job.loading_hours_from_id,
-    loading_hours_to_id: props.selected_transaction.transport_job.loading_hours_to_id,
-    load_insurance_per_ton: props.selected_transaction.transport_job.load_insurance_per_ton,
-    total_load_insurance: props.selected_transaction.transport_job.total_load_insurance,
-    number_loads: props.selected_transaction.transport_job.number_loads,
-    loading_instructions: props.selected_transaction.transport_job.loading_instructions,
-    offloading_instructions: props.selected_transaction.transport_job.offloading_instructions,
-
-    //Transport Finance
-
-    transport_rate_basis_id: props.selected_transaction.transport_finance.transport_rate_basis_id,
-    cost_price_per_unit: props.selected_transaction.transport_finance.cost_price_per_unit,
-    selling_price_per_unit: props.selected_transaction.transport_finance.selling_price_per_unit,
-    transport_rate: props.selected_transaction.transport_finance.transport_rate,
-    transport_cost_2: props.selected_transaction.transport_finance.transport_cost_2,
-    transport_cost_3: props.selected_transaction.transport_finance.transport_cost_3,
-    transport_cost_4: props.selected_transaction.transport_finance.transport_cost_4,
-    transport_cost_5: props.selected_transaction.transport_finance.transport_cost_5,
-    selling_price_2: props.selected_transaction.transport_finance.selling_price_2,
-    selling_price_3: props.selected_transaction.transport_finance.selling_price_3,
-    selling_price_4: props.selected_transaction.transport_finance.selling_price_4,
-    selling_price_5: props.selected_transaction.transport_finance.selling_price_5,
-    additional_cost_1: props.selected_transaction.transport_finance.additional_cost_1,
-    additional_cost_2: props.selected_transaction.transport_finance.additional_cost_2,
-    additional_cost_3: props.selected_transaction.transport_finance.additional_cost_3,
-    additional_cost_desc_1: props.selected_transaction.transport_finance.additional_cost_desc_1,
-    additional_cost_desc_2: props.selected_transaction.transport_finance.additional_cost_desc_2,
-    additional_cost_desc_3: props.selected_transaction.transport_finance.additional_cost_desc_3,
-    adjusted_gp: props.selected_transaction.transport_finance.adjusted_gp,
-    adjusted_gp_notes: props.selected_transaction.transport_finance.adjusted_gp_notes,
-
-    //Transport Invoice
-
-    transport_trans_id: props.selected_transaction.id,
-    invoice_old_id: props.selected_transaction.transport_invoice.old_id,
-    is_active: props.selected_transaction.transport_invoice.is_active,
-    is_printed: props.selected_transaction.transport_invoice.is_printed,
-    invoice_id: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_id,
-    is_invoiced: props.selected_transaction.transport_invoice.transport_invoice_details.is_invoiced,
-    is_invoice_paid: props.selected_transaction.transport_invoice.transport_invoice_details.is_invoice_paid,
-    invoice_no: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_no,
-    invoice_paid_date: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_paid_date,
-    invoice_pay_by_date: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_pay_by_date,
-    invoice_date: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_date,
-    invoice_amount: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount,
-    invoice_amount_paid: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount_paid,
-    status_id: props.selected_transaction.transport_invoice.transport_invoice_details.status_id,
-    notes: props.selected_transaction.transport_invoice.transport_invoice_details.notes,
-
     update_related_models: 0
 
 
@@ -779,13 +829,23 @@ let combined_Form = useForm({
 
 
 
+
+
+
 //Errors
 
-let emptyErrorsTrans = computed(() => Object.keys(combined_Form.errors).length === 0 && combined_Form.errors.constructor === Object);
-let paymentTerms = computed(() => props.all_terms_of_payments.find(element => element.id === combined_Form.customer_id.terms_of_payment_id));
+let emptyErrorsTrans = computed(() => Object.keys(transport_trans_Form.errors).length === 0 && transport_trans_Form.errors.constructor === Object);
+let emptyErrorsLoad = computed(() => Object.keys(transport_load_Form.errors).length === 0 && transport_load_Form.errors.constructor === Object);
+let emptyErrorsJob = computed(() => Object.keys(transport_job_Form.errors).length === 0 && transport_job_Form.errors.constructor === Object);
+let emptyErrorsFinance = computed(() => Object.keys(transport_finance_Form.errors).length === 0 && transport_finance_Form.errors.constructor === Object);
+let emptyErrorsInvoice = computed(() => Object.keys(transport_invoice_Form.errors).length === 0 && transport_invoice_Form.errors.constructor === Object);
+let emptyErrorsApproval = computed(() => Object.keys(transport_approval_Form.errors).length === 0 && transport_approval_Form.errors.constructor === Object);
 
 
-//combined_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
+let paymentTerms = computed(() => props.all_terms_of_payments.find(element => element.id === transport_trans_Form.customer_id.terms_of_payment_id));
+
+
+//transport_trans_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
 
 
 //Form CRUD
@@ -796,20 +856,20 @@ let endTime = 0;
 const updateCombined_Form = () => {
 
     isUpdating.value = true;
-   // startTime = performance.now()
+    startTime = performance.now()
 
 
     combined_Form.put(route('transaction_summary.update', props.selected_transaction.id),
         {
             preserveScroll: true,
             onSuccess: () => {
-                swal(usePage().props.jetstream.flash?.banner || '');
 
-                //endTime = performance.now()
-                //console.log(`Call to transportTrans took ${(endTime - startTime)/1000} seconds`);
+                endTime = performance.now()
+                console.log(`Call to transportTrans took ${(endTime - startTime)/1000} seconds`);
                 startTime =0;
                 endTime =0;
-                isUpdating.value = false;
+
+               // updateTransportLoad();
 
             },
             onError: (error) => {
@@ -826,6 +886,116 @@ const updateAll = () => {
 
     updateCombined_Form();
 
+}
+
+const updateTransportTrans = () => {
+
+    isUpdating.value = true;
+    startTime = performance.now()
+
+
+    transport_trans_Form.put(route('transport_transaction.update', props.selected_transaction.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+
+                endTime = performance.now()
+                console.log(`Call to transportTrans took ${(endTime - startTime)/1000} seconds`);
+                startTime =0;
+                endTime =0;
+
+                updateTransportLoad();
+
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                alert('Something went wrong on the Transaction')
+                console.log(error)
+            }
+        }
+    );
+}
+
+const updateTransportLoad = () => {
+
+    startTime = performance.now()
+    transport_load_Form.put(route('transport_load.update', props.selected_transaction.transport_load.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                endTime = performance.now()
+                console.log(`Call to transportload took ${(endTime - startTime)/1000} seconds`);
+                startTime =0;
+                endTime =0;
+
+                updateTransportJob();
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                alert('Something went wrong on the Load')
+                console.log(error)
+            }
+        }
+    );
+}
+
+const updateTransportJob = () => {
+    transport_job_Form.put(route('transport_job.update', props.selected_transaction.transport_job.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                updateTransportFinance();
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                alert('Something went wrong on the transport Job')
+                console.log(error)
+            }
+        }
+    );
+}
+
+const updateTransportFinance = () => {
+
+    startTime = performance.now();
+    transport_finance_Form.put(route('transport_finance.update', props.selected_transaction.transport_finance.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+
+                endTime = performance.now()
+                console.log(`Call to transport Finance took ${(endTime - startTime)/1000} seconds`);
+                startTime =0;
+                endTime =0;
+
+                updateTransportInvoice();
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                alert('Something went wrong on finance')
+                console.log(error)
+            }
+        }
+    );
+}
+
+const updateTransportInvoice = () => {
+    transport_invoice_Form.put(route('transport_invoice.update', props.selected_transaction.transport_invoice.id),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                updateSelectValues();
+
+                //swal('Updated');
+                isUpdating.value = false;
+            },
+            onError: (error) => {
+                isUpdating.value = false;
+                alert('Something went wrong')
+                console.log(error)
+            }
+        }
+    );
 }
 
 const cloneTransportTrans = () => {
@@ -1092,8 +1262,8 @@ let collectionAddressQuery = ref('');
 
 const filteredCollectionAddress = computed(() =>
     collectionAddressQuery.value === ''
-        ? combined_Form.supplier_id.addressable
-        : combined_Form.supplier_id.addressable.filter((address) => {
+        ? transport_trans_Form.supplier_id.addressable
+        : transport_trans_Form.supplier_id.addressable.filter((address) => {
             return address.line_1.toLowerCase().includes(collectionAddressQuery.value.toLowerCase())
         })
 );
@@ -1102,8 +1272,8 @@ let deliveryAddressQuery = ref('');
 
 const filteredDeliveryAddress = computed(() =>
     deliveryAddressQuery.value === ''
-        ? combined_Form.customer_id.addressable
-        : combined_Form.customer_id.addressable.filter((address) => {
+        ? transport_trans_Form.customer_id.addressable
+        : transport_trans_Form.customer_id.addressable.filter((address) => {
             return address.line_1.toLowerCase().includes(deliveryAddressQuery.value.toLowerCase())
         })
 );
@@ -1112,8 +1282,8 @@ let deliveryAddressQuery2 = ref('');
 
 const filteredDeliveryAddress2 = computed(() =>
     deliveryAddressQuery2.value === ''
-        ? combined_Form.customer_id_2.addressable
-        : combined_Form.customer_id_2.addressable.filter((address) => {
+        ? transport_trans_Form.customer_id_2.addressable
+        : transport_trans_Form.customer_id_2.addressable.filter((address) => {
             return address.line_1.toLowerCase().includes(deliveryAddressQuery2.value.toLowerCase())
         })
 );
@@ -1122,8 +1292,8 @@ let deliveryAddressQuery3 = ref('');
 
 const filteredDeliveryAddress3 = computed(() =>
     deliveryAddressQuery3.value === ''
-        ? combined_Form.customer_id_3.addressable
-        : combined_Form.customer_id_3.addressable.filter((address) => {
+        ? transport_trans_Form.customer_id_3.addressable
+        : transport_trans_Form.customer_id_3.addressable.filter((address) => {
             return address.line_1.toLowerCase().includes(deliveryAddressQuery3.value.toLowerCase())
         })
 );
@@ -1132,8 +1302,8 @@ let deliveryAddressQuery4 = ref('');
 
 const filteredDeliveryAddress4 = computed(() =>
     deliveryAddressQuery4.value === ''
-        ? combined_Form.customer_id_4.addressable
-        : combined_Form.customer_id_4.addressable.filter((address) => {
+        ? transport_trans_Form.customer_id_4.addressable
+        : transport_trans_Form.customer_id_4.addressable.filter((address) => {
             return address.line_1.toLowerCase().includes(deliveryAddressQuery4.value.toLowerCase())
         })
 );
@@ -1143,8 +1313,8 @@ let deliveryAddressQuery5 = ref('');
 
 const filteredDeliveryAddress5 = computed(() =>
     deliveryAddressQuery5.value === ''
-        ? combined_Form.customer_id_5.addressable
-        : combined_Form.customer_id_5.addressable.filter((address) => {
+        ? transport_trans_Form.customer_id_5.addressable
+        : transport_trans_Form.customer_id_5.addressable.filter((address) => {
             return address.line_1.toLowerCase().includes(deliveryAddressQuery5.value.toLowerCase())
         })
 );
@@ -1802,7 +1972,7 @@ const doCreatedTrade = (_id) => {
                             </div>
                             <div class="m-2 p-2">
                                 <div class="mb-2"
-                                     v-if="!emptyErrorsTrans">
+                                     v-if="!emptyErrorsTrans || !emptyErrorsJob || !emptyErrorsLoad || !emptyErrorsFinance || !emptyErrorsInvoice || !emptyErrorsApproval">
                                     <div class="rounded-md bg-red-50 p-4">
                                         <div class="flex">
                                             <div class="flex-shrink-0">
@@ -1816,70 +1986,83 @@ const doCreatedTrade = (_id) => {
                                                         <li v-if="!emptyErrorsTrans">Transaction errors (see appropriate
                                                             tab)
                                                         </li>
-
+                                                        <li v-if="!emptyErrorsJob">Job errors (see appropriate tab)</li>
+                                                        <li v-if="!emptyErrorsLoad">Load errors (see appropriate tab)
+                                                        </li>
+                                                        <li v-if="!emptyErrorsFinance">Finance errors (see appropriate
+                                                            tab)
+                                                        </li>
+                                                        <li v-if="!emptyErrorsInvoice">Invoice errors (see appropriate
+                                                            tab)
+                                                        </li>
+                                                        <li v-if="!emptyErrorsApproval">Approval errors (see appropriate
+                                                            tab)
+                                                        </li>
                                                     </ul>
                                                 </div>
 
                                                 <div class="mt-2 ml-6">
 
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors['confirmed_by_id.id']"/>
+                                                                :message="transport_load_Form.errors['confirmed_by_id.id']"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors['confirmed_by_type_id.id']"/>
+                                                                :message="transport_load_Form.errors['confirmed_by_type_id.id']"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors['packaging_incoming_id.id']"/>
+                                                                :message="transport_load_Form.errors['packaging_incoming_id.id']"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors['packaging_outgoing_id.id']"/>
+                                                                :message="transport_load_Form.errors['packaging_outgoing_id.id']"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors['billing_units_incoming_id.id']"/>
+                                                                :message="transport_load_Form.errors['billing_units_incoming_id.id']"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors['billing_units_outgoing_id.id']"/>
+                                                                :message="transport_load_Form.errors['billing_units_outgoing_id.id']"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors['collection_address_id.id']"/>
+                                                                :message="transport_load_Form.errors['collection_address_id.id']"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors['delivery_address_id.id']"/>
+                                                                :message="transport_load_Form.errors['delivery_address_id.id']"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors['product_source_id.id']"/>
+                                                                :message="transport_load_Form.errors['product_source_id.id']"/>
 
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.product_grade_perc"/>
+                                                                :message="transport_load_Form.errors.product_grade_perc"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.no_units_incoming"/>
+                                                                :message="transport_load_Form.errors.no_units_incoming"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.no_units_outgoing"/>
+                                                                :message="transport_load_Form.errors.no_units_outgoing"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.is_weighbridge_certificate_received"/>
+                                                                :message="transport_load_Form.errors.is_weighbridge_certificate_received"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.delivery_note"/>
+                                                                :message="transport_load_Form.errors.delivery_note"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.calculated_route_distance"/>
+                                                                :message="transport_load_Form.errors.calculated_route_distance"/>
+
 
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.customer_order_number"/>
+                                                                :message="transport_job_Form.errors.customer_order_number"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.supplier_loading_number"/>
+                                                                :message="transport_job_Form.errors.supplier_loading_number"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.is_multi_loads"/>
+                                                                :message="transport_job_Form.errors.is_multi_loads"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.is_approved"/>
+                                                                :message="transport_job_Form.errors.is_approved"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.is_transport_costs_inc_price"/>
+                                                                :message="transport_job_Form.errors.is_transport_costs_inc_price"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.offloading_hours_from_id"/>
+                                                                :message="transport_job_Form.errors.offloading_hours_from_id"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.offloading_hours_to_id"/>
+                                                                :message="transport_job_Form.errors.offloading_hours_to_id"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.loading_hours_from_id"/>
+                                                                :message="transport_job_Form.errors.loading_hours_from_id"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.loading_hours_to_id"/>
+                                                                :message="transport_job_Form.errors.loading_hours_to_id"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.load_insurance_per_ton"/>
+                                                                :message="transport_job_Form.errors.load_insurance_per_ton"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.total_load_insurance"/>
+                                                                :message="transport_job_Form.errors.total_load_insurance"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.loading_instructions"/>
+                                                                :message="transport_job_Form.errors.loading_instructions"/>
                                                     <InputError class="mt-2"
-                                                                :message="combined_Form.errors.offloading_instructions"/>
+                                                                :message="transport_job_Form.errors.offloading_instructions"/>
+
 
                                                 </div>
 
@@ -1909,7 +2092,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
                                                                 <Combobox as="div"
-                                                                          v-model="combined_Form.supplier_id">
+                                                                          v-model="transport_trans_Form.supplier_id">
 
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
@@ -1982,7 +2165,7 @@ const doCreatedTrade = (_id) => {
                                                                 <div class="mt-2">
 
                                                                     <Combobox as="div"
-                                                                              v-model="combined_Form.collection_address_id">
+                                                                              v-model="transport_load_Form.collection_address_id">
                                                                         <div class="relative mt-2">
                                                                             <ComboboxInput
                                                                                 class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2049,13 +2232,13 @@ const doCreatedTrade = (_id) => {
                                                                     </Combobox>
 
                                                                     <InputError class="mt-2"
-                                                                                :message="combined_Form.errors['collection_address_id.id']"/>
+                                                                                :message="transport_load_Form.errors['collection_address_id.id']"/>
                                                                 </div>
 
                                                                 <div class="mt-2">
                                                                     <Link
                                                                         class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                                                        :href="route('supplier.show',combined_Form.supplier_id)">
+                                                                        :href="route('supplier.show',transport_trans_Form.supplier_id)">
                                                                         + Add supplier address
                                                                     </Link>
                                                                 </div>
@@ -2065,7 +2248,7 @@ const doCreatedTrade = (_id) => {
 
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <div>
-                                                            <div v-if="combined_Form.collection_address_id">
+                                                            <div v-if="transport_load_Form.collection_address_id">
                                                                 <h3 class="text-base font-semibold leading-7 text-indigo-400">
                                                                     Selected Collection Address:</h3>
 
@@ -2074,7 +2257,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.collection_address_id.line_1
+                                                                                transport_load_Form.collection_address_id.line_1
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -2085,7 +2268,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.collection_address_id.line_2
+                                                                                transport_load_Form.collection_address_id.line_2
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -2096,7 +2279,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.collection_address_id.line_3
+                                                                                transport_load_Form.collection_address_id.line_3
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -2107,7 +2290,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.collection_address_id.country
+                                                                                transport_load_Form.collection_address_id.country
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -2118,7 +2301,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.collection_address_id.code
+                                                                                transport_load_Form.collection_address_id.code
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -2155,7 +2338,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="text-gray-700">
 
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.billing_units_incoming_id">
+                                                                      v-model="transport_load_Form.billing_units_incoming_id">
 
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
@@ -2204,7 +2387,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="text-gray-700">
 
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.packaging_incoming_id">
+                                                                      v-model="transport_load_Form.packaging_incoming_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2286,7 +2469,7 @@ const doCreatedTrade = (_id) => {
 
                                                         <AreaInput
                                                             id="supplier_notes"
-                                                            v-model="combined_Form.suppliers_notes"
+                                                            v-model="transport_trans_Form.suppliers_notes"
                                                             :rows=12
                                                             placeholder="Optional notes..."
                                                             type="text"
@@ -2295,7 +2478,7 @@ const doCreatedTrade = (_id) => {
                                                         />
 
                                                         <InputError class="mt-2"
-                                                                    :message="combined_Form.errors.suppliers_notes"/>
+                                                                    :message="transport_trans_Form.errors.suppliers_notes"/>
 
                                                     </div>
 
@@ -2321,7 +2504,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="text-gray-700">
                                                             <div>
                                                                 <Combobox as="div"
-                                                                          v-model="combined_Form.product_id">
+                                                                          v-model="transport_trans_Form.product_id">
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
                                                                             class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2369,7 +2552,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">No Units</dt>
                                                         <dd class="flex items-start gap-x-2">
-                                                            <input v-model="combined_Form.no_units_incoming"
+                                                            <input v-model="transport_load_Form.no_units_incoming"
                                                                    type="number"
                                                                    class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
@@ -2379,7 +2562,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Billing units</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.billing_units_incoming_id">
+                                                                      v-model="transport_load_Form.billing_units_incoming_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2426,7 +2609,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Package</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.packaging_incoming_id">
+                                                                      v-model="transport_load_Form.packaging_incoming_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2474,7 +2657,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
 
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.product_source_id">
+                                                                      v-model="transport_load_Form.product_source_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2521,7 +2704,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">Quantity / Grade</dt>
                                                         <dd class="flex items-start gap-x-2">
-                                                            <input v-model="combined_Form.product_grade_perc"
+                                                            <input v-model="transport_load_Form.product_grade_perc"
                                                                    type="text"
                                                                    class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
@@ -2543,7 +2726,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">No Units</dt>
                                                         <dd class="text-gray-700">
-                                                            <input v-model="combined_Form.no_units_outgoing"
+                                                            <input v-model="transport_load_Form.no_units_outgoing"
                                                                    type="number"
                                                                    class="block w-48  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
@@ -2553,7 +2736,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Billing units</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.billing_units_outgoing_id">
+                                                                      v-model="transport_load_Form.billing_units_outgoing_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2600,7 +2783,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
 
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.packaging_outgoing_id">
+                                                                      v-model="transport_load_Form.packaging_outgoing_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2695,7 +2878,7 @@ const doCreatedTrade = (_id) => {
 
                                                         <AreaInput
                                                             id="product_notes"
-                                                            v-model="combined_Form.product_notes"
+                                                            v-model="transport_trans_Form.product_notes"
                                                             :rows=12
                                                             placeholder="Optional notes..."
                                                             type="text"
@@ -2704,7 +2887,7 @@ const doCreatedTrade = (_id) => {
                                                         />
 
                                                         <InputError class="mt-2"
-                                                                    :message="combined_Form.errors.product_notes"/>
+                                                                    :message="transport_trans_Form.errors.product_notes"/>
 
                                                     </div>
 
@@ -2732,10 +2915,10 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
                                                                 <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch v-model="combined_Form.is_split_load"
-                                                                            :class="[combined_Form.is_split_load ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                    <Switch v-model="transport_trans_Form.is_split_load"
+                                                                            :class="[transport_trans_Form.is_split_load ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                                 <span aria-hidden="true"
-                                                                      :class="[combined_Form.is_split_load ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                      :class="[transport_trans_Form.is_split_load ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                     </Switch>
                                                                 </SwitchGroup>
                                                             </div>
@@ -2747,7 +2930,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <div>
                                                                                                                     <p class="text-gray-500">Customer Parent</p>
 
-                                                                                                                    <Combobox as="div" v-model="combined_Form.customer_id.customer_parent_id">
+                                                                                                                    <Combobox as="div" v-model="transport_trans_Form.customer_id.customer_parent_id">
 
                                                                                                                         <div class="relative mt-2">
 
@@ -2793,7 +2976,7 @@ const doCreatedTrade = (_id) => {
                                                             <div>
                                                                 <p class="text-gray-500">Customer</p>
                                                                 <Combobox as="div"
-                                                                          v-model="combined_Form.customer_id">
+                                                                          v-model="transport_trans_Form.customer_id">
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
                                                                             class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2844,7 +3027,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">Customer Order number</dt>
                                                         <dd class="flex items-start gap-x-2">
-                                                            <input v-model="combined_Form.customer_order_number"
+                                                            <input v-model="transport_job_Form.customer_order_number"
                                                                    type="text"
                                                                    class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
@@ -2853,7 +3036,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">Supplier loading number</dt>
                                                         <dd class="flex items-start gap-x-2">
-                                                            <input v-model="combined_Form.supplier_loading_number"
+                                                            <input v-model="transport_job_Form.supplier_loading_number"
                                                                    type="text"
                                                                    class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
@@ -2878,7 +3061,7 @@ const doCreatedTrade = (_id) => {
                                                             <div>
                                                                 <div class="mt-2">
                                                                     <Combobox as="div"
-                                                                              v-model="combined_Form.delivery_address_id">
+                                                                              v-model="transport_load_Form.delivery_address_id">
 
                                                                         <div class="relative mt-2">
                                                                             <ComboboxInput
@@ -2947,7 +3130,7 @@ const doCreatedTrade = (_id) => {
                                                                 <div class="mt-2">
                                                                     <Link
                                                                         class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                                                        :href="route('customer.show',combined_Form.customer_id)">
+                                                                        :href="route('customer.show',transport_trans_Form.customer_id)">
                                                                         + Add customer address
                                                                     </Link>
                                                                 </div>
@@ -2956,7 +3139,7 @@ const doCreatedTrade = (_id) => {
                                                     </div>
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <div>
-                                                            <div v-if="combined_Form.delivery_address_id">
+                                                            <div v-if="transport_load_Form.delivery_address_id">
                                                                 <h3 class="text-base font-semibold leading-7 text-indigo-400">
                                                                     Selected Delivery Address:</h3>
 
@@ -2965,7 +3148,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.delivery_address_id.line_1
+                                                                                transport_load_Form.delivery_address_id.line_1
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -2976,7 +3159,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.delivery_address_id.line_2
+                                                                                transport_load_Form.delivery_address_id.line_2
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -2987,7 +3170,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.delivery_address_id.line_3
+                                                                                transport_load_Form.delivery_address_id.line_3
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -2998,7 +3181,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.delivery_address_id.country
+                                                                                transport_load_Form.delivery_address_id.country
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -3009,7 +3192,7 @@ const doCreatedTrade = (_id) => {
                                                                     <dd class="text-gray-700">
                                                                         <div>
                                                                             {{
-                                                                                combined_Form.delivery_address_id.code
+                                                                                transport_load_Form.delivery_address_id.code
                                                                             }}
                                                                         </div>
                                                                     </dd>
@@ -3090,7 +3273,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Billing Units outgoing</dt>
                                                         <dd class="text-gray-700">
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.billing_units_outgoing_id">
+                                                                      v-model="transport_load_Form.billing_units_outgoing_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -3137,7 +3320,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="text-gray-700">
 
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.packaging_outgoing_id">
+                                                                      v-model="transport_load_Form.packaging_outgoing_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -3219,7 +3402,7 @@ const doCreatedTrade = (_id) => {
 
                                                         <AreaInput
                                                             id="customer_notes"
-                                                            v-model="combined_Form.customer_notes"
+                                                            v-model="transport_trans_Form.customer_notes"
                                                             :rows=12
                                                             placeholder="Optional notes..."
                                                             type="text"
@@ -3228,7 +3411,7 @@ const doCreatedTrade = (_id) => {
                                                         />
 
                                                         <InputError class="mt-2"
-                                                                    :message="combined_Form.errors.customer_notes"/>
+                                                                    :message="transport_trans_Form.errors.customer_notes"/>
 
                                                     </div>
 
@@ -3293,7 +3476,7 @@ const doCreatedTrade = (_id) => {
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                                                         <div>
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.customer_id_2">
+                                                                      v-model="transport_trans_Form.customer_id_2">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -3343,7 +3526,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div>
                                                                 <Combobox as="div"
-                                                                          v-model="combined_Form.delivery_address_id_2">
+                                                                          v-model="transport_load_Form.delivery_address_id_2">
 
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
@@ -3435,30 +3618,30 @@ const doCreatedTrade = (_id) => {
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.customer_order_number_2"
+                                                        <input v-model="transport_job_Form.customer_order_number_2"
                                                                type="text"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.supplier_loading_number_2"
+                                                        <input v-model="transport_job_Form.supplier_loading_number_2"
                                                                type="text"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.no_units_outgoing_2"
+                                                        <input v-model="transport_load_Form.no_units_outgoing_2"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.transport_cost_2"
+                                                        <input v-model="transport_finance_Form.transport_cost_2"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.selling_price_2"
+                                                        <input v-model="transport_finance_Form.selling_price_2"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
@@ -3473,7 +3656,7 @@ const doCreatedTrade = (_id) => {
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                                                         <div>
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.customer_id_3">
+                                                                      v-model="transport_trans_Form.customer_id_3">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -3523,7 +3706,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div>
                                                                 <Combobox as="div"
-                                                                          v-model="combined_Form.delivery_address_id_3">
+                                                                          v-model="transport_load_Form.delivery_address_id_3">
 
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
@@ -3615,30 +3798,30 @@ const doCreatedTrade = (_id) => {
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.customer_order_number_3"
+                                                        <input v-model="transport_job_Form.customer_order_number_3"
                                                                type="text"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.supplier_loading_number_3"
+                                                        <input v-model="transport_job_Form.supplier_loading_number_3"
                                                                type="text"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.no_units_outgoing_3"
+                                                        <input v-model="transport_load_Form.no_units_outgoing_3"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.transport_cost_3"
+                                                        <input v-model="transport_finance_Form.transport_cost_3"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.selling_price_3"
+                                                        <input v-model="transport_finance_Form.selling_price_3"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
@@ -3653,7 +3836,7 @@ const doCreatedTrade = (_id) => {
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                                                         <div>
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.customer_id_4">
+                                                                      v-model="transport_trans_Form.customer_id_4">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -3703,7 +3886,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div>
                                                                 <Combobox as="div"
-                                                                          v-model="combined_Form.delivery_address_id_4">
+                                                                          v-model="transport_load_Form.delivery_address_id_4">
 
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
@@ -3795,30 +3978,30 @@ const doCreatedTrade = (_id) => {
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.customer_order_number_4"
+                                                        <input v-model="transport_job_Form.customer_order_number_4"
                                                                type="text"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.supplier_loading_number_4"
+                                                        <input v-model="transport_job_Form.supplier_loading_number_4"
                                                                type="text"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.no_units_outgoing_4"
+                                                        <input v-model="transport_load_Form.no_units_outgoing_4"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.transport_cost_4"
+                                                        <input v-model="transport_finance_Form.transport_cost_4"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.selling_price_4"
+                                                        <input v-model="transport_finance_Form.selling_price_4"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
@@ -3833,7 +4016,7 @@ const doCreatedTrade = (_id) => {
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                                                         <div>
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.customer_id_5">
+                                                                      v-model="transport_trans_Form.customer_id_5">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -3883,7 +4066,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div>
                                                                 <Combobox as="div"
-                                                                          v-model="combined_Form.delivery_address_id_5">
+                                                                          v-model="transport_load_Form.delivery_address_id_5">
 
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
@@ -3975,30 +4158,30 @@ const doCreatedTrade = (_id) => {
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.customer_order_number_5"
+                                                        <input v-model="transport_job_Form.customer_order_number_5"
                                                                type="text"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.supplier_loading_number_5"
+                                                        <input v-model="transport_job_Form.supplier_loading_number_5"
                                                                type="text"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.no_units_outgoing_5"
+                                                        <input v-model="transport_load_Form.no_units_outgoing_5"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.transport_cost_5"
+                                                        <input v-model="transport_finance_Form.transport_cost_5"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                                                        <input v-model="combined_Form.selling_price_5"
+                                                        <input v-model="transport_finance_Form.selling_price_5"
                                                                type="number"
                                                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                     </td>
@@ -4071,7 +4254,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
 
-                                                                                                            <Combobox as="div" v-model="combined_Form.customer_id_2">
+                                                                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_2">
                                                                                                                 <div class="relative mt-2">
                                                                                                                     <ComboboxInput
                                                                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -4115,7 +4298,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Customer Order number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.customer_order_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.customer_order_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -4123,7 +4306,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Supplier loading number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.supplier_loading_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.supplier_loading_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -4131,7 +4314,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">No Units</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.no_units_outgoing_2" type="number"
+                                                                                                        <input v-model="transport_load_Form.no_units_outgoing_2" type="number"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -4150,7 +4333,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
                                                                                                             <div class="mt-2">
-                                                                                                                <Combobox as="div" v-model="combined_Form.delivery_address_id_2">
+                                                                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_2">
 
                                                                                                                     <div class="relative mt-2">
                                                                                                                         <ComboboxInput
@@ -4209,7 +4392,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 </div>
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <div>
-                                                                                                        <div v-if="combined_Form.delivery_address_id_2">
+                                                                                                        <div v-if="transport_load_Form.delivery_address_id_2">
                                                                                                             <h3 class="text-base font-semibold leading-7 text-indigo-400">
                                                                                                                 Selected Delivery Address:</h3>
 
@@ -4217,7 +4400,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 1</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_1 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_1 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4226,7 +4409,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 2</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_2 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_2 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4235,7 +4418,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 3</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_3 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_3 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4244,7 +4427,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Country</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.country }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.country }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4253,7 +4436,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Code</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.code }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.code }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4324,7 +4507,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
 
-                                                                                                            <Combobox as="div" v-model="combined_Form.customer_id_3">
+                                                                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_3">
                                                                                                                 <div class="relative mt-2">
                                                                                                                     <ComboboxInput
                                                                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -4368,7 +4551,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Customer Order number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.customer_order_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.customer_order_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -4376,7 +4559,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Supplier loading number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.supplier_loading_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.supplier_loading_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -4384,7 +4567,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">No Units</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.no_units_outgoing_3" type="number"
+                                                                                                        <input v-model="transport_load_Form.no_units_outgoing_3" type="number"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -4403,7 +4586,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
                                                                                                             <div class="mt-2">
-                                                                                                                <Combobox as="div" v-model="combined_Form.delivery_address_id_3">
+                                                                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_3">
 
                                                                                                                     <div class="relative mt-2">
                                                                                                                         <ComboboxInput
@@ -4462,7 +4645,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 </div>
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <div>
-                                                                                                        <div v-if="combined_Form.delivery_address_id_2">
+                                                                                                        <div v-if="transport_load_Form.delivery_address_id_2">
                                                                                                             <h3 class="text-base font-semibold leading-7 text-indigo-400">
                                                                                                                 Selected Delivery Address:</h3>
 
@@ -4470,7 +4653,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 1</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_1 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_1 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4479,7 +4662,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 2</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_2 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_2 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4488,7 +4671,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 3</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_3 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_3 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4497,7 +4680,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Country</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.country }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.country }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4506,7 +4689,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Code</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.code }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.code }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4577,7 +4760,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
 
-                                                                                                            <Combobox as="div" v-model="combined_Form.customer_id_4">
+                                                                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_4">
                                                                                                                 <div class="relative mt-2">
                                                                                                                     <ComboboxInput
                                                                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -4621,7 +4804,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Customer Order number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.customer_order_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.customer_order_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -4629,7 +4812,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Supplier loading number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.supplier_loading_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.supplier_loading_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -4637,7 +4820,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">No Units</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.no_units_outgoing_4" type="number"
+                                                                                                        <input v-model="transport_load_Form.no_units_outgoing_4" type="number"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -4656,7 +4839,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
                                                                                                             <div class="mt-2">
-                                                                                                                <Combobox as="div" v-model="combined_Form.delivery_address_id_4">
+                                                                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_4">
 
                                                                                                                     <div class="relative mt-2">
                                                                                                                         <ComboboxInput
@@ -4715,7 +4898,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 </div>
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <div>
-                                                                                                        <div v-if="combined_Form.delivery_address_id_2">
+                                                                                                        <div v-if="transport_load_Form.delivery_address_id_2">
                                                                                                             <h3 class="text-base font-semibold leading-7 text-indigo-400">
                                                                                                                 Selected Delivery Address:</h3>
 
@@ -4723,7 +4906,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 1</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_1 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_1 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4732,7 +4915,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 2</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_2 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_2 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4741,7 +4924,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 3</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_3 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_3 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4750,7 +4933,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Country</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.country }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.country }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4759,7 +4942,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Code</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.code }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.code }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -4829,7 +5012,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
                                                                 <Combobox as="div"
-                                                                          v-model="combined_Form.transporter_id">
+                                                                          v-model="transport_trans_Form.transporter_id">
 
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
@@ -4885,7 +5068,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div class="w-70">
                                                                 <VueDatePicker
-                                                                    v-model="combined_Form.transport_date_earliest"
+                                                                    v-model="transport_trans_Form.transport_date_earliest"
                                                                     :format="formatEarly"
                                                                     :teleport="true"></VueDatePicker>
 
@@ -4902,7 +5085,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div class="w-70">
                                                                 <VueDatePicker
-                                                                    v-model="combined_Form.transport_date_latest"
+                                                                    v-model="transport_trans_Form.transport_date_latest"
                                                                     :format="formatLate"
                                                                     :teleport="true"></VueDatePicker>
 
@@ -4917,7 +5100,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">No loads</dt>
                                                         <dd class="flex items-start gap-x-2">
-                                                            <input v-model="combined_Form.number_loads" type="text"
+                                                            <input v-model="transport_job_Form.number_loads" type="text"
                                                                    class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
                                                     </div>
@@ -5332,7 +5515,7 @@ const doCreatedTrade = (_id) => {
                                                                     hour from:</label>
 
                                                                 <select
-                                                                    v-model="combined_Form.loading_hours_from_id"
+                                                                    v-model="transport_job_Form.loading_hours_from_id"
                                                                     class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                                                     <option v-for="n in props.loading_hour_options"
                                                                             :key="n.id"
@@ -5352,7 +5535,7 @@ const doCreatedTrade = (_id) => {
                                                                     class="block text-sm font-medium leading-6 text-gray-900">Loading
                                                                     hour to:</label>
 
-                                                                <select v-model="combined_Form.loading_hours_to_id"
+                                                                <select v-model="transport_job_Form.loading_hours_to_id"
                                                                         class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                                                     <option v-for="n in props.loading_hour_options"
                                                                             :key="n.id"
@@ -5376,7 +5559,7 @@ const doCreatedTrade = (_id) => {
 
                                                         <AreaInput
                                                             id="loading_instructions"
-                                                            v-model="combined_Form.loading_instructions"
+                                                            v-model="transport_job_Form.loading_instructions"
                                                             :rows=4
                                                             placeholder="Optional notes..."
                                                             type="text"
@@ -5385,7 +5568,7 @@ const doCreatedTrade = (_id) => {
                                                         />
 
                                                         <InputError class="mt-2"
-                                                                    :message="combined_Form.errors.customer_notes"/>
+                                                                    :message="transport_trans_Form.errors.customer_notes"/>
 
                                                     </div>
 
@@ -5400,7 +5583,7 @@ const doCreatedTrade = (_id) => {
                                                                     hour to:</label>
 
                                                                 <select
-                                                                    v-model="combined_Form.offloading_hours_from_id"
+                                                                    v-model="transport_job_Form.offloading_hours_from_id"
                                                                     class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                                                     <option v-for="n in props.loading_hour_options"
                                                                             :key="n.id"
@@ -5422,7 +5605,7 @@ const doCreatedTrade = (_id) => {
                                                                     hour to:</label>
 
                                                                 <select
-                                                                    v-model="combined_Form.offloading_hours_to_id"
+                                                                    v-model="transport_job_Form.offloading_hours_to_id"
                                                                     class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                                                     <option v-for="n in props.loading_hour_options"
                                                                             :key="n.id"
@@ -5446,7 +5629,7 @@ const doCreatedTrade = (_id) => {
 
                                                         <AreaInput
                                                             id="offloading_instructions"
-                                                            v-model="combined_Form.offloading_instructions"
+                                                            v-model="transport_job_Form.offloading_instructions"
                                                             :rows=4
                                                             placeholder="Optional notes..."
                                                             type="text"
@@ -5473,7 +5656,7 @@ const doCreatedTrade = (_id) => {
 
                                                         <AreaInput
                                                             id="transport_notes"
-                                                            v-model="combined_Form.transport_notes"
+                                                            v-model="transport_trans_Form.transport_notes"
                                                             :rows=12
                                                             placeholder="Optional notes..."
                                                             type="text"
@@ -5482,7 +5665,7 @@ const doCreatedTrade = (_id) => {
                                                         />
 
                                                         <InputError class="mt-2"
-                                                                    :message="combined_Form.errors.customer_notes"/>
+                                                                    :message="transport_trans_Form.errors.customer_notes"/>
 
                                                     </div>
 
@@ -5525,7 +5708,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Supply Packaging</dt>
                                                         <dd class="text-gray-700">
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.packaging_incoming_id">
+                                                                      v-model="transport_load_Form.packaging_incoming_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -5569,7 +5752,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Billing Units</dt>
                                                         <dd class="text-gray-700">
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.billing_units_incoming_id">
+                                                                      v-model="transport_load_Form.billing_units_incoming_id">
 
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
@@ -5629,7 +5812,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">Cost Price / Unit</dt>
                                                         <dd class="text-gray-700">
-                                                            <input v-model="combined_Form.cost_price_per_unit"
+                                                            <input v-model="transport_finance_Form.cost_price_per_unit"
                                                                    type="number"
                                                                    class="block w-48  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
@@ -5669,7 +5852,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="text-gray-700">
                                                             <div>
                                                                 <select
-                                                                    v-model="combined_Form.transport_rate_basis_id"
+                                                                    v-model="transport_finance_Form.transport_rate_basis_id"
                                                                     class="mt-2 block w-48 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                                                     <option v-for="n in props.all_transport_rates"
                                                                             :key="n.id" :value="n.id">
@@ -5684,7 +5867,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Transport rate</dt>
                                                         <dd class="text-gray-700">
                                                             <div>
-                                                                <input v-model="combined_Form.transport_rate"
+                                                                <input v-model="transport_finance_Form.transport_rate"
                                                                        type="number"
                                                                        class="block w-48  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                             </div>
@@ -5719,10 +5902,10 @@ const doCreatedTrade = (_id) => {
 
                                                             <SwitchGroup as="div" class="flex m-2 items-center">
                                                                 <Switch
-                                                                    v-model="combined_Form.is_transport_costs_inc_price"
-                                                                    :class="[combined_Form.is_transport_costs_inc_price ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                    v-model="transport_job_Form.is_transport_costs_inc_price"
+                                                                    :class="[transport_job_Form.is_transport_costs_inc_price ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                         <span aria-hidden="true"
-                                                              :class="[combined_Form.is_transport_costs_inc_price ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                              :class="[transport_job_Form.is_transport_costs_inc_price ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                 </Switch>
 
                                                             </SwitchGroup>
@@ -5766,7 +5949,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
 
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.packaging_outgoing_id">
+                                                                      v-model="transport_load_Form.packaging_outgoing_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -5811,7 +5994,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Billing units</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <Combobox as="div"
-                                                                      v-model="combined_Form.billing_units_outgoing_id">
+                                                                      v-model="transport_load_Form.billing_units_outgoing_id">
                                                                 <div class="relative mt-2">
                                                                     <ComboboxInput
                                                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -5871,7 +6054,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Selling Price / Unit</dt>
                                                         <dd class="text-gray-700">
                                                             <input
-                                                                v-model="combined_Form.selling_price_per_unit"
+                                                                v-model="transport_finance_Form.selling_price_per_unit"
                                                                 type="number"
                                                                 class="block w-48  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
@@ -5918,14 +6101,14 @@ const doCreatedTrade = (_id) => {
 
                                                             <dt class="text-gray-500">
                                                                 <input
-                                                                    v-model="combined_Form.additional_cost_desc_1"
+                                                                    v-model="transport_finance_Form.additional_cost_desc_1"
                                                                     placeholder="Description..." type="text"
                                                                     class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                             </dt>
                                                             <dd class="text-gray-700">
                                                                 <div>
                                                                     <input
-                                                                        v-model="combined_Form.additional_cost_1"
+                                                                        v-model="transport_finance_Form.additional_cost_1"
                                                                         type="number"
                                                                         class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                 </div>
@@ -5935,14 +6118,14 @@ const doCreatedTrade = (_id) => {
 
                                                             <dt class="text-gray-500">
                                                                 <input
-                                                                    v-model="combined_Form.additional_cost_desc_2"
+                                                                    v-model="transport_finance_Form.additional_cost_desc_1"
                                                                     placeholder="Description..." type="text"
                                                                     class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                             </dt>
                                                             <dd class="text-gray-700">
                                                                 <div>
                                                                     <input
-                                                                        v-model="combined_Form.additional_cost_2"
+                                                                        v-model="transport_finance_Form.additional_cost_1"
                                                                         type="number"
                                                                         class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                 </div>
@@ -5952,14 +6135,14 @@ const doCreatedTrade = (_id) => {
 
                                                             <dt class="text-gray-500">
                                                                 <input
-                                                                    v-model="combined_Form.additional_cost_desc_3"
+                                                                    v-model="transport_finance_Form.additional_cost_desc_1"
                                                                     placeholder="Description..." type="text"
                                                                     class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                             </dt>
                                                             <dd class="text-gray-700">
                                                                 <div>
                                                                     <input
-                                                                        v-model="combined_Form.additional_cost_3"
+                                                                        v-model="transport_finance_Form.additional_cost_1"
                                                                         type="number"
                                                                         class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                 </div>
@@ -5973,14 +6156,14 @@ const doCreatedTrade = (_id) => {
 
                                                                 <dt class="text-gray-500">
                                                                     <input
-                                                                        v-model="combined_Form.adjusted_gp_notes"
+                                                                        v-model="transport_finance_Form.adjusted_gp_notes"
                                                                         placeholder="Description..." type="text"
                                                                         class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                 </dt>
                                                                 <dd class="text-gray-700">
                                                                     <div>
                                                                         <input
-                                                                            v-model="combined_Form.adjusted_gp"
+                                                                            v-model="transport_finance_Form.adjusted_gp"
                                                                             type="number"
                                                                             class="block w-full  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                     </div>
@@ -6078,7 +6261,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
                                                                 <div class="">
-                                                                    <select v-model="combined_Form.status_id"
+                                                                    <select v-model="transport_invoice_Form.status_id"
                                                                             class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                                                         <option v-for="n in props.all_invoice_statuses"
                                                                                 :key="n.id" :value="n.id">
@@ -6095,10 +6278,10 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
                                                                 <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch v-model="combined_Form.is_active"
-                                                                            :class="[combined_Form.is_active ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                    <Switch v-model="transport_invoice_Form.is_active"
+                                                                            :class="[transport_invoice_Form.is_active ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                 <span aria-hidden="true"
-                                                      :class="[combined_Form.is_active ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                      :class="[transport_invoice_Form.is_active ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                     </Switch>
                                                                 </SwitchGroup>
                                                             </div>
@@ -6110,10 +6293,10 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
                                                                 <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch v-model="combined_Form.is_printed"
-                                                                            :class="[combined_Form.is_printed ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                    <Switch v-model="transport_invoice_Form.is_printed"
+                                                                            :class="[transport_invoice_Form.is_printed ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                 <span aria-hidden="true"
-                                                      :class="[combined_Form.is_printed? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                      :class="[transport_invoice_Form.is_printed? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                     </Switch>
                                                                 </SwitchGroup>
                                                             </div>
@@ -6125,10 +6308,10 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
                                                                 <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch v-model="combined_Form.is_invoiced"
-                                                                            :class="[combined_Form.is_invoiced ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                    <Switch v-model="transport_invoice_Form.is_invoiced"
+                                                                            :class="[transport_invoice_Form.is_invoiced ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                 <span aria-hidden="true"
-                                                      :class="[combined_Form.is_invoiced ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                      :class="[transport_invoice_Form.is_invoiced ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                     </Switch>
                                                                 </SwitchGroup>
                                                             </div>
@@ -6141,10 +6324,10 @@ const doCreatedTrade = (_id) => {
                                                             <div>
                                                                 <SwitchGroup as="div" class="flex m-2 items-center">
                                                                     <Switch
-                                                                        v-model="combined_Form.is_invoice_paid"
-                                                                        :class="[combined_Form.is_invoice_paid ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                        v-model="transport_invoice_Form.is_invoice_paid"
+                                                                        :class="[transport_invoice_Form.is_invoice_paid ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                 <span aria-hidden="true"
-                                                      :class="[combined_Form.is_invoice_paid ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                      :class="[transport_invoice_Form.is_invoice_paid ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                     </Switch>
                                                                 </SwitchGroup>
                                                             </div>
@@ -6170,7 +6353,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div class="w-80">
                                                                 <VueDatePicker style="width: 250px;"
-                                                                               v-model="combined_Form.invoice_date"
+                                                                               v-model="transport_invoice_Form.invoice_date"
                                                                                :format="formatInvoiceDate"
                                                                                :teleport="true"></VueDatePicker>
 
@@ -6187,7 +6370,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div class="w-80">
                                                                 <VueDatePicker style="width: 250px;"
-                                                                               v-model="combined_Form.invoice_pay_by_date"
+                                                                               v-model="transport_invoice_Form.invoice_pay_by_date"
                                                                                :format="formatInvoicePayByDay"
                                                                                :teleport="true"></VueDatePicker>
                                                                 <div class="ml-3 text-sm text-indigo-400">
@@ -6206,7 +6389,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div class="w-80">
                                                                 <VueDatePicker style="width: 250px;"
-                                                                               v-model="combined_Form.invoice_paid_date"
+                                                                               v-model="transport_invoice_Form.invoice_paid_date"
                                                                                :format="formatInvoicePdDay"
                                                                                :teleport="true"></VueDatePicker>
 
@@ -6222,7 +6405,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Invoice No</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <input v-model="combined_Form.invoice_no"
+                                                                <input v-model="transport_invoice_Form.invoice_no"
                                                                        type="text"
                                                                        class="block w-48  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
@@ -6232,7 +6415,7 @@ const doCreatedTrade = (_id) => {
 
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <AreaInput
-                                                            v-model="combined_Form.notes"
+                                                            v-model="transport_invoice_Form.notes"
                                                             :rows=4
                                                             placeholder="Optional comments..."
                                                             type="text"
@@ -6259,7 +6442,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Invoice amount</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <input v-model="combined_Form.invoice_amount"
+                                                                <input v-model="transport_invoice_Form.invoice_amount"
                                                                        type="number"
                                                                        class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
@@ -6272,7 +6455,7 @@ const doCreatedTrade = (_id) => {
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
                                                                 <input
-                                                                    v-model="combined_Form.invoice_amount_paid"
+                                                                    v-model="transport_invoice_Form.invoice_amount_paid"
                                                                     type="number"
                                                                     class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
@@ -6757,7 +6940,7 @@ const doCreatedTrade = (_id) => {
 
                                                             <div>
                                                                 <Combobox as="div"
-                                                                          v-model="combined_Form.contract_type_id">
+                                                                          v-model="transport_trans_Form.contract_type_id">
                                                                     <div class="relative mt-2">
                                                                         <ComboboxInput
                                                                             class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -6807,10 +6990,10 @@ const doCreatedTrade = (_id) => {
                                                             <div>
                                                                 <SwitchGroup as="div" class="flex m-2 items-center">
                                                                     <Switch
-                                                                        v-model="combined_Form.include_in_calculations"
-                                                                        :class="[combined_Form.include_in_calculations ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                        v-model="transport_trans_Form.include_in_calculations"
+                                                                        :class="[transport_trans_Form.include_in_calculations ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                     <span aria-hidden="true"
-                                                          :class="[combined_Form.include_in_calculations ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                          :class="[transport_trans_Form.include_in_calculations ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                     </Switch>
                                                                 </SwitchGroup>
                                                             </div>
@@ -6824,10 +7007,10 @@ const doCreatedTrade = (_id) => {
                                                             <div>
                                                                 <SwitchGroup as="div" class="flex m-2 items-center">
                                                                     <Switch
-                                                                        v-model="combined_Form.is_transaction_done"
-                                                                        :class="[combined_Form.is_transaction_done ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                        v-model="transport_trans_Form.is_transaction_done"
+                                                                        :class="[transport_trans_Form.is_transaction_done ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                                 <span aria-hidden="true"
-                                                                      :class="[combined_Form.is_transaction_done ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                      :class="[transport_trans_Form.is_transaction_done ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                     </Switch>
 
                                                                 </SwitchGroup>
@@ -6841,7 +7024,7 @@ const doCreatedTrade = (_id) => {
 
                                                         <AreaInput
                                                             id="process_notes"
-                                                            v-model="combined_Form.process_notes"
+                                                            v-model="transport_trans_Form.process_notes"
                                                             :rows=4
                                                             placeholder="Optional notes..."
                                                             type="text"
@@ -6857,7 +7040,7 @@ const doCreatedTrade = (_id) => {
 
                                                         <AreaInput
                                                             id="traders_notes"
-                                                            v-model="combined_Form.traders_notes"
+                                                            v-model="transport_trans_Form.traders_notes"
                                                             :rows=4
                                                             placeholder="Optional notes..."
                                                             type="text"
@@ -7900,7 +8083,7 @@ const doCreatedTrade = (_id) => {
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                                                         <div>
-                                                            {{ combined_Form.customer_id.last_legal_name }}
+                                                            {{ transport_trans_Form.customer_id.last_legal_name }}
                                                         </div>
 
                                                     </td>
@@ -7941,7 +8124,7 @@ const doCreatedTrade = (_id) => {
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                                                         <div>
-                                                            {{ combined_Form.customer_id_2.last_legal_name }}
+                                                            {{ transport_trans_Form.customer_id_2.last_legal_name }}
                                                         </div>
 
                                                     </td>
@@ -7982,7 +8165,7 @@ const doCreatedTrade = (_id) => {
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                                                         <div>
-                                                            {{ combined_Form.customer_id_3.last_legal_name }}
+                                                            {{ transport_trans_Form.customer_id_3.last_legal_name }}
                                                         </div>
 
                                                     </td>
@@ -8023,7 +8206,7 @@ const doCreatedTrade = (_id) => {
 
                                                     <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                                                         <div>
-                                                            {{ combined_Form.customer_id_4.last_legal_name }}
+                                                            {{ transport_trans_Form.customer_id_4.last_legal_name }}
                                                         </div>
 
                                                     </td>
@@ -8128,7 +8311,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
 
-                                                                                                            <Combobox as="div" v-model="combined_Form.customer_id_2">
+                                                                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_2">
                                                                                                                 <div class="relative mt-2">
                                                                                                                     <ComboboxInput
                                                                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -8172,7 +8355,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Customer Order number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.customer_order_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.customer_order_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -8180,7 +8363,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Supplier loading number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.supplier_loading_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.supplier_loading_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -8188,7 +8371,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">No Units</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.no_units_outgoing_2" type="number"
+                                                                                                        <input v-model="transport_load_Form.no_units_outgoing_2" type="number"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -8207,7 +8390,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
                                                                                                             <div class="mt-2">
-                                                                                                                <Combobox as="div" v-model="combined_Form.delivery_address_id_2">
+                                                                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_2">
 
                                                                                                                     <div class="relative mt-2">
                                                                                                                         <ComboboxInput
@@ -8266,7 +8449,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 </div>
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <div>
-                                                                                                        <div v-if="combined_Form.delivery_address_id_2">
+                                                                                                        <div v-if="transport_load_Form.delivery_address_id_2">
                                                                                                             <h3 class="text-base font-semibold leading-7 text-indigo-400">
                                                                                                                 Selected Delivery Address:</h3>
 
@@ -8274,7 +8457,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 1</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_1 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_1 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8283,7 +8466,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 2</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_2 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_2 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8292,7 +8475,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 3</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_3 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_3 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8301,7 +8484,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Country</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.country }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.country }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8310,7 +8493,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Code</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.code }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.code }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8381,7 +8564,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
 
-                                                                                                            <Combobox as="div" v-model="combined_Form.customer_id_3">
+                                                                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_3">
                                                                                                                 <div class="relative mt-2">
                                                                                                                     <ComboboxInput
                                                                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -8425,7 +8608,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Customer Order number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.customer_order_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.customer_order_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -8433,7 +8616,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Supplier loading number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.supplier_loading_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.supplier_loading_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -8441,7 +8624,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">No Units</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.no_units_outgoing_3" type="number"
+                                                                                                        <input v-model="transport_load_Form.no_units_outgoing_3" type="number"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -8460,7 +8643,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
                                                                                                             <div class="mt-2">
-                                                                                                                <Combobox as="div" v-model="combined_Form.delivery_address_id_3">
+                                                                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_3">
 
                                                                                                                     <div class="relative mt-2">
                                                                                                                         <ComboboxInput
@@ -8519,7 +8702,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 </div>
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <div>
-                                                                                                        <div v-if="combined_Form.delivery_address_id_2">
+                                                                                                        <div v-if="transport_load_Form.delivery_address_id_2">
                                                                                                             <h3 class="text-base font-semibold leading-7 text-indigo-400">
                                                                                                                 Selected Delivery Address:</h3>
 
@@ -8527,7 +8710,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 1</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_1 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_1 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8536,7 +8719,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 2</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_2 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_2 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8545,7 +8728,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 3</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_3 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_3 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8554,7 +8737,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Country</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.country }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.country }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8563,7 +8746,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Code</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.code }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.code }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8634,7 +8817,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
 
-                                                                                                            <Combobox as="div" v-model="combined_Form.customer_id_4">
+                                                                                                            <Combobox as="div" v-model="transport_trans_Form.customer_id_4">
                                                                                                                 <div class="relative mt-2">
                                                                                                                     <ComboboxInput
                                                                                                                         class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -8678,7 +8861,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Customer Order number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.customer_order_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.customer_order_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -8686,7 +8869,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">Supplier loading number</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.supplier_loading_number" type="text"
+                                                                                                        <input v-model="transport_job_Form.supplier_loading_number" type="text"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -8694,7 +8877,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <dt class="text-gray-500">No Units</dt>
                                                                                                     <dd class="flex items-start gap-x-2">
-                                                                                                        <input v-model="combined_Form.no_units_outgoing_4" type="number"
+                                                                                                        <input v-model="transport_load_Form.no_units_outgoing_4" type="number"
                                                                                                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                                                                     </dd>
                                                                                                 </div>
@@ -8713,7 +8896,7 @@ const doCreatedTrade = (_id) => {
                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                         <div>
                                                                                                             <div class="mt-2">
-                                                                                                                <Combobox as="div" v-model="combined_Form.delivery_address_id_4">
+                                                                                                                <Combobox as="div" v-model="transport_load_Form.delivery_address_id_4">
 
                                                                                                                     <div class="relative mt-2">
                                                                                                                         <ComboboxInput
@@ -8772,7 +8955,7 @@ const doCreatedTrade = (_id) => {
                                                                                                 </div>
                                                                                                 <div class="flex justify-between gap-x-4 py-3">
                                                                                                     <div>
-                                                                                                        <div v-if="combined_Form.delivery_address_id_2">
+                                                                                                        <div v-if="transport_load_Form.delivery_address_id_2">
                                                                                                             <h3 class="text-base font-semibold leading-7 text-indigo-400">
                                                                                                                 Selected Delivery Address:</h3>
 
@@ -8780,7 +8963,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 1</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_1 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_1 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8789,7 +8972,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 2</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_2 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_2 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8798,7 +8981,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Line 3</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.line_3 }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.line_3 }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8807,7 +8990,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Country</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.country }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.country }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
@@ -8816,7 +8999,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                 <dt class="text-gray-500">Code</dt>
                                                                                                                 <dd class="text-gray-700">
                                                                                                                     <div>
-                                                                                                                        {{ combined_Form.delivery_address_id_2.code }}
+                                                                                                                        {{ transport_load_Form.delivery_address_id_2.code }}
                                                                                                                     </div>
                                                                                                                 </dd>
                                                                                                             </div>
