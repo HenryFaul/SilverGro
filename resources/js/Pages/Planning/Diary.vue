@@ -104,7 +104,7 @@ let NiceNumber = (_number) => {
     return "R " + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
-const totalWeighBridgeUpload = (driver_vehicles) => {
+const totalWeighBridgeUpload = async (driver_vehicles) => {
     var total = 0.0;
 
     if(Array.isArray(driver_vehicles)){
@@ -119,7 +119,7 @@ const totalWeighBridgeUpload = (driver_vehicles) => {
     return total;
 }
 
-const totalWeighBridgeOffload = (driver_vehicles) => {
+const totalWeighBridgeOffload = async (driver_vehicles) => {
     var total = 0.0;
 
     if(Array.isArray(driver_vehicles)){
@@ -140,13 +140,13 @@ const isPaymentOverdue = (driver_vehicles) => {
         return  false;
     }
 
-    driver_vehicles.forEach(function (arrayItem) {
-        var paymentStatus = arrayItem.is_payment_overdue;
+    for (let i = 0; i < driver_vehicles.length; i++) {
+        let paymentStatus = arrayItem[i].is_payment_overdue;
 
         if (paymentStatus === 1){
             return true;
         }
-    });
+    }
 
     return false;
 }
@@ -157,27 +157,23 @@ const toolTipGen = (Message, Truck) => {
 
 const isMillAlert = (Warnings) => {
 
-    Warnings.forEach(function (arrayItem) {
-        var entity = arrayItem.status_entity.entity;
-        var type = arrayItem.status_type.type;
-
-        if(entity === 3){
+    for (let i = 0; i < Warnings.length; i++) {
+        let entity = Warnings[i].status_entity.entity;
+        if (entity === 'mill') {
             return true;
         }
-    });
+    }
     return false;
 }
 
-const isQualityAlert = (Warnings) => {
+let isQualityAlert =  (Warnings) => {
 
-    Warnings.forEach(function (arrayItem) {
-        var entity = arrayItem.status_entity.entity;
-        var type = arrayItem.status_type.type;
-
-        if(entity === 5){
+    for (let i = 0; i < Warnings.length; i++) {
+        let entity = Warnings[i].status_entity.entity;
+        if (entity === 'quality') {
             return true;
         }
-    });
+    }
     return false;
 }
 
@@ -611,6 +607,7 @@ const closeTradeSlideOver = () => {
                                                                             <button
                                                                                 class="block w-10 h-10 ml-auto bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
 
+
                                                                                 <div v-if="isQualityAlert(trans.transport_status)">
                                                                                     <base-tooltip  content="Quality Alerty"><icon  name="building" class="mr-3 w-6 h-6 fill-yellow-300  animate-pulse"/> </base-tooltip>
                                                                                 </div>
@@ -627,7 +624,6 @@ const closeTradeSlideOver = () => {
                                                                                 </div>
                                                                             </button>
                                                                         </div>
-
 
                                                                     </div>
 

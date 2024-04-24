@@ -287,6 +287,7 @@ class TransactionSummaryController extends Controller
             ]
         );
 
+        //'no_units' => ['required', 'numeric', 'gt:0'],
 
         $request->validate([
             'confirmed_by_id.id'=>['required', 'integer'],
@@ -295,13 +296,13 @@ class TransactionSummaryController extends Controller
             'packaging_outgoing_id.id'=>['required', 'integer'],
             'product_source_id.id'=>['required', 'integer'],
             'product_grade_perc'=>['nullable'],
-            'no_units_incoming'=>['nullable', 'integer'],
+            'no_units_incoming'=>['nullable', 'numeric'],
             'billing_units_incoming_id.id'=>['required', 'integer'],
-            'no_units_outgoing'=>['nullable', 'integer'],
-            'no_units_outgoing_2'=>['nullable', 'integer'],
-            'no_units_outgoing_3'=>['nullable', 'integer'],
-            'no_units_outgoing_4'=>['nullable', 'integer'],
-            'no_units_outgoing_5'=>['nullable', 'integer'],
+            'no_units_outgoing'=>['nullable', 'numeric'],
+            'no_units_outgoing_2'=>['nullable', 'numeric'],
+            'no_units_outgoing_3'=>['nullable', 'numeric'],
+            'no_units_outgoing_4'=>['nullable', 'numeric'],
+            'no_units_outgoing_5'=>['nullable', 'numeric'],
             'billing_units_outgoing_id.id'=>['required'],
             'is_weighbridge_certificate_received'=>['nullable', 'boolean'],
             'delivery_note'=>['nullable'],

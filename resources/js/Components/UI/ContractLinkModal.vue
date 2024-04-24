@@ -42,7 +42,7 @@ const filteredPc = computed(() =>
     pcQuery.value === ''
         ? contractLinkModalProps.value['transport_trans']
         : contractLinkModalProps.value['transport_trans'].filter((contract) => {
-            return  contract.id >= pcQuery.value
+            return  (contract.id >= pcQuery.value)
         })
 );
 
@@ -50,7 +50,7 @@ const filteredSc = computed(() =>
     scQuery.value === ''
         ? contractLinkModalPropsSc.value['transport_trans']
         : contractLinkModalPropsSc.value['transport_trans'].filter((contract) => {
-            return  contract.id >= scQuery.value
+            return  (contract.id >= scQuery.value)
         })
 );
 
@@ -86,7 +86,7 @@ onUnmounted(async () => {
 })
 
 onBeforeMount(async () => {
-    getComponentProps();
+    await getComponentProps();
 });
 
 
@@ -130,11 +130,10 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
             <template #content>
                 <div>
 
-                    <div class="">
+                    <div class="" v-if=" contractLinkModalProps != null && contractLinkModalPropsSc != null">
 
                         <form class="w-full m-3 p-3">
 
-                            {{link_type_id}}
 
 <!--                            'transport_trans_id','transport_job_id','regular_driver_id','regular_vehicle_id','weighbridge_upload_weight','weighbridge_offload_weight',
                             'is_weighbridge_variance','is_cancelled','date_cancelled','is_loaded','date_loaded','is_onroad','date_onroad',
@@ -179,7 +178,7 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                         <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
                                                                 <span
                                                                     :class="['block truncate', selected && 'font-semibold']">
-                                                                  {{ contract.id }}
+                                                                  {{ contract.id }} (old: {{contract.old_id}})
                                                                 </span>
                                                             <span v-if="selected"
                                                                   :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
@@ -214,7 +213,7 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                         </div>
                                                         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                                             <dt class="text-sm font-medium leading-6 text-gray-900">ID</dt>
-                                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{form.to_link_id.id}}</dd>
+                                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{form.to_link_id.id}} (old {{form.to_link_id.old_id}})</dd>
                                                         </div>
                                                         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                                             <dt class="text-sm font-medium leading-6 text-gray-900">Transport Date Earliest</dt>
@@ -268,7 +267,7 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                                         <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
                                                                 <span
                                                                     :class="['block truncate', selected && 'font-semibold']">
-                                                                  {{ contract.id }}
+                                                                  {{ contract.id }} (old: {{contract.old_id}})
                                                                 </span>
                                                             <span v-if="selected"
                                                                   :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
@@ -306,7 +305,7 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
 
                                                         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                                             <dt class="text-sm font-medium leading-6 text-gray-900">ID</dt>
-                                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{form.to_link_id_sc.id}}</dd>
+                                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{form.to_link_id_sc.id}} (old {{form.to_link_id.old_id}})</dd>
                                                         </div>
                                                         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                                             <dt class="text-sm font-medium leading-6 text-gray-900">Transport Date Earliest</dt>
@@ -330,15 +329,15 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                     </div>
                                 </div>
 
-
-
-
-
                             </div>
 
 
                         </form>
 
+                    </div>
+
+                    <div v-else>
+                        Loading...
                     </div>
 
                 </div>

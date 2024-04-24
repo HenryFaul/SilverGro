@@ -136,6 +136,12 @@ let shortDate = () => {
     return Form.date.toISOString().substr(0, 10);
 };
 
+let calculatedCostPrice = (trans) =>{
+
+    let offload = totalWeighBridgeOffload(trans.transport_driver_vehicle);
+    let outgoing = trans
+}
+
 //const isNamePresent = computed(() => name.value.length > 0)
 
 const format = () => {
@@ -668,10 +674,11 @@ const contractNameOld = (trans) => {
                                                         </td>
                                                         <td class="py-4 px-6 whitespace-nowrap">
 
+
                                                             <div
                                                                 :class="trans.supplier.terms_of_payment_id === 1? 'p-2 bg-red-600 rounded': ''">
                                                                 {{
-                                                                    NiceNumber(trans.transport_invoice_details.cost_price)
+                                                                    NiceNumber(trans.transport_finance.cost_price)
                                                                 }}
                                                             </div>
 

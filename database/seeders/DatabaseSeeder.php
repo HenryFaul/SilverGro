@@ -657,6 +657,16 @@ class DatabaseSeeder extends Seeder
         ]);
 
         TermsOfPayment::create([
+            'value' => '60 Days',
+            'days' => 60
+        ]);
+
+        TermsOfPayment::create([
+            'value' => '90 Days',
+            'days' => 90
+        ]);
+
+        TermsOfPayment::create([
             'value' => 'F.C.A',
             'days' => 0
         ]);
@@ -673,12 +683,14 @@ class DatabaseSeeder extends Seeder
        $customer_parent= CustomerParent::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1,
             'invoice_basis_id'=>1,
             'terms_of_payment_basis_id'=>1,
+            'days_overdue_allowed_id'=>1,
             'customer_rating_id'=>1]);
 
 
         $customer_parent_2= CustomerParent::create(['id'=>2,'last_legal_name'=>'Split Parent','terms_of_payment_id'=>1,
             'invoice_basis_id'=>1,
             'terms_of_payment_basis_id'=>2,
+            'days_overdue_allowed_id'=>1,
             'customer_rating_id'=>1]);
 
         $address = Address::create([
@@ -703,11 +715,13 @@ class DatabaseSeeder extends Seeder
         Customer::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1,
             'invoice_basis_id'=>1,
             'terms_of_payment_basis_id'=>1,
+            'days_overdue_allowed_id'=>1,
             'customer_rating_id'=>1,'customer_parent_id'=>$customer_parent->id]);
 
        $customer_2 = Customer::create(['last_legal_name'=>'Split Customer','terms_of_payment_id'=>1,
             'invoice_basis_id'=>1,
             'terms_of_payment_basis_id'=>2,
+            'days_overdue_allowed_id'=>1,
             'customer_rating_id'=>1,'customer_parent_id'=>$customer_parent_2->id]);
 
         $address = Address::create([

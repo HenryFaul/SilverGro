@@ -110,7 +110,6 @@ class PlanningDiaryController extends Controller
             }else{
 
                 //weighbridge upload weight > 0
-
                 if ($cur_weight_uploaded > 0) {
                     $trans_cost += ($transport_finance->transport_rate * $cur_weight_uploaded);
                 }
@@ -138,10 +137,10 @@ class PlanningDiaryController extends Controller
             [
                 'transport_trans'=>$transport_trans,
                 'filters' => $filters,
-                'weight_uploaded' => round($weight_uploaded, 1),
-                'planned_tons_in' => round($planned_tons_in, 1),
-                'planned_tons_out' => round($planned_tons_out, 1),
-                'weight_offloaded' => round($weight_offloaded, 1),
+                'weight_uploaded' => round($weight_uploaded, 4),
+                'planned_tons_in' => round($planned_tons_in, 4),
+                'planned_tons_out' => round($planned_tons_out, 4),
+                'weight_offloaded' => round($weight_offloaded, 4),
                 'cost_price' => round($cost_price, 0),
                 'trans_cost' => round($trans_cost, 0),
                 'other_costs' => round($other_costs, 0),

@@ -53,6 +53,7 @@ class CustomerImport implements ToCollection, WithHeadingRow
                         'last_legal_name'=>trim($row['customername']),
                         'id_reg_no'=>trim($row['legal_no']),
                         'terms_of_payment_id'=>$terms_of_payment_id,
+                        'days_overdue_allowed_id'=>$terms_of_payment_id,
                         'invoice_basis_id'=>$invoice_basis_id,
                         'customer_rating_id'=>$customer_rating_id,
                         'terms_of_payment_basis_id'=>1,

@@ -44,6 +44,9 @@ return new class extends Migration
     public function up(): void
     {
 
+        //cost_price_actual,cost_price_per_ton_actual,selling_price_per_ton_actual,transport_cost_actual, weight_ton_incoming_actual,weight_ton_outgoing_actual,total_cost_price_actual,gross_profit_actual
+        //gross_profit_percent_actual,gross_profit_per_ton_actual
+
         Schema::create('transport_finances', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('transport_trans_id')->unsigned();
@@ -59,6 +62,7 @@ return new class extends Migration
                 ->references('id')->on('transport_rate_bases')->onDelete('cascade');
 
             $table->double('cost_price')->default(0);
+            $table->double('cost_price_actual')->default(0);
             $table->double('selling_price')->default(0);
             $table->double('selling_price_2')->default(0);
             $table->double('selling_price_3')->default(0);
@@ -67,13 +71,17 @@ return new class extends Migration
             $table->double('load_insurance_per_ton')->default(0);
             $table->double('cost_price_per_unit')->default(0);
             $table->double('cost_price_per_ton')->default(0);
+            $table->double('cost_price_per_ton_actual')->default(0);
             $table->double('selling_price_per_unit')->default(0);
             $table->double('selling_price_per_ton')->default(0);
+            $table->double('selling_price_per_ton_actual')->default(0);
             $table->boolean('is_transport_costs_inc_price')->default(false);
             $table->double('transport_rate_per_ton')->default(0);
+            $table->double('transport_rate_per_ton_actual')->default(0);
             $table->double('transport_rate')->default(0);
             $table->double('transport_price')->default(0);
             $table->double('transport_cost')->default(0);
+            $table->double('transport_cost_actual')->default(0);
             $table->double('transport_cost_2')->default(0);
             $table->double('transport_cost_3')->default(0);
             $table->double('transport_cost_4')->default(0);
@@ -81,8 +89,11 @@ return new class extends Migration
 
             $table->double('comms_due_per_ton')->default(0);
             $table->double('weight_ton_incoming')->default(0);
+            $table->double('weight_ton_incoming_actual')->default(0);
             $table->double('weight_ton_outgoing')->default(0);
+            $table->double('weight_ton_outgoing_actual')->default(0);
             $table->double('total_cost_price')->default(0);
+            $table->double('total_cost_price_actual')->default(0);
             $table->double('additional_cost_1')->default(0);
             $table->double('additional_cost_2')->default(0);
             $table->double('additional_cost_3')->default(0);
@@ -92,8 +103,11 @@ return new class extends Migration
             $table->string('additional_cost_desc_3')->nullable();
 
             $table->double('gross_profit')->default(0);
+            $table->double('gross_profit_actual')->default(0);
             $table->double('gross_profit_percent')->default(0);
+            $table->double('gross_profit_percent_actual')->default(0);
             $table->double('gross_profit_per_ton')->default(0);
+            $table->double('gross_profit_per_ton_actual')->default(0);
 
             $table->double('total_supplier_comm')->default(0);
             $table->double('total_customer_comm')->default(0);

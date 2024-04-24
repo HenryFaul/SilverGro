@@ -1,4 +1,4 @@
-<script setup>
+np<script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {computed, inject, onBeforeMount, ref, watch} from 'vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';

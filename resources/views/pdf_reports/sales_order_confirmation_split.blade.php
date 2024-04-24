@@ -122,7 +122,7 @@
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 20px;">
                         <b><span>Sales Order Confirmation Split:</span> <span>SOCP</span>
-                            <span>{{$transport_trans->id}}_{{$client_id}}</span>
+                            <span>{{$transport_trans->a_mq}}_{{$client_id}}</span>
                         </b>
                     </td>
 

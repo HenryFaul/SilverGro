@@ -17,6 +17,7 @@ use App\Models\TransportInvoice;
 use App\Models\TransportInvoiceDetails;
 use App\Models\TransportJob;
 use App\Models\TransportLoad;
+use App\Models\TransportStatus;
 use App\Models\TransportTransaction;
 use Illuminate\Http\Request;
 
@@ -66,6 +67,7 @@ class CustomReportController extends Controller
         $transport_invoice_details = TransportInvoiceDetails::first();
         $transport_job = TransportJob::first();
         $transport_load = TransportLoad::first();
+        $transport_status = TransportStatus::first();
 
 
         $model_data = array(
@@ -85,6 +87,7 @@ class CustomReportController extends Controller
                ['name'=>get_class($transport_invoice_details),'attributes'=> array_keys($transport_invoice_details->getAttributes())],
                ['name'=>get_class($transport_job),'attributes'=> array_keys($transport_job->getAttributes())],
                ['name'=>get_class($transport_load),'attributes'=> array_keys($transport_load->getAttributes())],
+               ['name'=>get_class($transport_status),'attributes'=> array_keys($transport_status->getAttributes())],
            )
         );
 

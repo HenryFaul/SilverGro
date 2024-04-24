@@ -1395,8 +1395,8 @@ const getTitle = computed(() => {
 });
 
 
-const header_styler = computed(() => "sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell");
-const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm text-gray-500 lg:table-cell");
+const header_styler = computed(() => "sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-1 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell");
+const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm text-gray-500 lg:table-cell");
 
 const doCreatedTrade = (_id) => {
     filterForm.selected_trans_id = _id;
@@ -1619,7 +1619,7 @@ const doCreatedTrade = (_id) => {
                                             <table class="min-w-full border-separate border-spacing-0">
                                                 <thead>
                                                 <tr>
-                                                    <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                                                    <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
                                                         scope="col">ID
                                                     </th>
                                                     <th :class="header_styler" scope="col">TYPE</th>
@@ -5622,7 +5622,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">Supply Weight (tons)</dt>
                                                         <dd class="text-gray-700">
-                                                            {{ selected_transaction.transport_load.weight_ton_incoming }}
+                                                            {{ selected_transaction.transport_finance.weight_ton_incoming }}
                                                         </dd>
                                                     </div>
 
@@ -5863,7 +5863,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">Selling Weight (tons)</dt>
                                                         <dd class="text-gray-700">
-                                                            {{ selected_transaction.transport_load.weight_ton_outgoing }}
+                                                            {{ selected_transaction.transport_finance.weight_ton_outgoing }}
                                                         </dd>
                                                     </div>
 
@@ -5988,71 +5988,136 @@ const doCreatedTrade = (_id) => {
                                                             </div>
                                                         </div>
 
-                                                        <div class="flex justify-between gap-x-4 py-3">
+<!--
+                                                            <div class="flex justify-between gap-x-4 py-3">
 
-                                                            <dt class="text-gray-500">Selling Price</dt>
-                                                            <dd class="text-gray-700">
-                                                                <div>
-                                                                    {{ NiceNumber(selected_transaction.transport_finance.selling_price) }}
-                                                                </div>
-                                                            </dd>
-                                                        </div>
-                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">Selling Price</dt>
+                                                                <dd class="text-gray-700">
+                                                                    <div>
+                                                                        {{ NiceNumber(selected_transaction.transport_finance.selling_price) }}
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-3">
 
-                                                            <dt class="text-gray-500">Cost Price</dt>
-                                                            <dd class="text-gray-700">
-                                                                <div>
-                                                                    {{ NiceNumber(selected_transaction.transport_finance.cost_price) }}
-                                                                </div>
-                                                            </dd>
-                                                        </div>
+                                                                <dt class="text-gray-500">Cost Price</dt>
+                                                                <dd class="text-gray-700">
+                                                                    <div>
+                                                                        {{ NiceNumber(selected_transaction.transport_finance.cost_price) }}
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">Transport Cost</dt>
+                                                                <dd class="text-gray-700">
+                                                                    <div>
+                                                                        {{ NiceNumber(selected_transaction.transport_finance.transport_cost) }}
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">Total Cost Price</dt>
+                                                                <dd class="text-gray-700">
+                                                                    <div>
+                                                                        {{ NiceNumber(selected_transaction.transport_finance.total_cost_price) }}
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">GP</dt>
+                                                                <dd class="text-gray-700">
+                                                                    <div>
+                                                                        {{ NiceNumber(selected_transaction.transport_finance.gross_profit) }}
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">GP / Ton</dt>
+                                                                <dd class="text-gray-700">
+                                                                    <div>
+                                                                        {{ NiceNumber(selected_transaction.transport_finance.gross_profit_per_ton) }}
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">GP %</dt>
+                                                                <dd class="text-gray-700">
+                                                                    <div>
+                                                                        {{ selected_transaction.transport_finance.gross_profit_percent }}
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+-->
 
-                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                            <dt class="text-gray-500">Transport Cost</dt>
-                                                            <dd class="text-gray-700">
-                                                                <div>
-                                                                    {{ NiceNumber(selected_transaction.transport_finance.transport_cost) }}
-                                                                </div>
-                                                            </dd>
-                                                        </div>
 
-                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                            <dt class="text-gray-500">Total Cost Price</dt>
-                                                            <dd class="text-gray-700">
-                                                                <div>
-                                                                    {{ NiceNumber(selected_transaction.transport_finance.total_cost_price) }}
-                                                                </div>
-                                                            </dd>
-                                                        </div>
-
-                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                            <dt class="text-gray-500">GP</dt>
-                                                            <dd class="text-gray-700">
-                                                                <div>
-                                                                    {{ NiceNumber(selected_transaction.transport_finance.gross_profit) }}
-                                                                </div>
-                                                            </dd>
-                                                        </div>
-
-                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                            <dt class="text-gray-500">GP / Ton</dt>
-                                                            <dd class="text-gray-700">
-                                                                <div>
-                                                                    {{ NiceNumber(selected_transaction.transport_finance.gross_profit_per_ton) }}
-                                                                </div>
-                                                            </dd>
-                                                        </div>
-
-                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                            <dt class="text-gray-500">GP %</dt>
-                                                            <dd class="text-gray-700">
-                                                                <div>
-                                                                    {{ selected_transaction.transport_finance.gross_profit_percent }}
-                                                                </div>
-                                                            </dd>
-                                                        </div>
 
                                                     </dl>
+
+                                                    <div class="m-2 p-2">
+                                                        <table class="min-w-full divide-y divide-gray-300">
+                                                            <thead>
+                                                            <tr class="divide-x divide-gray-200">
+                                                                <th scope="col" class="py-2 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-0">Item</th>
+                                                                <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">Plan</th>
+                                                                <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">Actual</th>
+
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody class="divide-y divide-gray-200 bg-white">
+                                                            <tr  class="divide-x divide-gray-200">
+                                                                <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Tons In</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500"> {{ selected_transaction.transport_finance.weight_ton_incoming }}</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ selected_transaction.transport_finance.weight_ton_incoming_actual }}</td>
+                                                            </tr>
+                                                            <tr  class="divide-x divide-gray-200">
+                                                                <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Tons Out</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{selected_transaction.transport_finance.weight_ton_outgoing }}</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{selected_transaction.transport_finance.weight_ton_outgoing_actual }}</td>
+                                                            </tr>
+                                                            <tr  class="divide-x divide-gray-200">
+                                                                <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Selling Price</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.selling_price) }}</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.selling_price) }}</td>
+                                                            </tr>
+                                                            <tr  class="divide-x divide-gray-200">
+                                                                <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Cost Price</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.cost_price) }}</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.cost_price_actual) }}</td>
+                                                            </tr>
+
+                                                            <tr  class="divide-x divide-gray-200">
+                                                                <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Transport Cost</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.transport_cost) }}</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.transport_cost_actual) }}</td>
+                                                            </tr>
+
+                                                            <tr  class="divide-x divide-gray-200">
+                                                                <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Total Cost Price</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500"> {{ NiceNumber(selected_transaction.transport_finance.total_cost_price) }}</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.total_cost_price_actual) }}</td>
+                                                            </tr>
+
+                                                            <tr  class="divide-x divide-gray-200">
+                                                                <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">GP</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">  {{ NiceNumber(selected_transaction.transport_finance.gross_profit) }}</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.gross_profit_actual) }}</td>
+                                                            </tr>
+
+                                                            <tr  class="divide-x divide-gray-200">
+                                                                <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">GP / Ton</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.gross_profit_per_ton) }}</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.gross_profit_per_ton_actual) }}</td>
+                                                            </tr>
+
+                                                            <tr  class="divide-x divide-gray-200">
+                                                                <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">GP %</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ selected_transaction.transport_finance.gross_profit_percent }}</td>
+                                                                <td class="whitespace-nowrap p-4 text-sm text-gray-500">{{ selected_transaction.transport_finance.gross_profit_percent_actual }}</td>
+                                                            </tr>
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
 
 
                                                 </div>
@@ -6279,7 +6344,7 @@ const doCreatedTrade = (_id) => {
                                                             </div>
                                                         </dd>
                                                     </div>
-
+<!--
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">cost_price</dt>
                                                         <dd class="flex items-start gap-x-2">
@@ -6306,8 +6371,7 @@ const doCreatedTrade = (_id) => {
                                                             </div>
                                                         </dd>
                                                     </div>
-
-
+-->
                                                 </dl>
                                             </li>
 

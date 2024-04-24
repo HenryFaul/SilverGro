@@ -38,6 +38,7 @@ use App\Models\TransportJob;
 use App\Models\TransportLoad;
 use App\Models\TransportOrder;
 use App\Models\TransportRateBasis;
+use App\Models\TransportStatus;
 use App\Models\TransportTransaction;
 use App\Models\User;
 use Carbon\Carbon;
@@ -994,6 +995,7 @@ class TransportTransactionController extends Controller
             $transport_invoice_details = TransportInvoiceDetails::first();
             $transport_job = TransportJob::first();
             $transport_load = TransportLoad::first();
+            $transport_status = TransportStatus::first();
 
 
             $model_transport_transactions = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_transaction))->get();
@@ -1012,6 +1014,7 @@ class TransportTransactionController extends Controller
             $model_regular_driver = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($regular_driver))->get();
             $model_regular_vehicle = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($regular_vehicle))->get();
             $model_transport_driver_vehicle = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_driver_vehicle))->get();
+            $model_transport_status = CustomReportModel::where('report_id', $custom_report->id)->where('class_name', get_class($transport_status))->get();
 
 
             $spreadsheet = new Spreadsheet();
@@ -1679,6 +1682,56 @@ class TransportTransactionController extends Controller
 
                     //increment the global column
                     $global_col++;
+
+                }
+
+
+            }
+
+            //Transport Status
+            //For all specific models loop over each
+            foreach ($model_transport_status as $custom_model) {
+
+                //confirm that model is correct
+                if ($custom_model->class_name === get_class($transport_status)) {
+
+                    if($custom_model->attribute_name==='status_entity_id'){
+
+                        //only once set the column name
+                        $sheet->setCellValue([$global_col, 1], 'alert_'.$custom_model->attribute_name);
+
+                        //extract transactions for that attribute
+                        //loop over trans
+                        if ($transactions != null) {
+
+                            $pos = 0;
+                            $col = 1;
+
+                            for ($r = 2; $r < count($transactions) + 2; $r++) {
+
+                                $trans = $transactions[$pos];
+                                $transport_status = $trans->TransportStatus;
+
+                                $val = '';
+
+                                foreach ($transport_status as $status){
+
+                                    $val .= $status->StatusEntity->entity.'-'.$status->StatusType->type.', ';
+                                }
+
+
+                                $sheet->setCellValue([$global_col, $r], $val);
+
+                                $pos++;
+                            }
+
+                        }
+
+                        //increment the global column
+                        $global_col++;
+                    }
+
+
 
                 }
 

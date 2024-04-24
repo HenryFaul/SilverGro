@@ -113,11 +113,25 @@ class DebtorStandingController extends Controller
             'selected_client_id'
         ]);
 
-        $paginate = $request['show'] ?? 5;
+        if( !isset($filters['hasBalance']) ){
+            $filters['hasBalance']=true;
+        }
+
+
+        $paginate = $request['show'] ?? 25;
 
         $debtors_standings = DebtorStanding::filter($filters)
             ->paginate($paginate)
             ->withQueryString();
+
+        $debtors_standings_totals = DebtorStanding::where('total_outstanding', '>',0)->get();
+        $total_outstanding =0;
+        $total_overdue=0;
+
+        foreach ($debtors_standings_totals as $standing){
+            $total_outstanding += $standing->total_outstanding;
+            $total_overdue += $standing->total_overdue;
+        }
 
         $max_date = DebtorStanding::max('updated_at');
 
@@ -135,8 +149,6 @@ class DebtorStandingController extends Controller
 
 
            // $invoices = TransportInvoice::where('customer_id',$selected_client_id)->with('TransportInvoiceDetails')->get();
-
-
             $invoices = TransportInvoice::where('customer_id',$selected_client_id)->with('TransportInvoiceDetails')
                 ->whereHas('TransportInvoiceDetails', function (Builder $query) {
                     $query->where('outstanding', '>', 0);
@@ -153,7 +165,9 @@ class DebtorStandingController extends Controller
                 'max_date'=>$max_date,
                 'selected_client_id'=>$selected_client_id,
                 'invoices'=>$invoices,
-                'selected_client'=>$customer
+                'selected_client'=>$customer,
+                'total_outstanding'=>$total_outstanding,
+                'total_overdue'=>$total_overdue
 
             ]
         );

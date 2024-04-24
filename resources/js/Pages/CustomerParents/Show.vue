@@ -326,6 +326,20 @@ const can_update_customer = computed(() => usePage().props.roles_permissions.per
                                                 </div>
 
                                                 <div class="sm:col-span-3">
+                                                    <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">Day overdue allowed</label>
+                                                    <div class="mt-2">
+                                                        <select v-model="customerForm.days_overdue_allowed_id" :disabled="editDisabled"
+                                                                class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                            <option v-for="n in terms_of_payment" :key="n.id" :value="n.id">{{
+                                                                    n.value
+                                                                }}
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                    <InputError class="mt-2" :message="customerForm.errors.days_overdue_allowed_id"/>
+                                                </div>
+
+                                                <div class="sm:col-span-3">
                                                     <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">Invoice basis</label>
                                                     <div class="mt-2">
                                                         <select v-model="customerForm.invoice_basis_id" :disabled="editDisabled"

@@ -22,7 +22,7 @@ class Customer extends Model
     use SoftDeletes;
 
     public $fillable = ['id','first_name','customer_parent_id','last_legal_name','nickname','title','id_reg_no','is_active','terms_of_payment_basis_id','terms_of_payment_id','invoice_basis_id','customer_rating_id','is_vat_exempt','is_vat_cert_received',
-        'credit_limit','credit_limit_hard','comment'];
+        'credit_limit','credit_limit_hard','comment','days_overdue_allowed_id'];
 
     protected $appends = [
         'trades_count'

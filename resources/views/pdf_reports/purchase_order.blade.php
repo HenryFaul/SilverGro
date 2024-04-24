@@ -122,7 +122,7 @@
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 20px;">
                         <b><span>Purchase Contract:</span> <span>PC</span>
-                            <span>{{$transport_trans->id}}</span>
+                            <span>{{$transport_trans->a_mq}}</span>
                         </b>
                     </td>
 

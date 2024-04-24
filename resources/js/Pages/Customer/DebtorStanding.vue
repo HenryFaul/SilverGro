@@ -19,7 +19,9 @@ const props = defineProps({
     max_date: Date,
     invoices: Object,
     selected_client_id: Number,
-    selected_client: Object
+    selected_client: Object,
+    total_outstanding:Number,
+    total_overdue: Number
 
 });
 
@@ -42,8 +44,8 @@ const filterForm = useForm({
     isActive: props.filters.isActive ?? true,
     field: props.filters.field ?? null,
     direction: props.filters.direction ?? "asc",
-    show: props.filters.show ?? 5,
-    hasBalance: props.filters.isActive ?? true,
+    show: props.filters.show ?? 25,
+    hasBalance: props.filters.hasBalance ?? true,
     selected_client_id: props.selected_client_id ?? null,
 
 })
@@ -181,7 +183,8 @@ const totalOverdue = (invoices) => {
             </h2>
         </template>
 
-        <div class="py-12">
+        <div class="py-4">
+
             <div class="max-w-full mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white m-2 p-2 overflow-hidden shadow-xl sm:rounded-lg">
 
@@ -205,12 +208,6 @@ const totalOverdue = (invoices) => {
                                                                 </select>
                                 -->
 
-                                <select v-model="filterForm.hasBalance"
-                                        class="input-filter-l block w-40 ml-2 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    <option :value="null">All</option>
-                                    <option :value=true>Has Balance</option>
-
-                                </select>
 
                                 <select v-model="filterForm.show"
                                         class="input-filter-l block w-32 ml-2 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -222,11 +219,6 @@ const totalOverdue = (invoices) => {
 
                                 </select>
 
-
-                            </div>
-
-
-                            <div class="flex col-span-6">
                                 <secondary-button @click="getComponentProps" class="ml-1">
 
                                     update
@@ -242,6 +234,13 @@ const totalOverdue = (invoices) => {
 
                             </div>
 
+
+                            <div class="flex col-span-6">
+
+
+
+                            </div>
+
                         </div>
 
                         <div>
@@ -249,7 +248,7 @@ const totalOverdue = (invoices) => {
                             <div>
 
 
-                                <div class="bg-white mt-6 rounded-md shadow overflow-x-auto">
+                                <div class="bg-white mt-2 rounded-md shadow overflow-x-auto">
 
                                     <table class="min-w-full border-separate border-spacing-0">
                                         <thead>
@@ -292,7 +291,7 @@ const totalOverdue = (invoices) => {
                                             :key="debtor.id"
                                             :class="'hover:bg-gray-100 text-sm focus-within:bg-gray-100'"
                                         >
-                                            <td class="border-b border-gray-200 whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8'">
+                                            <td class="border-b border-gray-200 whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8'">
                                                 {{ debtor.customer.last_legal_name }}
                                             </td>
 
@@ -354,6 +353,17 @@ const totalOverdue = (invoices) => {
 
                                         </tr>
 
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="whitespace-nowrap font-bold">TOTALS</td>
+                                            <td class="whitespace-nowrap font-bold ">
+                                                {{ NiceNumber(total_outstanding) }}                                            </td>
+                                            <td class="whitespace-nowrap font-bold">
+                                                {{ NiceNumber(total_overdue) }}
+                                            </td>
+                                        </tr>
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -364,7 +374,7 @@ const totalOverdue = (invoices) => {
                                 </div>
                             </div>
                             <div v-if="debtors_standings.data.length && !isLoading"
-                                 class="w-full flex justify-center mt-5 mb-4">
+                                 class="w-full flex justify-center mt-5 mb-1">
                                 <PaginationModified :links="debtors_standings.links"/>
                             </div>
 
@@ -390,37 +400,37 @@ const totalOverdue = (invoices) => {
                                     </div>
 
                                 </div>
-                                <div class="m-2 p-2">
+                                <div class="m-1 p-1">
                                     <div class="mb-2">
-                                        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                        <div class="inline-block min-w-full py-1 align-middle sm:px-6 lg:px-8">
                                             <table class="min-w-full divide-y divide-gray-300">
                                                 <thead>
                                                 <tr>
                                                     <th scope="col"
-                                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                                                        ID
+                                                        class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                                        TRADE
                                                     </th>
                                                     <th scope="col"
-                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
                                                         Invoice No
                                                     </th>
                                                     <th scope="col"
-                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
                                                         Invoice Date
                                                     </th>
                                                     <th scope="col"
-                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
                                                         Pay by Date
                                                     </th>
                                                     <th scope="col"
-                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
                                                         Outstanding
                                                     </th>
                                                     <th scope="col"
-                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
                                                         Overdue
                                                     </th>
-                                                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                                                    <th scope="col" class="relative py-2 pl-3 pr-4 sm:pr-0">
                                                         <span class="sr-only">Edit</span>
                                                     </th>
 
@@ -428,22 +438,25 @@ const totalOverdue = (invoices) => {
                                                 </thead>
                                                 <tbody class="divide-y divide-gray-200">
                                                 <tr v-for="invoice in props.invoices" :key="invoice.id">
-                                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                                                        {{ invoice.id }}
+
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                                                        <div class="font-bold underline">
+                                                            <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: invoice.transport_trans_id }">{{ invoice.transport_trans_id}}</Link>
+                                                        </div>
                                                     </td>
-                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                                                         {{ invoice.transport_invoice_details.invoice_no }}
                                                     </td>
-                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                                                         {{ invoice.transport_invoice_details.invoice_date }}
                                                     </td>
-                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                                                         {{ invoice.transport_invoice_details.invoice_pay_by_date }}
                                                     </td>
-                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                                                         {{ NiceNumber(invoice.transport_invoice_details.outstanding) }}
                                                     </td>
-                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                                                         {{ NiceNumber(invoice.transport_invoice_details.overdue) }}
                                                     </td>
 
@@ -453,11 +466,11 @@ const totalOverdue = (invoices) => {
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
-                                                    <td class="whitespace-nowrap px-3 py-4">TOTALS</td>
-                                                    <td class="whitespace-nowrap px-3 py-4">
+                                                    <td class="whitespace-nowrap font-bold px-3 py-4">TOTALS</td>
+                                                    <td class="whitespace-nowrap font-bold px-3 py-4">
                                                         {{ NiceNumber(totalOutstanding(props.invoices)) }}
                                                     </td>
-                                                    <td class="whitespace-nowrap px-3 py-4">
+                                                    <td class="whitespace-nowrap font-bold px-3 py-4">
                                                         {{ NiceNumber(totalOverdue(props.invoices)) }}
                                                     </td>
                                                 </tr>

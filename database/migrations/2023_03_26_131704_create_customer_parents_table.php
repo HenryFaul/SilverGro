@@ -27,6 +27,13 @@ return new class extends Migration
             $table->bigInteger('terms_of_payment_id')->unsigned();
             $table->foreign('terms_of_payment_id')
                 ->references('id')->on('terms_of_payments')->onDelete('cascade');
+
+            $table->bigInteger('days_overdue_allowed_id')->unsigned();
+            $table->foreign('days_overdue_allowed_id')
+                ->references('id')->on('terms_of_payments')->onDelete('cascade');
+
+
+
             $table->bigInteger('invoice_basis_id')->unsigned()->default(1);
             $table->foreign('invoice_basis_id')
                 ->references('id')->on('invoice_bases')->onDelete('cascade');
