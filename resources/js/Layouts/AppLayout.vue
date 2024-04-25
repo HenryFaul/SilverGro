@@ -92,6 +92,12 @@ const classesSetup = computed(() => {
         : 'font-semibold text-black text-sm';
 });
 
+const btnSetup = computed(() => {
+    return 'inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-semibold text-black rounded-md  bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition';
+});
+
+
+//inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-semibold text-black rounded-md  bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition
 
 const showingNavigationDropdown = ref(false);
 
@@ -372,13 +378,11 @@ const logout = () => {
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-semibold text-black rounded-md  bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" :class="btnSetup">
                                             Customers
-
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                                 </svg>
-
                                             </button>
                                         </span>
                                             </template>
@@ -405,9 +409,7 @@ const logout = () => {
                                 </div>
 
                                 <div :class="classesSuppliers">
-                                    <DropdownLink  :href="route('supplier.index')">
-                                        Suppliers
-                                    </DropdownLink>
+                                    <Link :class="btnSetup" :href="route('supplier.index')">Suppliers</Link>
                                 </div>
 
                                 <!-- Transporters -->
@@ -416,7 +418,7 @@ const logout = () => {
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 font-semibold text-black border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" :class="btnSetup">
                                                 Transporters
 
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -453,16 +455,13 @@ const logout = () => {
                                 </div>
 
                                 <div :class="classesProducts">
-                                    <DropdownLink :href="route('product.index')">
-                                        Products
-                                    </DropdownLink>
+
+                                    <Link :class="btnSetup" :href="route('product.index')">Products</Link>
+
                                 </div>
 
                                 <div :class="classesTransSummary">
-                                    <DropdownLink :href="route('transaction_summary.index')">
-                                        Trades
-                                    </DropdownLink>
-
+                                    <Link :class="btnSetup" :href="route('transaction_summary.index')">Trades</Link>
                                 </div>
 
                                 <!-- Views -->
@@ -472,7 +471,7 @@ const logout = () => {
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 font-semibold text-black border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" :class="btnSetup">
                                                 Views
 
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -532,9 +531,7 @@ const logout = () => {
                                 </div>
 
                                 <div :class="classesContact">
-                                    <DropdownLink :href="route('contact.index')">
-                                        Contacts
-                                    </DropdownLink>
+                                    <Link :class="btnSetup" :href="route('contact.index')">Contacts</Link>
                                 </div>
 
                                 <!-- Admin Dropdown -->
@@ -543,7 +540,7 @@ const logout = () => {
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 font-semibold text-black border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" :class="btnSetup">
                                             Admin
 
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -577,7 +574,7 @@ const logout = () => {
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border font-semibold text-black border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" :class="btnSetup">
                                                 Reports
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
