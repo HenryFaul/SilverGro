@@ -69,7 +69,7 @@ class PlanningDiaryController extends Controller
 
         $trans_data = TransportTransaction::where('include_in_calculations', '=', 1)->where('contract_type_id', '=', 4)->filter($filters)->with('TransportFinance')->with('TransportDriverVehicle')->with('TransportJob')->with('Customer')->with('Transporter')->get();
 
-        foreach ($trans_data as $trans) {
+   /*     foreach ($trans_data as $trans) {
             $transport_finance = $trans->TransportFinance;
             $transport_job = $trans->TransportJob;
             $customer = $trans->Customer;
@@ -122,6 +122,25 @@ class PlanningDiaryController extends Controller
             $weight_offloaded += $cur_weight_offloaded;
             $planned_tons_in += $transport_finance->weight_ton_incoming;
             $planned_tons_out += $transport_finance->weight_ton_outgoing;
+            $other_costs += ($transport_finance->additional_cost_1 + $transport_finance->additional_cost_2 + $transport_finance->additional_cost_3 + $transport_finance->adjusted_gp);
+
+        }*/
+
+        foreach ($trans_data as $trans) {
+            $transport_finance = $trans->TransportFinance;
+
+            $cur_weight_uploaded=$transport_finance->weight_ton_incoming_actual;
+            $cur_weight_offloaded=$transport_finance->weight_ton_outgoing_actual;
+
+            $weight_uploaded += $cur_weight_uploaded;
+            $weight_offloaded += $cur_weight_offloaded;
+            $planned_tons_in += $transport_finance->weight_ton_incoming;
+            $planned_tons_out += $transport_finance->weight_ton_outgoing;
+
+            $cost_price+=$transport_finance->cost_price;
+            $trans_cost+=$transport_finance->transport_cost;
+            $selling_price+=$transport_finance->selling_price;
+
             $other_costs += ($transport_finance->additional_cost_1 + $transport_finance->additional_cost_2 + $transport_finance->additional_cost_3 + $transport_finance->adjusted_gp);
 
         }

@@ -15,81 +15,81 @@ defineProps({
 
 const classesCustomers = computed(() => {
     return route().current('customer.*') || route().current('customer_parent.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm  focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 const classesSuppliers = computed(() => {
     return route().current('supplier.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 const classesProducts = computed(() => {
     return route().current('product.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 const classesContact = computed(() => {
     return route().current('contact.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 
 const classesTransSummary = computed(() => {
     return route().current('transaction_summary.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm  focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 const classesTransporters = computed(() => {
     return route().current('regular_driver.*') || route().current('transporter.*')  || route().current('regular_vehicle.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm  focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 
 const classesSystemPlayer = computed(() => {
     return route().current('customer.*') || route().current('contact.*') || route().current('supplier.*') || route().current('transporter.*') || route().current('customer_parent.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 const classesViews = computed(() => {
     return route().current('planning.diary') ||route().current('planning.week') ||route().current('transaction_spreadsheet.index')
     ||route().current('debtor.*')  || route().current('pc_overview.index')
     || route().current('sc_overview.index')  || route().current('home_overview.index')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm  focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 
 const classesAdmin= computed(() => {
     return route().current('staff.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 const classesReports = computed(() => {
     return route().current('custom_report.*') || route().current('transport_transaction.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm  focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 
 
 const classesPlanning = computed(() => {
     return route().current('planning.*') || route().current('transport_transaction.*')
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm  focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 const classesSetup = computed(() => {
     return false
-        ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-        : '';
+        ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm  focus:outline-none focus:border-indigo-700 transition'
+        : 'font-semibold text-black text-sm';
 });
 
 
@@ -372,7 +372,7 @@ const logout = () => {
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-semibold text-black rounded-md  bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
                                             Customers
 
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -416,7 +416,7 @@ const logout = () => {
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 font-semibold text-black border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
                                                 Transporters
 
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -465,7 +465,6 @@ const logout = () => {
 
                                 </div>
 
-
                                 <!-- Views -->
                                 <div class="ml-3 relative">
 
@@ -473,7 +472,7 @@ const logout = () => {
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 font-semibold text-black border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
                                                 Views
 
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -538,14 +537,13 @@ const logout = () => {
                                     </DropdownLink>
                                 </div>
 
-
                                 <!-- Admin Dropdown -->
                                 <div class="ml-3 relative">
                                     <div :class="classesAdmin">
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 font-semibold text-black border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
                                             Admin
 
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -579,7 +577,7 @@ const logout = () => {
                                         <Dropdown align="right" width="48">
                                             <template #trigger>
                                             <span  class="inline-flex rounded-md">
-                                            <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
+                                            <button type="button" class="inline-flex items-center px-3 py-2 border font-semibold text-black border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition">
                                                 Reports
                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />

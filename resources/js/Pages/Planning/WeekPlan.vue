@@ -382,7 +382,7 @@ const contractNameOld = (trans) => {
                                 <div class="flex">
                                     <div class="m-2">Per page:</div>
                                     <select v-model="Form.show"
-                                            class="input-filter-l block w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            class="input-filter-l block w-6/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
 
                                         <option :value=1>1</option>
                                         <option :value=5>5</option>
@@ -401,7 +401,7 @@ const contractNameOld = (trans) => {
                             <trade-slide-over :show="viewTradeSlideOver" @close="closeTradeSlideOver"  />
                         </div>
 
-                        <div class="basis-1/2">
+                        <div class="basis-1/2 mt-2">
                             <div class="">
                                 <select v-model="Form.contract_type_id"
                                         class="input-filter-l w-2/6  rounded-md rounded-md shadow-sm border border-gray-300 text-gray-500">
@@ -529,13 +529,19 @@ const contractNameOld = (trans) => {
                                                         </td>
                                                         <td class="py-4 px-6">
 
-                                                            <div v-if="totalWeighBridgeUpload(trans.transport_driver_vehicle)>0">
+                                                            <div v-if="trans.transport_finance.weight_ton_incoming_actual != 0">
+                                                                {{ trans.transport_finance.weight_ton_incoming_actual }}
+                                                            </div>
+                                                            <div v-else>
+                                                                {{ trans.transport_finance.weight_ton_incoming }}
+                                                            </div>
+<!--                                                            <div v-if="totalWeighBridgeUpload(trans.transport_driver_vehicle)>0">
                                                                 {{ totalWeighBridgeUpload(trans.transport_driver_vehicle)}}
                                                             </div>
 
                                                             <div v-else>
                                                                 {{ trans.transport_finance.weight_ton_incoming }}
-                                                            </div>
+                                                            </div>-->
 
 
                                                         </td>
@@ -630,23 +636,16 @@ const contractNameOld = (trans) => {
 
                                                             {{NiceNumber(trans.transport_finance.cost_price_per_ton)}}
 
-
                                                         </td>
                                                         <td class="py-4 px-6 whitespace-nowrap">
-
                                                              {{NiceNumber(trans.transport_finance.selling_price_per_ton)}}
-
                                                         </td>
                                                         <td class="py-4 px-6 whitespace-nowrap">
-
 
                                                             {{NiceNumber(trans.transport_finance.transport_rate_per_ton)}}
-
                                                         </td>
                                                         <td class="py-4 px-6 whitespace-nowrap">
-
                                                             {{ NiceNumber(trans.transport_finance.gross_profit) }}
-
 
                                                         </td>
                                                         <td class="py-4 px-6">
@@ -674,36 +673,45 @@ const contractNameOld = (trans) => {
                                                         </td>
                                                         <td class="py-4 px-6 whitespace-nowrap">
 
-
                                                             <div
                                                                 :class="trans.supplier.terms_of_payment_id === 1? 'p-2 bg-red-600 rounded': ''">
-                                                                {{
-                                                                    NiceNumber(trans.transport_finance.cost_price)
-                                                                }}
+                                                                {{NiceNumber(trans.transport_finance.cost_price)}}
                                                             </div>
-
                                                         </td>
                                                         <td class="py-4 px-6 whitespace-nowrap">
-                                                            {{NiceNumber(trans.transport_finance.transport_rate_per_ton * trans.transport_finance.weight_ton_incoming) }}
+<!--                                                            {{NiceNumber(trans.transport_finance.transport_rate_per_ton * trans.transport_finance.weight_ton_incoming) }}-->
+
+                                                            {{NiceNumber(trans.transport_finance.transport_cost) }}
                                                         </td>
 
                                                         <td class="py-4 px-6 whitespace-nowrap">
 
-                                                            <div v-if="totalWeighBridgeUpload(trans.transport_driver_vehicle)>0">
+<!--                                                            selling price-->
+
+<!--                                                            <div v-if="totalWeighBridgeUpload(trans.transport_driver_vehicle)>0">
                                                                 {{ NiceNumber(totalWeighBridgeUpload(trans.transport_driver_vehicle*trans.transport_finance.selling_price_per_ton))}}
                                                             </div>
                                                             <div v-else>
                                                                 {{NiceNumber(trans.transport_finance.selling_price_per_ton*trans.transport_finance.weight_ton_incoming)}}
+                                                            </div>-->
+
+                                                            <div v-if="trans.transport_finance.weight_ton_incoming_actual>0" >
+                                                                {{NiceNumber(trans.transport_finance.selling_price_actual)}}
                                                             </div>
+
+                                                            <div v-else>
+                                                                {{NiceNumber(trans.transport_finance.selling_price)}}
+                                                            </div>
+
                                                         </td>
 
                                                         <td class="py-4 px-6 whitespace-nowrap">
                                                             {{ trans.transport_finance.gross_profit_percent }} %
                                                         </td>
+
                                                         <td class="py-4 px-6 whitespace-nowrap">
                                                             {{NiceNumber(trans.transport_finance.gross_profit_per_ton) }}
                                                         </td>
-
 
                                                     </tr>
 

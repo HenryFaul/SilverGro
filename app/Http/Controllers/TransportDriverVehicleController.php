@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TransportDriverVehicle;
+use App\Models\TransportFinance;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -93,7 +94,11 @@ class TransportDriverVehicleController extends Controller
         );
 
 
+
+
         if($is_created){
+            $transport_finance = TransportFinance::where('transport_trans_id',$request->transport_trans_id)->first();
+            $transport_finance?->calculateFields();
             $request->session()->flash('flash.bannerStyle', 'success');
             $request->session()->flash('flash.banner', 'Driver Vehicle created');
         }
@@ -195,6 +200,8 @@ class TransportDriverVehicleController extends Controller
 
 
         if($is_updated){
+            $transport_finance = TransportFinance::where('transport_trans_id',$request->transport_trans_id)->first();
+            $transport_finance?->calculateFields();
             $request->session()->flash('flash.bannerStyle', 'success');
             $request->session()->flash('flash.banner', 'Driver Vehicle updated');
         }

@@ -64,6 +64,7 @@ return new class extends Migration
             $table->double('cost_price')->default(0);
             $table->double('cost_price_actual')->default(0);
             $table->double('selling_price')->default(0);
+            $table->double('selling_price_actual')->default(0);
             $table->double('selling_price_2')->default(0);
             $table->double('selling_price_3')->default(0);
             $table->double('selling_price_4')->default(0);

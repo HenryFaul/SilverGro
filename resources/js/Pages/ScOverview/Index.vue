@@ -401,8 +401,8 @@ const getTitle = computed(() => {
 });
 
 
-const header_styler = computed(() => "sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell");
-const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm text-gray-500 lg:table-cell");
+const header_styler = computed(() => "sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-2 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell");
+const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm text-gray-500 lg:table-cell");
 
 
 </script>
@@ -796,11 +796,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-4 text-sm 
                                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{NiceNumber(props.selected_transaction.transport_finance.selling_price)}}</td>
                                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{NiceNumber(props.selected_transaction.transport_finance.gross_profit)}}</td>
                                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{weightRemaining()}} tons</td>
-                                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                                                        <a href="#" class="text-indigo-600 hover:text-indigo-900"
-                                                        >Edit<span class="sr-only">, x</span></a
-                                                        >
-                                                    </td>
+
                                                 </tr>
                                                 </tbody>
                                             </table>

@@ -296,7 +296,7 @@ const closeTradeSlideOver = () => {
 
                             </div>
                         </div>
-                        <div class="basis-1/2">
+                        <div class="basis-1/2 mt-2">
                             <div class="">
                                 {{Form.contract_type_id}}
                                 <select v-model="Form.contract_type_id"
@@ -317,7 +317,7 @@ const closeTradeSlideOver = () => {
                                <div class="flex">
                                    <div class="m-2">Per page: </div>
                                    <select v-model="Form.show"
-                                           class="input-filter-l block w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                           class="input-filter-l block w-6/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
 
                                        <option :value=1>1</option>
                                        <option :value=5>5</option>
@@ -449,7 +449,13 @@ const closeTradeSlideOver = () => {
 
                                                                             <div class="basis-1/4 ml-3 whitespace-nowrap">
 
-                                                                                {{niceWeighUpOrOutgoing(trans)}} Tons
+<!--                                                                                {{niceWeighUpOrOutgoing(trans)}} Tons-->
+                                                                                <div v-if="trans.transport_finance.weight_ton_incoming_actual != 0">
+                                                                                    {{ trans.transport_finance.weight_ton_incoming_actual }} Tons
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    {{ trans.transport_finance.weight_ton_incoming }} Tons
+                                                                                </div>
                                                                             </div>
 
                                                                         </div>
@@ -548,7 +554,13 @@ const closeTradeSlideOver = () => {
                                                                             </div>
 
                                                                             <div class="basis-1/2 ml-6">
-                                                                                {{niceWeighOffOrOutgoing(trans)}} Tons
+<!--                                                                                {{niceWeighOffOrOutgoing(trans)}} Tons-->
+                                                                                <div v-if="trans.transport_finance.weight_ton_outgoing_actual != 0">
+                                                                                    {{ trans.transport_finance.weight_ton_outgoing_actual }} Tons
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    {{ trans.transport_finance.weight_ton_outgoing}} Tons
+                                                                                </div>
                                                                             </div>
 
                                                                         </div>

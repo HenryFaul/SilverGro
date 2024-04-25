@@ -517,28 +517,28 @@ const generateExcel = () => {
                                     <tr  v-for="(transaction, index) in filteredTrans"
                                         :key="transaction.id" class="hover:bg-gray-100 text-sm focus-within:bg-gray-100 ">
 
-                                        <td class="py-4 px-6 whitespace-nowrap">
+                                        <td class="py-1 px-6 whitespace-nowrap">
                                             {{ transaction.id}}
                                         </td>
-                                        <td class="py-4 px-6 ">
+                                        <td class="py-1 px-6 ">
                                             {{transaction.contract_type.name}}
                                         </td>
 
-                                        <td class="py-4 px-6 whitespace-nowrap">
+                                        <td class="py-1 px-6 whitespace-nowrap">
                                             {{ NiceTDate( transaction.transport_date_earliest)}}
                                         </td>
 
-                                        <td class="py-4 px-6 ">
+                                        <td class="py-1 px-6 ">
                                             {{transaction.supplier.last_legal_name}}
                                         </td>
-                                        <td class="py-4 px-6 ">
+                                        <td class="py-1 px-6 ">
                                             {{transaction.customer.last_legal_name}}
                                         </td>
-                                        <td class="py-4 px-6 ">
+                                        <td class="py-1 px-6 ">
                                             {{transaction.transporter.last_legal_name}}
                                         </td>
 
-                                        <td class="py-4 px-6 ">
+                                        <td class="py-1 px-6 ">
                                             {{transaction.product.name}}
                                         </td>
 

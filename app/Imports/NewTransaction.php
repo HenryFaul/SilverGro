@@ -843,6 +843,9 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                         */
 
+                        //calculate margins
+                        $transport_finance->calculateFields();
+
 
                         if (trim($row['transport_delayed']) == 1) {
                             $transport_status
