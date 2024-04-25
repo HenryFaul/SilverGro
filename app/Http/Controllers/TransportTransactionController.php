@@ -303,6 +303,17 @@ class TransportTransactionController extends Controller
             'is_active' => false
         ]);
 
+        $transport_driver_vehicle = TransportDriverVehicle::create(
+            [
+                'transport_trans_id' => $transport_trans->id,
+                'transport_job_id' => $transport_job->id,
+                'regular_driver_id' => 1,
+                'regular_vehicle_id' => 1,
+                'weighbridge_upload_weight' => 0,
+                'weighbridge_offload_weight' => 0,
+            ]
+        );
+
 
         $request->session()->flash('flash.bannerStyle', 'success');
         $request->session()->flash('flash.banner', 'Created:' . $transport_trans->id);
@@ -630,8 +641,8 @@ class TransportTransactionController extends Controller
 
         $update_related_models = 1;
 
-        if (isset($request->update_related_models)){
-            $update_related_models=$request->update_related_models;
+        if (isset($request->update_related_models)) {
+            $update_related_models = $request->update_related_models;
         }
 
         $request->validate([
@@ -659,31 +670,30 @@ class TransportTransactionController extends Controller
             'is_transaction_done' => ['nullable', 'boolean'],
         ]);
 
-    /*    $request->validate([
-            'contract_type_id.id' => ['required', 'integer', 'exists:contract_types,id'],
-            'supplier_id.id' => ['required', 'integer', 'exists:suppliers,id'],
-            'customer_id.id' => ['required', 'integer', 'exists:customers,id'],
-            'transporter_id.id' => ['required', 'integer', 'exists:transporters,id'],
-            'product_id.id' => ['required', 'integer', 'exists:products,id'],
-            'include_in_calculations' => ['nullable', 'boolean'],
-            'transport_date_earliest' => ['required', 'date'],
-            'transport_date_latest' => ['required', 'date'],
-            'delivery_notes' => ['nullable'],
-            'product_notes' => ['nullable'],
-            'customer_notes' => ['nullable'],
-            'suppliers_notes' => ['nullable'],
-            'traders_notes' => ['nullable'],
-            'transport_notes' => ['nullable'],
-            'pricing_notes' => ['nullable'],
-            'process_notes' => ['nullable'],
-            'document_notes' => ['nullable'],
-            'transaction_notes' => ['nullable'],
-            'traders_notes_supplier' => ['nullable'],
-            'traders_notes_customer' => ['nullable'],
-            'traders_notes_transport' => ['nullable'],
-            'is_transaction_done' => ['nullable', 'boolean'],
-        ]);*/
-
+        /*    $request->validate([
+                'contract_type_id.id' => ['required', 'integer', 'exists:contract_types,id'],
+                'supplier_id.id' => ['required', 'integer', 'exists:suppliers,id'],
+                'customer_id.id' => ['required', 'integer', 'exists:customers,id'],
+                'transporter_id.id' => ['required', 'integer', 'exists:transporters,id'],
+                'product_id.id' => ['required', 'integer', 'exists:products,id'],
+                'include_in_calculations' => ['nullable', 'boolean'],
+                'transport_date_earliest' => ['required', 'date'],
+                'transport_date_latest' => ['required', 'date'],
+                'delivery_notes' => ['nullable'],
+                'product_notes' => ['nullable'],
+                'customer_notes' => ['nullable'],
+                'suppliers_notes' => ['nullable'],
+                'traders_notes' => ['nullable'],
+                'transport_notes' => ['nullable'],
+                'pricing_notes' => ['nullable'],
+                'process_notes' => ['nullable'],
+                'document_notes' => ['nullable'],
+                'transaction_notes' => ['nullable'],
+                'traders_notes_supplier' => ['nullable'],
+                'traders_notes_customer' => ['nullable'],
+                'traders_notes_transport' => ['nullable'],
+                'is_transaction_done' => ['nullable', 'boolean'],
+            ]);*/
 
 
         $is_updated = $transportTransaction->update(
@@ -725,8 +735,7 @@ class TransportTransactionController extends Controller
         $transport_invoice->save();
 
 
-
-        if($update_related_models==1){
+        if ($update_related_models == 1) {
             $transport_finance = ($transportTransaction->TransportFinance);
             $transport_finance->CalculateFields();
 
@@ -1095,7 +1104,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($deal_ticket)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'deal_ticket_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'deal_ticket_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1111,7 +1120,7 @@ class TransportTransactionController extends Controller
 
                             //dd($trans->DealTicket);
 
-                            if (isset($trans->DealTicket->$attribute)){
+                            if (isset($trans->DealTicket->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->DealTicket->$attribute);
                             }
 
@@ -1136,7 +1145,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($transport_finance)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'trans_finance_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'trans_finance_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1152,7 +1161,7 @@ class TransportTransactionController extends Controller
 
                             //dd($trans->DealTicket);
 
-                            if (isset($trans->TransportFinance->$attribute)){
+                            if (isset($trans->TransportFinance->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->TransportFinance->$attribute);
                             }
 
@@ -1177,7 +1186,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($transport_invoice)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'trans_invoice_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'trans_invoice_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1192,7 +1201,7 @@ class TransportTransactionController extends Controller
                             $attribute = $custom_model->attribute_name;
 
 
-                            if (isset($trans->TransportInvoice->$attribute)){
+                            if (isset($trans->TransportInvoice->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->TransportInvoice->$attribute);
                             }
 
@@ -1217,7 +1226,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($transport_invoice_details)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'trans_invoice_details_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'trans_invoice_details_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1232,7 +1241,7 @@ class TransportTransactionController extends Controller
                             $attribute = $custom_model->attribute_name;
 
 
-                            if (isset($trans->TransportInvoice->TransportInvoiceDetails->$attribute)){
+                            if (isset($trans->TransportInvoice->TransportInvoiceDetails->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->TransportInvoice->TransportInvoiceDetails->$attribute);
                             }
 
@@ -1257,7 +1266,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($transport_invoice_details)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'trans_invoice_details_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'trans_invoice_details_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1272,7 +1281,7 @@ class TransportTransactionController extends Controller
                             $attribute = $custom_model->attribute_name;
 
 
-                            if (isset($trans->TransportInvoice->TransportInvoiceDetails->$attribute)){
+                            if (isset($trans->TransportInvoice->TransportInvoiceDetails->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->TransportInvoice->TransportInvoiceDetails->$attribute);
                             }
 
@@ -1297,7 +1306,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($transport_job)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'trans_job_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'trans_job_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1312,7 +1321,7 @@ class TransportTransactionController extends Controller
                             $attribute = $custom_model->attribute_name;
 
 
-                            if (isset($trans->TransportJob->$attribute)){
+                            if (isset($trans->TransportJob->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->TransportJob->$attribute);
                             }
 
@@ -1337,7 +1346,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($transport_load)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'trans_load_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'trans_load_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1352,7 +1361,7 @@ class TransportTransactionController extends Controller
                             $attribute = $custom_model->attribute_name;
 
 
-                            if (isset($trans->TransportLoad->$attribute)){
+                            if (isset($trans->TransportLoad->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->TransportLoad->$attribute);
                             }
 
@@ -1377,7 +1386,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($customer)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'customer_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'customer_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1392,7 +1401,7 @@ class TransportTransactionController extends Controller
                             $attribute = $custom_model->attribute_name;
 
 
-                            if (isset($trans->Customer->$attribute)){
+                            if (isset($trans->Customer->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->Customer->$attribute);
                             }
 
@@ -1417,7 +1426,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($customer_parent)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'customer_parent_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'customer_parent_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1432,7 +1441,7 @@ class TransportTransactionController extends Controller
                             $attribute = $custom_model->attribute_name;
 
 
-                            if (isset($trans->Customer->CustomerParent->$attribute)){
+                            if (isset($trans->Customer->CustomerParent->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->Customer->CustomerParent->$attribute);
                             }
 
@@ -1457,7 +1466,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($product)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'product_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'product_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1472,7 +1481,7 @@ class TransportTransactionController extends Controller
                             $attribute = $custom_model->attribute_name;
 
 
-                            if (isset($trans->Product->$attribute)){
+                            if (isset($trans->Product->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->Product->$attribute);
                             }
 
@@ -1497,7 +1506,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($supplier)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'supplier_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'supplier_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1511,7 +1520,7 @@ class TransportTransactionController extends Controller
                             $trans = $transactions[$pos];
                             $attribute = $custom_model->attribute_name;
 
-                            if (isset($trans->Supplier->$attribute)){
+                            if (isset($trans->Supplier->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->Supplier->$attribute);
                             }
 
@@ -1536,7 +1545,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($transporter)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'transporter_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'transporter_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1550,7 +1559,7 @@ class TransportTransactionController extends Controller
                             $trans = $transactions[$pos];
                             $attribute = $custom_model->attribute_name;
 
-                            if (isset($trans->Transporter->$attribute)){
+                            if (isset($trans->Transporter->$attribute)) {
                                 $sheet->setCellValue([$global_col, $r], $trans->Transporter->$attribute);
                             }
 
@@ -1575,7 +1584,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($transport_driver_vehicle)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'driver_vehicle_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'driver_vehicle_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1589,7 +1598,7 @@ class TransportTransactionController extends Controller
                             $trans = $transactions[$pos];
                             $attribute = $custom_model->attribute_name;
 
-                            if (isset($trans->TransportJob->TransportDriverVehicle[0])){
+                            if (isset($trans->TransportJob->TransportDriverVehicle[0])) {
 
                                 $sheet->setCellValue([$global_col, $r], $trans->TransportJob->TransportDriverVehicle[0]->$attribute);
                             }
@@ -1615,7 +1624,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($regular_driver)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'driver_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'driver_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1629,7 +1638,7 @@ class TransportTransactionController extends Controller
                             $trans = $transactions[$pos];
                             $attribute = $custom_model->attribute_name;
 
-                            if (isset($trans->TransportJob->TransportDriverVehicle[0]->Driver)){
+                            if (isset($trans->TransportJob->TransportDriverVehicle[0]->Driver)) {
 
                                 $sheet->setCellValue([$global_col, $r], $trans->TransportJob->TransportDriverVehicle[0]->Driver->$attribute);
                             }
@@ -1656,7 +1665,7 @@ class TransportTransactionController extends Controller
                 if ($custom_model->class_name === get_class($regular_vehicle)) {
 
                     //only once set the column name
-                    $sheet->setCellValue([$global_col, 1], 'vehicle_'. $custom_model->attribute_name);
+                    $sheet->setCellValue([$global_col, 1], 'vehicle_' . $custom_model->attribute_name);
 
                     //extract transactions for that attribute
                     //loop over trans
@@ -1670,7 +1679,7 @@ class TransportTransactionController extends Controller
                             $trans = $transactions[$pos];
                             $attribute = $custom_model->attribute_name;
 
-                            if (isset($trans->TransportJob->TransportDriverVehicle[0]->Vehicle)){
+                            if (isset($trans->TransportJob->TransportDriverVehicle[0]->Vehicle)) {
 
                                 $sheet->setCellValue([$global_col, $r], $trans->TransportJob->TransportDriverVehicle[0]->Vehicle->$attribute);
                             }
@@ -1695,10 +1704,10 @@ class TransportTransactionController extends Controller
                 //confirm that model is correct
                 if ($custom_model->class_name === get_class($transport_status)) {
 
-                    if($custom_model->attribute_name==='status_entity_id'){
+                    if ($custom_model->attribute_name === 'status_entity_id') {
 
                         //only once set the column name
-                        $sheet->setCellValue([$global_col, 1], 'alert_'.$custom_model->attribute_name);
+                        $sheet->setCellValue([$global_col, 1], 'alert_' . $custom_model->attribute_name);
 
                         //extract transactions for that attribute
                         //loop over trans
@@ -1714,9 +1723,9 @@ class TransportTransactionController extends Controller
 
                                 $val = '';
 
-                                foreach ($transport_status as $status){
+                                foreach ($transport_status as $status) {
 
-                                    $val .= $status->StatusEntity->entity.'-'.$status->StatusType->type.', ';
+                                    $val .= $status->StatusEntity->entity . '-' . $status->StatusType->type . ', ';
                                 }
 
 
@@ -1732,17 +1741,15 @@ class TransportTransactionController extends Controller
                     }
 
 
-
                 }
 
 
             }
 
 
-
-             for ($x = 1; $x < $global_col; $x++) {
-                 $sheet->getStyleByColumnAndRow($x, 1)->applyFromArray($styleArray1);
-             }
+            for ($x = 1; $x < $global_col; $x++) {
+                $sheet->getStyleByColumnAndRow($x, 1)->applyFromArray($styleArray1);
+            }
 
 
             /*   $sheet
