@@ -460,6 +460,18 @@ class TransportTransactionController extends Controller
             'status_id' => $transport_invoice_details_to_clone->status_id,
         ]);
 
+        $transport_driver_vehicle = TransportDriverVehicle::create(
+            [
+                'transport_trans_id' => $transport_trans->id,
+                'transport_job_id' => $transport_job->id,
+                'regular_driver_id' => 1,
+                'regular_vehicle_id' => 1,
+                'weighbridge_upload_weight' => 0,
+                'weighbridge_offload_weight' => 0,
+            ]
+        );
+
+
         //Orders
 
         $transport_order = TransportOrder::create([
