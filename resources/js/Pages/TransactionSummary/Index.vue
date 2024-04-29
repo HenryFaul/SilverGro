@@ -5695,7 +5695,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">Total Supplier Cost</dt>
                                                         <dd class="text-gray-700">
-                                                            {{ NiceNumber(selected_transaction.transport_finance.total_cost_price) }}
+                                                            {{ NiceNumber(selected_transaction.transport_finance./**/cost_price) }}
                                                         </dd>
                                                     </div>
 
