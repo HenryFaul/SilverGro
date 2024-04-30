@@ -97,6 +97,34 @@ class TransportApprovalController extends Controller
         }
 
 
+        //activate if all approvals are done
+        if (true){
+            $is_updated = false;
+            if (true){
+                $is_updated = $deal_ticket->update(['is_active' =>1]);
+
+                if ($deal_ticket->is_active){
+                    $transport_transaction = $deal_ticket->TransportTransaction;
+                    if ($transport_transaction->a_mq == null){
+
+                        $max_a_mq = TransportTransaction::max("a_mq");
+
+                        if($max_a_mq == null){
+                            $max_a_mq = TransportTransaction::max("id");
+                        }
+                        if (is_numeric($max_a_mq)){
+                            $transport_transaction->a_mq=($max_a_mq+1);
+                            $transport_transaction->save();
+                        }
+
+
+                    }
+                }
+            }
+
+        }
+
+
         $request->session()->flash('flash.bannerStyle', 'success');
         $request->session()->flash('flash.banner', 'Approval Updated');
 
@@ -116,9 +144,9 @@ class TransportApprovalController extends Controller
         $is_approved = $deal_ticket->is_approved;
 
 
-        $request->validate([
+   /*     $request->validate([
             'is_active'=>['nullable','boolean',Rule::prohibitedIf(!$can_approve),Rule::prohibitedIf(!$is_approved)],
-        ],['is_active'=>'You need permissions to activate a deal ticket & must be approved!']);
+        ],['is_active'=>'You need permissions to activate a deal ticket & must be approved!']);*/
 
         $is_updated = false;
 

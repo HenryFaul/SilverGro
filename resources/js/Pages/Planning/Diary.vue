@@ -394,10 +394,18 @@ const closeTradeSlideOver = () => {
                                                                 <div class="">
                                                                     <div>
                                                                         <div class="font-bold underline">
-                                                                            <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: trans.id }">{{ contractName(trans) }}</Link>
+                                                                            <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: trans.id }">
+                                                                                <span v-if="trans.a_mq">
+                                                                                MQ{{trans.a_mq}}
+                                                                                </span>
+                                                                                <span v-else>
+                                                                                 ID:{{trans.id}}
+                                                                                </span>
+                                                                            </Link>
                                                                         </div>
-                                                                        <div class="italic">{{ contractNameOld(trans) }}</div>
-
+                                                                        <div v-if="trans.old_id" class="italic">
+                                                                            (OLD:{{ trans.old_id }})
+                                                                        </div>
                                                                     </div>
                                                                     <div class="mt-3 font-bold">
                                                                         <span>GP: </span> <span>{{NiceNumber(trans.transport_finance.gross_profit)}}</span>
@@ -485,11 +493,10 @@ const closeTradeSlideOver = () => {
                                                                                     <div
                                                                                         v-for="(item,index) of trans.transport_driver_vehicle">
 
-
                                                                                         <div v-if="item.is_delivered">
                                                                                             <div v-if="item.is_delivered">
                                                                                                 <base-tooltip
-                                                                                                    :content='toolTipGen("Loaded",index)'>
+                                                                                                    :content='toolTipGen("Delivered",index)'>
                                                                                                     <icon name="truck"
                                                                                                           class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse"/>
                                                                                                 </base-tooltip>
@@ -591,8 +598,6 @@ const closeTradeSlideOver = () => {
                                                                                 <div v-if="trans.transport_driver_vehicle">
                                                                                     <div
                                                                                         v-for="(item,index) of trans.transport_driver_vehicle">
-
-
                                                                                         <div v-if="item.is_loaded">
                                                                                             <div v-if="item.is_loaded">
                                                                                                 <base-tooltip

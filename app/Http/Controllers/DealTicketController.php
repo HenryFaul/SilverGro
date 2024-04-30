@@ -84,9 +84,9 @@ class DealTicketController extends Controller
 
         $deal_ticket = $transport_trans->DealTicket;
 
-        if (!($deal_ticket->is_active)){
+      /*  if (!($deal_ticket->is_active)){
             abort(403);
-        }
+        }*/
 
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');

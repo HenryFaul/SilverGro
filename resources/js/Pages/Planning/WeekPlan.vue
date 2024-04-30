@@ -507,22 +507,21 @@ const contractNameOld = (trans) => {
                                                                 </base-tooltip>
                                                             </div>
 
-
                                                         </td>
                                                         <td class="py-4 px-6">
-
                                                             {{ NiceTDate(trans.transport_date_earliest) }}
-
                                                         </td>
                                                         <td class="py-4 px-6">
 
                                                             <div class="font-bold">
-                                                            <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: trans.id }">  {{contractName(trans)}}</Link>
+                                                            <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: trans.id }">
+                                                                <span v-if="trans.a_mq">MQ{{trans.a_mq}}</span>
+                                                                <span v-else>ID:{{trans.id}}</span>
+                                                            </Link>
                                                             </div>
-                                                            <div class="italic">
-                                                                {{contractNameOld(trans)}}
+                                                            <div v-if="trans.old_id" class="italic">
+                                                                (OLD:{{ trans.old_id }})
                                                             </div>
-
                                                         </td>
                                                         <td class="py-4 px-6">
                                                             {{ trans.product.name }}
@@ -542,7 +541,6 @@ const contractNameOld = (trans) => {
                                                             <div v-else>
                                                                 {{ trans.transport_finance.weight_ton_incoming }}
                                                             </div>-->
-
 
                                                         </td>
                                                         <td class="py-4 px-6">

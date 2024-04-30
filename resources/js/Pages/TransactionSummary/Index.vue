@@ -1393,9 +1393,9 @@ const createStatus = () => {
 const getTitle = computed(() => {
 
     if(props.selected_transaction.a_mq !=null){
-        return "MQ"+props.selected_transaction.id;
+        return "MQ"+props.selected_transaction.a_mq;
     } else{
-        return props.selected_transaction != null ? "ID:" + props.selected_transaction.id : "Trans Summary";
+        return  "ID:" + props.selected_transaction.id;
     }
 
 });
@@ -1659,7 +1659,7 @@ const doCreatedTrade = (_id) => {
                                                             MQ{{ transaction.a_mq }}
                                                         </div>
                                                         <div class="font-light text-sm italic">(ID:{{ transaction.id }})</div>
-                                                        <div class="font-light text-sm italic">(OLD:{{ transaction.old_id }})</div>
+                                                        <div v-if="transaction.old_id" class="font-light text-sm italic">(OLD:{{ transaction.old_id }})</div>
 
                                                     </td>
                                                     <td :class="row_styler">
@@ -6454,19 +6454,22 @@ const doCreatedTrade = (_id) => {
                                                              class=" mt-3">
                                                             <div class="text-green-400">Deal Ticket is Active</div>
                                                             <div v-if="selected_transaction.a_mq"
-                                                                 class="font-bold text-indigo-400">Approved MQ:
+                                                                 class="font-bold text-indigo-400">MQ:
                                                                 {{ selected_transaction.a_mq }}
                                                             </div>
                                                             <div class=" text-indigo-400">
-                                                                {{ selected_transaction.contract_type.name }}{{ selected_transaction.id }}
+                                                                ID:{{ selected_transaction.id }}
                                                             </div>
-                                                            <div v-if="selected_transaction.contract_type_id ===4"
+                                                            <div class="mb-2 text-gray-400" v-if="selected_transaction.old_id">
+                                                                (OLD:{{ selected_transaction.old_id }})
+                                                            </div>
+<!--                                                            <div v-if="selected_transaction.contract_type_id ===4"
                                                                  class="mb-2 text-gray-400">OLD
                                                                 {{ selected_transaction.contract_type.name }}{{ selected_transaction.deal_ticket.old_id }}
                                                             </div>
                                                             <div v-else class="mb-2 text-gray-400">
                                                                 {{ selected_transaction.contract_type.name }}{{ selected_transaction.old_id }}
-                                                            </div>
+                                                            </div>-->
                                                         </div>
 
                                                         <div v-else class="text-red-400 mt-3">
@@ -6688,13 +6691,13 @@ const doCreatedTrade = (_id) => {
                                                             Approve
                                                         </SecondaryButton>
 
-                                                        <SecondaryButton @click="createActivation" class="m-1">
+<!--                                                        <SecondaryButton @click="createActivation" class="m-1">
                                                             Activate
-                                                        </SecondaryButton>
+                                                        </SecondaryButton>-->
 
                                                         <a :href="'/pdf_report/deal_ticket_view/' + props.selected_transaction.id"
                                                            target="_blank"
-                                                           class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                           class="ml-3 mt-2 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                                             View (working doc)
                                                         </a>
                                                     </div>
@@ -8008,7 +8011,7 @@ const doCreatedTrade = (_id) => {
                                                             </dd>
                                                         </div>
 
-                                                        <div class="flex justify-between gap-x-4 py-3">
+<!--                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Working Document</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <a :href="'/pdf_report/purchase_order_view/' + props.selected_transaction.id"
@@ -8017,7 +8020,10 @@ const doCreatedTrade = (_id) => {
                                                                     View
                                                                 </a>
                                                             </dd>
-                                                        </div>
+                                                        </div>-->
+
+
+
                                                         <!--                                                        <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Generate Final</dt>
                                                                                                                     <dd class="flex items-start gap-x-2">
@@ -8169,7 +8175,7 @@ const doCreatedTrade = (_id) => {
                                                             </dd>
                                                         </div>
 
-                                                        <div class="flex justify-between gap-x-4 py-3">
+<!--                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Working Document</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <a :href="'/pdf_report/sales_order_view/' + props.selected_transaction.id"
@@ -8178,7 +8184,7 @@ const doCreatedTrade = (_id) => {
                                                                     View
                                                                 </a>
                                                             </dd>
-                                                        </div>
+                                                        </div>-->
                                                         <!--                                                        <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Generate Final</dt>
                                                                                                                     <dd class="flex items-start gap-x-2">
