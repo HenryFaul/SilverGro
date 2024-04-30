@@ -29,7 +29,7 @@ class TransportFinance extends Model
         'transport_cost_4', 'transport_cost_5', 'total_cost_price', 'additional_cost_1', 'additional_cost_2', 'additional_cost_3',
         'additional_cost_desc_1', 'additional_cost_desc_2', 'additional_cost_desc_3', 'gross_profit', 'gross_profit_percent',
         'gross_profit_per_ton', 'total_supplier_comm', 'total_customer_comm', 'total_comm', 'adjusted_gp', 'adjusted_gp_notes',
-        'cost_price_actual','selling_price_actual', 'cost_price_per_ton_actual', 'selling_price_per_ton_actual', 'transport_cost_actual', 'weight_ton_incoming_actual', 'weight_ton_outgoing_actual', 'total_cost_price_actual', 'gross_profit_actual',
+        'cost_price_actual', 'selling_price_actual', 'cost_price_per_ton_actual', 'selling_price_per_ton_actual', 'transport_cost_actual', 'weight_ton_incoming_actual', 'weight_ton_outgoing_actual', 'total_cost_price_actual', 'gross_profit_actual',
         'gross_profit_percent_actual', 'gross_profit_per_ton_actual', 'transport_rate_per_ton_actual'
     ];
 
@@ -77,7 +77,6 @@ class TransportFinance extends Model
                 $actual_tons_in += $driver_vehicle->weighbridge_upload_weight;
                 $actual_tons_out += $driver_vehicle->weighbridge_offload_weight;
             }
-
         }
 
 
@@ -130,12 +129,14 @@ class TransportFinance extends Model
         $transport_cost = 0;
         $transport_rate_per_ton = 0;
 
+
         if ($transport_Finance->transport_rate_basis_id === 3) {
             $transport_cost = $transport_Finance->transport_rate;
-            $transport_rate_per_ton = $transport_cost;
+            $transport_rate_per_ton = $transport_cost/($weight_ton_incoming>0?$weight_ton_incoming:1);
             //actual
             $transport_cost_actual = $transport_Finance->transport_rate;
-            $transport_rate_per_ton_actual = $transport_cost_actual;
+            $transport_rate_per_ton_actual = $transport_cost_actual/($actual_tons_in > 0 ? $actual_tons_in : 1);
+
         } else if ($weight_ton_incoming > 0) {
             $transport_cost = $transport_Finance->transport_rate * $weight_ton_incoming;
             $transport_rate_per_ton = $transport_cost / $weight_ton_incoming;
@@ -143,7 +144,6 @@ class TransportFinance extends Model
             //actual
             $transport_cost_actual = $transport_Finance->transport_rate * $actual_tons_in;
             $transport_rate_per_ton_actual = $transport_cost_actual / ($actual_tons_in > 0 ? $actual_tons_in : 1);
-
 
         } else {
             $transport_cost = $transport_Finance->transport_rate * $weight_ton_outgoing;
@@ -197,7 +197,7 @@ class TransportFinance extends Model
             $gross_profit_percent = round($gross_profit / $selling_price * 100, 4);
 
             if ($actual_tons_in > 0) {
-                $gross_profit_percent_actual = round($gross_profit_actual / ($selling_price_actual>0?$selling_price_actual:1) * 100, 4);
+                $gross_profit_percent_actual = round($gross_profit_actual / ($selling_price_actual > 0 ? $selling_price_actual : 1) * 100, 4);
             } else {
                 $gross_profit_percent_actual = 0;
             }
