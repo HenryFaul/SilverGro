@@ -79,16 +79,20 @@ class TransportFinance extends Model
             }
         }
 
-
         //selling_price = no_units_outgoing * selling_price_per_unit
         //dd($transport_Finance->selling_price_per_unit);
         $selling_price = $transport_Load->no_units_outgoing * $transport_Finance->selling_price_per_unit;
-        $selling_price_actual = $actual_tons_out * $transport_Finance->selling_price_per_unit;
+
+        //need to convert tons to the billing units
+        //$weight_ton_outgoing = $no_units_outgoing_total * ($billing_units_outgoing_id->kgs) / 1000;
+        //$selling_price_actual = $actual_tons_out * $transport_Finance->selling_price_per_unit;
+        $selling_price_actual = ($actual_tons_out/($transport_Load->BillingUnitsOutgoing->kgs)*1000 * $transport_Finance->selling_price_per_unit);
 
 
         //cost_price = no_units_incoming * cost_price_per_unit
         $cost_price = $transport_Load->no_units_incoming * $transport_Finance->cost_price_per_unit;
-        $cost_price_actual = $actual_tons_in * $transport_Finance->cost_price_per_unit;
+        //$cost_price_actual = $actual_tons_in * $transport_Finance->cost_price_per_unit;
+        $cost_price_actual = ($actual_tons_in/($transport_Load->BillingUnitsIncoming->kgs)*1000 * $transport_Finance->cost_price_per_unit);
 
         //Update cost price
 
