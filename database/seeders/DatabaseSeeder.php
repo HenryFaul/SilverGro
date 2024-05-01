@@ -396,9 +396,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-
-
-
         $henry_user->assignRole('SystemTesterRole');
         $henry_user->assignRole('TraderRole');
         $henry_user->assignRole('AdminRole');

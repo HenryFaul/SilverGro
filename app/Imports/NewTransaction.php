@@ -127,13 +127,17 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         default => 1,
                     };
 
-                    $exists = TransportTransaction::where('old_id', '=', $conv_old_id)->exists();
+                    //deal_ticket
+                    $old_id_or_deal_ticket = $conv_contract_type_id === 4? $conv_old_deal_ticket : $conv_old_id;
+                    $old_id_or_deal_ticket = is_numeric($old_id_or_deal_ticket)? $old_id_or_deal_ticket:0;
+
+                    $exists = TransportTransaction::where('old_id', '=', $old_id_or_deal_ticket)->exists();
 
 
                     if(!$exists){
                         //create transaction
                         $transport_trans = TransportTransaction::create([
-                            'old_id' => $conv_old_id,
+                            'old_id' => $old_id_or_deal_ticket,
                             'contract_type_id' => $conv_contract_type_id,
                             'contract_no' => $conv_contract_no,
                             'supplier_id' => $found_supplier_id,
