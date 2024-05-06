@@ -24,6 +24,7 @@ use App\Models\TransLink;
 use App\Models\Transporter;
 use App\Models\TransportRateBasis;
 use App\Models\TransportTransaction;
+use App\Models\VehicleType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
@@ -73,7 +74,7 @@ class TransactionSummaryController extends Controller
             ->with('Customer_3',fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_4',fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_5',fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
-            ->with('TransportFinance')
+            ->with('TransportFinance')->with('Transporter')
             ->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))->with('AssignedUserComm', fn($query) => $query->with('AssignedUserSupplier')->with('AssignedUserCustomer'))
             ->with('TransportJob', fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo')
                 ->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle', fn($query) => $query->with('VehicleType'))))->first();
@@ -119,6 +120,7 @@ class TransactionSummaryController extends Controller
         $all_invoice_statuses = InvoiceStatus::all();
 
         $all_terms_of_payments = TermsOfPayment::all();
+        $all_vehicle_types= VehicleType::all();
 
         $linked_trans = null;
 
@@ -162,6 +164,7 @@ class TransactionSummaryController extends Controller
                 'loading_hour_options' => $loading_hour_options,
                 'all_drivers' => $all_drivers,
                 'all_vehicles' => $all_vehicles,
+                'all_vehicle_types'=>$all_vehicle_types,
                 'all_transport_rates' => $all_transport_rates,
                 'all_status_entities' => $all_status_entities,
                 'all_status_types' => $all_status_types,
@@ -388,6 +391,71 @@ class TransactionSummaryController extends Controller
             ])
         );
 
+
+        //transport driver vehicle update
+
+        $transportDriverVehicle = $transportJob->TransportDriverVehicle[0];
+
+        $request->validate([
+            'regular_driver_id' => ['required', 'integer','exists:regular_drivers,id'],
+            'regular_vehicle_id' => ['required', 'integer','exists:regular_vehicles,id'],
+            'weighbridge_upload_weight' => ['required','numeric'],
+            'weighbridge_offload_weight' => ['required','numeric'],
+            'is_cancelled' => ['required','boolean'],
+            'is_loaded' => ['required','boolean'],
+            'is_onroad' => ['required','boolean'],
+            'is_delivered' => ['required','boolean'],
+            'is_transport_scheduled' => ['required','boolean'],
+            'is_paid' => ['required','boolean'],
+            'is_payment_overdue' => ['required','boolean'],
+            'traders_notes' => ['nullable','string'],
+            'operations_alert_notes' => ['nullable','string'],
+            'driver_vehicle_loading_number' => ['nullable','string']
+        ]);
+
+        $cur_date = (Carbon::now())->toDateString();
+
+        //if variance in weight
+
+        $is_weighbridge_variance = !(($request->weighbridge_upload_weight == $request->weighbridge_offload_weight));
+        //Stamps if changed
+        $date_cancelled = $request->is_cancelled && (!($transportDriverVehicle->is_cancelled)) ? $cur_date : $transportDriverVehicle->date_cancelled;
+        $date_loaded = $request->is_loaded && (!($transportDriverVehicle->is_loaded)) ? $cur_date : $transportDriverVehicle->date_loaded;
+        $date_onroad = $request->is_onroad && (!($transportDriverVehicle->is_onroad)) ? $cur_date : $transportDriverVehicle->date_onroad;
+        $date_delivered = $request->is_delivered && (!($transportDriverVehicle->is_delivered)) ? $cur_date : $transportDriverVehicle->date_delivered;
+        $date_scheduled = $request->is_transport_scheduled && (!($transportDriverVehicle->is_transport_scheduled)) ? $cur_date : $transportDriverVehicle->date_scheduled;
+        $date_paid = $request->is_paid && (!($transportDriverVehicle->is_paid)) ? $cur_date : $transportDriverVehicle->date_paid ;
+        $date_payment_overdue = $request->is_payment_overdue && (!($transportDriverVehicle->is_payment_overdue)) ? $cur_date : $transportDriverVehicle->date_payment_overdue;
+
+        $is_updated = $transportDriverVehicle->update(
+            [
+                'regular_driver_id' => $request->regular_driver_id,
+                'regular_vehicle_id' => $request->regular_vehicle_id,
+                'weighbridge_upload_weight' => $request->weighbridge_upload_weight,
+                'weighbridge_offload_weight' => $request->weighbridge_offload_weight,
+                'is_cancelled' => $request->is_cancelled,
+                'is_loaded' => $request->is_loaded,
+                'is_onroad' => $request->is_onroad,
+                'is_delivered' => $request->is_delivered,
+                'is_transport_scheduled' => $request->is_transport_scheduled,
+                'is_paid' => $request->is_paid,
+                'is_payment_overdue' => $request->is_payment_overdue,
+                'traders_notes' => $request->traders_notes,
+                'operations_alert_notes' => $request->operations_alert_notes,
+                'is_weighbridge_variance' => $is_weighbridge_variance,
+                'date_cancelled' => $date_cancelled,
+                'date_loaded' =>  $date_loaded,
+                'date_onroad' => $date_onroad,
+                'date_delivered' => $date_delivered,
+                'date_scheduled' => $date_scheduled,
+                'date_paid' => $date_paid,
+                'date_payment_overdue' => $date_payment_overdue,
+                'driver_vehicle_loading_number'=>$request->driver_vehicle_loading_number,
+            ]
+        );
+
+
+        //Transport Finance
         $transportFinance = $transportTransaction->TransportFinance;
 
         $user = auth()->user();
@@ -487,6 +555,28 @@ class TransactionSummaryController extends Controller
             $invoice_pay_by_date = $invoice_date->addDays($terms_of_payment_days);
         }
 
+
+        $invoice_balance=0;
+        $invoice_overdue=0;
+
+        if ($request->invoice_amount_paid < $request->invoice_amount){
+
+            $invoice_balance = ($request->invoice_amount - $request->invoice_amount_paid);
+
+            $customer = Customer::where('id',$request->customer_id['id'])->first();
+
+            $day_to_add = $customer->TermsOfPayment->days;
+            $invoice_date = Carbon::create($transportInvoiceDetails->invoice_date);
+            $adjusted_date = $invoice_date->addDays($day_to_add);
+
+            if($adjusted_date < $cur_date){
+                $invoice_overdue = $invoice_balance;
+            }
+
+
+        }
+
+
         $transportInvoiceDetails->update(
             [
                 'is_invoiced' => $request->is_invoiced,
@@ -500,7 +590,8 @@ class TransactionSummaryController extends Controller
                 'invoice_amount_paid' => $request->invoice_amount_paid,
                 'status_id' => $request->status_id,
                 'notes' => $request->notes,
-
+                'overdue'=>$invoice_overdue,
+                'outstanding'=>$invoice_balance
             ]);
 
 

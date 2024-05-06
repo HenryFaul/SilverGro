@@ -220,6 +220,13 @@ Route::middleware([
     Route::resource('transport_driver_vehicle', TransportDriverVehicleController::class)->middleware('auth')
         ->only(['destroy', 'update', 'store']);
 
+    //update specific items
+
+    Route::put('/transport_driver_vehicle/update_state/{transport_driver_vehicle}', [TransportDriverVehicleController::class, 'updateState'])->middleware('auth')->name('transport_driver_vehicle.update.state');
+    Route::put('/transport_driver_vehicle/update_load/{transport_driver_vehicle}', [TransportDriverVehicleController::class, 'updateLoad'])->middleware('auth')->name('transport_driver_vehicle.update.load');
+    Route::put('/transport_driver_vehicle/update_driver/{transport_driver_vehicle}', [TransportDriverVehicleController::class, 'updateDriverVehicle'])->middleware('auth')->name('transport_driver_vehicle.update.driver');
+
+
     //Assigned User Comm
 
     Route::resource('assigned_user_comm', AssignedUserCommController::class)->middleware('auth')

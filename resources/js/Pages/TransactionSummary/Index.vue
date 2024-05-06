@@ -7,6 +7,10 @@ import {debounce, throttle} from 'lodash'
 import PaginationModified from "@/Components/UI/PaginationModified.vue";
 import Icon from "@/Components/Icon.vue";
 import TradeSlideOver from "@/Components/UI/TradeSlideOver.vue";
+import DriverVehicleComponent from "@/Components/UI/DriverVehicleComponent.vue";
+import DriverVehicleStateComponent from "@/Components/UI/DriverVehicleStateComponent.vue";
+import DriverVehicleLoadComponent from "@/Components/UI/DriverVehicleLoadComponent.vue";
+
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
@@ -80,8 +84,8 @@ let NiceDay = (_date) => {
 let NiceTDate = (date) => {
     const _date = new Date(date);
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: 'Africa/Johannesburg'})).toUpperCase();
-    const dayString = (_date.toLocaleString('en', {weekday: 'long', timeZone: 'Africa/Johannesburg'})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: 'Africa/Johannesburg'})).toUpperCase();
+    const dayString = (_date.toLocaleString('en', {weekday: 'short', timeZone: 'Africa/Johannesburg'})).toUpperCase();
     const year = _date.getFullYear();
     return `${dayString} ${day}/${month}/${year}`;
 };
@@ -93,7 +97,7 @@ let TrunkCateText = (_text) => {
 const format = () => {
     const _date = new Date(filterForm.end_date);
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
     return `${day}/${month}/${year}`;
 }
@@ -101,7 +105,7 @@ const format = () => {
 const formatStart = () => {
     const _date = new Date(filterForm.start_date);
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
     return `${day}/${month}/${year}`;
 }
@@ -111,10 +115,20 @@ let NiceNumber = (_number) => {
     return "R " + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
+let NiceVariance = (val_in, val_out) => {
+    if(!isNaN(val_in) && !isNaN(val_out)){
+        let variance = val_in-val_out;
+        return variance.toFixed(4);
+    }
+    return 0;
+}
+
+
+
 const formatEarly = () => {
     const _date = new Date(combined_Form.transport_date_earliest);
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
     return `${day}/${month}/${year}`;
 }
@@ -122,7 +136,7 @@ const formatEarly = () => {
 const formatLate = () => {
     const _date = new Date(combined_Form.transport_date_latest);
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
     return `${day}/${month}/${year}`;
 }
@@ -130,7 +144,7 @@ const formatLate = () => {
 const formatInvoicePdDay = () => {
     const _date = new Date(combined_Form.invoice_paid_date);
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
     return `${day}/${month}/${year}`;
 }
@@ -138,7 +152,7 @@ const formatInvoicePdDay = () => {
 const formatInvoicePayByDay = () => {
     const _date = new Date(combined_Form.invoice_pay_by_date);
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
     return `${day}/${month}/${year}`;
 }
@@ -146,7 +160,7 @@ const formatInvoicePayByDay = () => {
 const formatInvoiceDate = () => {
     const _date = new Date(combined_Form.invoice_date);
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
     return `${day}/${month}/${year}`;
 }
@@ -170,6 +184,7 @@ const props = defineProps({
     loading_hour_options: Object,
     all_drivers: Object,
     all_vehicles: Object,
+    all_vehicles_types: Object,
     all_transport_rates: Object,
     all_status_entities: Object,
     all_status_types: Object,
@@ -598,7 +613,31 @@ let updateSelectValues = () => {
     combined_Form.invoice_amount_paid = props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount_paid;
     combined_Form.status_id = props.selected_transaction.transport_invoice.transport_invoice_details.status_id;
     combined_Form.notes = props.selected_transaction.transport_invoice.transport_invoice_details.notes;
-    combined_Form.clearErrors();
+
+
+    //Driver vehicle
+    combined_Form.regular_driver_id = props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_driver_id;
+    combined_Form.regular_vehicle_id = props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_vehicle_id;
+    combined_Form.weighbridge_upload_weight = props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_upload_weight;
+    combined_Form.weighbridge_offload_weight = props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_offload_weight;
+    combined_Form.is_weighbridge_variance = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_weighbridge_variance;
+    combined_Form.is_cancelled = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_cancelled;
+    combined_Form.date_cancelled = props.selected_transaction.transport_job.transport_driver_vehicle[0].date_cancelled;
+    combined_Form.is_loaded = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_loaded;
+    combined_Form.date_loaded = props.selected_transaction.transport_job.transport_driver_vehicle[0].date_loaded;
+    combined_Form.is_onroad = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_onroad;
+    combined_Form.date_onroad = props.selected_transaction.transport_job.transport_driver_vehicle[0].date_onroad;
+    combined_Form.is_delivered = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_delivered;
+    combined_Form.date_delivered = props.selected_transaction.transport_job.transport_driver_vehicle[0].date_delivered;
+    combined_Form.is_transport_scheduled = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_transport_scheduled;
+    combined_Form.date_scheduled = props.selected_transaction.transport_job.transport_driver_vehicle[0].date_scheduled;
+    combined_Form.is_paid = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_paid;
+    combined_Form.date_paid = props.selected_transaction.transport_job.transport_driver_vehicle[0].date_paid;
+    combined_Form.is_payment_overdue = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_payment_overdue;
+    combined_Form.driver_vehicle_loading_number = props.selected_transaction.transport_job.transport_driver_vehicle[0].driver_vehicle_loading_number;
+
+
+   combined_Form.clearErrors();
 }
 
 let no_units_to_allocate = computed(() => combined_Form.no_units_outgoing - combined_Form.no_units_outgoing_2 - combined_Form.no_units_outgoing_3 - combined_Form.no_units_outgoing_4 - combined_Form.no_units_outgoing_5);
@@ -771,6 +810,30 @@ let combined_Form = useForm({
     invoice_amount_paid: props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount_paid,
     status_id: props.selected_transaction.transport_invoice.transport_invoice_details.status_id,
     notes: props.selected_transaction.transport_invoice.transport_invoice_details.notes,
+
+    //driver_vehicle
+
+    //props.selected_transaction.transport_job.transport_driver_vehicle[0]
+
+    regular_driver_id: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? 1 : props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_driver_id,
+    regular_vehicle_id: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? 1 : props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_vehicle_id,
+    weighbridge_upload_weight: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? 0 : props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_upload_weight,
+    weighbridge_offload_weight: props.selected_transaction.transport_job.transport_driver_vehicle[0]== null ? 0 : props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_offload_weight,
+    is_weighbridge_variance: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_weighbridge_variance,
+    is_cancelled: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_cancelled,
+    date_cancelled: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].date_cancelled,
+    is_loaded: props.selected_transaction.transport_job.transport_driver_vehicle[0]== null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_loaded,
+    date_loaded: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].date_loaded,
+    is_onroad: props.selected_transaction.transport_job.transport_driver_vehicle[0]== null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_onroad,
+    date_onroad: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].date_onroad,
+    is_delivered: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_delivered,
+    date_delivered: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].date_delivered,
+    is_transport_scheduled: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_transport_scheduled,
+    date_scheduled: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].date_scheduled,
+    is_paid: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_paid,
+    date_paid: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].date_paid,
+    is_payment_overdue: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_payment_overdue,
+    driver_vehicle_loading_number: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].driver_vehicle_loading_number,
 
     update_related_models: 0
 
@@ -1400,6 +1463,69 @@ const getTitle = computed(() => {
 
 });
 
+let showDriver = ref(false);
+let showVehicle = ref(false);
+
+const toggleShowDriver = () => {
+    showDriver.value =  !showDriver.value;
+}
+
+const toggleShowVehicle = () => {
+    showVehicle.value =  !showVehicle.value;
+}
+
+let driverForm = useForm({
+    first_name:  null,
+    last_name:  null,
+    cell_no:  null,
+    comment: null,
+});
+
+let vehicleForm = useForm({
+    vehicle_type_id:  1,
+    comment: null,
+    reg_no: null,
+});
+
+let vehicleSlideProps = ref(null);
+
+const getComponentProps = () => {
+
+    axios.get(route('props.vehicle_slide_over'),).then((res) => {
+        vehicleSlideProps.value = res.data['vehicle_types'];
+    });
+
+};const createProduct = () => {
+
+    driverForm.post(route('regular_driver.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            driverForm.first_name = null;
+            driverForm.last_name = null;
+            driverForm.cell_no = null;
+            driverForm.comment = null;
+            toggleShowDriver();
+        },
+        onError: (e) => {
+            console.log(e);
+        },
+    });
+};
+
+const createProductVehicle = () => {
+
+    vehicleForm.post(route('regular_vehicle.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            toggleShowVehicle()
+        },
+        onError: (e) => {
+            console.log(e);
+        },
+    });
+};
+
+
 
 const header_styler = computed(() => "sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-1 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell");
 const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm text-gray-500 lg:table-cell");
@@ -1420,23 +1546,23 @@ const doCreatedTrade = (_id) => {
             </h2>
         </template>
 
-        <div class="py-2">
+        <div class="py-1">
 
-            <div class="bg-white m-2 p-2 shadow-xl sm:rounded-lg">
+            <div class="bg-white  overflow-x-auto  m-1 p-1 shadow-xl sm:rounded-lg">
 
                 <div>
                     <div class="px-4 sm:px-6 lg:px-8">
                         <div class="mt-3 flow-root">
-                            <div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
+                            <div class="-mx-4 -my-4 sm:-mx-6 lg:-mx-8">
                                 <div class="inline-block min-w-full py-2 align-middle">
-                                    <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                                    <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-6">
 
                                         <div class="flex col-span-6">
                                             <div>
-                                                <div class="ml-3 text-indigo-400 text-sm font-bold">
+                                                <div class="ml-1 text-indigo-400 text-sm font-bold">
                                                     Start Date
                                                 </div>
-                                                <div class="w-48">
+                                                <div class="w-36">
                                                     <VueDatePicker v-model="filterForm.start_date"
                                                                    :format="formatStart"
                                                                    :teleport="true"
@@ -1444,21 +1570,20 @@ const doCreatedTrade = (_id) => {
                                                 </div>
 
                                             </div>
-                                            <div class="ml-2">
+                                            <div class="ml-1">
                                                 <div class="ml-3 text-indigo-400 text-sm font-bold">
                                                     End Date
                                                 </div>
-                                                <div class="w-48">
+                                                <div class="w-36">
                                                     <VueDatePicker v-model="filterForm.end_date"
                                                                    :format="format"
                                                                    :teleport="true"
                                                     ></VueDatePicker>
                                                 </div>
                                             </div>
-
-                                            <div class="mt-5 ml-2">
+                                            <div class="mt-5 ml-1">
                                                 <select v-model="filterForm.contract_type_id"
-                                                        class="input-filter-l  w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                        class="input-filter-l  w-36 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                                     <option :value="null">All contracts</option>
 
                                                     <option v-for="n in contract_types" :key="n.id" :value="n.id">
@@ -1466,9 +1591,9 @@ const doCreatedTrade = (_id) => {
                                                     </option>
                                                 </select>
                                             </div>
-                                            <div class="mt-5 ml-2">
+                                            <div class="mt-5 ml-1">
                                                 <select v-model="filterForm.show"
-                                                        class="input-filter-l  w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                                        class="input-filter-l  w-20 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                                     <option :value=5>5</option>
                                                     <option :value=10>10</option>
                                                     <option :value=25>25</option>
@@ -1478,50 +1603,51 @@ const doCreatedTrade = (_id) => {
                                                 </select>
 
                                             </div>
-
-                                            <div class="mt-5 ml-2">
+                                            <div class="mt-5 ml-1">
                                                 <input v-model.number="filterForm.old_id" aria-label="Search"
-                                                       class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                       placeholder="old contract no..."
+                                                       class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                       placeholder="old no..."
+                                                       type="search"/>
+                                            </div>
+                                            <div class="mt-5 ml-1">
+                                                <input v-model.number="filterForm.id" aria-label="Search"
+                                                       class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                       placeholder="ID no..."
+                                                       type="search"/>
+                                            </div>
+                                            <div class="mt-5 ml-1">
+                                                <input v-model.number="filterForm.a_mq" aria-label="Search"
+                                                       class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                       placeholder="MQ no..."
+                                                       type="search"/>
+                                            </div>
+                                            <div class="mt-5 ml-1">
+                                                <input v-model.number="filterForm.supplier_name" aria-label="Search"
+                                                       class="block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                       placeholder="supplier..."
+                                                       type="search"/>
+                                            </div>
+                                            <div class="mt-5 ml-1">
+                                                <input v-model.number="filterForm.customer_name" aria-label="Search"
+                                                       class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                       placeholder="customer..."
+                                                       type="search"/>
+                                            </div>
+                                            <div class="mt-5 ml-1">
+                                                <input v-model.number="filterForm.transporter_name" aria-label="Search"
+                                                       class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                       placeholder="transporter..."
+                                                       type="search"/>
+                                            </div>
+                                            <div class="mt-5 ml-1">
+                                                <input v-model.number="filterForm.product_name" aria-label="Search"
+                                                       class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                       placeholder="product..."
                                                        type="search"/>
                                             </div>
 
-
                                         </div>
                                         <div class="col-span-4 flex">
-                                            <input v-model.number="filterForm.supplier_name" aria-label="Search"
-                                                   class="block w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="supplier name..."
-                                                   type="search"/>
-
-                                            <input v-model.number="filterForm.customer_name" aria-label="Search"
-                                                   class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="customer name..."
-                                                   type="search"/>
-
-                                            <input v-model.number="filterForm.transporter_name" aria-label="Search"
-                                                   class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="transporter name..."
-                                                   type="search"/>
-
-                                            <input v-model.number="filterForm.product_name" aria-label="Search"
-                                                   class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="product name..."
-                                                   type="search"/>
-
-                                            <input v-model.number="filterForm.id" aria-label="Search"
-                                                   class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="contract no..."
-                                                   type="search"/>
-                                            <input v-model.number="filterForm.a_mq" aria-label="Search"
-                                                   class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="approved mq no..."
-                                                   type="search"/>
-
-
-                                        </div>
-                                        <div class="col-span-4 flex">
-
                                             <div>
                                                 <secondary-button class="" @click="filter">Search</secondary-button>
                                                 <secondary-button class=" ml-1" @click="clear">Clear</secondary-button>
@@ -1621,11 +1747,11 @@ const doCreatedTrade = (_id) => {
                                                           @created_trade="doCreatedTrade"/>
                                     </div>
                                     <div class="">
-                                        <div class="">
+                                        <div class="overflow-y-auto h-72">
                                             <table class="min-w-full border-separate border-spacing-0">
                                                 <thead>
                                                 <tr>
-                                                    <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                                                    <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
                                                         scope="col">ID
                                                     </th>
                                                     <th :class="header_styler" scope="col">TYPE</th>
@@ -1751,25 +1877,18 @@ const doCreatedTrade = (_id) => {
                                                 <PaginationModified :links="transactions.links"/>
                                             </div>
                                         </div>
-
                                     </div>
-
 
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
-
             </div>
 
-            <div class="sticky bg-white m-2 p-2  shadow-xl sm:rounded-lg">
-
+            <div class="sticky bg-white m-1 p-1  shadow-xl sm:rounded-lg">
                 <div>
-                    <div class="px-4 sm:px-6 lg:px-8">
-
-
+                    <div class="px-2 sm:px-3 lg:px-4">
                         <div>
                             <div class="relative border-b border-gray-200 pb-5 sm:pb-0">
                                 <div class="md:flex md:items-center md:justify-between">
@@ -1778,11 +1897,7 @@ const doCreatedTrade = (_id) => {
                                     <div class="mt-3 flex md:absolute md:right-0 md:top-3 md:mt-0">
                                         <div v-if="selected_transaction.a_mq" class="py-2 inline-flex text-xl font-bold text-black">MQ{{ selected_transaction.a_mq }}</div>
                                         <div class="py-3 ml-2 inline-flex text-sm font-light text-gray-900">(ID:{{ selected_transaction.id }})</div>
-<!--                                        <button
-                                            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                            type="button">
-                                            {{ selected_transaction.contract_type.name }} {{ selected_transaction.id }}
-                                        </button>-->
+
                                         <button @click="cloneTransportTrans"
                                                 class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                                 type="button">
@@ -1797,7 +1912,7 @@ const doCreatedTrade = (_id) => {
                                         </button>
                                     </div>
                                 </div>
-                                <div class="mt-4">
+                                <div class="mt-1">
                                     <div class="hidden sm:block">
                                         <nav class="-mb-px flex space-x-8">
                                             <button v-for="tab in tabs" @click="selectTab(tab.id)" :key="tab.id"
@@ -1808,8 +1923,8 @@ const doCreatedTrade = (_id) => {
                                     </div>
                                 </div>
                             </div>
-                            <div class="m-2 p-2">
-                                <div class="mb-2"
+                            <div class="m-1 p-1">
+                                <div class="mb-1"
                                      v-if="!emptyErrorsTrans">
                                     <div class="rounded-md bg-red-50 p-4">
                                         <div class="flex">
@@ -1828,7 +1943,7 @@ const doCreatedTrade = (_id) => {
                                                     </ul>
                                                 </div>
 
-                                                <div class="mt-2 ml-6">
+                                                <div class="mt-1 ml-6">
 
                                                     <InputError class="mt-2"
                                                                 :message="combined_Form.errors['confirmed_by_id.id']"/>
@@ -4992,379 +5107,222 @@ const doCreatedTrade = (_id) => {
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
 
-                                                    <div v-if="viewDriverVehicleNewModal">
+                                                    <div>
 
-                                                        <driver-vehicle-modal-add
-                                                            :show="viewDriverVehicleNewModal"
-                                                            @close="closeDriverVehicleModal"
-                                                            :transport_trans_id="props.selected_transaction.id"
-                                                            :transport_job_id="props.selected_transaction.transport_job.id"
-                                                            :driver_vehicle="null"
-                                                            :all_drivers="props.all_drivers"
-                                                            :all_vehicles="props.all_vehicles"
-                                                        />
+                                                        <div class="mt-3">
+                                                            <label class="block text-sm font-medium leading-6 text-gray-900">Driver/Vehicle loading no</label>
 
-                                                    </div>
-<!--                                                    <SecondaryButton @click="viewDriverNewVehicle()" class="m-6">
-                                                        Add Driver Vehicle (+)
-                                                    </SecondaryButton>-->
+                                                            <input  id="loading_no"
+                                                                    v-model="combined_Form.driver_vehicle_loading_number"
+                                                                    type="text"
+                                                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
 
-                                                    <div class="col-span-4">
-                                                        <div
-                                                            v-for="(driver_vehicle,index) in selected_transaction.transport_job.transport_driver_vehicle"
-                                                            :key="driver_vehicle.id">
-                                                            <div class="">
-                                                                <div class="px-4 sm:px-0">
-                                                                    <h3 class="text-base font-semibold mt-2 leading-7 text-indigo-400">
-                                                                        Driver vehicle {{ index + 1 }}</h3>
-                                                                    <h3 class="text-base font-semibold leading-7 text-sm text-gray-400">
-                                                                        Reference {{ driver_vehicle.id }}</h3>
-                                                                </div>
-                                                                <div class="mt-2 border-t border-gray-100">
-
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Driver/Vehicle loading
-                                                                            no
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            {{
-                                                                                driver_vehicle.driver_vehicle_loading_number
-                                                                            }}
-                                                                        </dd>
-                                                                    </div>
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Weighbridge upload
-                                                                            weight
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            {{
-                                                                                driver_vehicle.weighbridge_upload_weight
-                                                                            }}
-                                                                        </dd>
-                                                                    </div>
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Weighbridge offload
-                                                                            weight
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            {{
-                                                                                driver_vehicle.weighbridge_offload_weight
-                                                                            }}
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Weighbridge variance
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div
-                                                                                v-if="driver_vehicle.is_weighbridge_variance">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Cancelled
-
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_cancelled">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_cancelled && driver_vehicle.date_cancelled ? '(' + driver_vehicle.date_cancelled + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_cancelled && driver_vehicle.date_cancelled ? '(' + driver_vehicle.date_cancelled + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Loaded</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_loaded">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_loaded && driver_vehicle.date_loaded ? '(' + driver_vehicle.date_loaded + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_loaded && driver_vehicle.date_loaded ? '(' + driver_vehicle.date_loaded + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">On Road</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_onroad">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_loaded && driver_vehicle.date_loaded ? '(' + driver_vehicle.date_loaded + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_loaded && driver_vehicle.date_loaded ? '(' + driver_vehicle.date_loaded + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Delivered</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_delivered">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_delivered && driver_vehicle.date_delivered ? '(' + driver_vehicle.date_delivered + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_delivered && driver_vehicle.date_delivered ? '(' + driver_vehicle.date_delivered + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Scheduled</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div
-                                                                                v-if="driver_vehicle.is_transport_scheduled">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_transport_scheduled && driver_vehicle.date_scheduled ? '(' + driver_vehicle.date_scheduled + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_transport_scheduled && driver_vehicle.date_scheduled ? '(' + driver_vehicle.date_scheduled + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Paid</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_paid">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_transport_scheduled && driver_vehicle.date_scheduled ? '(' + driver_vehicle.date_scheduled + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_transport_scheduled && driver_vehicle.date_scheduled ? '(' + driver_vehicle.date_scheduled + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Payment Overdue</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div
-                                                                                v-if="driver_vehicle.is_payment_overdue">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_payment_overdue && driver_vehicle.date_payment_overdue ? '(' + driver_vehicle.date_payment_overdue + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-<!--                                                                                {{
-                                                                                    driver_vehicle.is_payment_overdue && driver_vehicle.date_payment_overdue ? '(' + driver_vehicle.date_payment_overdue + ')' : ''
-                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Traders notes</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-
-                                                                            <div v-if="driver_vehicle.traders_notes">
-                                                                                {{ driver_vehicle.traders_notes }}
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                none...
-                                                                            </div>
-
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Operation alert
-                                                                            notes
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-
-                                                                            <div
-                                                                                v-if="driver_vehicle.operations_alert_notes">
-                                                                                {{
-                                                                                    driver_vehicle.operations_alert_notes
-                                                                                }}
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                none...
-                                                                            </div>
-
-                                                                        </dd>
-                                                                    </div>
-
-
-                                                                    <div>
-                                                                        <div class="mt-3">
-                                                                            <div class="">
-                                                                                <div class="px-4 sm:px-0">
-                                                                                    <h3 class="text-base font-semibold leading-7 text-indigo-400">
-                                                                                        Selected Driver</h3>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4">
-                                                                                    <dt class="text-gray-500">First
-                                                                                        name
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{
-                                                                                            driver_vehicle.driver.first_name
-                                                                                        }}
-                                                                                    </dd>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4 ">
-                                                                                    <dt class="text-gray-500">Last
-                                                                                        name
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{
-                                                                                            driver_vehicle.driver.last_name
-                                                                                        }}
-                                                                                    </dd>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4">
-                                                                                    <dt class="text-gray-500">Cell no
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{ driver_vehicle.driver.cell_no }}
-                                                                                    </dd>
-                                                                                </div>
-
-                                                                            </div>
-                                                                        </div>
-
-                                                                    </div>
-
-                                                                    <div>
-                                                                        <div class="mt-3">
-                                                                            <div class="">
-                                                                                <div class="px-4 sm:px-0">
-                                                                                    <h3 class="text-base font-semibold leading-7 text-indigo-400">
-                                                                                        Selected Vehicle</h3>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4 ">
-                                                                                    <dt class="text-gray-500">
-                                                                                        Registration number
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{
-                                                                                            driver_vehicle.vehicle.reg_no
-                                                                                        }}
-                                                                                    </dd>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4 ">
-                                                                                    <dt class="text-gray-500">Vehicle
-                                                                                        Type
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{
-                                                                                            driver_vehicle.vehicle.vehicle_type.name
-                                                                                        }}
-                                                                                    </dd>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-
-                                                                    </div>
-
-
-                                                                </div>
-
-                                                                <div class="mt-6 col-span-4">
-
-                                                                    <div v-if="viewDriverVehicleModal">
-                                                                        <DriverVehicleModal
-                                                                            :show="viewDriverVehicleModal"
-                                                                            @close="closeDriverVehicleModal"
-                                                                            :transport_trans_id="props.selected_transaction.id"
-                                                                            :transport_job_id="props.selected_transaction.transport_job.id"
-                                                                            :driver_vehicle="currentDriverVehicle"
-                                                                            :all_drivers="props.all_drivers"
-                                                                            :all_vehicles="props.all_vehicles"
-                                                                        />
-                                                                    </div>
-
-
-                                                                    <SecondaryButton class="m-1"
-                                                                                     @click="viewDriverVehicle(driver_vehicle)">
-                                                                        Edit
-                                                                    </SecondaryButton>
-
-<!--                                                                    <SecondaryButton class="m-1"
-                                                                                     @click="deleteDriverVehicle(driver_vehicle.id)">
-                                                                        Delete
-                                                                    </SecondaryButton>-->
-
-
-                                                                </div>
-
-                                                            </div>
+                                                            <!--                                    <InputError class="mt-2" :message="form.errors.line_1"/>-->
                                                         </div>
+
+                                                        <div class="mt-3">
+
+                                                            <label class="block text-sm font-medium leading-6 text-gray-900">Driver</label>
+
+                                                            <select v-model="combined_Form.regular_driver_id"
+                                                                    class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                                <option v-for="n in props.all_drivers" :key="n.id" :value="n.id">
+                                                                    {{n.first_name}} {{n.last_legal_name}}
+                                                                </option>
+                                                            </select>
+
+                                                            <InputError class="mt-2" :message="combined_Form.errors.regular_driver_id"/>
+                                                            <div @click="toggleShowDriver" class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">+ Add driver</div>
+
+                                                            <div v-if="showDriver" class="m-4 p-4 border-solid border-2 border-green-500">
+
+                                                                <div
+                                                                    class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+                                                                    <!-- First name -->
+                                                                    <div
+                                                                        class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                                        <div>
+                                                                            <label
+                                                                                class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">First name</label>
+                                                                        </div>
+                                                                        <div class="sm:col-span-2">
+                                                                            <input v-model="driverForm.first_name" type="text" name="name" id="name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                                            <InputError class="mt-2" :message="driverForm.errors.first_name"/>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Last name -->
+                                                                    <div
+                                                                        class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                                        <div>
+                                                                            <label
+                                                                                class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Last name</label>
+                                                                        </div>
+                                                                        <div class="sm:col-span-2">
+                                                                            <input v-model="driverForm.last_name" type="text" name="last_name" id="last_name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                                            <InputError class="mt-2" :message="driverForm.errors.last_name"/>
+
+
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Cell no -->
+                                                                    <div
+                                                                        class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                                        <div>
+                                                                            <label
+                                                                                class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Cell no</label>
+                                                                        </div>
+                                                                        <div class="sm:col-span-2">
+                                                                            <input v-model="driverForm.cell_no" type="text" name="cell_no" id="cell_no" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                                            <InputError class="mt-2" :message="driverForm.errors.cell_no"/>
+
+
+                                                                        </div>
+                                                                    </div>
+
+
+                                                                    <!-- Comment -->
+                                                                    <div
+                                                                        class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                                        <div>
+
+                                                                        </div>
+                                                                        <div class="sm:col-span-4">
+                                                                            <AreaInput
+                                                                                id="comments2"
+                                                                                :rows=6
+                                                                                placeholder="Optional comments..."
+                                                                                v-model="driverForm.comment"
+                                                                                type="text"
+                                                                                class="mt-1 block w-full"
+                                                                            />
+                                                                            <InputError class="mt-2" :message="driverForm.errors.comment"/>
+
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Action buttons -->
+                                                                    <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                                                                        <div class="flex justify-end space-x-3">
+                                                                            <button type="button"
+                                                                                    class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                                                    @click="toggleShowDriver">Cancel
+                                                                            </button>
+                                                                            <button type="button" @click="createProduct"
+                                                                                    class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                                Create
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+
+
+
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="mt-3">
+
+                                                            <label class="block text-sm font-medium leading-6 text-gray-900">Vehicle</label>
+                                                            <select v-model="combined_Form.regular_vehicle_id"
+                                                                    class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                                <option v-for="n in props.all_vehicles" :key="n.id" :value="n.id">
+                                                                    {{n.reg_no}} - {{n.vehicle_type.name}}
+                                                                </option>
+                                                            </select>
+
+                                                            <InputError class="mt-2" :message="combined_Form.errors.regular_driver_id"/>
+
+                                                            <div @click="toggleShowVehicle" class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">+ Add vehicle</div>
+
+                                                            <div v-if="showVehicle" class="m-4 p-4 border-solid border-2 border-green-500">
+
+                                                                <div
+                                                                    class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+
+                                                                    <!-- Divider container -->
+                                                                    <div
+                                                                        class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+                                                                        <!--  reg no -->
+                                                                        <div
+                                                                            class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                                            <div>
+                                                                                <label
+                                                                                    class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Reg no</label>
+                                                                            </div>
+                                                                            <div class="sm:col-span-2">
+                                                                                <input v-model="vehicleForm.reg_no" type="text" name="reg_no" id="reg_no" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                                                <InputError class="mt-2" :message="vehicleForm.errors.reg_no"/>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <!--  vehicle type -->
+                                                                        <div
+                                                                            class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                                            <div>
+                                                                                <label
+                                                                                    class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">Vehicle type</label>
+                                                                            </div>
+                                                                            <div class="sm:col-span-2">
+                                                                                <select v-model="vehicleForm.vehicle_type_id"
+                                                                                        class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                                                    <option v-for="n in all_vehicles_types" :key="n.id" :value="n.id">{{
+                                                                                            n.name
+                                                                                        }}
+                                                                                    </option>
+
+                                                                                </select>
+                                                                                <InputError class="mt-2" :message="vehicleForm.errors.vehicle_type_id"/>
+                                                                            </div>
+                                                                        </div>
+
+
+
+                                                                        <!-- Comment -->
+                                                                        <div
+                                                                            class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                                                                            <div>
+
+                                                                            </div>
+                                                                            <div class="sm:col-span-4">
+                                                                                <AreaInput
+                                                                                    id="comments"
+                                                                                    :rows=6
+                                                                                    placeholder="Optional comments..."
+                                                                                    v-model="vehicleForm.comment"
+                                                                                    type="text"
+                                                                                    class="mt-1 block w-full"
+                                                                                />
+                                                                                <InputError class="mt-2" :message="vehicleForm.errors.comment"/>
+
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                    <!-- Action buttons -->
+                                                                    <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                                                                        <div class="flex justify-end space-x-3">
+                                                                            <button type="button"
+                                                                                    class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                                                    @click="toggleShowVehicle">Cancel
+                                                                            </button>
+                                                                            <button type="button" @click="createProductVehicle"
+                                                                                    class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                                Create
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
                                                     </div>
+
 
                                                 </dl>
                                             </li>
@@ -6045,68 +6003,6 @@ const doCreatedTrade = (_id) => {
                                                             </div>
                                                         </div>
 
-<!--
-                                                            <div class="flex justify-between gap-x-4 py-3">
-
-                                                                <dt class="text-gray-500">Selling Price</dt>
-                                                                <dd class="text-gray-700">
-                                                                    <div>
-                                                                        {{ NiceNumber(selected_transaction.transport_finance.selling_price) }}
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-                                                            <div class="flex justify-between gap-x-4 py-3">
-
-                                                                <dt class="text-gray-500">Cost Price</dt>
-                                                                <dd class="text-gray-700">
-                                                                    <div>
-                                                                        {{ NiceNumber(selected_transaction.transport_finance.cost_price) }}
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-                                                            <div class="flex justify-between gap-x-4 py-3">
-                                                                <dt class="text-gray-500">Transport Cost</dt>
-                                                                <dd class="text-gray-700">
-                                                                    <div>
-                                                                        {{ NiceNumber(selected_transaction.transport_finance.transport_cost) }}
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-                                                            <div class="flex justify-between gap-x-4 py-3">
-                                                                <dt class="text-gray-500">Total Cost Price</dt>
-                                                                <dd class="text-gray-700">
-                                                                    <div>
-                                                                        {{ NiceNumber(selected_transaction.transport_finance.total_cost_price) }}
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-                                                            <div class="flex justify-between gap-x-4 py-3">
-                                                                <dt class="text-gray-500">GP</dt>
-                                                                <dd class="text-gray-700">
-                                                                    <div>
-                                                                        {{ NiceNumber(selected_transaction.transport_finance.gross_profit) }}
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-                                                            <div class="flex justify-between gap-x-4 py-3">
-                                                                <dt class="text-gray-500">GP / Ton</dt>
-                                                                <dd class="text-gray-700">
-                                                                    <div>
-                                                                        {{ NiceNumber(selected_transaction.transport_finance.gross_profit_per_ton) }}
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-                                                            <div class="flex justify-between gap-x-4 py-3">
-                                                                <dt class="text-gray-500">GP %</dt>
-                                                                <dd class="text-gray-700">
-                                                                    <div>
-                                                                        {{ selected_transaction.transport_finance.gross_profit_percent }}
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
--->
-
-
 
                                                     </dl>
 
@@ -6123,53 +6019,53 @@ const doCreatedTrade = (_id) => {
                                                             <tbody class="divide-y divide-gray-200 bg-white">
                                                             <tr  class="divide-x divide-gray-200">
                                                                 <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Tons In</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500"> {{ selected_transaction.transport_finance.weight_ton_incoming }}</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ selected_transaction.transport_finance.weight_ton_incoming_actual }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500"> {{ selected_transaction.transport_finance.weight_ton_incoming }}</td>
+                                                                <td class="whitespace-nowrap text-right  text-sm text-gray-500">{{ selected_transaction.transport_finance.weight_ton_incoming_actual }}</td>
                                                             </tr>
                                                             <tr  class="divide-x divide-gray-200">
                                                                 <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Tons Out</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{selected_transaction.transport_finance.weight_ton_outgoing }}</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{selected_transaction.transport_finance.weight_ton_outgoing_actual }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{selected_transaction.transport_finance.weight_ton_outgoing }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{selected_transaction.transport_finance.weight_ton_outgoing_actual }}</td>
                                                             </tr>
                                                             <tr  class="divide-x divide-gray-200">
                                                                 <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Selling Price</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.selling_price) }}</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.selling_price_actual) }}</td>
+                                                                <td class="whitespace-nowrap text-right  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.selling_price) }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.selling_price_actual) }}</td>
                                                             </tr>
                                                             <tr  class="divide-x divide-gray-200">
                                                                 <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Cost Price</td>
-                                                                <td class="whitespace-nowrap text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.cost_price) }}</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.cost_price_actual) }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.cost_price) }}</td>
+                                                                <td class="whitespace-nowrap text-right  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.cost_price_actual) }}</td>
                                                             </tr>
 
                                                             <tr  class="divide-x divide-gray-200">
                                                                 <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Transport Cost</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.transport_cost) }}</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.transport_cost_actual) }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.transport_cost) }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.transport_cost_actual) }}</td>
                                                             </tr>
 
                                                             <tr  class="divide-x divide-gray-200">
                                                                 <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">Total Cost Price</td>
-                                                                <td class="whitespace-nowrap text-sm text-gray-500"> {{ NiceNumber(selected_transaction.transport_finance.total_cost_price) }}</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.total_cost_price_actual) }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500"> {{ NiceNumber(selected_transaction.transport_finance.total_cost_price) }}</td>
+                                                                <td class="whitespace-nowrap text-right  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.total_cost_price_actual) }}</td>
                                                             </tr>
 
                                                             <tr  class="divide-x divide-gray-200">
                                                                 <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">GP</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">  {{ NiceNumber(selected_transaction.transport_finance.gross_profit) }}</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.gross_profit_actual) }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">  {{ NiceNumber(selected_transaction.transport_finance.gross_profit) }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.gross_profit_actual) }}</td>
                                                             </tr>
 
                                                             <tr  class="divide-x divide-gray-200">
                                                                 <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">GP / Ton</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.gross_profit_per_ton) }}</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.gross_profit_per_ton_actual) }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.gross_profit_per_ton) }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{ NiceNumber(selected_transaction.transport_finance.gross_profit_per_ton_actual) }}</td>
                                                             </tr>
 
                                                             <tr  class="divide-x divide-gray-200">
                                                                 <td class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">GP %</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ selected_transaction.transport_finance.gross_profit_percent }}</td>
-                                                                <td class="whitespace-nowrap  text-sm text-gray-500">{{ selected_transaction.transport_finance.gross_profit_percent_actual }}</td>
+                                                                <td class="whitespace-nowrap text-right text-sm text-gray-500">{{ selected_transaction.transport_finance.gross_profit_percent }}</td>
+                                                                <td class="whitespace-nowrap text-right  text-sm text-gray-500">{{ selected_transaction.transport_finance.gross_profit_percent_actual }}</td>
                                                             </tr>
 
                                                             </tbody>
@@ -6190,88 +6086,74 @@ const doCreatedTrade = (_id) => {
                                                     class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Invoice
                                                     </div>
-                                                    <div class="text-sm font-light text-gray-900">(State)</div>
+                                                    <div class="text-sm font-light text-gray-900">(Basis)</div>
                                                 </div>
 
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Phase</dt>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Supplier</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <div class="">
-                                                                    <select v-model="combined_Form.status_id"
-                                                                            class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                                        <option v-for="n in props.all_invoice_statuses"
-                                                                                :key="n.id" :value="n.id">
-                                                                            {{ n.name }}
-                                                                        </option>
-                                                                    </select>
-
-                                                                </div>
-                                                            </div>
-                                                        </dd>
-                                                    </div>
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Active</dt>
-                                                        <dd class="flex items-start gap-x-2">
-                                                            <div>
-                                                                <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch v-model="combined_Form.is_active"
-                                                                            :class="[combined_Form.is_active ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_active ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                    </Switch>
-                                                                </SwitchGroup>
+                                                                {{selected_transaction.supplier.last_legal_name }}
                                                             </div>
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Printed</dt>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Product</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch v-model="combined_Form.is_printed"
-                                                                            :class="[combined_Form.is_printed ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_printed? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                    </Switch>
-                                                                </SwitchGroup>
+                                                                {{ selected_transaction.product.name }}
                                                             </div>
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Invoiced</dt>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Customer</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch v-model="combined_Form.is_invoiced"
-                                                                            :class="[combined_Form.is_invoiced ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_invoiced ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                    </Switch>
-                                                                </SwitchGroup>
+                                                                {{ selected_transaction.customer.last_legal_name }}
                                                             </div>
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Paid</dt>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Order no</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch
-                                                                        v-model="combined_Form.is_invoice_paid"
-                                                                        :class="[combined_Form.is_invoice_paid ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_invoice_paid ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                    </Switch>
-                                                                </SwitchGroup>
+                                                                {{combined_Form.customer_order_number}}
                                                             </div>
                                                         </dd>
                                                     </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Billing basis</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                {{ selected_transaction.customer.invoice_basis.value }}
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Vehicle registration</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                {{ selected_transaction.transport_job.transport_driver_vehicle[0].vehicle.reg_no }}
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Transporter</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                {{ selected_transaction.transporter.last_legal_name }}
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
 
 
                                                 </dl>
@@ -6282,12 +6164,12 @@ const doCreatedTrade = (_id) => {
                                                     class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Invoice
                                                     </div>
-                                                    <div class="text-sm font-light text-gray-900">(Details)</div>
+                                                    <div class="text-sm font-light text-gray-900">(Inputs)</div>
                                                 </div>
 
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                    <div class="flex justify-between gap-x-4 py-1">
                                                         <dd class="flex items-start gap-x-2">
 
                                                             <div class="w-80">
@@ -6304,7 +6186,7 @@ const doCreatedTrade = (_id) => {
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                    <div class="flex justify-between gap-x-4 py-1">
                                                         <dd class="flex items-start gap-x-2">
 
                                                             <div class="w-80">
@@ -6323,7 +6205,7 @@ const doCreatedTrade = (_id) => {
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                    <div class="flex justify-between gap-x-4 py-1">
                                                         <dd class="flex items-start gap-x-2">
 
                                                             <div class="w-80">
@@ -6352,7 +6234,7 @@ const doCreatedTrade = (_id) => {
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                    <div class="flex justify-between gap-x-4 py-1">
                                                         <AreaInput
                                                             v-model="combined_Form.notes"
                                                             :rows=4
@@ -6371,13 +6253,52 @@ const doCreatedTrade = (_id) => {
                                                     class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Invoice
                                                     </div>
-                                                    <div class="text-sm font-light text-gray-900">(Finance)</div>
+                                                    <div class="text-sm font-light text-gray-900">(and debtors control)</div>
                                                 </div>
 
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
+<!--                                                    <div>
+                                                        <driver-vehicle-load-component
+                                                            :transport_trans_id="props.selected_transaction.id"
+                                                            :transport_job_id="props.selected_transaction.transport_job.id"
+                                                            :driver_vehicle="props.selected_transaction.transport_job.transport_driver_vehicle[0]"
+                                                            :all_drivers="props.all_drivers"
+                                                            :all_vehicles="props.all_vehicles"/>
+                                                    </div>-->
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Weighbridge Upload</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <input v-model="combined_Form.weighbridge_upload_weight"
+                                                                       type="number"
+                                                                       class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Weighbridge Offload</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <input v-model="combined_Form.weighbridge_offload_weight"
+                                                                       type="number"
+                                                                       class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Weighbridge variance</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                {{NiceVariance(combined_Form.weighbridge_upload_weight,combined_Form.weighbridge_offload_weight)}}
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
                                                         <dt class="text-gray-500">Invoice amount</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
@@ -6389,7 +6310,7 @@ const doCreatedTrade = (_id) => {
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                    <div class="flex justify-between gap-x-4 py-1">
                                                         <dt class="text-gray-500">Invoice amount paid</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
@@ -6401,34 +6322,85 @@ const doCreatedTrade = (_id) => {
                                                             </div>
                                                         </dd>
                                                     </div>
-<!--
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">cost_price</dt>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Balance overdue</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                {{ NiceNumber(selected_transaction.transport_finance.cost_price) }}
+                                                                {{NiceNumber(selected_transaction.transport_invoice.transport_invoice_details.overdue)}}
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Outstanding</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                {{NiceNumber(selected_transaction.transport_invoice.transport_invoice_details.outstanding)}}
                                                             </div>
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">total_cost_price</dt>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Phase</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                {{ NiceNumber(selected_transaction.transport_finance.total_cost_price) }}
+                                                                <div class="">
+                                                                    <select v-model="combined_Form.status_id"
+                                                                            class="mt-2 block w-48 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                                                        <option v-for="n in props.all_invoice_statuses"
+                                                                                :key="n.id" :value="n.id">
+                                                                            {{ n.name }}
+                                                                        </option>
+                                                                    </select>
+
+                                                                </div>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Active</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                    <Switch v-model="combined_Form.is_active"
+                                                                            :class="[combined_Form.is_active ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_active ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+                                                                </SwitchGroup>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Invoiced</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                    <Switch v-model="combined_Form.is_invoiced"
+                                                                            :class="[combined_Form.is_invoiced ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_invoiced ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+                                                                </SwitchGroup>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Paid</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                    <Switch
+                                                                        v-model="combined_Form.is_invoice_paid"
+                                                                        :class="[combined_Form.is_invoice_paid ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_invoice_paid ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+                                                                </SwitchGroup>
                                                             </div>
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">gross_profit</dt>
-                                                        <dd class="flex items-start gap-x-2">
-                                                            <div>
-                                                                {{ NiceNumber(selected_transaction.transport_finance.gross_profit) }}
-                                                            </div>
-                                                        </dd>
-                                                    </div>
--->
+
                                                 </dl>
                                             </li>
 
@@ -6674,17 +6646,6 @@ const doCreatedTrade = (_id) => {
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Is Printed</dt>
-                                                        <dd class="flex items-start gap-x-2">
-                                                            <div>
-                                                                <check-icon
-                                                                    v-if="selected_transaction.deal_ticket.is_printed"
-                                                                    class="w-6 h-6 fill-green-300 "/>
-                                                                <XCircleIcon v-else class="w-6 h-6 fill-red-400 "/>
-                                                            </div>
-                                                        </dd>
-                                                    </div>
 
                                                     <div class="mt-2">
                                                         <SecondaryButton @click="createApproval" class="m-1">
@@ -6717,9 +6678,6 @@ const doCreatedTrade = (_id) => {
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
                                                     <div class="">
-                                                        <div class="text-lg mb-2 text-indigo-400">Transport Statuses
-                                                        </div>
-
 
                                                         <form class="mt-5">
 
@@ -6734,7 +6692,7 @@ const doCreatedTrade = (_id) => {
                                                                     <div class="flex">
                                                                         <div class="w-48">
                                                                             <label
-                                                                                class="block text-sm font-medium leading-6 text-gray-900">Entity:</label>
+                                                                                class="block text-sm font-medium leading-6 text-gray-900">Type:</label>
                                                                             <div class="mt-2">
                                                                                 <div class="">
                                                                                     <select
@@ -6862,382 +6820,267 @@ const doCreatedTrade = (_id) => {
                                                 </div>
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
+<!--                                                    <driver-vehicle-state-component
+                                                        :transport_trans_id="props.selected_transaction.id"
+                                                        :transport_job_id="props.selected_transaction.transport_job.id"
+                                                        :driver_vehicle="props.selected_transaction.transport_job.transport_driver_vehicle[0]"
+                                                        :all_drivers="props.all_drivers"
+                                                        :all_vehicles="props.all_vehicles"
+                                                    />-->
 
-                                                    <div v-if="viewDriverVehicleNewModal">
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Transport planned</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div v-if="selected_transaction.transporter_id !==1">
+                                                                <check-icon class="h-5 h-5"/>
+                                                            </div>
+                                                            <div v-else>
+                                                                <x-mark-icon class="h-5 h-5"/>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
 
-                                                        <driver-vehicle-modal-add
-                                                            :show="viewDriverVehicleNewModal"
-                                                            @close="closeDriverVehicleModal"
-                                                            :transport_trans_id="props.selected_transaction.id"
-                                                            :transport_job_id="props.selected_transaction.transport_job.id"
-                                                            :driver_vehicle="null"
-                                                            :all_drivers="props.all_drivers"
-                                                            :all_vehicles="props.all_vehicles"
-                                                        />
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Transport scheduled</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div v-if="props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_vehicle_id !==1">
+                                                                <check-icon class="h-5 h-5"/>
+                                                            </div>
+                                                            <div v-else >
+                                                                <x-mark-icon class="h-5 h-5"/>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+
+                                                </dl>
+
+                                                <div>
+                                                    <dl class="-my-3 divide-y divide-gray-100 px-6 py-1 text-sm leading-6">
+                                                        <div>Purchase order</div>
+                                                        <div v-if="purchase_order.is_active">
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Confirmation Sent</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <div>
+                                                                        <div v-if="purchase_order.is_po_sent">
+                                                                            <p>
+                                                                                <check-icon class="h-5 h-5"/>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <SecondaryButton @click="sendPurchaseOrder">
+                                                                                Sent
+                                                                            </SecondaryButton>
+                                                                        </div>
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Received</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <div>
+                                                                        <div v-if="purchase_order.is_po_received">
+                                                                            <p>
+                                                                                <check-icon class="h-5 h-5"/>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <SecondaryButton @click="receivePurchaseOrder">
+                                                                                Received
+                                                                            </SecondaryButton>
+                                                                        </div>
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                        </div>
+                                                        <div v-else>
+
+                                                            <p class="text-red-400 font-bold">Purchase order Not Active</p>
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Activate Purchase Order</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <SecondaryButton @click="activatePurchaseOrder">
+                                                                        Activate
+                                                                    </SecondaryButton>
+                                                                </dd>
+                                                            </div>
+                                                        </div>
+                                                    </dl>
+
+                                                </div>
+
+                                                <div>
+                                                    <dl class="-my-3 divide-y divide-gray-100 px-6 py-1 text-sm leading-6">
+                                                        <div>Sales order</div>
+                                                        <div v-if="sales_order.is_active">
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Confirmation Sent</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <div>
+                                                                        <div v-if="sales_order.is_sa_conf_sent">
+                                                                            <p>
+                                                                                <check-icon class="h-5 h-5"/>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <SecondaryButton @click="sendSalesOrder">
+                                                                                Sent
+                                                                            </SecondaryButton>
+                                                                        </div>
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Received</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <div>
+                                                                        <div v-if="sales_order.is_sa_conf_received">
+                                                                            <p>
+                                                                                <check-icon class="h-5 h-5"/>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <SecondaryButton @click="receiveSalesOrder">
+                                                                                Received
+                                                                            </SecondaryButton>
+                                                                        </div>
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+
+                                                            <!--                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                        <dt class="text-gray-500">Working Document</dt>
+                                                                                                                        <dd class="flex items-start gap-x-2">
+                                                                                                                            <a :href="'/pdf_report/sales_order_view/' + props.selected_transaction.id"
+                                                                                                                               target="_blank"
+                                                                                                                               class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                                                                                View
+                                                                                                                            </a>
+                                                                                                                        </dd>
+                                                                                                                    </div>-->
+                                                            <!--                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                        <dt class="text-gray-500">Generate Final</dt>
+                                                                                                                        <dd class="flex items-start gap-x-2">
+                                                                                                                            <SecondaryButton @click="">
+                                                                                                                                Generate
+                                                                                                                            </SecondaryButton>
+                                                                                                                        </dd>
+                                                                                                                    </div>
+                                                                                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                                                                                        <dt class="text-gray-500">Download Final</dt>
+
+                                                                                                                        <dd class="flex items-start gap-x-2">
+
+                                                                                                                            <div v-if="deal_ticket.report_path">
+                                                                                                                                <a :href="route('pdf_report.deal_ticket_final.download',deal_ticket.report_path)" target="_blank"
+                                                                                                                                   class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                                                                                    Download
+                                                                                                                                </a>
+                                                                                                                            </div>
+
+                                                                                                                            <div v-else>
+                                                                                                                                <p>Not generated</p>
+                                                                                                                            </div>
+
+
+                                                                                                                        </dd>
+
+
+                                                                                                                    </div>-->
+                                                        </div>
+
+                                                        <div v-else>
+
+                                                            <p class="text-red-400 font-bold">Sales order Not Active</p>
+                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">Activate Sales Order</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <SecondaryButton @click="activateSalesOrder">
+                                                                        Activate
+                                                                    </SecondaryButton>
+                                                                </dd>
+                                                            </div>
+                                                        </div>
+
+
+                                                    </dl>
+
+                                                </div>
+
+                                                <div class="m-2 p-2">
+                                                    <div class="mt-3">
+                                                        <div class="flex col-span-2 mt-2">
+                                                            <SwitchGroup  as="div" class="flex m-2 items-center">
+                                                                <Switch  v-model="combined_Form.is_cancelled"
+                                                                         :class="[combined_Form.is_cancelled ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_cancelled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                </Switch>
+                                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                                    <span class="font-medium text-gray-900">Cancelled</span>
+                                                                </SwitchLabel>
+                                                            </SwitchGroup>
+
+                                                            <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                <Switch  v-model="combined_Form.is_loaded"
+                                                                         :class="[combined_Form.is_loaded ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_loaded ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                </Switch>
+                                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                                    <span class="font-medium text-gray-900">Loaded</span>
+                                                                </SwitchLabel>
+                                                            </SwitchGroup>
+
+                                                        </div>
+
+                                                        <div class="flex col-span-2 mt-2">
+
+                                                            <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                <Switch v-model="combined_Form.is_onroad"
+                                                                        :class="[combined_Form.is_onroad ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_onroad ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                </Switch>
+                                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                                    <span class="font-medium text-gray-900">On road</span>
+                                                                </SwitchLabel>
+                                                            </SwitchGroup>
+
+                                                            <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                <Switch  v-model="combined_Form.is_delivered"
+                                                                         :class="[combined_Form.is_delivered ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_delivered ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                </Switch>
+                                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                                    <span class="font-medium text-gray-900">Delivered</span>
+                                                                </SwitchLabel>
+                                                            </SwitchGroup>
+                                                        </div>
 
                                                     </div>
-                                                    <!--                                                    <SecondaryButton @click="viewDriverNewVehicle()" class="m-6">
-                                                                                                            Add Driver Vehicle (+)
-                                                                                                        </SecondaryButton>-->
 
-                                                    <div class="col-span-4">
-                                                        <div
-                                                            v-for="(driver_vehicle,index) in selected_transaction.transport_job.transport_driver_vehicle"
-                                                            :key="driver_vehicle.id">
-                                                            <div class="">
-                                                                <div class="px-4 sm:px-0">
-                                                                    <h3 class="text-base font-semibold mt-2 leading-7 text-indigo-400">
-                                                                        Driver vehicle {{ index + 1 }}</h3>
-                                                                    <h3 class="text-base font-semibold leading-7 text-sm text-gray-400">
-                                                                        Reference {{ driver_vehicle.id }}</h3>
-                                                                </div>
-                                                                <div class="mt-2 border-t border-gray-100">
-
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Driver/Vehicle loading
-                                                                            no
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            {{
-                                                                                driver_vehicle.driver_vehicle_loading_number
-                                                                            }}
-                                                                        </dd>
-                                                                    </div>
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Weighbridge upload
-                                                                            weight
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            {{
-                                                                                driver_vehicle.weighbridge_upload_weight
-                                                                            }}
-                                                                        </dd>
-                                                                    </div>
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Weighbridge offload
-                                                                            weight
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            {{
-                                                                                driver_vehicle.weighbridge_offload_weight
-                                                                            }}
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Weighbridge variance
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div
-                                                                                v-if="driver_vehicle.is_weighbridge_variance">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Cancelled
-
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_cancelled">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_cancelled && driver_vehicle.date_cancelled ? '(' + driver_vehicle.date_cancelled + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_cancelled && driver_vehicle.date_cancelled ? '(' + driver_vehicle.date_cancelled + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Loaded</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_loaded">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_loaded && driver_vehicle.date_loaded ? '(' + driver_vehicle.date_loaded + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_loaded && driver_vehicle.date_loaded ? '(' + driver_vehicle.date_loaded + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">On Road</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_onroad">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_loaded && driver_vehicle.date_loaded ? '(' + driver_vehicle.date_loaded + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_loaded && driver_vehicle.date_loaded ? '(' + driver_vehicle.date_loaded + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Delivered</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_delivered">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_delivered && driver_vehicle.date_delivered ? '(' + driver_vehicle.date_delivered + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_delivered && driver_vehicle.date_delivered ? '(' + driver_vehicle.date_delivered + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Scheduled</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div
-                                                                                v-if="driver_vehicle.is_transport_scheduled">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_transport_scheduled && driver_vehicle.date_scheduled ? '(' + driver_vehicle.date_scheduled + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_transport_scheduled && driver_vehicle.date_scheduled ? '(' + driver_vehicle.date_scheduled + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Paid</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div v-if="driver_vehicle.is_paid">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_transport_scheduled && driver_vehicle.date_scheduled ? '(' + driver_vehicle.date_scheduled + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_transport_scheduled && driver_vehicle.date_scheduled ? '(' + driver_vehicle.date_scheduled + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Payment Overdue</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-                                                                            <div
-                                                                                v-if="driver_vehicle.is_payment_overdue">
-                                                                                <icon name="tick-circle"
-                                                                                      class=" w-6 h-6 fill-green-200"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_payment_overdue && driver_vehicle.date_payment_overdue ? '(' + driver_vehicle.date_payment_overdue + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                <icon name="cross-solid"
-                                                                                      class="w-6 h-6 fill-red-500"/>
-                                                                                <!--                                                                                {{
-                                                                                                                                                                    driver_vehicle.is_payment_overdue && driver_vehicle.date_payment_overdue ? '(' + driver_vehicle.date_payment_overdue + ')' : ''
-                                                                                                                                                                }}-->
-                                                                            </div>
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Traders notes</dt>
-                                                                        <dd class="flex items-start gap-x-2">
-
-                                                                            <div v-if="driver_vehicle.traders_notes">
-                                                                                {{ driver_vehicle.traders_notes }}
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                none...
-                                                                            </div>
-
-                                                                        </dd>
-                                                                    </div>
-
-                                                                    <div class="flex justify-between gap-x-4 ">
-                                                                        <dt class="text-gray-500">Operation alert
-                                                                            notes
-                                                                        </dt>
-                                                                        <dd class="flex items-start gap-x-2">
-
-                                                                            <div
-                                                                                v-if="driver_vehicle.operations_alert_notes">
-                                                                                {{
-                                                                                    driver_vehicle.operations_alert_notes
-                                                                                }}
-                                                                            </div>
-                                                                            <div v-else>
-                                                                                none...
-                                                                            </div>
-
-                                                                        </dd>
-                                                                    </div>
-
-
-                                                                    <div>
-                                                                        <div class="mt-3">
-                                                                            <div class="">
-                                                                                <div class="px-4 sm:px-0">
-                                                                                    <h3 class="text-base font-semibold leading-7 text-indigo-400">
-                                                                                        Selected Driver</h3>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4">
-                                                                                    <dt class="text-gray-500">First
-                                                                                        name
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{
-                                                                                            driver_vehicle.driver.first_name
-                                                                                        }}
-                                                                                    </dd>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4 ">
-                                                                                    <dt class="text-gray-500">Last
-                                                                                        name
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{
-                                                                                            driver_vehicle.driver.last_name
-                                                                                        }}
-                                                                                    </dd>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4">
-                                                                                    <dt class="text-gray-500">Cell no
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{ driver_vehicle.driver.cell_no }}
-                                                                                    </dd>
-                                                                                </div>
-
-                                                                            </div>
-                                                                        </div>
-
-                                                                    </div>
-
-                                                                    <div>
-                                                                        <div class="mt-3">
-                                                                            <div class="">
-                                                                                <div class="px-4 sm:px-0">
-                                                                                    <h3 class="text-base font-semibold leading-7 text-indigo-400">
-                                                                                        Selected Vehicle</h3>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4 ">
-                                                                                    <dt class="text-gray-500">
-                                                                                        Registration number
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{
-                                                                                            driver_vehicle.vehicle.reg_no
-                                                                                        }}
-                                                                                    </dd>
-                                                                                </div>
-
-                                                                                <div
-                                                                                    class="flex justify-between gap-x-4 ">
-                                                                                    <dt class="text-gray-500">Vehicle
-                                                                                        Type
-                                                                                    </dt>
-                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                        {{
-                                                                                            driver_vehicle.vehicle.vehicle_type.name
-                                                                                        }}
-                                                                                    </dd>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-
-                                                                    </div>
-
-
-                                                                </div>
-
-                                                                <div class="mt-6 col-span-4">
-
-                                                                    <div v-if="viewDriverVehicleModal">
-                                                                        <DriverVehicleModal
-                                                                            :show="viewDriverVehicleModal"
-                                                                            @close="closeDriverVehicleModal"
-                                                                            :transport_trans_id="props.selected_transaction.id"
-                                                                            :transport_job_id="props.selected_transaction.transport_job.id"
-                                                                            :driver_vehicle="currentDriverVehicle"
-                                                                            :all_drivers="props.all_drivers"
-                                                                            :all_vehicles="props.all_vehicles"
-                                                                        />
-                                                                    </div>
-
-
-                                                                    <SecondaryButton class="m-1"
-                                                                                     @click="viewDriverVehicle(driver_vehicle)">
-                                                                        Edit
-                                                                    </SecondaryButton>
-
-                                                                    <!--                                                                    <SecondaryButton class="m-1"
-                                                                                                                                                         @click="deleteDriverVehicle(driver_vehicle.id)">
-                                                                                                                                            Delete
-                                                                                                                                        </SecondaryButton>-->
-
-
-                                                                </div>
-
-                                                            </div>
+                                                    <div class="mt-3">
+                                                        <div class="flex col-span-2 mt-2">
+                                                            <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                <Switch  v-model="combined_Form.is_transport_scheduled"
+                                                                         :class="[combined_Form.is_transport_scheduled ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_transport_scheduled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                </Switch>
+                                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                                    <span class="font-medium text-gray-900">Scheduled</span>
+                                                                </SwitchLabel>
+                                                            </SwitchGroup>
                                                         </div>
                                                     </div>
 
-                                                </dl>
+                                                </div>
+
+
+
                                             </li>
 
                                             <li class="overflow-hidden rounded-xl border border-gray-200">
@@ -7965,7 +7808,7 @@ const doCreatedTrade = (_id) => {
                                                 </dl>
                                             </li>
 
-                                            <li v-if="selected_transaction.contract_type_id === 2 || selected_transaction.contract_type_id === 4"
+<!--                                            <li v-if="selected_transaction.contract_type_id === 2 || selected_transaction.contract_type_id === 4"
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
                                                     class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
@@ -8011,7 +7854,7 @@ const doCreatedTrade = (_id) => {
                                                             </dd>
                                                         </div>
 
-<!--                                                        <div class="flex justify-between gap-x-4 py-3">
+&lt;!&ndash;                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Working Document</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <a :href="'/pdf_report/purchase_order_view/' + props.selected_transaction.id"
@@ -8020,11 +7863,11 @@ const doCreatedTrade = (_id) => {
                                                                     View
                                                                 </a>
                                                             </dd>
-                                                        </div>-->
+                                                        </div>&ndash;&gt;
 
 
 
-                                                        <!--                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                        &lt;!&ndash;                                                        <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Generate Final</dt>
                                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                                         <SecondaryButton @click="">
@@ -8052,7 +7895,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                     </dd>
 
 
-                                                                                                                </div>-->
+                                                                                                                </div>&ndash;&gt;
                                                     </div>
 
                                                     <div v-else>
@@ -8070,7 +7913,7 @@ const doCreatedTrade = (_id) => {
 
 
                                                 </dl>
-                                            </li>
+                                            </li>-->
                                             <li v-if="selected_transaction.contract_type_id === 2 || selected_transaction.contract_type_id === 4"
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
@@ -8129,7 +7972,7 @@ const doCreatedTrade = (_id) => {
                                                 </dl>
                                             </li>
 
-                                            <li v-if="selected_transaction.contract_type_id === 3 || selected_transaction.contract_type_id === 4"
+<!--                                            <li v-if="selected_transaction.contract_type_id === 3 || selected_transaction.contract_type_id === 4"
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
                                                     class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
@@ -8175,7 +8018,7 @@ const doCreatedTrade = (_id) => {
                                                             </dd>
                                                         </div>
 
-<!--                                                        <div class="flex justify-between gap-x-4 py-3">
+&lt;!&ndash;                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Working Document</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <a :href="'/pdf_report/sales_order_view/' + props.selected_transaction.id"
@@ -8184,8 +8027,8 @@ const doCreatedTrade = (_id) => {
                                                                     View
                                                                 </a>
                                                             </dd>
-                                                        </div>-->
-                                                        <!--                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                        </div>&ndash;&gt;
+                                                        &lt;!&ndash;                                                        <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Generate Final</dt>
                                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                                         <SecondaryButton @click="">
@@ -8213,7 +8056,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                     </dd>
 
 
-                                                                                                                </div>-->
+                                                                                                                </div>&ndash;&gt;
                                                     </div>
 
                                                     <div v-else>
@@ -8231,7 +8074,8 @@ const doCreatedTrade = (_id) => {
 
 
                                                 </dl>
-                                            </li>
+                                            </li>-->
+
                                             <li v-if="selected_transaction.contract_type_id === 3 || selected_transaction.contract_type_id === 4 "
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
