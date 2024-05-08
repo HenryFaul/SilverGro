@@ -184,7 +184,7 @@ const props = defineProps({
     loading_hour_options: Object,
     all_drivers: Object,
     all_vehicles: Object,
-    all_vehicles_types: Object,
+    all_vehicle_types: Object,
     all_transport_rates: Object,
     all_status_entities: Object,
     all_status_types: Object,
@@ -216,9 +216,9 @@ const tabs_split = [
     {id: 3, name: 'Transport', current: false},
     {id: 4, name: 'Pricing', current: false},
     {id: 5, name: 'Invoice', current: false},
-    {id: 6, name: 'Process Control', current: false},
     {id: 7, name: 'Linked Trades', current: false},
     {id: 8, name: 'Documents', current: false},
+    {id: 6, name: 'Process Control', current: false},
     {id: 9, name: 'Log', current: false},
     {id: 11, name: 'Split Customers', current: false},
 ];
@@ -230,9 +230,9 @@ const tabs_non_split = [
     {id: 3, name: 'Transport', current: false},
     {id: 4, name: 'Pricing', current: false},
     {id: 5, name: 'Invoice', current: false},
-    {id: 6, name: 'Process Control', current: false},
     {id: 7, name: 'Linked Trades', current: false},
     {id: 8, name: 'Documents', current: false},
+    {id: 6, name: 'Process Control', current: false},
     {id: 9, name: 'Log', current: false},
 ];
 
@@ -279,7 +279,6 @@ const closeContractLinkSc = () => {
 };
 
 const newTradeAdded = () => {
-
     filterForm.new_trade_added = true;
 }
 
@@ -288,7 +287,7 @@ const filterForm = useForm({
     isActive: props.filters.isActive ?? null,
     field: props.filters.field ?? null,
     direction: props.filters.direction ?? "asc",
-    show: props.filters.show ?? 5,
+    show: props.filters.show ?? 25,
     supplier_name: props.filters.supplier_name ?? null,
     customer_name: props.filters.customer_name ?? null,
     transporter_name: props.filters.transporter_name ?? null,
@@ -573,6 +572,10 @@ let updateSelectValues = () => {
     combined_Form.loading_instructions = props.selected_transaction.transport_job.loading_instructions;
     combined_Form.offloading_instructions = props.selected_transaction.transport_job.offloading_instructions;
 
+    combined_Form.loading_contact = props.selected_transaction.transport_job.loading_contact;
+    combined_Form.loading_contact_no = props.selected_transaction.transport_job.loading_contact_no;
+    combined_Form.offloading_contact = props.selected_transaction.transport_job.offloading_contact;
+    combined_Form.offloading_contact_no = props.selected_transaction.transport_job.offloading_contact_no;
 
     //combined_Form
 
@@ -616,8 +619,8 @@ let updateSelectValues = () => {
 
 
     //Driver vehicle
-    combined_Form.regular_driver_id = props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_driver_id;
-    combined_Form.regular_vehicle_id = props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_vehicle_id;
+    combined_Form.regular_driver_id = props.all_drivers.find(element => element.id === props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_driver_id);
+    combined_Form.regular_vehicle_id = props.all_vehicles.find(element => element.id === props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_vehicle_id);
     combined_Form.weighbridge_upload_weight = props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_upload_weight;
     combined_Form.weighbridge_offload_weight = props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_offload_weight;
     combined_Form.is_weighbridge_variance = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_weighbridge_variance;
@@ -635,9 +638,10 @@ let updateSelectValues = () => {
     combined_Form.date_paid = props.selected_transaction.transport_job.transport_driver_vehicle[0].date_paid;
     combined_Form.is_payment_overdue = props.selected_transaction.transport_job.transport_driver_vehicle[0].is_payment_overdue;
     combined_Form.driver_vehicle_loading_number = props.selected_transaction.transport_job.transport_driver_vehicle[0].driver_vehicle_loading_number;
+    combined_Form.trailer_reg_1 = props.selected_transaction.transport_job.transport_driver_vehicle[0].trailer_reg_1;
+    combined_Form.trailer_reg_2 = props.selected_transaction.transport_job.transport_driver_vehicle[0].trailer_reg_2;
 
-
-   combined_Form.clearErrors();
+    combined_Form.clearErrors();
 }
 
 let no_units_to_allocate = computed(() => combined_Form.no_units_outgoing - combined_Form.no_units_outgoing_2 - combined_Form.no_units_outgoing_3 - combined_Form.no_units_outgoing_4 - combined_Form.no_units_outgoing_5);
@@ -769,6 +773,11 @@ let combined_Form = useForm({
     number_loads: props.selected_transaction.transport_job.number_loads,
     loading_instructions: props.selected_transaction.transport_job.loading_instructions,
     offloading_instructions: props.selected_transaction.transport_job.offloading_instructions,
+    loading_contact: props.selected_transaction.transport_job.loading_contact,
+    loading_contact_no: props.selected_transaction.transport_job.loading_contact_no,
+    offloading_contact: props.selected_transaction.transport_job.offloading_contact,
+    offloading_contact_no: props.selected_transaction.transport_job.offloading_contact_no,
+
 
     //Transport Finance
 
@@ -813,10 +822,10 @@ let combined_Form = useForm({
 
     //driver_vehicle
 
-    //props.selected_transaction.transport_job.transport_driver_vehicle[0]
 
-    regular_driver_id: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? 1 : props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_driver_id,
-    regular_vehicle_id: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? 1 : props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_vehicle_id,
+    regular_driver_id: props.all_drivers.find(element => element.id === props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_driver_id),
+    regular_vehicle_id: props.all_vehicles.find(element => element.id === props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_vehicle_id),
+
     weighbridge_upload_weight: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? 0 : props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_upload_weight,
     weighbridge_offload_weight: props.selected_transaction.transport_job.transport_driver_vehicle[0]== null ? 0 : props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_offload_weight,
     is_weighbridge_variance: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_weighbridge_variance,
@@ -834,6 +843,8 @@ let combined_Form = useForm({
     date_paid: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].date_paid,
     is_payment_overdue: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? false : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_payment_overdue,
     driver_vehicle_loading_number: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].driver_vehicle_loading_number,
+    trailer_reg_1: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].trailer_reg_1,
+    trailer_reg_2: props.selected_transaction.transport_job.transport_driver_vehicle[0] == null ? null : props.selected_transaction.transport_job.transport_driver_vehicle[0].trailer_reg_2,
 
     update_related_models: 0
 
@@ -1324,9 +1335,28 @@ const filteredCustomers5 = computed(() =>
         })
 );
 
+let selectedVehicleQuery = ref('');
+
+const filteredSelectedVehicles = computed(() =>
+    selectedVehicleQuery.value === ''
+        ? props.all_vehicles
+        : props.all_vehicles.filter((vehicle) => {
+            return vehicle.reg_no.toLowerCase().includes(selectedVehicleQuery.value.toLowerCase())
+        })
+);
+
+let selectedDriverQuery = ref('');
+
+const filteredSelectedDrivers = computed(() =>
+    selectedDriverQuery.value === ''
+        ? props.all_drivers
+        : props.all_drivers.filter((driver) => {
+            return driver.first_name.toLowerCase().includes(selectedDriverQuery.value.toLowerCase())
+        })
+);
+
 
 let transporterQuery = ref('');
-
 const filteredTransporters = computed(() =>
     transporterQuery.value === ''
         ? props.all_transporters
@@ -1453,6 +1483,18 @@ const createStatus = () => {
     });
 };
 
+const deleteStatus = (id) => {
+    status_Form.delete(route('transport_status.destroy',id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            swal(usePage().props.jetstream.flash?.banner || '');
+        },
+        onError: (e) => {
+            console.log(e);
+        },
+    });
+};
+
 const getTitle = computed(() => {
 
     if(props.selected_transaction.a_mq !=null){
@@ -1460,7 +1502,6 @@ const getTitle = computed(() => {
     } else{
         return  "ID:" + props.selected_transaction.id;
     }
-
 });
 
 let showDriver = ref(false);
@@ -1495,7 +1536,9 @@ const getComponentProps = () => {
         vehicleSlideProps.value = res.data['vehicle_types'];
     });
 
-};const createProduct = () => {
+};
+
+const createProduct = () => {
 
     driverForm.post(route('regular_driver.store'), {
         preserveScroll: true,
@@ -1546,7 +1589,7 @@ const doCreatedTrade = (_id) => {
             </h2>
         </template>
 
-        <div class="py-1">
+        <div class="p-1">
 
             <div class="bg-white  overflow-x-auto  m-1 p-1 shadow-xl sm:rounded-lg">
 
@@ -1747,7 +1790,7 @@ const doCreatedTrade = (_id) => {
                                                           @created_trade="doCreatedTrade"/>
                                     </div>
                                     <div class="">
-                                        <div class="overflow-y-auto h-72">
+                                        <div class="overflow-y-auto h-64">
                                             <table class="min-w-full border-separate border-spacing-0">
                                                 <thead>
                                                 <tr>
@@ -1871,11 +1914,10 @@ const doCreatedTrade = (_id) => {
 
                                                 </tbody>
                                             </table>
-
-                                            <div v-if="transactions.data.length"
-                                                 class="w-full flex justify-center mt-5 mb-4">
-                                                <PaginationModified :links="transactions.links"/>
-                                            </div>
+                                        </div>
+                                        <div v-if="transactions.data.length"
+                                             class="w-full flex justify-center mt-5 mb-4">
+                                            <PaginationModified :links="transactions.links"/>
                                         </div>
                                     </div>
 
@@ -1886,7 +1928,7 @@ const doCreatedTrade = (_id) => {
                 </div>
             </div>
 
-            <div class="sticky bg-white m-1 p-1  shadow-xl sm:rounded-lg">
+            <div class="sticky bg-white m-2 p-1  shadow-xl sm:rounded-lg">
                 <div>
                     <div class="px-2 sm:px-3 lg:px-4">
                         <div>
@@ -5106,30 +5148,57 @@ const doCreatedTrade = (_id) => {
                                                 </div>
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 
-
                                                     <div>
-
-                                                        <div class="mt-3">
-                                                            <label class="block text-sm font-medium leading-6 text-gray-900">Driver/Vehicle loading no</label>
-
-                                                            <input  id="loading_no"
-                                                                    v-model="combined_Form.driver_vehicle_loading_number"
-                                                                    type="text"
-                                                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
-
-                                                            <!--                                    <InputError class="mt-2" :message="form.errors.line_1"/>-->
-                                                        </div>
-
-                                                        <div class="mt-3">
+                                                        <div class="mt-1">
 
                                                             <label class="block text-sm font-medium leading-6 text-gray-900">Driver</label>
 
-                                                            <select v-model="combined_Form.regular_driver_id"
+                                                            <div>
+                                                                <Combobox as="div"
+                                                                          v-model="combined_Form.regular_driver_id">
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="selectedDriverQuery = $event.target.value"
+                                                                            :display-value="(driver) => driver?.first_name + ' '+driver?.last_name"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon
+                                                                                class="h-5 w-5 text-gray-400"
+                                                                                aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <ComboboxOptions
+                                                                            v-if="filteredSelectedDrivers.length > 0"
+                                                                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                            <ComboboxOption
+                                                                                v-for="driver in filteredSelectedDrivers"
+                                                                                :key="driver.id"
+                                                                                :value="driver"
+                                                                                as="template"
+                                                                                v-slot="{ active, selected }">
+                                                                                <ul>
+                                                                                    <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                   <span :class="['block truncate', selected && 'font-semibold']">{{driver.first_name }} {{driver.last_name }}
+                                                                                   </span>
+                                                                                        <span v-if="selected"
+                                                                                              :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                              <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                       </span>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </ComboboxOption>
+                                                                        </ComboboxOptions>
+                                                                    </div>
+                                                                </Combobox>
+                                                            </div>
+
+<!--                                                            <select v-model="combined_Form.regular_driver_id"
                                                                     class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                                                 <option v-for="n in props.all_drivers" :key="n.id" :value="n.id">
                                                                     {{n.first_name}} {{n.last_legal_name}}
                                                                 </option>
-                                                            </select>
+                                                            </select>-->
 
                                                             <InputError class="mt-2" :message="combined_Form.errors.regular_driver_id"/>
                                                             <div @click="toggleShowDriver" class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">+ Add driver</div>
@@ -5222,16 +5291,56 @@ const doCreatedTrade = (_id) => {
                                                             </div>
 
                                                         </div>
-
-                                                        <div class="mt-3">
+                                                        <div class="mt-1">
 
                                                             <label class="block text-sm font-medium leading-6 text-gray-900">Vehicle</label>
-                                                            <select v-model="combined_Form.regular_vehicle_id"
+
+                                                            <div>
+                                                                <Combobox as="div"
+                                                                          v-model="combined_Form.regular_vehicle_id">
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="selectedVehicleQuery = $event.target.value"
+                                                                            :display-value="(vehicle) => vehicle?.reg_no+' '+vehicle?.vehicle_type.name "/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon
+                                                                                class="h-5 w-5 text-gray-400"
+                                                                                aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <ComboboxOptions
+                                                                            v-if="filteredSelectedVehicles.length > 0"
+                                                                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                            <ComboboxOption
+                                                                                v-for="vehicle in filteredSelectedVehicles"
+                                                                                :key="vehicle.id"
+                                                                                :value="vehicle"
+                                                                                as="template"
+                                                                                v-slot="{ active, selected }">
+                                                                                <ul>
+                                                                                    <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                   <span :class="['block truncate', selected && 'font-semibold']">{{vehicle.reg_no }} {{vehicle.vehicle_type.name}}
+                                                                                   </span>
+                                                                                        <span v-if="selected"
+                                                                                              :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                              <CheckIcon class="h-5 w-5" aria-hidden="true"/>
+                                                                                       </span>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </ComboboxOption>
+                                                                        </ComboboxOptions>
+                                                                    </div>
+                                                                </Combobox>
+                                                            </div>
+
+<!--                                                            <select v-model="combined_Form.regular_vehicle_id"
                                                                     class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                                                 <option v-for="n in props.all_vehicles" :key="n.id" :value="n.id">
                                                                     {{n.reg_no}} - {{n.vehicle_type.name}}
                                                                 </option>
-                                                            </select>
+                                                            </select>-->
 
                                                             <InputError class="mt-2" :message="combined_Form.errors.regular_driver_id"/>
 
@@ -5268,7 +5377,7 @@ const doCreatedTrade = (_id) => {
                                                                             <div class="sm:col-span-2">
                                                                                 <select v-model="vehicleForm.vehicle_type_id"
                                                                                         class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                                                    <option v-for="n in all_vehicles_types" :key="n.id" :value="n.id">{{
+                                                                                    <option v-for="n in all_vehicle_types" :key="n.id" :value="n.id">{{
                                                                                             n.name
                                                                                         }}
                                                                                     </option>
@@ -5320,10 +5429,77 @@ const doCreatedTrade = (_id) => {
                                                             </div>
 
                                                         </div>
-
                                                     </div>
 
+                                                    <dl class="-my-3 mt-3 divide-y divide-gray-100 px-1 py-1 text-sm leading-6">
 
+                                                        <div>Captured details</div>
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Driver First</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                               {{combined_Form.regular_driver_id.first_name}}
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Driver Last</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                {{combined_Form.regular_driver_id.last_name}}
+                                                            </dd>
+                                                        </div>
+
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Driver Cell</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                {{combined_Form.regular_driver_id.cell_no}}
+                                                            </dd>
+                                                        </div>
+
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Vehicle reg</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                {{combined_Form.regular_vehicle_id.reg_no}}
+                                                            </dd>
+                                                        </div>
+
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Vehicle type</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                {{combined_Form.regular_vehicle_id.vehicle_type.name}}
+                                                            </dd>
+                                                        </div>
+
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Loading no</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <input  id="loading_no"
+                                                                        v-model="combined_Form.driver_vehicle_loading_number"
+                                                                        type="text"
+                                                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                            </dd>
+                                                        </div>
+
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Trailer 1</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <input  id="trailer_reg_1"
+                                                                        v-model="combined_Form.trailer_reg_1"
+                                                                        type="text"
+                                                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                            </dd>
+                                                        </div>
+
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Trailer 2</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <input  id="trailer_reg_2"
+                                                                        v-model="combined_Form.trailer_reg_2"
+                                                                        type="text"
+                                                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                            </dd>
+                                                        </div>
+
+
+                                                    </dl>
                                                 </dl>
                                             </li>
 
@@ -5335,8 +5511,8 @@ const doCreatedTrade = (_id) => {
                                                     </div>
                                                 </div>
 
-                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-1 text-sm leading-6">
+                                                    <div class="flex justify-between gap-x-4 py-1">
 
                                                         <div class="mt-2 flex col-span-4">
 
@@ -5387,12 +5563,39 @@ const doCreatedTrade = (_id) => {
 
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                    <div>
+                                                        <dl class="-my-3 mt-3 divide-y divide-gray-100 px-1 py-1 text-sm leading-6">
+
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Contact Person</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <input  id="contact1"
+                                                                            v-model="combined_Form.loading_contact"
+                                                                            type="text"
+                                                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                </dd>
+                                                            </div>
+
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Contact No</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <input  id="contact_no_1"
+                                                                            v-model="combined_Form.loading_contact_no"
+                                                                            type="text"
+                                                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                </dd>
+                                                            </div>
+
+                                                        </dl>
+
+                                                    </div>
+
+                                                    <div class="flex mt-1 justify-between gap-x-4 py-1">
 
                                                         <AreaInput
                                                             id="loading_instructions"
                                                             v-model="combined_Form.loading_instructions"
-                                                            :rows=4
+                                                            :rows=2
                                                             placeholder="Optional notes..."
                                                             type="text"
                                                             class="mt-1 block w-1/3"
@@ -5404,7 +5607,7 @@ const doCreatedTrade = (_id) => {
 
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                    <div class="flex justify-between gap-x-4 py-1">
 
                                                         <div class="mt-2 flex col-span-4">
 
@@ -5412,7 +5615,7 @@ const doCreatedTrade = (_id) => {
 
                                                                 <label
                                                                     class="block text-sm font-medium leading-6 text-gray-900">Offloading
-                                                                    hour to:</label>
+                                                                    hour from:</label>
 
                                                                 <select
                                                                     v-model="combined_Form.offloading_hours_from_id"
@@ -5457,12 +5660,37 @@ const doCreatedTrade = (_id) => {
 
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                    <div>
+                                                        <dl class="-my-3 mt-3 divide-y divide-gray-100 px-1 py-1 text-sm leading-6">
+
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Contact Person</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <input  id="contact2"
+                                                                            v-model="combined_Form.offloading_contact"
+                                                                            type="text"
+                                                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                </dd>
+                                                            </div>
+
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Contact No</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <input  id="contact_no_2"
+                                                                            v-model="combined_Form.offloading_contact_no"
+                                                                            type="text"
+                                                                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                                </dd>
+                                                            </div>
+                                                        </dl>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
 
                                                         <AreaInput
                                                             id="offloading_instructions"
                                                             v-model="combined_Form.offloading_instructions"
-                                                            :rows=4
+                                                            :rows=2
                                                             placeholder="Optional notes..."
                                                             type="text"
                                                             class="mt-1 block w-1/3"
@@ -6340,6 +6568,23 @@ const doCreatedTrade = (_id) => {
                                                     </div>
 
                                                     <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Transaction done</dt>
+                                                        <dd class="flex items-start gap-x-2">
+
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-1 items-center">
+                                                                    <Switch
+                                                                        v-model="combined_Form.is_transaction_done"
+                                                                        :class="[combined_Form.is_transaction_done ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                <span aria-hidden="true"
+                                                                      :class="[combined_Form.is_transaction_done ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+
+                                                                </SwitchGroup>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-1">
                                                         <dt class="text-gray-500">Phase</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
@@ -6360,7 +6605,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Active</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                <SwitchGroup as="div" class="flex m-1 items-center">
                                                                     <Switch v-model="combined_Form.is_active"
                                                                             :class="[combined_Form.is_active ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                 <span aria-hidden="true"
@@ -6374,7 +6619,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Invoiced</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                <SwitchGroup as="div" class="flex m-1 items-center">
                                                                     <Switch v-model="combined_Form.is_invoiced"
                                                                             :class="[combined_Form.is_invoiced ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                 <span aria-hidden="true"
@@ -6388,7 +6633,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Paid</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                <SwitchGroup as="div" class="flex m-1 items-center">
                                                                     <Switch
                                                                         v-model="combined_Form.is_invoice_paid"
                                                                         :class="[combined_Form.is_invoice_paid ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
@@ -6399,7 +6644,21 @@ const doCreatedTrade = (_id) => {
                                                             </div>
                                                         </dd>
                                                     </div>
-
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Weighbridge cert received</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-1 items-center">
+                                                                    <Switch
+                                                                        v-model="combined_Form.is_weighbridge_certificate_received"
+                                                                        :class="[combined_Form.is_weighbridge_certificate_received ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                <span aria-hidden="true"
+                                                                 :class="[combined_Form.is_weighbridge_certificate_received ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+                                                                </SwitchGroup>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
 
                                                 </dl>
                                             </li>
@@ -6670,6 +6929,303 @@ const doCreatedTrade = (_id) => {
                                             <li class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
                                                     class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Driver &
+                                                        vehicles (Specific)
+                                                    </div>
+                                                </div>
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+<!--                                                    <driver-vehicle-state-component
+                                                        :transport_trans_id="props.selected_transaction.id"
+                                                        :transport_job_id="props.selected_transaction.transport_job.id"
+                                                        :driver_vehicle="props.selected_transaction.transport_job.transport_driver_vehicle[0]"
+                                                        :all_drivers="props.all_drivers"
+                                                        :all_vehicles="props.all_vehicles"
+                                                    />-->
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Transport planned</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div v-if="selected_transaction.transporter_id !==1">
+                                                                <check-icon class="h-5 h-5"/>
+                                                            </div>
+                                                            <div v-else>
+                                                                <x-mark-icon class="h-5 h-5"/>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Transport scheduled</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div v-if="props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_vehicle_id !==1">
+                                                                <check-icon class="h-5 h-5"/>
+                                                            </div>
+                                                            <div v-else >
+                                                                <x-mark-icon class="h-5 h-5"/>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+
+                                                    <div v-if="transport_order.is_active">
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Transport Confirmation Sent</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <div>
+                                                                        <div v-if="transport_order.is_to_sent">
+                                                                            <p>
+                                                                                <check-icon class="h-5 h-5"/>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <SecondaryButton @click="sendTransportOrder">
+                                                                                Sent
+                                                                            </SecondaryButton>
+                                                                        </div>
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="flex justify-between gap-x-4 py-1">
+                                                                <dt class="text-gray-500">Transport Confirmation Received</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <div>
+                                                                        <div v-if="transport_order.is_to_received">
+                                                                            <p>
+                                                                                <check-icon class="h-5 h-5"/>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <SecondaryButton @click="receiveTransportOrder">
+                                                                                Received
+                                                                            </SecondaryButton>
+                                                                        </div>
+                                                                    </div>
+                                                                </dd>
+                                                            </div>
+
+                                                        </div>
+                                                    <div v-else>
+
+                                                            <p class="text-red-400 font-bold">Transport order Not Active</p>
+                                                            <div class="flex justify-between gap-x-4 py-3">
+                                                                <dt class="text-gray-500">Activate Transport Order</dt>
+                                                                <dd class="flex items-start gap-x-2">
+                                                                    <SecondaryButton @click="activateTransportOrder">
+                                                                        Activate
+                                                                    </SecondaryButton>
+                                                                </dd>
+                                                            </div>
+                                                        </div>
+
+
+                                                </dl>
+
+                                                <div class="m-2 p-2">
+                                                    <div class="mt-3">
+                                                        <div class="flex col-span-2 mt-2">
+                                                            <SwitchGroup  as="div" class="flex m-2 items-center">
+                                                                <Switch  v-model="combined_Form.is_cancelled"
+                                                                         :class="[combined_Form.is_cancelled ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_cancelled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                </Switch>
+                                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                                    <span class="font-medium text-gray-900">Cancelled</span>
+                                                                </SwitchLabel>
+                                                            </SwitchGroup>
+
+
+                                                        </div>
+
+                                                        <div class="flex col-span-2 mt-2">
+
+                                                            <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                <Switch v-model="combined_Form.is_onroad"
+                                                                        :class="[combined_Form.is_onroad ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_onroad ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                </Switch>
+                                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                                    <span class="font-medium text-gray-900">On road</span>
+                                                                </SwitchLabel>
+                                                            </SwitchGroup>
+
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="mt-3">
+                                                        <div class="flex col-span-2 mt-2">
+                                                            <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                <Switch  v-model="combined_Form.is_transport_scheduled"
+                                                                         :class="[combined_Form.is_transport_scheduled ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                <span aria-hidden="true"
+                                                      :class="[combined_Form.is_transport_scheduled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                </Switch>
+                                                                <SwitchLabel as="span" class="ml-3 text-sm">
+                                                                    <span class="font-medium text-gray-900">Scheduled</span>
+                                                                </SwitchLabel>
+                                                            </SwitchGroup>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+
+
+                                            </li>
+
+                                            <li class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div
+                                                    class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">
+                                                        Operations
+                                                    </div>
+                                                </div>
+
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-2 text-sm leading-6">
+
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Include in calculations</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                    <Switch
+                                                                        v-model="combined_Form.include_in_calculations"
+                                                                        :class="[combined_Form.include_in_calculations ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                 <span aria-hidden="true"
+                                                          :class="[combined_Form.include_in_calculations ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+                                                                </SwitchGroup>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Loaded</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                    <Switch  v-model="combined_Form.is_loaded"
+                                                                             :class="[combined_Form.is_loaded ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                               <span aria-hidden="true"
+                                                                     :class="[combined_Form.is_loaded ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+                                                                </SwitchGroup>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Delivered</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                    <Switch  v-model="combined_Form.is_delivered"
+                                                                             :class="[combined_Form.is_delivered ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                     <span aria-hidden="true"
+                                                      :class="[combined_Form.is_delivered ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+                                                                </SwitchGroup>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Contract type</dt>
+                                                        <dd class="flex items-start gap-x-2">
+
+                                                            <div>
+                                                                <Combobox as="div"
+                                                                          v-model="combined_Form.contract_type_id">
+                                                                    <div class="relative mt-2">
+                                                                        <ComboboxInput
+                                                                            class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                            @change="contractTypeQuery = $event.target.value"
+                                                                            :display-value="(type) => type?.name"/>
+                                                                        <ComboboxButton
+                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                                                            <ChevronUpDownIcon
+                                                                                class="h-5 w-5 text-gray-400"
+                                                                                aria-hidden="true"/>
+                                                                        </ComboboxButton>
+
+                                                                        <ComboboxOptions
+                                                                            v-if="filteredContractTypes.length > 0"
+                                                                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                                                            <ComboboxOption
+                                                                                v-for="type in filteredContractTypes"
+                                                                                :key="type.id" :value="type"
+                                                                                as="template"
+                                                                                v-slot="{ active, selected }">
+                                                                                <ul>
+                                                                                    <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                                                    <span
+                                                                                        :class="['block truncate', selected && 'font-semibold']">
+                                                                                      {{ type.name }}
+                                                                                    </span>
+                                                                                        <span v-if="selected"
+                                                                                              :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                                                      <CheckIcon class="h-5 w-5"
+                                                                                                 aria-hidden="true"/>
+                                                                                    </span>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </ComboboxOption>
+                                                                        </ComboboxOptions>
+                                                                    </div>
+                                                                </Combobox>
+
+                                                            </div>
+
+                                                        </dd>
+                                                    </div>
+
+
+                                                    <div class="text-lg mb-2 text-indigo-400">Process notes</div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+
+                                                        <AreaInput
+                                                            id="process_notes"
+                                                            v-model="combined_Form.process_notes"
+                                                            :rows=4
+                                                            placeholder="Optional notes..."
+                                                            type="text"
+                                                            class="mt-1 block w-1/3"
+                                                        />
+
+
+                                                    </div>
+
+                                                    <div class="text-lg mb-2 text-indigo-400">Traders notes</div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+
+                                                        <AreaInput
+                                                            id="traders_notes"
+                                                            v-model="combined_Form.traders_notes"
+                                                            :rows=4
+                                                            placeholder="Optional notes..."
+                                                            type="text"
+                                                            class="mt-1 block w-1/3"
+                                                        />
+
+
+                                                    </div>
+
+
+                                                </dl>
+                                            </li>
+
+                                            <li class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div
+                                                    class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                                                     <div class="text-sm font-medium leading-6 text-gray-900">Operational
                                                         Alerts (Generic)
                                                     </div>
@@ -6763,9 +7319,9 @@ const doCreatedTrade = (_id) => {
                                                                                                 <div class="flex">
                                                                                                     <div
                                                                                                         class="flex-shrink-0">
-                                                                                                        <ExclamationTriangleIcon
-                                                                                                            class="h-5 w-5 text-yellow-400"
-                                                                                                            aria-hidden="true"/>
+                                                                                                        <XCircleIcon @click="deleteStatus(n.id)"
+                                                                                                                     class="h-5 w-5 text-red-400 hover:text-black"
+                                                                                                                     aria-hidden="true"/>
                                                                                                     </div>
                                                                                                     <div class="ml-3">
                                                                                                         <h3 class="text-lg uppercase font-medium text-yellow-800">
@@ -6807,409 +7363,6 @@ const doCreatedTrade = (_id) => {
                                                         </form>
 
                                                     </div>
-
-                                                </dl>
-                                            </li>
-
-                                            <li class="overflow-hidden rounded-xl border border-gray-200">
-                                                <div
-                                                    class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                                                    <div class="text-sm font-medium leading-6 text-gray-900">Driver &
-                                                        vehicles (Specific)
-                                                    </div>
-                                                </div>
-                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-
-<!--                                                    <driver-vehicle-state-component
-                                                        :transport_trans_id="props.selected_transaction.id"
-                                                        :transport_job_id="props.selected_transaction.transport_job.id"
-                                                        :driver_vehicle="props.selected_transaction.transport_job.transport_driver_vehicle[0]"
-                                                        :all_drivers="props.all_drivers"
-                                                        :all_vehicles="props.all_vehicles"
-                                                    />-->
-
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Transport planned</dt>
-                                                        <dd class="flex items-start gap-x-2">
-                                                            <div v-if="selected_transaction.transporter_id !==1">
-                                                                <check-icon class="h-5 h-5"/>
-                                                            </div>
-                                                            <div v-else>
-                                                                <x-mark-icon class="h-5 h-5"/>
-                                                            </div>
-                                                        </dd>
-                                                    </div>
-
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Transport scheduled</dt>
-                                                        <dd class="flex items-start gap-x-2">
-                                                            <div v-if="props.selected_transaction.transport_job.transport_driver_vehicle[0].regular_vehicle_id !==1">
-                                                                <check-icon class="h-5 h-5"/>
-                                                            </div>
-                                                            <div v-else >
-                                                                <x-mark-icon class="h-5 h-5"/>
-                                                            </div>
-                                                        </dd>
-                                                    </div>
-
-
-                                                </dl>
-
-                                                <div>
-                                                    <dl class="-my-3 divide-y divide-gray-100 px-6 py-1 text-sm leading-6">
-                                                        <div>Purchase order</div>
-                                                        <div v-if="purchase_order.is_active">
-                                                            <div class="flex justify-between gap-x-4 py-1">
-                                                                <dt class="text-gray-500">Confirmation Sent</dt>
-                                                                <dd class="flex items-start gap-x-2">
-                                                                    <div>
-                                                                        <div v-if="purchase_order.is_po_sent">
-                                                                            <p>
-                                                                                <check-icon class="h-5 h-5"/>
-                                                                            </p>
-                                                                        </div>
-                                                                        <div v-else>
-                                                                            <SecondaryButton @click="sendPurchaseOrder">
-                                                                                Sent
-                                                                            </SecondaryButton>
-                                                                        </div>
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-                                                            <div class="flex justify-between gap-x-4 py-1">
-                                                                <dt class="text-gray-500">Received</dt>
-                                                                <dd class="flex items-start gap-x-2">
-                                                                    <div>
-                                                                        <div v-if="purchase_order.is_po_received">
-                                                                            <p>
-                                                                                <check-icon class="h-5 h-5"/>
-                                                                            </p>
-                                                                        </div>
-                                                                        <div v-else>
-                                                                            <SecondaryButton @click="receivePurchaseOrder">
-                                                                                Received
-                                                                            </SecondaryButton>
-                                                                        </div>
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-                                                        </div>
-                                                        <div v-else>
-
-                                                            <p class="text-red-400 font-bold">Purchase order Not Active</p>
-                                                            <div class="flex justify-between gap-x-4 py-1">
-                                                                <dt class="text-gray-500">Activate Purchase Order</dt>
-                                                                <dd class="flex items-start gap-x-2">
-                                                                    <SecondaryButton @click="activatePurchaseOrder">
-                                                                        Activate
-                                                                    </SecondaryButton>
-                                                                </dd>
-                                                            </div>
-                                                        </div>
-                                                    </dl>
-
-                                                </div>
-
-                                                <div>
-                                                    <dl class="-my-3 divide-y divide-gray-100 px-6 py-1 text-sm leading-6">
-                                                        <div>Sales order</div>
-                                                        <div v-if="sales_order.is_active">
-                                                            <div class="flex justify-between gap-x-4 py-1">
-                                                                <dt class="text-gray-500">Confirmation Sent</dt>
-                                                                <dd class="flex items-start gap-x-2">
-                                                                    <div>
-                                                                        <div v-if="sales_order.is_sa_conf_sent">
-                                                                            <p>
-                                                                                <check-icon class="h-5 h-5"/>
-                                                                            </p>
-                                                                        </div>
-                                                                        <div v-else>
-                                                                            <SecondaryButton @click="sendSalesOrder">
-                                                                                Sent
-                                                                            </SecondaryButton>
-                                                                        </div>
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-                                                            <div class="flex justify-between gap-x-4 py-1">
-                                                                <dt class="text-gray-500">Received</dt>
-                                                                <dd class="flex items-start gap-x-2">
-                                                                    <div>
-                                                                        <div v-if="sales_order.is_sa_conf_received">
-                                                                            <p>
-                                                                                <check-icon class="h-5 h-5"/>
-                                                                            </p>
-                                                                        </div>
-                                                                        <div v-else>
-                                                                            <SecondaryButton @click="receiveSalesOrder">
-                                                                                Received
-                                                                            </SecondaryButton>
-                                                                        </div>
-                                                                    </div>
-                                                                </dd>
-                                                            </div>
-
-                                                            <!--                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                        <dt class="text-gray-500">Working Document</dt>
-                                                                                                                        <dd class="flex items-start gap-x-2">
-                                                                                                                            <a :href="'/pdf_report/sales_order_view/' + props.selected_transaction.id"
-                                                                                                                               target="_blank"
-                                                                                                                               class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                                                                                                                View
-                                                                                                                            </a>
-                                                                                                                        </dd>
-                                                                                                                    </div>-->
-                                                            <!--                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                        <dt class="text-gray-500">Generate Final</dt>
-                                                                                                                        <dd class="flex items-start gap-x-2">
-                                                                                                                            <SecondaryButton @click="">
-                                                                                                                                Generate
-                                                                                                                            </SecondaryButton>
-                                                                                                                        </dd>
-                                                                                                                    </div>
-                                                                                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                        <dt class="text-gray-500">Download Final</dt>
-
-                                                                                                                        <dd class="flex items-start gap-x-2">
-
-                                                                                                                            <div v-if="deal_ticket.report_path">
-                                                                                                                                <a :href="route('pdf_report.deal_ticket_final.download',deal_ticket.report_path)" target="_blank"
-                                                                                                                                   class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                                                                                                                    Download
-                                                                                                                                </a>
-                                                                                                                            </div>
-
-                                                                                                                            <div v-else>
-                                                                                                                                <p>Not generated</p>
-                                                                                                                            </div>
-
-
-                                                                                                                        </dd>
-
-
-                                                                                                                    </div>-->
-                                                        </div>
-
-                                                        <div v-else>
-
-                                                            <p class="text-red-400 font-bold">Sales order Not Active</p>
-                                                            <div class="flex justify-between gap-x-4 py-3">
-                                                                <dt class="text-gray-500">Activate Sales Order</dt>
-                                                                <dd class="flex items-start gap-x-2">
-                                                                    <SecondaryButton @click="activateSalesOrder">
-                                                                        Activate
-                                                                    </SecondaryButton>
-                                                                </dd>
-                                                            </div>
-                                                        </div>
-
-
-                                                    </dl>
-
-                                                </div>
-
-                                                <div class="m-2 p-2">
-                                                    <div class="mt-3">
-                                                        <div class="flex col-span-2 mt-2">
-                                                            <SwitchGroup  as="div" class="flex m-2 items-center">
-                                                                <Switch  v-model="combined_Form.is_cancelled"
-                                                                         :class="[combined_Form.is_cancelled ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_cancelled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                </Switch>
-                                                                <SwitchLabel as="span" class="ml-3 text-sm">
-                                                                    <span class="font-medium text-gray-900">Cancelled</span>
-                                                                </SwitchLabel>
-                                                            </SwitchGroup>
-
-                                                            <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                <Switch  v-model="combined_Form.is_loaded"
-                                                                         :class="[combined_Form.is_loaded ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_loaded ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                </Switch>
-                                                                <SwitchLabel as="span" class="ml-3 text-sm">
-                                                                    <span class="font-medium text-gray-900">Loaded</span>
-                                                                </SwitchLabel>
-                                                            </SwitchGroup>
-
-                                                        </div>
-
-                                                        <div class="flex col-span-2 mt-2">
-
-                                                            <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                <Switch v-model="combined_Form.is_onroad"
-                                                                        :class="[combined_Form.is_onroad ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_onroad ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                </Switch>
-                                                                <SwitchLabel as="span" class="ml-3 text-sm">
-                                                                    <span class="font-medium text-gray-900">On road</span>
-                                                                </SwitchLabel>
-                                                            </SwitchGroup>
-
-                                                            <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                <Switch  v-model="combined_Form.is_delivered"
-                                                                         :class="[combined_Form.is_delivered ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_delivered ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                </Switch>
-                                                                <SwitchLabel as="span" class="ml-3 text-sm">
-                                                                    <span class="font-medium text-gray-900">Delivered</span>
-                                                                </SwitchLabel>
-                                                            </SwitchGroup>
-                                                        </div>
-
-                                                    </div>
-
-                                                    <div class="mt-3">
-                                                        <div class="flex col-span-2 mt-2">
-                                                            <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                <Switch  v-model="combined_Form.is_transport_scheduled"
-                                                                         :class="[combined_Form.is_transport_scheduled ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_transport_scheduled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                </Switch>
-                                                                <SwitchLabel as="span" class="ml-3 text-sm">
-                                                                    <span class="font-medium text-gray-900">Scheduled</span>
-                                                                </SwitchLabel>
-                                                            </SwitchGroup>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-
-
-                                            </li>
-
-                                            <li class="overflow-hidden rounded-xl border border-gray-200">
-                                                <div
-                                                    class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                                                    <div class="text-sm font-medium leading-6 text-gray-900">
-                                                        Operations
-                                                    </div>
-                                                </div>
-
-                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-
-
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Contract type</dt>
-                                                        <dd class="flex items-start gap-x-2">
-
-                                                            <div>
-                                                                <Combobox as="div"
-                                                                          v-model="combined_Form.contract_type_id">
-                                                                    <div class="relative mt-2">
-                                                                        <ComboboxInput
-                                                                            class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                                                            @change="contractTypeQuery = $event.target.value"
-                                                                            :display-value="(type) => type?.name"/>
-                                                                        <ComboboxButton
-                                                                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                                                            <ChevronUpDownIcon
-                                                                                class="h-5 w-5 text-gray-400"
-                                                                                aria-hidden="true"/>
-                                                                        </ComboboxButton>
-
-                                                                        <ComboboxOptions
-                                                                            v-if="filteredContractTypes.length > 0"
-                                                                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                                                            <ComboboxOption
-                                                                                v-for="type in filteredContractTypes"
-                                                                                :key="type.id" :value="type"
-                                                                                as="template"
-                                                                                v-slot="{ active, selected }">
-                                                                                <ul>
-                                                                                    <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
-                                                                                    <span
-                                                                                        :class="['block truncate', selected && 'font-semibold']">
-                                                                                      {{ type.name }}
-                                                                                    </span>
-                                                                                        <span v-if="selected"
-                                                                                              :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
-                                                                                      <CheckIcon class="h-5 w-5"
-                                                                                                 aria-hidden="true"/>
-                                                                                    </span>
-                                                                                    </li>
-                                                                                </ul>
-                                                                            </ComboboxOption>
-                                                                        </ComboboxOptions>
-                                                                    </div>
-                                                                </Combobox>
-
-                                                            </div>
-
-                                                        </dd>
-                                                    </div>
-
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Include in calculations</dt>
-                                                        <dd class="flex items-start gap-x-2">
-                                                            <div>
-                                                                <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch
-                                                                        v-model="combined_Form.include_in_calculations"
-                                                                        :class="[combined_Form.include_in_calculations ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                    <span aria-hidden="true"
-                                                          :class="[combined_Form.include_in_calculations ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                    </Switch>
-                                                                </SwitchGroup>
-                                                            </div>
-                                                        </dd>
-                                                    </div>
-
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Transaction done</dt>
-                                                        <dd class="flex items-start gap-x-2">
-
-                                                            <div>
-                                                                <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                    <Switch
-                                                                        v-model="combined_Form.is_transaction_done"
-                                                                        :class="[combined_Form.is_transaction_done ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                                <span aria-hidden="true"
-                                                                      :class="[combined_Form.is_transaction_done ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                    </Switch>
-
-                                                                </SwitchGroup>
-                                                            </div>
-                                                        </dd>
-                                                    </div>
-
-                                                    <div class="text-lg mb-2 text-indigo-400">Process notes</div>
-
-                                                    <div class="flex justify-between gap-x-4 py-3">
-
-                                                        <AreaInput
-                                                            id="process_notes"
-                                                            v-model="combined_Form.process_notes"
-                                                            :rows=4
-                                                            placeholder="Optional notes..."
-                                                            type="text"
-                                                            class="mt-1 block w-1/3"
-                                                        />
-
-
-                                                    </div>
-
-                                                    <div class="text-lg mb-2 text-indigo-400">Traders notes</div>
-
-                                                    <div class="flex justify-between gap-x-4 py-3">
-
-                                                        <AreaInput
-                                                            id="traders_notes"
-                                                            v-model="combined_Form.traders_notes"
-                                                            :rows=4
-                                                            placeholder="Optional notes..."
-                                                            type="text"
-                                                            class="mt-1 block w-1/3"
-                                                        />
-
-
-                                                    </div>
-
 
                                                 </dl>
                                             </li>
@@ -7807,8 +7960,7 @@ const doCreatedTrade = (_id) => {
 
                                                 </dl>
                                             </li>
-
-<!--                                            <li v-if="selected_transaction.contract_type_id === 2 || selected_transaction.contract_type_id === 4"
+                                            <li v-if="selected_transaction.contract_type_id === 2"
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
                                                     class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
@@ -7854,7 +8006,7 @@ const doCreatedTrade = (_id) => {
                                                             </dd>
                                                         </div>
 
-&lt;!&ndash;                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                      <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Working Document</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <a :href="'/pdf_report/purchase_order_view/' + props.selected_transaction.id"
@@ -7863,11 +8015,8 @@ const doCreatedTrade = (_id) => {
                                                                     View
                                                                 </a>
                                                             </dd>
-                                                        </div>&ndash;&gt;
-
-
-
-                                                        &lt;!&ndash;                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                        </div>
+<!--                                                         <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Generate Final</dt>
                                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                                         <SecondaryButton @click="">
@@ -7875,7 +8024,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                         </SecondaryButton>
                                                                                                                     </dd>
                                                                                                                 </div>
-                                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                         <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Download Final</dt>
 
                                                                                                                     <dd class="flex items-start gap-x-2">
@@ -7891,11 +8040,9 @@ const doCreatedTrade = (_id) => {
                                                                                                                             <p>Not generated</p>
                                                                                                                         </div>
 
-
                                                                                                                     </dd>
 
-
-                                                                                                                </div>&ndash;&gt;
+                                                                                                                </div>-->
                                                     </div>
 
                                                     <div v-else>
@@ -7913,7 +8060,7 @@ const doCreatedTrade = (_id) => {
 
 
                                                 </dl>
-                                            </li>-->
+                                            </li>
                                             <li v-if="selected_transaction.contract_type_id === 2 || selected_transaction.contract_type_id === 4"
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
@@ -7937,7 +8084,7 @@ const doCreatedTrade = (_id) => {
                                                                 </a>
                                                             </dd>
                                                         </div>
-                                                        <!--                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                                                                             <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Generate Final</dt>
                                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                                         <SecondaryButton @click="">
@@ -7962,7 +8109,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                         </div>
 
                                                                                                                     </dd>
-                                                                                                                </div>-->
+                                                                                                                </div>
                                                     </div>
 
                                                     <div v-else>
@@ -7971,8 +8118,7 @@ const doCreatedTrade = (_id) => {
 
                                                 </dl>
                                             </li>
-
-<!--                                            <li v-if="selected_transaction.contract_type_id === 3 || selected_transaction.contract_type_id === 4"
+                                            <li v-if="selected_transaction.contract_type_id === 3"
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
                                                     class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
@@ -8018,7 +8164,7 @@ const doCreatedTrade = (_id) => {
                                                             </dd>
                                                         </div>
 
-&lt;!&ndash;                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                        <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Working Document</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <a :href="'/pdf_report/sales_order_view/' + props.selected_transaction.id"
@@ -8027,8 +8173,8 @@ const doCreatedTrade = (_id) => {
                                                                     View
                                                                 </a>
                                                             </dd>
-                                                        </div>&ndash;&gt;
-                                                        &lt;!&ndash;                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                        </div>
+<!--                                                     <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Generate Final</dt>
                                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                                         <SecondaryButton @click="">
@@ -8036,7 +8182,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                         </SecondaryButton>
                                                                                                                     </dd>
                                                                                                                 </div>
-                                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                      <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Download Final</dt>
 
                                                                                                                     <dd class="flex items-start gap-x-2">
@@ -8052,11 +8198,9 @@ const doCreatedTrade = (_id) => {
                                                                                                                             <p>Not generated</p>
                                                                                                                         </div>
 
-
                                                                                                                     </dd>
 
-
-                                                                                                                </div>&ndash;&gt;
+                                                                                                                </div>-->
                                                     </div>
 
                                                     <div v-else>
@@ -8072,10 +8216,8 @@ const doCreatedTrade = (_id) => {
                                                         </div>
                                                     </div>
 
-
                                                 </dl>
-                                            </li>-->
-
+                                            </li>
                                             <li v-if="selected_transaction.contract_type_id === 3 || selected_transaction.contract_type_id === 4 "
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
@@ -8133,7 +8275,6 @@ const doCreatedTrade = (_id) => {
 
                                                 </dl>
                                             </li>
-
                                             <li v-if="selected_transaction.contract_type_id === 3 || selected_transaction.contract_type_id === 4 "
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
@@ -8185,8 +8326,6 @@ const doCreatedTrade = (_id) => {
 
                                                 </dl>
                                             </li>
-
-
                                         </ul>
                                     </div>
 

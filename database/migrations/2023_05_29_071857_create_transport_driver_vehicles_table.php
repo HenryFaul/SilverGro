@@ -34,6 +34,8 @@ return new class extends Migration
                 ->references('id')->on('regular_vehicles')->onDelete('cascade');
 
             $table->string('driver_vehicle_loading_number')->nullable();
+            $table->string('trailer_reg_1')->nullable();
+            $table->string('trailer_reg_2')->nullable();
 
             $table->double('weighbridge_upload_weight')->default(0);
             $table->double('weighbridge_offload_weight')->default(0);

@@ -41,6 +41,12 @@ return new class extends Migration
             $table->string('customer_order_number_5')->nullable();
             $table->string('supplier_loading_number_5')->nullable();
 
+            $table->string('loading_contact')->nullable();
+            $table->string('loading_contact_no')->nullable();
+
+            $table->string('offloading_contact')->nullable();
+            $table->string('offloading_contact_no')->nullable();
+
 
             $table->boolean('is_multi_loads')->default(0);
             $table->boolean('is_approved')->default(0);
@@ -62,7 +68,7 @@ return new class extends Migration
                 ->references('id')->on('loading_hour_options')->onDelete('cascade');
             $table->double('load_insurance_per_ton')->default(0);
             $table->double('total_load_insurance')->default(0);
-            $table->integer('number_loads')->default(0);
+            $table->integer('number_loads')->default(1);
             $table->longText('loading_instructions')->nullable();
             $table->longText('offloading_instructions')->nullable();
             $table->longText('comments')->nullable();

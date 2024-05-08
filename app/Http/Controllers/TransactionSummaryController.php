@@ -53,7 +53,7 @@ class TransactionSummaryController extends Controller
             'old_id'
         ]);
 
-        $paginate = $request['show'] ?? 5;
+        $paginate = $request['show'] ?? 25;
 
         $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Customer_2')->with('Customer_3')->with('Customer_4')->with('Supplier')->with('Transporter')->with('Product')->with('TransportFinance')
             ->with('TransportLoad')->with('DealTicket')->with('PurchaseOrder')->with('SalesOrder')->with('TransportOrder')->with('TransportInvoice')
@@ -121,6 +121,7 @@ class TransactionSummaryController extends Controller
 
         $all_terms_of_payments = TermsOfPayment::all();
         $all_vehicle_types= VehicleType::all();
+
 
         $linked_trans = null;
 
@@ -387,8 +388,13 @@ class TransactionSummaryController extends Controller
                 'offloading_hours_from_id' => ['required', 'integer','exists:loading_hour_options,id'],
                 'offloading_hours_to_id' => ['required', 'integer','exists:loading_hour_options,id'],
                 'loading_instructions' => ['nullable','string'],
-                'offloading_instructions' => ['nullable','string']
+                'offloading_instructions' => ['nullable','string'],
+                'loading_contact' => ['nullable','string'],
+                'loading_contact_no' => ['nullable','string'],
+                'offloading_contact' => ['nullable','string'],
+                'offloading_contact_no' => ['nullable','string']
             ])
+
         );
 
 
@@ -397,8 +403,8 @@ class TransactionSummaryController extends Controller
         $transportDriverVehicle = $transportJob->TransportDriverVehicle[0];
 
         $request->validate([
-            'regular_driver_id' => ['required', 'integer','exists:regular_drivers,id'],
-            'regular_vehicle_id' => ['required', 'integer','exists:regular_vehicles,id'],
+            'regular_driver_id.id' => ['required', 'integer','exists:regular_drivers,id'],
+            'regular_vehicle_id.id' => ['required', 'integer','exists:regular_vehicles,id'],
             'weighbridge_upload_weight' => ['required','numeric'],
             'weighbridge_offload_weight' => ['required','numeric'],
             'is_cancelled' => ['required','boolean'],
@@ -410,7 +416,9 @@ class TransactionSummaryController extends Controller
             'is_payment_overdue' => ['required','boolean'],
             'traders_notes' => ['nullable','string'],
             'operations_alert_notes' => ['nullable','string'],
-            'driver_vehicle_loading_number' => ['nullable','string']
+            'driver_vehicle_loading_number' => ['nullable','string'],
+            'trailer_reg_1' => ['nullable','string'],
+            'trailer_reg_2' => ['nullable','string']
         ]);
 
         $cur_date = (Carbon::now())->toDateString();
@@ -429,8 +437,8 @@ class TransactionSummaryController extends Controller
 
         $is_updated = $transportDriverVehicle->update(
             [
-                'regular_driver_id' => $request->regular_driver_id,
-                'regular_vehicle_id' => $request->regular_vehicle_id,
+                'regular_driver_id' => $request->regular_driver_id['id'],
+                'regular_vehicle_id' => $request->regular_vehicle_id['id'],
                 'weighbridge_upload_weight' => $request->weighbridge_upload_weight,
                 'weighbridge_offload_weight' => $request->weighbridge_offload_weight,
                 'is_cancelled' => $request->is_cancelled,
@@ -451,6 +459,8 @@ class TransactionSummaryController extends Controller
                 'date_paid' => $date_paid,
                 'date_payment_overdue' => $date_payment_overdue,
                 'driver_vehicle_loading_number'=>$request->driver_vehicle_loading_number,
+                'trailer_reg_1'=>$request->trailer_reg_1,
+                'trailer_reg_2'=>$request->trailer_reg_2
             ]
         );
 

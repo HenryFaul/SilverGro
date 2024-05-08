@@ -72,8 +72,12 @@ class TransportStatusController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TransportStatus $transportStatus)
+    public function destroy(Request $request, TransportStatus $transportStatus): \Illuminate\Http\RedirectResponse
     {
-        //
+        $transportStatus->delete();
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Status deleted');
+
+        return redirect()->back();
     }
 }
