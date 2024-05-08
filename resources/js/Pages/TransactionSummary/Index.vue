@@ -7018,61 +7018,20 @@ const doCreatedTrade = (_id) => {
                                                             </div>
                                                         </div>
 
-
-                                                </dl>
-
-                                                <div class="m-2 p-2">
-                                                    <div class="mt-3">
-                                                        <div class="flex col-span-2 mt-2">
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Cancelled</dt>
+                                                        <dd class="flex items-start gap-x-2">
                                                             <SwitchGroup  as="div" class="flex m-2 items-center">
                                                                 <Switch  v-model="combined_Form.is_cancelled"
                                                                          :class="[combined_Form.is_cancelled ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                 <span aria-hidden="true"
                                                       :class="[combined_Form.is_cancelled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                 </Switch>
-                                                                <SwitchLabel as="span" class="ml-3 text-sm">
-                                                                    <span class="font-medium text-gray-900">Cancelled</span>
-                                                                </SwitchLabel>
                                                             </SwitchGroup>
-
-
-                                                        </div>
-
-                                                        <div class="flex col-span-2 mt-2">
-
-                                                            <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                <Switch v-model="combined_Form.is_onroad"
-                                                                        :class="[combined_Form.is_onroad ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_onroad ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                </Switch>
-                                                                <SwitchLabel as="span" class="ml-3 text-sm">
-                                                                    <span class="font-medium text-gray-900">On road</span>
-                                                                </SwitchLabel>
-                                                            </SwitchGroup>
-
-
-                                                        </div>
-
+                                                        </dd>
                                                     </div>
 
-                                                    <div class="mt-3">
-                                                        <div class="flex col-span-2 mt-2">
-                                                            <SwitchGroup as="div" class="flex m-2 items-center">
-                                                                <Switch  v-model="combined_Form.is_transport_scheduled"
-                                                                         :class="[combined_Form.is_transport_scheduled ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_transport_scheduled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                </Switch>
-                                                                <SwitchLabel as="span" class="ml-3 text-sm">
-                                                                    <span class="font-medium text-gray-900">Scheduled</span>
-                                                                </SwitchLabel>
-                                                            </SwitchGroup>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
+                                                </dl>
 
 
                                             </li>
@@ -7134,7 +7093,21 @@ const doCreatedTrade = (_id) => {
                                                         </dd>
                                                     </div>
 
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">On road</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                    <Switch v-model="combined_Form.is_onroad"
+                                                                            :class="[combined_Form.is_onroad ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                        <span aria-hidden="true"
+                                                              :class="[combined_Form.is_onroad ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                            </Switch>
 
+                                                                        </SwitchGroup>
+                                                                    </div>
+                                                        </dd>
+                                                    </div>
 
                                                     <div class="flex justify-between gap-x-4 py-1">
                                                         <dt class="text-gray-500">Contract type</dt>
@@ -7185,7 +7158,6 @@ const doCreatedTrade = (_id) => {
 
                                                         </dd>
                                                     </div>
-
 
                                                     <div class="text-lg mb-2 text-indigo-400">Process notes</div>
 
@@ -7238,7 +7210,7 @@ const doCreatedTrade = (_id) => {
                                                         <form class="mt-5">
 
                                                             <div
-                                                                class="mt-2 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                                                class="mt-2 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-6">
 
                                                                 <div class="col-span-6 ">
                                                                     <div class="text-sm mb-2 text-indigo-400">Add
@@ -7289,7 +7261,7 @@ const doCreatedTrade = (_id) => {
                                                                 </div>
 
 
-                                                                <div class="col-span-4 mt-1">
+                                                                <div class="col-span-4">
 
                                                                     <SecondaryButton @click="createStatus" class="">
                                                                         Add Status (+)
