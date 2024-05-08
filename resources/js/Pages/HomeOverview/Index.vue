@@ -213,7 +213,7 @@ const filterForm = useForm({
     isActive: props.filters.isActive ?? null,
     field: props.filters.field ?? null,
     direction: props.filters.direction ?? "asc",
-    show: props.filters.show ?? 5,
+    show: props.filters.show ?? 25,
     supplier_name: props.filters.supplier_name ?? null,
     customer_name: props.filters.customer_name ?? null,
     transporter_name: props.filters.transporter_name ?? null,
@@ -428,9 +428,9 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm 
             </h2>
         </template>
 
-        <div class="p-1">
+        <div class="p-1 h-screen">
 
-            <div class="bg-white overflow-x-auto m-2 p-2 shadow-xl sm:rounded-lg">
+            <div class="bg-white h-3/4  overflow-x-auto m-2 p-2 shadow-xl sm:rounded-lg">
 
                 <div>
                     <div class="px-4 sm:px-6 lg:px-8">
@@ -633,6 +633,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm 
                                                     ></VueDatePicker>
                                                 </div>
                                             </div>
+
                                             <div class="mt-5 ml-1">
                                                 <select v-model="filterForm.contract_type_id"
                                                         class="input-filter-l  w-36 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -649,6 +650,7 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm 
                                                     <option :value=5>5</option>
                                                     <option :value=10>10</option>
                                                     <option :value=25>25</option>
+                                                    <option :value=50>50</option>
                                                     <option :value=100>100</option>
                                                     <option :value=200>200</option>
                                                     <option :value=500>500</option>
@@ -703,8 +705,6 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm 
                                             <div>
                                                 <secondary-button class="" @click="filter">Search</secondary-button>
                                                 <secondary-button class=" ml-1" @click="clear">Clear</secondary-button>
-                                                <secondary-button class=" ml-1" @click="showTradeSlideOver">Add (+)
-                                                </secondary-button>
                                                 <secondary-button class=" ml-1" @click="toggleDetails">Toggle
                                                 </secondary-button>
                                             </div>
@@ -797,11 +797,11 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm 
                                     <div>
                                     </div>
                                     <div class="">
-                                        <div class="">
+                                        <div class="overflow-y-auto h-screen">
                                             <table class="min-w-full border-separate border-spacing-0">
                                                 <thead>
                                                 <tr>
-                                                    <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                                                    <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
                                                         scope="col">ID
                                                     </th>
                                                     <th :class="header_styler" scope="col">TYPE</th>
@@ -820,18 +820,22 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm 
                                                 </thead>
                                                 <tbody>
 
-                                                <tr @click="updateSelectedTrans(transaction.id)"
+                                                <tr
                                                     v-for="(transaction, index) in filteredTrans"
                                                     :key="transaction.id"
                                                     :class="[transaction.id === props.selected_transaction.id  ? 'bg-indigo-300' : '', 'hover:bg-gray-100 text-sm focus-within:bg-gray-100']"
                                                 >
 
                                                     <td :class="row_styler">
-                                                        <div class="font-bold">{{ transaction.id }}</div>
-                                                        <div>{{ transaction.old_id }}</div>
-                                                        <div class="text-indigo-500" v-if="transaction.a_mq">
-                                                            {{ transaction.a_mq }}
-                                                        </div>
+
+                                                        <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: transaction.id }">
+                                                            <span class="font-bold" v-if="transaction.a_mq">
+                                                                (MQ:{{ transaction.a_mq }})
+                                                            </span>
+                                                            <span >(ID:{{ transaction.id }})</span>
+                                                            <span> </span>
+                                                            <span>(Old:{{ transaction.old_id }})</span>
+                                                        </Link>
 
                                                     </td>
                                                     <td :class="row_styler">
@@ -882,12 +886,12 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm 
                                                 </tbody>
                                             </table>
 
-                                            <div v-if="transactions.data.length"
-                                                 class="w-full flex justify-center mt-5 mb-4">
-                                                <PaginationModified :links="transactions.links"/>
-                                            </div>
                                         </div>
 
+                                        <div v-if="transactions.data.length"
+                                             class="w-full flex justify-center mt-5 mb-4">
+                                            <PaginationModified :links="transactions.links"/>
+                                        </div>
                                     </div>
 
 
@@ -900,55 +904,55 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm 
 
             </div>
 
-            <div class="sticky bg-white m-2 p-2 overflow-x-auto shadow-xl sm:rounded-lg">
+            <div class="sticky  bg-white m-2 p-2 shadow-xl sm:rounded-lg">
                 <div>
                     <div class="px-4 sm:px-6 lg:px-8">
 
                         <div>
-                            <div class="relative border-b border-gray-200 pb-5 sm:pb-0">
+                            <div class="relative border-b border-gray-200 pb-1 sm:pb-0">
                                 <div class="md:flex md:items-center md:justify-between">
                                     <h3 v-if="filterForm.end_date" class="text-base font-semibold leading-6 text-gray-900">{{NiceTDate(filters['start_date'])}} to {{NiceTDate(filters['end_date'])}} (filtered)</h3>
-                                    <div class="mt-3 flex md:absolute md:right-0 md:top-3 md:mt-0">
+                                    <div class="mt-1 flex md:absolute md:right-0 md:top-3 md:mt-0">
                                     </div>
                                 </div>
 
                             </div>
-                            <div class="m-2 p-2">
+                            <div class="m-2 p-1">
                                 <div class="mb-2">
                                     <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                                         <table class="min-w-full divide-y divide-gray-300">
                                             <thead>
                                             <tr>
-                                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">No Trades</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Planned Tons In</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Planned Tons Out</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Weight Uploaded</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Weight Offloaded</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Cost Price</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Trans Cost</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Other Cost</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Selling Price</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">GP</th>
-                                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">GP %</th>
+                                                <th scope="col" class="py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">No Trades</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">Planned Tons In</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">Planned Tons Out</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">Weight Uploaded</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">Weight Offloaded</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">Cost Price</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">Trans Cost</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">Other Cost</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">Selling Price</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">GP</th>
+                                                <th scope="col" class="px-3 py-1 text-left text-sm font-semibold text-gray-900">GP %</th>
 
-                                                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                                                <th scope="col" class="relative py-1 pl-3 pr-4 sm:pr-0">
                                                     <span class="sr-only">Edit</span>
                                                 </th>
                                             </tr>
                                             </thead>
                                             <tbody class="divide-y divide-gray-200">
                                             <tr>
-                                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{no_trades}}</td>
-                                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{planned_tons_in}}</td>
+                                                <td class="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{no_trades}}</td>
+                                                <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{{planned_tons_in}}</td>
                                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{planned_tons_out}}</td>
-                                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{weight_uploaded}}</td>
-                                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{weight_offloaded}}</td>
-                                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{NiceNumber(cost_price)}}</td>
-                                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{NiceNumber(trans_cost)}}</td>
-                                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"> {{NiceNumber(other_costs)}}</td>
-                                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{NiceNumber(selling_price)}}</td>
-                                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{NiceNumber(gp)}}</td>
-                                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{gp_perc}}%</td>
+                                                <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{{weight_uploaded}}</td>
+                                                <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{{weight_offloaded}}</td>
+                                                <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{{NiceNumber(cost_price)}}</td>
+                                                <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{{NiceNumber(trans_cost)}}</td>
+                                                <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500"> {{NiceNumber(other_costs)}}</td>
+                                                <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{{NiceNumber(selling_price)}}</td>
+                                                <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{{NiceNumber(gp)}}</td>
+                                                <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{{gp_perc}}%</td>
 
                                             </tr>
                                             </tbody>

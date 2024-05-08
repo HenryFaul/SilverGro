@@ -32,7 +32,7 @@ class HomeOverviewController extends Controller
 
         $filters['contract_type_id'] = 4;
 
-        $paginate = $request['show'] ?? 5;
+        $paginate = $request['show'] ?? 25;
 
         $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Customer_2')->with('Customer_3')->with('Customer_4')->with('Supplier')->with('Transporter')->with('Product')->with('TransportFinance')
             ->with('TransportLoad')->with('DealTicket')->with('PurchaseOrder')->with('SalesOrder')->with('TransportOrder')->with('TransportInvoice')
@@ -201,10 +201,10 @@ class HomeOverviewController extends Controller
                 'purchase_order'=>$purchase_order,
                 'sales_order'=>$sales_order,
                 'linked_trans_other'=>$linked_trans_other,
-                'planned_tons_in'=> round($planned_tons_in,2),
-                'planned_tons_out'=> round($planned_tons_out,2),
-                'weight_uploaded'=> round($weight_uploaded,2),
-                'weight_offloaded'=> round($weight_offloaded,2),
+                'planned_tons_in'=> round($planned_tons_in,4),
+                'planned_tons_out'=> round($planned_tons_out,4),
+                'weight_uploaded'=> round($weight_uploaded,4),
+                'weight_offloaded'=> round($weight_offloaded,4),
                 'cost_price'=> round($cost_price,2),
                 'trans_cost'=> round($trans_cost,2),
                 'other_costs'=> round($other_costs,2),
