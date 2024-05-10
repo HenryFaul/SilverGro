@@ -100,7 +100,7 @@ class TransportApprovalController extends Controller
         //activate if all approvals are done
         if (true){
             $is_updated = false;
-            if (true){
+            if ($is_approved = $deal_ticket->is_approved){
                 $is_updated = $deal_ticket->update(['is_active' =>1]);
 
                 //update tranport order & sales order
@@ -109,6 +109,8 @@ class TransportApprovalController extends Controller
                 $transport_order->update(['is_active' =>1]);
                 $sales_order = $transport_trans->SalesOrder;
                 $sales_order->update(['is_active' =>1]);
+                $purchase_order = $transport_trans->PurchaseOrder;
+                $purchase_order->update(['is_active' =>1]);
 
                 if ($deal_ticket->is_active){
                     $transport_transaction = $deal_ticket->TransportTransaction;
@@ -128,9 +130,7 @@ class TransportApprovalController extends Controller
                     }
                 }
             }
-
         }
-
 
         $request->session()->flash('flash.bannerStyle', 'success');
         $request->session()->flash('flash.banner', 'Approval Updated');
