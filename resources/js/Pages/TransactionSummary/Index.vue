@@ -7018,18 +7018,118 @@ const doCreatedTrade = (_id) => {
                                                             </div>
                                                         </div>
 
+<!--                                                    purchase order-->
+                                                    <div v-if="purchase_order.is_active">
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Purchase Confirmation Sent</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <div>
+                                                                    <div v-if="purchase_order.is_po_sent">
+                                                                        <p>
+                                                                            <check-icon class="h-5 h-5"/>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <SecondaryButton @click="sendPurchaseOrder">
+                                                                            Sent
+                                                                        </SecondaryButton>
+                                                                    </div>
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Purchase Confirmation Received</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <div>
+                                                                    <div v-if="purchase_order.is_po_received">
+                                                                        <p>
+                                                                            <check-icon class="h-5 h-5"/>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <SecondaryButton @click="receivePurchaseOrder">
+                                                                            Received
+                                                                        </SecondaryButton>
+                                                                    </div>
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                    </div>
+                                                    <div v-else>
+                                                        <p class="text-red-400 font-bold">Purchase order Not Active</p>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Activate Purchase Order</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <SecondaryButton @click="activatePurchaseOrder">
+                                                                    Activate
+                                                                </SecondaryButton>
+                                                            </dd>
+                                                        </div>
+                                                    </div>
+<!--                                                    sales order-->
+                                                    <div v-if="sales_order.is_active">
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Sales Confirmation Sent</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <div>
+                                                                    <div v-if="sales_order.is_sa_conf_sent">
+                                                                        <p>
+                                                                            <check-icon class="h-5 h-5"/>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <SecondaryButton @click="sendSalesOrder">
+                                                                            Sent
+                                                                        </SecondaryButton>
+                                                                    </div>
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+                                                        <div class="flex justify-between gap-x-4 py-1">
+                                                            <dt class="text-gray-500">Sales Confirmation Received</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <div>
+                                                                    <div v-if="sales_order.is_sa_conf_received">
+                                                                        <p>
+                                                                            <check-icon class="h-5 h-5"/>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <SecondaryButton @click="receiveSalesOrder">
+                                                                            Received
+                                                                        </SecondaryButton>
+                                                                    </div>
+                                                                </div>
+                                                            </dd>
+                                                        </div>
+
+                                                    </div>
+                                                    <div v-else>
+
+                                                        <p class="text-red-400 font-bold">Sales order Not Active</p>
+                                                        <div class="flex justify-between gap-x-4 py-3">
+                                                            <dt class="text-gray-500">Activate Sales Order</dt>
+                                                            <dd class="flex items-start gap-x-2">
+                                                                <SecondaryButton @click="activateSalesOrder">
+                                                                    Activate
+                                                                </SecondaryButton>
+                                                            </dd>
+                                                        </div>
+                                                    </div>
                                                     <div class="flex justify-between gap-x-4 py-1">
                                                         <dt class="text-gray-500">Cancelled</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <SwitchGroup  as="div" class="flex m-2 items-center">
                                                                 <Switch  v-model="combined_Form.is_cancelled"
                                                                          :class="[combined_Form.is_cancelled ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                <span aria-hidden="true"
-                                                      :class="[combined_Form.is_cancelled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                         <span aria-hidden="true"
+                                                               :class="[combined_Form.is_cancelled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                 </Switch>
                                                             </SwitchGroup>
                                                         </dd>
                                                     </div>
+
+
 
                                                 </dl>
 
@@ -7757,6 +7857,8 @@ const doCreatedTrade = (_id) => {
                                     <div v-if="selectedTabId === 8">
                                         <ul class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8"
                                             role="list">
+
+
                                             <li v-if="selected_transaction.contract_type_id === 4"
                                                 class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
@@ -8056,7 +8158,7 @@ const doCreatedTrade = (_id) => {
                                                                 </a>
                                                             </dd>
                                                         </div>
-                                                                                                             <div class="flex justify-between gap-x-4 py-3">
+<!--                                                         <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Generate Final</dt>
                                                                                                                     <dd class="flex items-start gap-x-2">
                                                                                                                         <SecondaryButton @click="">
@@ -8064,7 +8166,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                         </SecondaryButton>
                                                                                                                     </dd>
                                                                                                                 </div>
-                                                                                                                <div class="flex justify-between gap-x-4 py-3">
+                                                        <div class="flex justify-between gap-x-4 py-3">
                                                                                                                     <dt class="text-gray-500">Download Final</dt>
 
                                                                                                                     <dd class="flex items-start gap-x-2">
@@ -8081,7 +8183,7 @@ const doCreatedTrade = (_id) => {
                                                                                                                         </div>
 
                                                                                                                     </dd>
-                                                                                                                </div>
+                                                                                                                </div>-->
                                                     </div>
 
                                                     <div v-else>
@@ -8098,7 +8200,6 @@ const doCreatedTrade = (_id) => {
                                                         Order
                                                     </div>
                                                 </div>
-
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
                                                     <div v-if="sales_order.is_active">
                                                         <div class="flex justify-between gap-x-4 py-3">
@@ -8298,6 +8399,8 @@ const doCreatedTrade = (_id) => {
 
                                                 </dl>
                                             </li>
+
+
                                         </ul>
                                     </div>
 

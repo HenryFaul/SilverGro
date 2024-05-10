@@ -32,7 +32,7 @@ const props = defineProps({
 const format = () => {
     const _date = new Date(Form.date)
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: "Africa/Johannesburg"})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: "Africa/Johannesburg"})).toUpperCase();
     const year = _date.getFullYear();
     return `${day}/${month}/${year}`;
 }

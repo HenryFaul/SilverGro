@@ -103,6 +103,13 @@ class TransportApprovalController extends Controller
             if (true){
                 $is_updated = $deal_ticket->update(['is_active' =>1]);
 
+                //update tranport order & sales order
+
+                $transport_order = $transport_trans->TransportOrder;
+                $transport_order->update(['is_active' =>1]);
+                $sales_order = $transport_trans->SalesOrder;
+                $sales_order->update(['is_active' =>1]);
+
                 if ($deal_ticket->is_active){
                     $transport_transaction = $deal_ticket->TransportTransaction;
                     if ($transport_transaction->a_mq == null){
@@ -168,7 +175,6 @@ class TransportApprovalController extends Controller
                         $transport_transaction->a_mq=($max_a_mq+1);
                         $transport_transaction->save();
                     }
-
 
                 }
             }

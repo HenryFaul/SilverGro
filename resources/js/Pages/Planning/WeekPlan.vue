@@ -100,8 +100,8 @@ let NiceTDate = (date) => {
 
     const _date = new Date(date);
     const day = _date.getDate();
-    const month = (_date.toLocaleString('en', {month: 'long', timeZone: 'Africa/Johannesburg'})).toUpperCase();
-    const dayString = (_date.toLocaleString('en', {weekday: 'long', timeZone: 'Africa/Johannesburg'})).toUpperCase();
+    const month = (_date.toLocaleString('en', {month: 'short', timeZone: 'Africa/Johannesburg'})).toUpperCase();
+    const dayString = (_date.toLocaleString('en', {weekday: 'short', timeZone: 'Africa/Johannesburg'})).toUpperCase();
     const year = _date.getFullYear();
     return `${dayString} ${day}/${month}/${year}`;
 };
@@ -269,7 +269,6 @@ const contractNameOld = (trans) => {
     else return "N/A";
 
 }
-
 
 
 </script>
