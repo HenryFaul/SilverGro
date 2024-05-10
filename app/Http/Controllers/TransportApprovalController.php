@@ -96,11 +96,15 @@ class TransportApprovalController extends Controller
 
         }
 
+        $deal_ticket->save();
+
+        $deal_ticket->calculateRules();
+        $is_approved = $deal_ticket->is_approved;
 
         //activate if all approvals are done
-        if (true){
+        if ($is_approved){
             $is_updated = false;
-            if ($is_approved = $deal_ticket->is_approved){
+            if (true){
                 $is_updated = $deal_ticket->update(['is_active' =>1]);
 
                 //update tranport order & sales order
