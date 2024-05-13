@@ -28,6 +28,14 @@ class TransportTransaction extends Model
         'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at','is_split_load'];
 
 
+    protected $casts = [
+        'transport_date_earliest' => 'date',
+        'transport_date_latest' => 'date',
+    ];
+
+
+
+
     public function TransLinks(): HasMany
     {
         return $this->hasMany(TransLink::class,'transport_trans_id');

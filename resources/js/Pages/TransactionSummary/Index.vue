@@ -215,10 +215,10 @@ const tabs_split = [
     {id: 2, name: 'Customer', current: false},
     {id: 3, name: 'Transport', current: false},
     {id: 4, name: 'Pricing', current: false},
-    {id: 5, name: 'Invoice', current: false},
-    {id: 7, name: 'Linked Trades', current: false},
-    {id: 8, name: 'Documents', current: false},
     {id: 6, name: 'Process Control', current: false},
+    {id: 5, name: 'Invoice', current: false},
+    {id: 8, name: 'Documents', current: false},
+    {id: 7, name: 'Linked Trades', current: false},
     {id: 9, name: 'Log', current: false},
     {id: 11, name: 'Split Customers', current: false},
 ];
@@ -229,10 +229,10 @@ const tabs_non_split = [
     {id: 2, name: 'Customer', current: false},
     {id: 3, name: 'Transport', current: false},
     {id: 4, name: 'Pricing', current: false},
-    {id: 5, name: 'Invoice', current: false},
-    {id: 7, name: 'Linked Trades', current: false},
-    {id: 8, name: 'Documents', current: false},
     {id: 6, name: 'Process Control', current: false},
+    {id: 5, name: 'Invoice', current: false},
+    {id: 8, name: 'Documents', current: false},
+    {id: 7, name: 'Linked Trades', current: false},
     {id: 9, name: 'Log', current: false},
 ];
 
@@ -2122,6 +2122,15 @@ const doCreatedTrade = (_id) => {
                                                     </div>
 
                                                     <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Supplier loading number</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <input v-model="combined_Form.supplier_loading_number"
+                                                                   type="text"
+                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
                                                         <dd class="text-gray-700">
                                                             <div>
                                                                 <div v-if="selected_transaction.contract_type_id === 4">
@@ -2456,7 +2465,7 @@ const doCreatedTrade = (_id) => {
                                                         <dt class="text-gray-500">Total Cost Price</dt>
                                                         <dd class="text-gray-700">
                                                             <div>
-                                                                {{ NiceNumber(selected_transaction.transport_finance.total_cost_price) }}
+                                                                {{ NiceNumber(selected_transaction.transport_finance.cost_price)}}
                                                             </div>
                                                         </dd>
                                                     </div>
@@ -3040,12 +3049,13 @@ const doCreatedTrade = (_id) => {
                                                         </dd>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Supplier loading number</dt>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Loading no</dt>
                                                         <dd class="flex items-start gap-x-2">
-                                                            <input v-model="combined_Form.supplier_loading_number"
-                                                                   type="text"
-                                                                   class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                            <input  id="loading_no"
+                                                                    v-model="combined_Form.driver_vehicle_loading_number"
+                                                                    type="text"
+                                                                    class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
                                                     </div>
 
@@ -5469,16 +5479,6 @@ const doCreatedTrade = (_id) => {
                                                         </div>
 
                                                         <div class="flex justify-between gap-x-4 py-1">
-                                                            <dt class="text-gray-500">Loading no</dt>
-                                                            <dd class="flex items-start gap-x-2">
-                                                                <input  id="loading_no"
-                                                                        v-model="combined_Form.driver_vehicle_loading_number"
-                                                                        type="text"
-                                                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
-                                                            </dd>
-                                                        </div>
-
-                                                        <div class="flex justify-between gap-x-4 py-1">
                                                             <dt class="text-gray-500">Trailer 1</dt>
                                                             <dd class="flex items-start gap-x-2">
                                                                 <input  id="trailer_reg_1"
@@ -5881,7 +5881,7 @@ const doCreatedTrade = (_id) => {
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">Total Supplier Cost</dt>
                                                         <dd class="text-gray-700">
-                                                            {{ NiceNumber(selected_transaction.transport_finance./**/cost_price) }}
+                                                            {{ NiceNumber(selected_transaction.transport_finance.cost_price) }}
                                                         </dd>
                                                     </div>
 
@@ -7592,6 +7592,10 @@ const doCreatedTrade = (_id) => {
                                                                                                 <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
                                                                                                     <div
                                                                                                         class="font-medium text-gray-900">
+                                                                                                        PC{{ contract.transport_transaction_pc.id }}
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="font-medium text-gray-900">
                                                                                                         {{ contract.transport_transaction_pc.supplier.last_legal_name }}
                                                                                                     </div>
                                                                                                     <div
@@ -7610,11 +7614,15 @@ const doCreatedTrade = (_id) => {
                                                                                                     {{ NiceNumber(contract.transport_transaction_pc.transport_finance.gross_profit) }}
                                                                                                 </td>
                                                                                                 <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
-                                                                                                    <Link
-                                                                                                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                                                                                        :href="route('transport_transaction.show',contract.transport_transaction_pc.id)">
-                                                                                                        View trans
+
+                                                                                                    <Link href="/transaction_summary" class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" method="get" target="_blank" :data="{ selected_trans_id: contract.transport_transaction_pc.id }">
+                                                                                                         Summary
                                                                                                     </Link>
+
+                                                                                                    <Link href="/pc_overview" class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" method="get" target="_blank" :data="{ selected_trans_id: contract.transport_transaction_pc.id }">
+                                                                                                         Overview
+                                                                                                    </Link>
+
                                                                                                 </td>
 
 
@@ -7794,6 +7802,11 @@ const doCreatedTrade = (_id) => {
                                                                                                 class="border-b border-gray-200">
 
                                                                                                 <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
+
+                                                                                                    <div
+                                                                                                        class="font-medium text-gray-900">
+                                                                                                        SC{{ contract.transport_transaction_pc.id }}
+                                                                                                    </div>
                                                                                                     <div
                                                                                                         class="font-medium text-gray-900">
                                                                                                         {{ contract.transport_transaction_pc.supplier.last_legal_name }}
@@ -7814,11 +7827,14 @@ const doCreatedTrade = (_id) => {
                                                                                                     {{ NiceNumber(contract.transport_transaction_pc.transport_finance.gross_profit) }}
                                                                                                 </td>
                                                                                                 <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
-                                                                                                    <Link
-                                                                                                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                                                                                        :href="route('transport_transaction.show',contract.transport_transaction_pc.id)">
-                                                                                                        View trans
+                                                                                                    <Link href="/transaction_summary" class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" method="get" target="_blank" :data="{ selected_trans_id: contract.transport_transaction_pc.id }">
+                                                                                                        Summary
                                                                                                     </Link>
+
+                                                                                                    <Link href="/sc_overview" class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" method="get" target="_blank" :data="{ selected_trans_id: contract.transport_transaction_pc.id }">
+                                                                                                        Overview
+                                                                                                    </Link>
+
                                                                                                 </td>
 
 

@@ -34,6 +34,7 @@ class TransportFinance extends Model
     ];
 
 
+
     public function TransportRateBasis(): BelongsTo
     {
         return $this->belongsTo(TransportRateBasis::class);
@@ -123,13 +124,15 @@ class TransportFinance extends Model
         $weight_ton_outgoing = $no_units_outgoing_total * ($billing_units_outgoing_id->kgs) / 1000;
 
         //cost_price_per_ton = cost_price / weight_ton_outgoing
-        $cost_price_per_ton = $cost_price / ($weight_ton_outgoing == 0 ? 1 : $weight_ton_outgoing);
-        $cost_price_per_ton_actual = $cost_price_actual / ($actual_tons_out == 0 ? 1 : $actual_tons_out);
+        $cost_price_per_ton = $cost_price / ($weight_ton_incoming == 0 ? 1 : $weight_ton_incoming);
+        $cost_price_per_ton_actual = $cost_price_actual / ($actual_tons_in == 0 ? 1 : $actual_tons_in);
 
         //selling_price_per_ton = selling_price / weight_ton_incoming
 
-        $selling_price_per_ton = $selling_price / ($weight_ton_incoming == 0 ? 1 : $weight_ton_incoming);
-        $selling_price_per_ton_actual = $selling_price_actual / ($actual_tons_in == 0 ? 1 : $actual_tons_in);
+
+
+        $selling_price_per_ton = $selling_price / ($weight_ton_outgoing== 0 ? 1 : $weight_ton_outgoing);
+        $selling_price_per_ton_actual = $selling_price_actual / ($actual_tons_out == 0 ? 1 : $actual_tons_out);
 
         //load_insurance_per_ton = selling_price_per_ton*1.1
         $load_insurance_per_ton = $selling_price_per_ton * 1.1;

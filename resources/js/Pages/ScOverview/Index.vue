@@ -743,7 +743,13 @@ const row_styler = computed(() => "whitespace-nowrap border-b px-3 py-1 text-sm 
                                             </thead>
                                             <tbody class="divide-y divide-gray-200">
                                             <tr v-for="contract in props.linked_trans_other" :key="contract.id">
-                                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{contract.id}}</td>
+                                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+
+                                                    <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: contract.transport_transaction.id}">
+                                                        MQ:{{contract.transport_transaction.a_mq}} ID:{{contract.transport_transaction.id}}
+                                                    </Link>
+
+                                                </td>
                                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{contract.transport_transaction.supplier.last_legal_name}}</td>
                                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{contract.transport_transaction.customer.last_legal_name}}</td>
                                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{contract.transport_transaction.transporter.last_legal_name}}</td>

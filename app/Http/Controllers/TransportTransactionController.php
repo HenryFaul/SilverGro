@@ -536,7 +536,7 @@ class TransportTransactionController extends Controller
     public function getPcs(): array
     {
         $transport_trans = TransportTransaction::where('contract_type_id', 2)->with('Product')->with('TransportLoad')->with('Customer')->with('Supplier')
-            ->orderBy('transport_date_earliest', 'desc')->get();
+            ->orderBy('id', 'desc')->get();
         $contract_types = ContractType::all();
 
         return array("transport_trans" => $transport_trans, "contract_types" => $contract_types);
@@ -546,7 +546,7 @@ class TransportTransactionController extends Controller
     public function getScs(): array
     {
         $transport_trans = TransportTransaction::where('contract_type_id', 3)->with('Product')->with('TransportLoad')->with('Customer')->with('Supplier')
-            ->orderBy('transport_date_earliest', 'desc')->get();
+            ->orderBy('id', 'desc')->get();
         $contract_types = ContractType::all();
 
         return array("transport_trans" => $transport_trans, "contract_types" => $contract_types);
