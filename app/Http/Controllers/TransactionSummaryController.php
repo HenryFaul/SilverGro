@@ -63,7 +63,7 @@ class TransactionSummaryController extends Controller
             ->withQueryString();
 
         $first_transaction_id = TransportTransaction::with('ContractType')->with('Customer')->with('Customer_2')->with('Customer_3')->with('Customer_4')->with('Supplier')->with('Transporter')->with('Product')
-            ->index($filters)->pluck('id')->first();
+            ->index($filters)->pluck('id')->last();
 
         $selected_trans_id = $request['selected_trans_id'] ?? $first_transaction_id;
 
