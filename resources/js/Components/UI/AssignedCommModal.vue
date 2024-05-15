@@ -108,7 +108,7 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
 
                     <div class="">
 
-                        <form class="w-full m-3 p-3">
+                        <form class="w-full">
 
 
 <!--                            'transport_trans_id','transport_finance_id','assigned_user_supplier_id','assigned_user_customer_id',
@@ -146,7 +146,7 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                     <InputError class="mt-2" :message="form.errors.assigned_user_customer_id"/>
                                 </div>
 
-                                <div class="mt-5">
+<!--                                <div class="mt-5">
                                     <label class="block text-sm font-medium leading-6 text-gray-900">notes</label>
 
                                     <AreaInput
@@ -160,7 +160,7 @@ let borderClass = computed(() => !emptyErrors ? 'ml-4 mt-4 p-4 rounded-md border
                                     />
 
                                     <InputError class="mt-2" :message="form.errors.notes"/>
-                                </div>
+                                </div>-->
 
                             </div>
 

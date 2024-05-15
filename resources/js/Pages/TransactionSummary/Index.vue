@@ -2168,12 +2168,33 @@ const deleteAssignedComm =  (id) => {
 
                                                     </div>
 
+
+
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dt class="text-gray-500">Supplier loading number</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <input v-model="combined_Form.supplier_loading_number"
                                                                    type="text"
                                                                    class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div v-if="selected_transaction.contract_type_id === 4" class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">PC Linked</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div v-if="filteredLinkedContractsPc[0]" >
+                                                                <div>PC:{{filteredLinkedContractsPc[0].transport_trans_id}}</div>
+                                                                <div>{{filteredLinkedContractsPc[0].transport_transaction_pc.customer.last_legal_name}}</div>
+                                                                <div>{{filteredLinkedContractsPc[0].transport_transaction_pc.supplier.last_legal_name}}</div>
+                                                                <div>{{filteredLinkedContractsPc[0].transport_transaction_pc.product.name}}</div>
+                                                                <div>{{filteredLinkedContractsPc[0].transport_transaction_pc.transport_load.no_units_incoming}}</div>
+                                                            </div>
+                                                            <div v-else>
+                                                                Nothing linked..
+                                                            </div>
+
+
+
                                                         </dd>
                                                     </div>
 
@@ -3105,6 +3126,26 @@ const deleteAssignedComm =  (id) => {
                                                                     class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
                                                         </dd>
                                                     </div>
+
+                                                    <div v-if="selected_transaction.contract_type_id === 4" class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">SC Linked</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div v-if="filteredLinkedContractsSc[0]" >
+                                                                <div>SC:{{filteredLinkedContractsSc[0].transport_trans_id}}</div>
+                                                                <div>{{filteredLinkedContractsSc[0].transport_transaction_pc.customer.last_legal_name}}</div>
+                                                                <div>{{filteredLinkedContractsSc[0].transport_transaction_pc.supplier.last_legal_name}}</div>
+                                                                <div>{{filteredLinkedContractsSc[0].transport_transaction_pc.product.name}}</div>
+                                                                <div>{{filteredLinkedContractsSc[0].transport_transaction_pc.transport_load.no_units_incoming}}</div>
+                                                            </div>
+                                                            <div v-else>
+                                                                Nothing linked..
+                                                            </div>
+
+
+
+                                                        </dd>
+                                                    </div>
+
 
                                                     <div class="flex justify-between gap-x-4 py-3">
                                                         <dd class="text-gray-700">
@@ -6411,11 +6452,36 @@ const deleteAssignedComm =  (id) => {
                                                         </dd>
                                                     </div>
 
+
+
+                                                </dl>
+                                            </li>
+
+                                            <li class="overflow-hidden rounded-xl border border-gray-200">
+
+
+
+                                                <div
+                                                    class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Invoice
+                                                    </div>
+                                                    <div class="text-sm font-light text-gray-900">(Inputs)</div>
+                                                </div>
+
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
                                                     <div class="flex justify-between gap-x-4 py-1">
-                                                        <dt class="text-gray-500">Vehicle registration</dt>
+                                                        <dt class="text-gray-500">Weighbridge Certificate received</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                {{ selected_transaction.transport_job.transport_driver_vehicle[0].vehicle.reg_no }}
+                                                                <SwitchGroup as="div" class="flex m-1 items-center">
+                                                                    <Switch
+                                                                        v-model="combined_Form.is_weighbridge_certificate_received"
+                                                                        :class="[combined_Form.is_weighbridge_certificate_received ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                <span aria-hidden="true"
+                                                                      :class="[combined_Form.is_weighbridge_certificate_received ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+                                                                </SwitchGroup>
                                                             </div>
                                                         </dd>
                                                     </div>
@@ -6429,118 +6495,14 @@ const deleteAssignedComm =  (id) => {
                                                         </dd>
                                                     </div>
 
-
-
-                                                </dl>
-                                            </li>
-
-                                            <li class="overflow-hidden rounded-xl border border-gray-200">
-                                                <div
-                                                    class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                                                    <div class="text-sm font-medium leading-6 text-gray-900">Invoice
-                                                    </div>
-                                                    <div class="text-sm font-light text-gray-900">(Inputs)</div>
-                                                </div>
-
-                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-
                                                     <div class="flex justify-between gap-x-4 py-1">
-                                                        <dd class="flex items-start gap-x-2">
-
-                                                            <div class="w-80">
-                                                                <VueDatePicker style="width: 250px;"
-                                                                               v-model="combined_Form.invoice_date"
-                                                                               :format="formatInvoiceDate"
-                                                                               :teleport="true"></VueDatePicker>
-
-                                                                <div class="ml-3 text-sm text-indigo-400">
-                                                                    Invoice date
-                                                                </div>
-                                                            </div>
-
-                                                        </dd>
-                                                    </div>
-
-                                                    <div class="flex justify-between gap-x-4 py-1">
-                                                        <dd class="flex items-start gap-x-2">
-
-                                                            <div class="w-80">
-                                                                <VueDatePicker style="width: 250px;"
-                                                                               v-model="combined_Form.invoice_pay_by_date"
-                                                                               :format="formatInvoicePayByDay"
-                                                                               :teleport="true"></VueDatePicker>
-                                                                <div class="ml-3 text-sm text-indigo-400">
-                                                                    Invoice pay by date
-                                                                    <span v-if="paymentTerms">
-                                                                       ({{ paymentTerms.value }} / {{ paymentTerms.days }} days)
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-
-                                                        </dd>
-                                                    </div>
-
-                                                    <div class="flex justify-between gap-x-4 py-1">
-                                                        <dd class="flex items-start gap-x-2">
-
-                                                            <div class="w-80">
-                                                                <VueDatePicker style="width: 250px;"
-                                                                               v-model="combined_Form.invoice_paid_date"
-                                                                               :format="formatInvoicePdDay"
-                                                                               :teleport="true"></VueDatePicker>
-
-                                                                <div class="ml-3 text-sm text-indigo-400">
-                                                                    Invoice paid date
-                                                                </div>
-                                                            </div>
-
-                                                        </dd>
-                                                    </div>
-
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Invoice No</dt>
+                                                        <dt class="text-gray-500">Vehicle registration</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
-                                                                <input v-model="combined_Form.invoice_no"
-                                                                       type="text"
-                                                                       class="block w-48  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
-
+                                                                {{ selected_transaction.transport_job.transport_driver_vehicle[0].vehicle.reg_no }}
                                                             </div>
                                                         </dd>
                                                     </div>
-
-                                                    <div class="flex justify-between gap-x-4 py-1">
-                                                        <AreaInput
-                                                            v-model="combined_Form.notes"
-                                                            :rows=4
-                                                            placeholder="Optional comments..."
-                                                            type="text"
-                                                            class="mt-1 block w-full"
-                                                        />
-                                                    </div>
-
-
-                                                </dl>
-                                            </li>
-
-                                            <li class="overflow-hidden rounded-xl border border-gray-200">
-                                                <div
-                                                    class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                                                    <div class="text-sm font-medium leading-6 text-gray-900">Invoice
-                                                    </div>
-                                                    <div class="text-sm font-light text-gray-900">(and debtors control)</div>
-                                                </div>
-
-                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-
-<!--                                                    <div>
-                                                        <driver-vehicle-load-component
-                                                            :transport_trans_id="props.selected_transaction.id"
-                                                            :transport_job_id="props.selected_transaction.transport_job.id"
-                                                            :driver_vehicle="props.selected_transaction.transport_job.transport_driver_vehicle[0]"
-                                                            :all_drivers="props.all_drivers"
-                                                            :all_vehicles="props.all_vehicles"/>
-                                                    </div>-->
 
                                                     <div class="flex justify-between gap-x-4 py-1">
                                                         <dt class="text-gray-500">Weighbridge Upload</dt>
@@ -6573,6 +6535,101 @@ const deleteAssignedComm =  (id) => {
                                                         </dd>
                                                     </div>
 
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <AreaInput
+                                                            v-model="combined_Form.notes"
+                                                            :rows=4
+                                                            placeholder="Optional comments..."
+                                                            type="text"
+                                                            class="mt-1 block w-full"
+                                                        />
+                                                    </div>
+
+
+                                                </dl>
+                                            </li>
+
+                                            <li class="overflow-hidden rounded-xl border border-gray-200">
+                                                <div
+                                                    class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Invoice
+                                                    </div>
+                                                    <div class="text-sm font-light text-gray-900">(and Debtor control)</div>
+                                                </div>
+
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+
+<!--                                                    <div>
+                                                        <driver-vehicle-load-component
+                                                            :transport_trans_id="props.selected_transaction.id"
+                                                            :transport_job_id="props.selected_transaction.transport_job.id"
+                                                            :driver_vehicle="props.selected_transaction.transport_job.transport_driver_vehicle[0]"
+                                                            :all_drivers="props.all_drivers"
+                                                            :all_vehicles="props.all_vehicles"/>
+                                                    </div>-->
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Invoice No</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <input v-model="combined_Form.invoice_no"
+                                                                       type="text"
+                                                                       class="block w-48  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Invoice date</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div class="w-48">
+                                                                <VueDatePicker
+                                                                               v-model="combined_Form.invoice_date"
+                                                                               :format="formatInvoiceDate"
+                                                                               :teleport="true"></VueDatePicker>
+
+                                                                <div class="ml-3 text-sm text-indigo-400">
+                                                                    Invoice date
+                                                                </div>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Invoice pay by date</dt>
+
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div class="w-48">
+                                                                <VueDatePicker
+                                                                               v-model="combined_Form.invoice_pay_by_date"
+                                                                               :format="formatInvoicePayByDay"
+                                                                               :teleport="true"></VueDatePicker>
+                                                                <div class="ml-3 text-sm text-indigo-400">
+                                                                    Invoice pay by date
+                                                                    <span v-if="paymentTerms">
+                                                                       ({{ paymentTerms.value }} / {{ paymentTerms.days }} days)
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                        </dd>
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                        <dt class="text-gray-500">Invoice paid date</dt>
+
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div class="w-48">
+                                                                <VueDatePicker
+                                                                               v-model="combined_Form.invoice_paid_date"
+                                                                               :format="formatInvoicePdDay"
+                                                                               :teleport="true"></VueDatePicker>
+                                                                <div class="ml-3 text-sm text-indigo-400">
+                                                                    Invoice paid date
+                                                                </div>
+                                                            </div>
+
+                                                        </dd>
+                                                    </div>
                                                     <div class="flex justify-between gap-x-4 py-1">
                                                         <dt class="text-gray-500">Invoice amount</dt>
                                                         <dd class="flex items-start gap-x-2">
@@ -6686,21 +6743,6 @@ const deleteAssignedComm =  (id) => {
                                                                         :class="[combined_Form.is_invoice_paid ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
                                                 <span aria-hidden="true"
                                                       :class="[combined_Form.is_invoice_paid ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
-                                                                    </Switch>
-                                                                </SwitchGroup>
-                                                            </div>
-                                                        </dd>
-                                                    </div>
-                                                    <div class="flex justify-between gap-x-4 py-1">
-                                                        <dt class="text-gray-500">Weighbridge cert received</dt>
-                                                        <dd class="flex items-start gap-x-2">
-                                                            <div>
-                                                                <SwitchGroup as="div" class="flex m-1 items-center">
-                                                                    <Switch
-                                                                        v-model="combined_Form.is_weighbridge_certificate_received"
-                                                                        :class="[combined_Form.is_weighbridge_certificate_received ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
-                                                                <span aria-hidden="true"
-                                                                 :class="[combined_Form.is_weighbridge_certificate_received ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
                                                                     </Switch>
                                                                 </SwitchGroup>
                                                             </div>
@@ -6976,8 +7018,7 @@ const deleteAssignedComm =  (id) => {
                                             <li class="overflow-hidden rounded-xl border border-gray-200">
                                                 <div
                                                     class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                                                    <div class="text-sm font-medium leading-6 text-gray-900">Driver &
-                                                        vehicles (Specific)
+                                                    <div class="text-sm font-medium leading-6 text-gray-900">Documents
                                                     </div>
                                                 </div>
                                                 <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
@@ -8620,17 +8661,13 @@ const deleteAssignedComm =  (id) => {
                                                                         <div v-if="viewAssignedCommModal">
                                                                             <assigned-comm-modal
                                                                                 :show="viewAssignedCommModal" @close="closeAssignedComm"
-                                                                                :transport_trans_id="transaction.id"
-                                                                                :transport_finance_id="transaction.transport_finance.id"
+                                                                                :transport_trans_id="selected_transaction.id"
+                                                                                :transport_finance_id="selected_transaction.transport_finance.id"
                                                                                 :assigned_user_comm="currentAssignedComm"
                                                                                 :all_staff="props.all_staff"
                                                                             />
                                                                         </div>
 
-                                                                        <SecondaryButton class="m-1"
-                                                                                         @click="viewAssignedComm(user_comm)">
-                                                                            Edit
-                                                                        </SecondaryButton>
                                                                         <SecondaryButton class="m-1"
                                                                                          @click="deleteAssignedComm(user_comm.id)">
                                                                             Delete

@@ -135,11 +135,11 @@ class TransactionSummaryController extends Controller
 */
 
                 $linked_trans_sc = TransLink::where('linked_transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id','=',4)->with('TransportTransactionPc',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                    ->with('Product')->with('TransportFinance'))->get();
+                    ->with('Product')->with('TransportFinance') ->with('TransportLoad'))->get();
                 $linked_trans_pc = TransLink::where('linked_transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id','=',3)->with('TransportTransactionPc',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                    ->with('Product')->with('TransportFinance'))->get();
+                    ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
                 $linked_trans_other = TransLink::where('transport_trans_id','=',$transportTransaction->id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                    ->with('Product')->with('TransportFinance'))->get();
+                    ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
 
         }
 
