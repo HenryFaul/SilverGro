@@ -79,7 +79,7 @@ class DealTicketController extends Controller
         $file_data = file_get_contents($path);
         $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
 
-        $transport_trans = TransportTransaction::where('id', $request->transport_trans_id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
+        $transport_trans = TransportTransaction::where('id', $request->transport_trans_id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('addressablePhysical')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
 
         $deal_ticket = $transport_trans->DealTicket;
@@ -116,7 +116,7 @@ class DealTicketController extends Controller
             'purchase_order'=>$purchase_order
         ];
 
-        $pdf = PDF::loadView('pdf_reports.deal_ticket',$data);
+        $pdf = PDF::loadView('pdf_reports.deal_ticket_v2',$data);
         $pdf->setPaper('A4', 'portrait');
         $pdf->setEncryption($transport_trans->id);
 
