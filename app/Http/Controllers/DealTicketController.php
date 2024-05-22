@@ -29,7 +29,7 @@ class DealTicketController extends Controller
         $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
 
         $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))
-            ->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))
+            ->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment')->with('addressablePhysical'))
             ->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')
                 ->with('DeliveryAddress')->with('DeliveryAddress_2')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))
@@ -63,7 +63,7 @@ class DealTicketController extends Controller
             'purchase_order'=>$purchase_order
         ];
 
-        $pdf = PDF::loadView('pdf_reports.deal_ticket',$data);
+        $pdf = PDF::loadView('pdf_reports.deal_ticket_v2',$data);
         $pdf->setPaper('A4', 'portrait');
 
        return $pdf->stream();
