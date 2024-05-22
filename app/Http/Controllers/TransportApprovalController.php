@@ -6,6 +6,7 @@ use App\Models\TradeRule;
 use App\Models\TradeRuleOpp;
 use App\Models\TransportApproval;
 use App\Models\TransportTransaction;
+use App\Notifications\DealTicketApproved;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -105,6 +106,7 @@ class TransportApprovalController extends Controller
         if ($is_approved){
             $is_updated = false;
             if (true){
+
                 $is_updated = $deal_ticket->update(['is_active' =>1]);
 
                 //update tranport order & sales order
@@ -118,6 +120,7 @@ class TransportApprovalController extends Controller
 
                 if ($deal_ticket->is_active){
                     $transport_transaction = $deal_ticket->TransportTransaction;
+
                     if ($transport_transaction->a_mq == null){
 
                         $max_a_mq = TransportTransaction::max("a_mq");
@@ -128,11 +131,19 @@ class TransportApprovalController extends Controller
                         if (is_numeric($max_a_mq)){
                             $transport_transaction->a_mq=($max_a_mq+1);
                             $transport_transaction->save();
+                            //notify user - need also notify others
+
                         }
 
 
                     }
+
+                    $user->notify(
+                        new DealTicketApproved($deal_ticket,$transport_transaction)
+                    );
                 }
+
+
             }
         }
 

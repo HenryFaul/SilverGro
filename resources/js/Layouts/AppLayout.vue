@@ -1,12 +1,16 @@
 <script setup>
 import {computed, ref} from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import {Head, Link, router, usePage} from '@inertiajs/vue3';
 import ApplicationMark from '@/Components/ApplicationMark.vue';
 import Banner from '@/Components/Banner.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+
+import {
+   BellIcon
+} from '@heroicons/vue/20/solid';
 
 defineProps({
     title: String,
@@ -112,6 +116,9 @@ const switchToTeam = (team) => {
 const logout = () => {
     router.post(route('logout'));
 };
+
+const unread_notifications = computed(() => Math.min(usePage().props.unread_notification_count,9) )
+
 </script>
 
 <template>
@@ -201,6 +208,16 @@ const logout = () => {
                                     </template>
                                 </Dropdown>
                             </div>
+
+                            <Link v-if="unread_notifications" :class="btnSetup" :href="route('notifications.index')">
+                                <div  class="relative p-1">
+                                    <span><BellIcon class="h-4 w-4"/></span>
+                                    <div class="absolute right-0 top-0 h-4 w-4 bg-red-500 text-white font-medium border border-white rounded-full text-xs text-center ">
+                                        <span> {{unread_notifications}}</span>
+                                    </div>
+                                </div>
+                            </Link>
+
 
                             <!-- Settings Dropdown -->
                             <div class="ml-3 relative">

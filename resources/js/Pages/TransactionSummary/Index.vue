@@ -11,8 +11,6 @@ import DriverVehicleComponent from "@/Components/UI/DriverVehicleComponent.vue";
 import DriverVehicleStateComponent from "@/Components/UI/DriverVehicleStateComponent.vue";
 import DriverVehicleLoadComponent from "@/Components/UI/DriverVehicleLoadComponent.vue";
 import AssignedCommModal from "@/Components/UI/AssignedCommModal.vue";
-
-
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'

@@ -6,7 +6,7 @@
     <title>Deal Ticket</title>
     <style>
         @page {
-            margin: 80px 10px;
+            margin: 80px 40px;
             font-family: sans-serif;
         }
 
@@ -760,7 +760,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Transport Date Earliest
                             </td>
-                            <td class="table_sections table_row_value">{{ $transport_trans->transport_date_earliest->format('Y-m-d')}}</td>
+                            <td class="table_sections table_row_value">{{ $transport_trans->transport_date_earliest->format('D d/M/Y')}}</td>
                             <td class="table_sections table_row_heading">Rate Basis</td>
                             <td class="table_sections table_row_value">{{$transport_trans->TransportFinance->TransportRateBasis->name}}
                                 <
@@ -769,7 +769,7 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Transport Date Latest</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->transport_date_latest->format('Y-m-d')}}</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
                             <td class="table_sections table_row_heading">Tarrif / Metric Ton</td>
                             <td class="table_sections table_row_value">
                                 R {{number_format(round($transport_trans->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}</td>

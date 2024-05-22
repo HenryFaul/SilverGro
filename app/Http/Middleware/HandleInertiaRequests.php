@@ -36,7 +36,7 @@ class HandleInertiaRequests extends Middleware
         $user = Auth::user();
         $roles = $user?->getRoleNames();
         $permissions = $user?->getPermissionsViaRoles()->pluck('name');
-
+        $unread_notification_count = $user?->unreadNotifications()->count();
         return array_merge(parent::share($request), [
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
@@ -44,7 +44,8 @@ class HandleInertiaRequests extends Middleware
                 ]);
             },
             'app_logo'=>$logo,
-            'roles_permissions'=>['roles'=>$roles,'permissions'=>$permissions]
+            'roles_permissions'=>['roles'=>$roles,'permissions'=>$permissions],
+            'unread_notification_count'=>$unread_notification_count
         ]);
     }
 }

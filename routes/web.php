@@ -14,6 +14,8 @@ use App\Http\Controllers\DealTicketController;
 use App\Http\Controllers\DebtorStandingController;
 use App\Http\Controllers\EmailContactDetailController;
 use App\Http\Controllers\HomeOverviewController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationSeenController;
 use App\Http\Controllers\NumberContactDetailController;
 use App\Http\Controllers\PcOverviewController;
 use App\Http\Controllers\PlanningDiaryController;
@@ -112,6 +114,9 @@ Route::middleware([
 
     //Planning
 
+    Route::put('/notification/{notification}/seen', [NotificationSeenController::class,'index'])->middleware('auth')->name('notification.seen');
+
+
     //Diary
 
     Route::get('/planning/diary', [PlanningDiaryController::class, 'index'])->middleware('auth')->name('planning.diary');
@@ -144,6 +149,11 @@ Route::middleware([
     //Sc Overview
 
     Route::resource('sc_overview', ScOverviewController::class)->middleware('auth')
+        ->only(['index']);
+
+    //Notifications
+
+    Route::resource('notifications', NotificationController::class)->middleware('auth')
         ->only(['index']);
 
     //Home Overview
