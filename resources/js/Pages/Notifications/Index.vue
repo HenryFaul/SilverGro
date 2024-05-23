@@ -33,12 +33,16 @@ const permissions = computed(() => usePage().props.permissions)
 
                     <h1 class="text-3xl mb-4">Your Notifications</h1>
 
-                    <section v-if="notifications.data.length" class="text-gray-700 dark:text-gray-400">
+                    <section v-if="notifications.data.length" class="">
                         <div v-for="notification in notifications.data" :key="notification.id" class="border-b border-gray-200 dark:border-gray-800 py-4 flex justify-between items-center">
                             <div>
-                                    <span v-if="notification.type === 'App\\Notifications\\DealTicketApproved'">
+                                    <span class="underline" v-if="notification.type === 'App\\Notifications\\DealTicketApproved'">
                                           <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: notification.data.transport_trans_id }">Deal Ticket was approved MQ:{{notification.data.a_mq}}</Link>
                                     </span>
+                                    <span v-else>
+                                    Unallocated notification
+                                    </span>
+
                             </div>
                             <div>
 

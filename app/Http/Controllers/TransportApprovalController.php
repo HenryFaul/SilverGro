@@ -6,6 +6,7 @@ use App\Models\TradeRule;
 use App\Models\TradeRuleOpp;
 use App\Models\TransportApproval;
 use App\Models\TransportTransaction;
+use App\Models\User;
 use App\Notifications\DealTicketApproved;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -138,9 +139,32 @@ class TransportApprovalController extends Controller
 
                     }
 
+                    //Notify user that is logged in
                     $user->notify(
                         new DealTicketApproved($deal_ticket,$transport_transaction)
                     );
+
+                    //Notify all staff linked to customer
+                    $customer = $transport_transaction->Customer;
+                    $staff_allocated=$customer?->staff;
+
+                    if($staff_allocated){
+                        foreach ($staff_allocated as $staff_member){
+
+                            $cur_user = User::find($staff_member->user_id);
+
+                            if ($cur_user){
+                                if ($user->id !=$cur_user->id){
+                                    $cur_user->notify(
+                                        new DealTicketApproved($deal_ticket,$transport_transaction)
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+
+
                 }
 
 

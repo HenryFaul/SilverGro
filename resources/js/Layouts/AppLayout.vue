@@ -577,6 +577,10 @@ const unread_notifications = computed(() => Math.min(usePage().props.unread_noti
                                                     Staff
                                                 </DropdownLink>
 
+                                                <DropdownLink :href="route('notifications.index')">
+                                                    Notifications
+                                                </DropdownLink>
+
                                                 <div class="border-t border-gray-100" />
 
                                             </template>
