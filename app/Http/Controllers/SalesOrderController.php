@@ -96,7 +96,7 @@ class SalesOrderController extends Controller
             'app_version'=>$app_version
         ];
 
-        $pdf = PDF::loadView('pdf_reports.sales_order_confirmation',$data);
+        $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_v2',$data);
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream();
@@ -142,7 +142,7 @@ class SalesOrderController extends Controller
             'app_version'=>$app_version
         ];
 
-        $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_split',$data);
+        $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_split_v2',$data);
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream();

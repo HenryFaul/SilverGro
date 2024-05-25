@@ -54,7 +54,7 @@ class TransportOrderController extends Controller
             'transport_order'=>$transport_order
         ];
 
-        $pdf = PDF::loadView('pdf_reports.transport_order_confirmation',$data);
+        $pdf = PDF::loadView('pdf_reports.transport_order_confirmation_v2',$data);
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream();

@@ -30,6 +30,12 @@ class Supplier extends Model
         return $this->morphMany(Address::class, 'poly_address');
     }
 
+    public function addressablePhysical(): MorphMany
+    {
+        return $this->morphMany(Address::class, 'poly_address')->where('address_type_id',2);
+    }
+
+
     public function contactable(): MorphMany
     {
         return $this->morphMany(Contact::class, 'poly_contact');

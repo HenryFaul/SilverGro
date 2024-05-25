@@ -97,7 +97,7 @@ class PurchaseOrderController extends Controller
             'app_version'=>$app_version
         ];
 
-        $pdf = PDF::loadView('pdf_reports.purchase_order_confirmation',$data);
+        $pdf = PDF::loadView('pdf_reports.purchase_order_confirmation_v2',$data);
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream();

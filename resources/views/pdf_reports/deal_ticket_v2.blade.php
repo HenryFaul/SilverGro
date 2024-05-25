@@ -6,7 +6,7 @@
     <title>Deal Ticket</title>
     <style>
         @page {
-            margin: 80px 40px;
+            margin: 100px 40px;
             font-family: sans-serif;
         }
 
@@ -18,10 +18,10 @@
 
         header {
             position: fixed;
-            top: -70px;
+            top: -85px;
             left: 0px;
             right: 0px;
-            height: 70px;
+            height: 200px;
             line-height: 11px;
         }
 
@@ -90,17 +90,16 @@
 <body>
 <!-- Define header and footer blocks before your content -->
 <header>
-    <table style="width:100%">
+    <table style="width:100%;">
         <tr>
             <td>
-                <img style="float: left" src="{{ $logo }}" width="235" height="110"/>
+                <img style="float: left;" src="{{ $logo }}" width="188" height="88"/>
             </td>
-            <td style="float: right; text-align: right; font-size: 10px"><span>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
+            <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;"><span>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
             </td>
         </tr>
 
     </table>
-
 </header>
 
 
@@ -136,7 +135,7 @@
 
             <ol type="1">
                 @if($transport_trans->is_split_load)
-                    <h4>SPLIT LOAD DEAL</h4>
+                    <h3>SPLIT LOAD DEAL</h3>
                 @endif
                 <li class="section_heading">Product Information</li>
                 <div>
@@ -144,20 +143,26 @@
                         <tbody>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Product</td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$transport_trans->product->name}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->product->name}}</td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Grade</td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$transport_trans->TransportLoad->product_grade_perc}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->TransportLoad->product_grade_perc}}</td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Source</td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$transport_trans->TransportLoad->ProductSource->name}}</td>
-                            <td class="table_sections table_row_heading"style="width: 25%;">Weight in Tons Outgoing</td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$transport_trans->TransportFinance->weight_ton_outgoing}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->TransportLoad->ProductSource->name}}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Weight in Tons Outgoing
+                            </td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->TransportFinance->weight_ton_outgoing}}</td>
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Packaging outgoing</td>
-                            <td class="table_sections table_row_value"style="width: 25%;">{{$transport_trans->TransportLoad->PackagingOutgoing->name}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->TransportLoad->PackagingOutgoing->name}}</td>
                             <td class="table_sections table_row_heading" style="width: 25%;"></td>
                             <td class="table_sections table_row_value" style="width: 25%;"></td>
                         </tr>
@@ -210,16 +215,16 @@
 
                                 <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
                                 @if($transport_trans->TransportLoad->DeliveryAddress->line_2),
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
+                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
                                 @endif
                                 @if($transport_trans->TransportLoad->DeliveryAddress->line_3),
                                 <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
                                 @endif
                                 @if($transport_trans->TransportLoad->DeliveryAddress->country),
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
                                 @endif
                                 @if($transport_trans->TransportLoad->DeliveryAddress->code),
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
                                 @endif
 
                             </td>
@@ -294,7 +299,9 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Customer Notes</td>
                             <td class="table_sections table_row_value"
-                                colspan="3">{{$transport_trans->customer_notes}}</td>
+                                colspan="3">
+                                {!!nl2br($transport_trans->customer_notes)!!}
+                            </td>
 
                         </tr>
 
@@ -317,60 +324,32 @@
                                         colspan="3">{{$transport_trans->Customer_2->last_legal_name}}</td>
                                 </tr>
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 20%;">Collection
-                                        Address
-                                    </td>
-                                    <td class="table_sections table_row_value">
-                                    <span>
-                                        {{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->line_2}}</span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->line_3}}</span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
-
-                                    </td>
-                                    <td class="table_sections table_row_heading">Delivery Address</td>
-                                    <td class="table_sections table_row_value">
+                                    <td class="table_sections table_row_heading "style="width:25%;">Delivery Address</td>
+                                    <td class="table_sections table_row_value" colspan="3">
                                     <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
                                             {{$transport_trans->TransportLoad->DeliveryAddress_2->line_1}}
                                         @endif
                                     </span>
-                                        <br>
-                                        <span>
-                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_2->line_2}}
+                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_2)),
+                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_2->line_2}}</span>
                                             @endif
-                                </span>
-                                        <br>
-                                        <span>
-                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_2->line_3}}
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_2)),
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress_2->line_3}}</span>
                                             @endif
-                                </span>
-                                        <br>
-                                        <span>
+
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
                                                 {{$transport_trans->TransportLoad->DeliveryAddress_2->country}}
                                             @endif
-
-                                    </span>
-                                        <br>
-                                        <span>
-                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_2->code}}
+                                        @if(isset($transport_trans->TransportLoad->code)),
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress_2->code}}</span>
                                             @endif
-                                    </span>
                                     </td>
                                 </tr>
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 20%;">Selling Price Split
+                                    <td class="table_sections table_row_heading" style="width: 25%;">Selling Price Split
                                     </td>
-                                    <td class="table_sections table_row_value">
+                                    <td class="table_sections table_row_value" style="width: 25%;">
                                         R {{number_format(round($transport_trans->TransportFinance->selling_price_2,2), 2, '.', ' ')}}
                                     </td>
                                     <td class="table_sections table_row_heading">Transport Cost Split</td>
@@ -380,8 +359,8 @@
                                 </tr>
 
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 20%;">Unit Split</td>
-                                    <td class="table_sections table_row_value">
+                                    <td class="table_sections table_row_heading" style="width: 25%;">Unit Split</td>
+                                    <td class="table_sections table_row_value" style="width: 25%;">
                                         {{$transport_trans->TransportLoad->no_units_outgoing_2}}
                                     </td>
                                     <td class="table_sections table_row_heading">Customer order no</td>
@@ -391,7 +370,7 @@
                                 </tr>
 
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 20%;">Supplier loading no
+                                    <td class="table_sections table_row_heading" style="width: 25%;">Supplier loading no
                                     </td>
                                     <td class="table_sections table_row_value">
                                         {{$transport_trans->TransportJob->supplier_loading_number_2}}
@@ -418,65 +397,36 @@
                                         colspan="3">{{$transport_trans->Customer_3->last_legal_name}}</td>
                                 </tr>
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">Collection
-                                        Address
-                                    </td>
-                                    <td class="table_sections table_row_value">
-                                    <span>
-                                        {{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
-                                        <br>
-                                        <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
-                                </span>
-                                        <br>
-                                        <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
-                                </span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
-
-                                    </td>
                                     <td class="table_sections table_row_heading">Delivery Address</td>
-                                    <td class="table_sections table_row_value">
+                                    <td class="table_sections table_row_value"  colspan="3">
                                     <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_3))
                                             {{$transport_trans->TransportLoad->DeliveryAddress_3->line_1}}
                                         @endif
                                     </span>
-                                        <br>
-                                        <span>
-                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_3))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_3->line_2}}
-                                            @endif
-                                </span>
-                                        <br>
-                                        <span>
-                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress->line_3}}
-                                            @endif
-                                </span>
-                                        <br>
-                                        <span>
-                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress->country}}
+
+                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_3)),
+                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_3->line_2}}</span>
                                             @endif
 
-                                    </span>
-                                        <br>
-                                        <span>
-                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress->code}}
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_3)),
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
                                             @endif
-                                    </span>
+
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_3))
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                            @endif
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_3))
+                                            <span> {{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                                            @endif
+
                                     </td>
                                 </tr>
                                 <tr class="table_sections">
                                     <td class="table_sections table_row_heading" style="width: 25%;">Selling Price
                                         Split
                                     </td>
-                                    <td class="table_sections table_row_value">
+                                    <td class="table_sections table_row_value"  style="width: 25%;">
                                         R {{number_format(round($transport_trans->TransportFinance->selling_price_2,2), 2, '.', ' ')}}
                                     </td>
                                     <td class="table_sections table_row_heading">Transport Cost Split</td>
@@ -520,70 +470,41 @@
                             <table class="table_sections" style="width:100%;">
                                 <tbody>
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading">Split Customer 4</td>
+                                    <td class="table_sections table_row_heading" style="width: 25%;">Split Customer 4</td>
                                     <td class="table_sections table_row_value"
                                         colspan="3">{{$transport_trans->Customer_4->last_legal_name}}</td>
                                 </tr>
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">Collection
-                                        Address
-                                    </td>
-                                    <td class="table_sections table_row_value">
-                                    <span>
-                                        {{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
-                                        <br>
-                                        <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
-                                </span>
-                                        <br>
-                                        <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
-                                </span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
-
-                                    </td>
                                     <td class="table_sections table_row_heading">Delivery Address</td>
-                                    <td class="table_sections table_row_value">
+                                    <td class="table_sections table_row_value" colspan="3">
                                     <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
                                             {{$transport_trans->TransportLoad->DeliveryAddress_4->line_1}}
                                         @endif
                                     </span>
-                                        <br>
-                                        <span>
+
                                          @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_4->line_2}}
-                                            @endif
-                                </span>
-                                        <br>
-                                        <span>
-                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_4->line_3}}
-                                            @endif
-                                </span>
-                                        <br>
-                                        <span>
-                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_4->country}}
+                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_4->line_2}}</span>
                                             @endif
 
-                                    </span>
-                                        <br>
-                                        <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_4->code}}
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress_4->line_3}}</span>
                                             @endif
-                                    </span>
+
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
+                                            <span>  {{$transport_trans->TransportLoad->DeliveryAddress_4->country}}</span>
+                                            @endif
+
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
+                                            <span> {{$transport_trans->TransportLoad->DeliveryAddress_4->code}}</span>
+                                            @endif
                                     </td>
                                 </tr>
                                 <tr class="table_sections">
                                     <td class="table_sections table_row_heading" style="width: 25%;">Selling Price
                                         Split
                                     </td>
-                                    <td class="table_sections table_row_value">
+                                    <td class="table_sections table_row_value" style="width: 25%;">
                                         R {{number_format(round($transport_trans->TransportFinance->selling_price_4,2), 2, '.', ' ')}}
                                     </td>
                                     <td class="table_sections table_row_heading">Transport Cost Split</td>
@@ -633,58 +554,25 @@
                                         colspan="3">{{$transport_trans->Customer_5->last_legal_name}}</td>
                                 </tr>
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">Collection
-                                        Address
-                                    </td>
-                                    <td class="table_sections table_row_value">
-                                    <span>
-                                        {{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
-                                        <br>
-                                        <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
-                                </span>
-                                        <br>
-                                        <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
-                                </span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
-                                        <br>
-                                        <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
-
-                                    </td>
                                     <td class="table_sections table_row_heading">Delivery Address</td>
-                                    <td class="table_sections table_row_value">
+                                    <td class="table_sections table_row_value" colspan="3">
                                     <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
                                             {{$transport_trans->TransportLoad->DeliveryAddress_5->line_1}}
                                         @endif
                                     </span>
-                                        <br>
-                                        <span>
                                          @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_5->line_2}}
+                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_5->line_2}}</span>
                                             @endif
-                                </span>
-                                        <br>
-                                        <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_5->line_3}}
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress_5->line_3}}</span>
                                             @endif
-                                </span>
-                                        <br>
-                                        <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_5->country}}
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress_5->country}}</span>
                                             @endif
-
-                                    </span>
-                                        <br>
-                                        <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_5->code}}
+                                            <span> {{$transport_trans->TransportLoad->DeliveryAddress_5->code}}</span>
                                             @endif
-                                    </span>
                                     </td>
                                 </tr>
                                 <tr class="table_sections">
@@ -744,9 +632,11 @@
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Order Confirmed By</td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$transport_trans->TransportLoad->ConfirmedByType->name}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->TransportLoad->ConfirmedByType->name}}</td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Weight Tons Incoming</td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$transport_trans->TransportFinance->weight_ton_incoming}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->TransportFinance->weight_ton_incoming}}</td>
                         </tr>
 
                         <tr class="table_sections">
@@ -777,7 +667,9 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Transport Notes</td>
                             <td class="table_sections table_row_value"
-                                colspan="3">{{$transport_trans->transport_notes}}</td>
+                                colspan="3">
+                                {!!nl2br($transport_trans->transport_notes)!!}
+                            </td>
 
                         </tr>
 
@@ -801,19 +693,19 @@
                             <td class="table_sections table_row_value" colspan="3">
                                 <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
                                 @if($transport_trans->TransportLoad->CollectionAddress->line_2),
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
+                                {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
                                 </span>
                                 @endif
                                 @if($transport_trans->TransportLoad->CollectionAddress->line_3),
-                                    <span>
+                                <span>
                                     {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
                                 </span>
                                 @endif
                                 @if($transport_trans->TransportLoad->CollectionAddress->country),
-                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
+                                <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
                                 @endif
                                 @if($transport_trans->TransportLoad->CollectionAddress->code),
-                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
+                                <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
                                 @endif
 
                             </td>
@@ -821,10 +713,11 @@
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Cost Price / Unit</td>
-                            <td class="table_sections table_row_value"style="width: 25%;">
+                            <td class="table_sections table_row_value" style="width: 25%;">
                                 R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Terms of Payment</td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$transport_trans->Supplier->TermsOfPayment->value}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->Supplier->TermsOfPayment->value}}</td>
                         </tr>
 
                         <tr class="table_sections">
@@ -837,7 +730,9 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Supplier Notes</td>
                             <td class="table_sections table_row_value"
-                                colspan="3">{{$transport_trans->suppliers_notes}}</td>
+                                colspan="3">
+                                {!!nl2br($transport_trans->suppliers_notes)!!}
+                            </td>
                         </tr>
 
                         </tbody>
