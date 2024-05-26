@@ -104,33 +104,33 @@ class TransportApprovalController extends Controller
         $is_approved = $deal_ticket->is_approved;
 
         //activate if all approvals are done
-        if ($is_approved){
+        if ($is_approved) {
             $is_updated = false;
-            if (true){
+            if (true) {
 
-                $is_updated = $deal_ticket->update(['is_active' =>1]);
+                $is_updated = $deal_ticket->update(['is_active' => 1]);
 
                 //update tranport order & sales order
 
                 $transport_order = $transport_trans->TransportOrder;
-                $transport_order->update(['is_active' =>1]);
+                $transport_order->update(['is_active' => 1]);
                 $sales_order = $transport_trans->SalesOrder;
-                $sales_order->update(['is_active' =>1]);
+                $sales_order->update(['is_active' => 1]);
                 $purchase_order = $transport_trans->PurchaseOrder;
-                $purchase_order->update(['is_active' =>1]);
+                $purchase_order->update(['is_active' => 1]);
 
-                if ($deal_ticket->is_active){
+                if ($deal_ticket->is_active) {
                     $transport_transaction = $deal_ticket->TransportTransaction;
 
-                    if ($transport_transaction->a_mq == null){
+                    if ($transport_transaction->a_mq == null) {
 
                         $max_a_mq = TransportTransaction::max("a_mq");
 
-                        if($max_a_mq == null){
+                        if ($max_a_mq == null) {
                             $max_a_mq = TransportTransaction::max("id");
                         }
-                        if (is_numeric($max_a_mq)){
-                            $transport_transaction->a_mq=($max_a_mq+1);
+                        if (is_numeric($max_a_mq)) {
+                            $transport_transaction->a_mq = ($max_a_mq + 1);
                             $transport_transaction->save();
                             //notify user - need also notify others
 
@@ -141,28 +141,31 @@ class TransportApprovalController extends Controller
 
                     //Notify user that is logged in
                     $user->notify(
-                        new DealTicketApproved($deal_ticket,$transport_transaction)
+                        new DealTicketApproved($deal_ticket, $transport_transaction)
+                    );
+
+                    //Notify desire
+                    $user_desire = User::find(6);
+
+                    $user_desire->notify(
+                        new DealTicketApproved($deal_ticket, $transport_transaction)
                     );
 
                     //Notify all staff linked to customer
                     $customer = $transport_transaction->Customer;
-                    $staff_allocated=$customer?->staff;
-
-                    if($staff_allocated){
-                        foreach ($staff_allocated as $staff_member){
-
+                    $staff_allocated = $customer?->staff;
+                    if ($staff_allocated) {
+                        foreach ($staff_allocated as $staff_member) {
                             $cur_user = User::find($staff_member->user_id);
-
-                            if ($cur_user){
-                                if ($user->id !=$cur_user->id){
+                            if ($cur_user) {
+                                if ($user->id != $cur_user->id && $user_desire->id != $cur_user->id) {
                                     $cur_user->notify(
-                                        new DealTicketApproved($deal_ticket,$transport_transaction)
+                                        new DealTicketApproved($deal_ticket, $transport_transaction)
                                     );
                                 }
                             }
                         }
                     }
-
 
 
                 }
@@ -190,28 +193,28 @@ class TransportApprovalController extends Controller
         $is_approved = $deal_ticket->is_approved;
 
 
-   /*     $request->validate([
-            'is_active'=>['nullable','boolean',Rule::prohibitedIf(!$can_approve),Rule::prohibitedIf(!$is_approved)],
-        ],['is_active'=>'You need permissions to activate a deal ticket & must be approved!']);*/
+        /*     $request->validate([
+                 'is_active'=>['nullable','boolean',Rule::prohibitedIf(!$can_approve),Rule::prohibitedIf(!$is_approved)],
+             ],['is_active'=>'You need permissions to activate a deal ticket & must be approved!']);*/
 
         $is_updated = false;
 
-        if ($can_approve && $is_approved){
-            $is_updated = $deal_ticket->update(['is_active' =>1]);
+        if ($can_approve && $is_approved) {
+            $is_updated = $deal_ticket->update(['is_active' => 1]);
 
-            if ($deal_ticket->is_active){
+            if ($deal_ticket->is_active) {
 
                 $transport_transaction = $deal_ticket->TransportTransaction;
-                if ($transport_transaction->a_mq == null){
+                if ($transport_transaction->a_mq == null) {
 
                     $max_a_mq = TransportTransaction::max("a_mq");
 
-                    if($max_a_mq == null){
+                    if ($max_a_mq == null) {
                         $max_a_mq = TransportTransaction::max("id");
                     }
 
-                    if (is_numeric($max_a_mq)){
-                        $transport_transaction->a_mq=($max_a_mq+1);
+                    if (is_numeric($max_a_mq)) {
+                        $transport_transaction->a_mq = ($max_a_mq + 1);
                         $transport_transaction->save();
                     }
 
@@ -219,10 +222,10 @@ class TransportApprovalController extends Controller
             }
         }
 
-        if ($is_updated){
+        if ($is_updated) {
             $request->session()->flash('flash.bannerStyle', 'success');
             $request->session()->flash('flash.banner', 'Deal Ticket updated');
-        }else{
+        } else {
             $request->session()->flash('flash.bannerStyle', 'danger');
             $request->session()->flash('flash.banner', 'Deal Ticket NOT updated');
         }

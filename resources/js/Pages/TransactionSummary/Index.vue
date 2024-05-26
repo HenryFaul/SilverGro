@@ -5771,7 +5771,7 @@ const deleteAssignedComm =  (id) => {
                                                         </dl>
                                                     </div>
 
-                                                    <div class="flex justify-between gap-x-4 py-1">
+                                                    <div class="flex justify-between gap-x-4 mb-2 py-1">
 
                                                         <AreaInput
                                                             id="offloading_instructions"
@@ -5803,7 +5803,7 @@ const deleteAssignedComm =  (id) => {
                                                         <AreaInput
                                                             id="transport_notes"
                                                             v-model="combined_Form.transport_notes"
-                                                            :rows=12
+                                                            :rows=6
                                                             placeholder="Optional notes..."
                                                             type="text"
                                                             class="mt-1 block w-1/3"
@@ -5813,6 +5813,96 @@ const deleteAssignedComm =  (id) => {
                                                         <InputError class="mt-2"
                                                                     :message="combined_Form.errors.customer_notes"/>
 
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Transporter contacts</dt>
+                                                        <dd class="text-gray-700">
+                                                            <div v-if="selected_transaction.transporter.contactable">
+
+                                                                <div v-for="contact in selected_transaction.transporter.contactable"
+                                                                     :key="contact.id">
+
+                                                                    <div>
+                                                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('contact.show',contact.id)" ><span>{{contact.first_name}}</span> <span>{{contact.last_legal_name}}</span></Link>
+
+                                                                        <div v-if="contact.numberable">
+                                                                            <span>T: </span>
+                                                                            <span v-for="number in contact.numberable"
+                                                                            :key="number.id">{{number.value}}</span>
+                                                                        </div>
+
+                                                                        <div v-if="contact.emailable">
+                                                                            <span>E: </span>
+                                                                            <span v-for="email in contact.emailable"
+                                                                                  :key="email.id">{{email.value}}</span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Customer contacts</dt>
+                                                        <dd class="text-gray-700">
+                                                            <div v-if="selected_transaction.customer.contactable">
+
+                                                                <div v-for="contact in selected_transaction.customer.contactable"
+                                                                     :key="contact.id">
+
+                                                                    <div>
+                                                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('contact.show',contact.id)" ><span>{{contact.first_name}}</span> <span>{{contact.last_legal_name}}</span></Link>
+
+                                                                        <div v-if="contact.numberable">
+                                                                            <span>T: </span>
+                                                                            <span v-for="number in contact.numberable"
+                                                                                  :key="number.id">{{number.value}}</span>
+                                                                        </div>
+
+                                                                        <div v-if="contact.emailable">
+                                                                            <span>E: </span>
+                                                                            <span v-for="email in contact.emailable"
+                                                                                  :key="email.id">{{email.value}}</span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Supplier contacts</dt>
+                                                        <dd class="text-gray-700">
+                                                            <div v-if="selected_transaction.supplier.contactable">
+
+                                                                <div v-for="contact in selected_transaction.supplier.contactable"
+                                                                     :key="contact.id">
+
+                                                                    <div>
+                                                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('contact.show',contact.id)" ><span>{{contact.first_name}}</span> <span>{{contact.last_legal_name}}</span></Link>
+
+                                                                        <div v-if="contact.numberable">
+                                                                            <span>T: </span>
+                                                                            <span v-for="number in contact.numberable"
+                                                                                  :key="number.id">{{number.value}}</span>
+                                                                        </div>
+
+                                                                        <div v-if="contact.emailable">
+                                                                            <span>E: </span>
+                                                                            <span v-for="email in contact.emailable"
+                                                                                  :key="email.id">{{email.value}}</span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+                                                        </dd>
                                                     </div>
 
                                                 </dl>
