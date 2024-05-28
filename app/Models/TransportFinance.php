@@ -66,6 +66,7 @@ class TransportFinance extends Model
         $transport_Load = ($transport_Finance->TransportLoad);
         $assigned_user_comm = $transport_Finance->AssignedUserComm;
         $transport_trans = $transport_Finance->TransportTransaction;
+        $is_split_load = $transport_trans->is_split_load;
         $deal_ticket = $transport_trans->DealTicket;
         $driver_vehicles = $transport_trans->TransportDriverVehicle;
 
@@ -110,7 +111,11 @@ class TransportFinance extends Model
         //Update cost price
 
         //units calc
-        $no_units_outgoing_total = $transport_Load->no_units_outgoing + $transport_Load->no_units_outgoing_2 + $transport_Load->no_units_outgoing_3 + $transport_Load->no_units_outgoing_4;
+        if ($is_split_load){
+            $no_units_outgoing_total = $transport_Load->no_units_outgoing_2 + $transport_Load->no_units_outgoing_3 + $transport_Load->no_units_outgoing_4;
+        } else {
+            $no_units_outgoing_total = $transport_Load->no_units_outgoing;
+        }
 
         $transport_Load->no_units_outgoing_total = $no_units_outgoing_total;
 
