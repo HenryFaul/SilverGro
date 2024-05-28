@@ -112,7 +112,7 @@ class TransportFinance extends Model
 
         //units calc
         if ($is_split_load){
-            $no_units_outgoing_total = $transport_Load->no_units_outgoing_2 + $transport_Load->no_units_outgoing_3 + $transport_Load->no_units_outgoing_4;
+            $no_units_outgoing_total = $transport_Load->no_units_outgoing_2 + $transport_Load->no_units_outgoing_3 + $transport_Load->no_units_outgoing_4+ $transport_Load->no_units_outgoing_5;
         } else {
             $no_units_outgoing_total = $transport_Load->no_units_outgoing;
         }
