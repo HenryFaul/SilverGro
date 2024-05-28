@@ -202,7 +202,9 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Transport Rate Basis</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportFinance->TransportRateBasis->name}}</td>
+                            <td class="table_sections table_row_value" style="background-color: #fde047">
+                                {{$transport_trans->TransportFinance->TransportRateBasis->name}}
+                            </td>
                             <td class="table_sections table_row_heading">Rate / Ton</td>
                             <td class="table_sections table_row_value">
                                 R {{number_format(round($transport_trans->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}
@@ -311,8 +313,13 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Collection from</td>
-                            <td class="table_sections table_row_value" colspan="3">
+                            <td class="table_sections table_row_value" >
                                 {{$transport_trans->TransportJob->LoadingHoursFrom->name}} HRS
+                            </td>
+
+                            <td class="table_sections table_row_heading" style="width: 25%;">Collection to</td>
+                            <td class="table_sections table_row_value" >
+                                {{$transport_trans->TransportJob->LoadingHoursTo->name}} HRS
                             </td>
                         </tr>
 
@@ -355,34 +362,7 @@
                             <td class="table_sections table_row_heading" style="width: 25%;">Supplier contact:
                             </td>
                             <td class="table_sections table_row_value" colspan="3">
-                                @if($transport_trans->Supplier->contactable=="[]")
-                                    <span>No contact loaded</span>
-                                @else
-                                    @foreach($transport_trans->Supplier->contactable as $contact)
-                                        <div>
-                                            <span>{{$contact->first_name}}</span> <span>{{$contact->last_legal_name}}</span>
-
-                                            @if($contact->numberable=="[]")
-                                                <span>T: none loaded</span>
-                                            @else
-                                                <span>T:</span>
-                                                @foreach($contact->numberable as $phone)
-                                                    <span>{{$phone->value}}</span>
-                                                @endforeach
-                                            @endif
-
-                                            @if($contact->emailable=="[]")
-                                                <span>E: none loaded</span>
-                                            @else
-                                                <span>E:</span>
-                                                @foreach($contact->emailable as $email)
-                                                    <span>{{$email->value}}</span>
-                                                @endforeach
-                                            @endif
-
-                                        </div>
-                                    @endforeach
-                                @endif
+                               <span>{{$transport_trans->TransportJob->loading_contact}} {{$transport_trans->TransportJob->loading_contact_no}}</span>
                             </td>
                         </tr>
 
@@ -410,8 +390,12 @@
 
                             <tr class="table_sections">
                                 <td class="table_sections table_row_heading" style="width: 25%;">Delivery from</td>
-                                <td class="table_sections table_row_value" colspan="3">
+                                <td class="table_sections table_row_value">
                                     {{$transport_trans->TransportJob->OffloadingHoursFrom->name}} HRS
+                                </td>
+                                <td class="table_sections table_row_heading" style="width: 25%;">Delivery to</td>
+                                <td class="table_sections table_row_value">
+                                    {{$transport_trans->TransportJob->OffloadingHoursTo->name}} HRS
                                 </td>
                             </tr>
 
@@ -454,34 +438,7 @@
                                 <td class="table_sections table_row_heading" style="width: 25%;">Customer contact:
                                 </td>
                                 <td class="table_sections table_row_value" colspan="3">
-                                    @if($transport_trans->Customer->contactable=="[]")
-                                        <span>No contact loaded</span>
-                                    @else
-                                        @foreach($transport_trans->Customer->contactable as $contact)
-                                            <div>
-                                                <span>{{$contact->first_name}}</span> <span>{{$contact->last_legal_name}}</span>
-
-                                                @if($contact->numberable=="[]")
-                                                    <span>T: none loaded</span>
-                                                @else
-                                                    <span>T:</span>
-                                                    @foreach($contact->numberable as $phone)
-                                                        <span>{{$phone->value}}</span>
-                                                    @endforeach
-                                                @endif
-
-                                                @if($contact->emailable=="[]")
-                                                    <span>E: none loaded</span>
-                                                @else
-                                                    <span>E:</span>
-                                                    @foreach($contact->emailable as $email)
-                                                        <span>{{$email->value}}</span>
-                                                    @endforeach
-                                                @endif
-
-                                            </div>
-                                        @endforeach
-                                    @endif
+                                    <span>{{$transport_trans->TransportJob->offloading_contact}} {{$transport_trans->TransportJob->offloading_contact_no}}</span>
                                 </td>
                             </tr>
 
@@ -825,7 +782,7 @@
                         </li>
 
                         <li>
-                            Load Insurance: The transporter confirms that the value of the load(s), calculated at the selling value of the commodity, that is R4,455.00 per mt, is fully insured by the
+                            Load Insurance: The transporter confirms that the value of the load(s), calculated at the selling value of the commodity, that is R {{number_format(round($transport_trans->TransportFinance->load_insurance_per_ton,2), 2, '.', ' ')}} per mt, is fully insured by the
                             Transport Company / CC / Other for all possible risks.
                         </li>
 
