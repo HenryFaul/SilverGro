@@ -411,7 +411,7 @@ const closeTradeSlideOver = () => {
                                                                         <span>GP: </span> <span>{{NiceNumber(trans.transport_finance.gross_profit)}}</span>
                                                                     </div>
                                                                     <div class="mt-1 font-bold">
-                                                                        <span>Invoice: </span> <span>{{invoiceNo(trans)}}</span>
+                                                                        <span>Invoice: </span> <span>{{trans.transport_invoice_details.invoice_no}}</span>
 
                                                                     </div>
                                                                     <div class="mt-1 font-bold">

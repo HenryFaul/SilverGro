@@ -472,6 +472,8 @@ let updateSelectValues = () => {
     combined_Form.customer_id_2 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_2);
     combined_Form.customer_id_3 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3);
     combined_Form.customer_id_4 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4);
+    combined_Form.customer_id_4 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4);
+    combined_Form.customer_id_5 = props.all_customers.find(element => element.id === props.selected_transaction.customer_id_5);
 
 
     combined_Form.transporter_id = props.all_transporters.find(element => element.id === props.selected_transaction.transporter_id);
@@ -510,6 +512,8 @@ let updateSelectValues = () => {
     combined_Form.delivery_address_id_2 = props.selected_transaction.transport_load.delivery_address_id_2 === null ? null : props.all_customers.find(element => element.id === props.selected_transaction.customer_id_2).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_2);
     combined_Form.delivery_address_id_3 = props.selected_transaction.transport_load.delivery_address_id_3 === null ? null : props.all_customers.find(element => element.id === props.selected_transaction.customer_id_3).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_3);
     combined_Form.delivery_address_id_4 = props.selected_transaction.transport_load.delivery_address_id_4 === null ? null :  props.all_customers.find(element => element.id === props.selected_transaction.customer_id_4).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_4);
+    combined_Form.delivery_address_id_5 = props.selected_transaction.transport_load.delivery_address_id_5 === null ? null :  props.all_customers.find(element => element.id === props.selected_transaction.customer_id_5).addressable.find(element => element.id === props.selected_transaction.transport_load.delivery_address_id_5);
+
 
 
     combined_Form.product_grade_perc = props.selected_transaction.transport_load.product_grade_perc;
@@ -519,6 +523,8 @@ let updateSelectValues = () => {
     combined_Form.no_units_outgoing_2 = props.selected_transaction.transport_load.no_units_outgoing_2;
     combined_Form.no_units_outgoing_3 = props.selected_transaction.transport_load.no_units_outgoing_3;
     combined_Form.no_units_outgoing_4 = props.selected_transaction.transport_load.no_units_outgoing_4;
+    combined_Form.no_units_outgoing_5 = props.selected_transaction.transport_load.no_units_outgoing_5;
+
     combined_Form.no_units_outgoing_total = props.selected_transaction.transport_load.no_units_outgoing_total;
 
     combined_Form.is_weighbridge_certificate_received = props.selected_transaction.transport_load.is_weighbridge_certificate_received;
@@ -558,6 +564,8 @@ let updateSelectValues = () => {
     combined_Form.supplier_loading_number_3 = props.selected_transaction.transport_job.supplier_loading_number_3;
     combined_Form.customer_order_number_4 = props.selected_transaction.transport_job.customer_order_number_4;
     combined_Form.supplier_loading_number_4 = props.selected_transaction.transport_job.supplier_loading_number_4;
+    combined_Form.customer_order_number_5 = props.selected_transaction.transport_job.customer_order_number_5;
+    combined_Form.supplier_loading_number_5 = props.selected_transaction.transport_job.supplier_loading_number_5;
 
 
     combined_Form.is_multi_loads = props.selected_transaction.transport_job.is_multi_loads;
@@ -588,10 +596,12 @@ let updateSelectValues = () => {
     combined_Form.transport_cost_2 = props.selected_transaction.transport_finance.transport_cost_2;
     combined_Form.transport_cost_3 = props.selected_transaction.transport_finance.transport_cost_3;
     combined_Form.transport_cost_4 = props.selected_transaction.transport_finance.transport_cost_4;
+    combined_Form.transport_cost_5 = props.selected_transaction.transport_finance.transport_cost_5;
 
     combined_Form.selling_price_2 = props.selected_transaction.transport_finance.selling_price_2;
     combined_Form.selling_price_3 = props.selected_transaction.transport_finance.selling_price_3;
     combined_Form.selling_price_4 = props.selected_transaction.transport_finance.selling_price_4;
+    combined_Form.selling_price_5 = props.selected_transaction.transport_finance.selling_price_5;
 
     combined_Form.additional_cost_1 = props.selected_transaction.transport_finance.additional_cost_1;
     combined_Form.additional_cost_2 = props.selected_transaction.transport_finance.additional_cost_2;
@@ -1242,7 +1252,7 @@ const filteredPackageIncoming = computed(() =>
     packageIncomingQuery.value === ''
         ? props.all_packaging
         : props.all_packaging.filter((type) => {
-            return type.name.toLowerCase().includes(productSourceQuery.value.toLowerCase())
+            return type.name.toLowerCase().includes(packageIncomingQuery.value.toLowerCase())
         })
 );
 
@@ -3116,7 +3126,7 @@ const deleteAssignedComm =  (id) => {
                                                     </div>
 
                                                     <div class="flex justify-between gap-x-4 py-1">
-                                                        <dt class="text-gray-500">Loading no</dt>
+                                                        <dt class="text-gray-500">Offloading no</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <input  id="loading_no"
                                                                     v-model="combined_Form.driver_vehicle_loading_number"
