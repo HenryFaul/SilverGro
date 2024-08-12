@@ -192,6 +192,11 @@ Route::middleware([
 
     Route::get('/props/contract_link_sc_modal', [TransportTransactionController::class, 'getScs'])->middleware('auth')->name('props.contract_link_sc_modal');
 
+    //Transport SC trans Modal Props
+
+    Route::get('/props/contract_link_split/primary', [TransportTransactionController::class, 'getPrimarySplit'])->middleware('auth')->name('props.contract_link_split_primary');
+
+
     //Transport Load
 
     Route::resource('transport_load', TransportLoadController::class)->middleware('auth')
@@ -203,6 +208,10 @@ Route::middleware([
 
     Route::resource('trans_link', TransLinkController::class)->middleware('auth')
         ->only(['store']);
+
+    Route::post('trans_link/split', [TransLinkController::class, 'storeSplits'])->middleware('auth')->name('trans_link.split.store');
+    Route::delete('trans_link/split/delete/{trade}', [TransLinkController::class, 'deleteSplits'])->middleware('auth')->name('trans_link.split.delete');
+
 
     //Trans Approval
    // Route::resource('trans_approval', TransportApprovalController::class)->middleware('auth')->only(['store']);

@@ -542,6 +542,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'mq_to_sc'
         ]);
 
+        TransLinkType::create([
+            'name' => 'pc_to_pc'
+        ]);
+
         //AddressType
         //delivery 1, physical 2, postal 3
         AddressType::create([

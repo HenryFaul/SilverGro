@@ -13,7 +13,7 @@ return new class extends Migration
 
      */
 
-
+//sl_id, is_split_load_primary, is_split_load_member
 
     public function up(): void
     {
@@ -22,6 +22,9 @@ return new class extends Migration
 
             $table->bigInteger('old_id')->nullable();
             $table->bigInteger('a_mq')->nullable();
+            $table->bigInteger('sl_id')->nullable();
+            $table->bigInteger('sl_global_id')->nullable();
+
             $table->string('contract_no')->nullable();
             $table->string('old_deal_ticket')->nullable();
 
@@ -81,6 +84,8 @@ return new class extends Migration
             $table->boolean('include_in_calculations')->default(1);
             $table->boolean('is_transaction_done')->default(0);
             $table->boolean('is_split_load')->default(0);
+            $table->boolean('is_split_load_primary')->default(0);
+            $table->boolean('is_split_load_member')->default(0);
 
             $table->softDeletes();
             $table->timestamps();

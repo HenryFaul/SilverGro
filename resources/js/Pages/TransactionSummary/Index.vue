@@ -53,6 +53,7 @@ import {
 
 import ContractLinkModal from "@/Components/UI/ContractLinkModal.vue";
 import ContractLinkModalSc from "@/Components/UI/ContractLinkModal.vue";
+import SplitLinkModal from "@/Components/UI/SplitLinkModal.vue";
 
 
 let dayIncluded = (_date) => {
@@ -198,6 +199,8 @@ const props = defineProps({
     linked_trans_sc: Object,
     linked_trans_pc: Object,
     linked_trans_other: Object,
+    linked_trans_split: Object,
+    primary_linked_trans_split:Object,
     model_activity: Object
 });
 
@@ -220,8 +223,8 @@ const tabs_split = [
     {id: 8, name: 'Documents', current: false},
     {id: 7, name: 'Linked Trades', current: false},
     {id: 9, name: 'Log', current: false},
-    {id: 11, name: 'Split Customers', current: false},
-    {id: 12, name: 'Staff allocation', current: false}
+    {id: 12, name: 'Staff allocation', current: false},
+    {id: 13, name: 'Split Trades', current: false}
 ];
 
 const tabs_non_split = [
@@ -235,7 +238,8 @@ const tabs_non_split = [
     {id: 8, name: 'Documents', current: false},
     {id: 7, name: 'Linked Trades', current: false},
     {id: 9, name: 'Log', current: false},
-    {id: 12, name: 'Staff allocation', current: false}
+    {id: 12, name: 'Staff allocation', current: false},
+
 ];
 
 let tabs = computed(() => props.selected_transaction.is_split_load ? tabs_split : tabs_non_split);
@@ -278,6 +282,10 @@ const closeContractLink = () => {
 
 const closeContractLinkSc = () => {
     viewContractLinkModalSc.value = false;
+};
+
+const closeSplitLink = () => {
+    viewSplitLinkModal.value = false;
 };
 
 const newTradeAdded = () => {
@@ -498,6 +506,12 @@ let updateSelectValues = () => {
     combined_Form.traders_notes_transport = props.selected_transaction.traders_notes_transport;
     combined_Form.is_transaction_done = props.selected_transaction.is_transaction_done;
     combined_Form.is_split_load = props.selected_transaction.is_split_load;
+
+    combined_Form.is_split_load = props.selected_transaction.is_split_load;
+
+    combined_Form.is_split_load_primary = props.selected_transaction.is_split_load_primary;
+    combined_Form.is_split_load_member = props.selected_transaction.is_split_load_member;
+
 
     //combined_Form
     combined_Form.confirmed_by_id = props.all_staff.find(element => element.id === props.selected_transaction.transport_load.confirmed_by_id);
@@ -732,6 +746,9 @@ let combined_Form = useForm({
     traders_notes_transport: props.selected_transaction.traders_notes_transport,
     is_transaction_done: props.selected_transaction.is_transaction_done,
     is_split_load: props.selected_transaction.is_split_load,
+    is_split_load_primary: props.selected_transaction.is_split_load_primary,
+    is_split_load_member: props.selected_transaction.is_split_load_member,
+
 
 
     //TransportLoad
@@ -1410,6 +1427,8 @@ let viewContractLinkModal = ref(false);
 
 let viewContractLinkModalSc = ref(false);
 
+let viewSplitLinkModal = ref(false);
+
 const viewContractLink = () => {
     viewContractLinkModal.value = true;
 
@@ -1417,6 +1436,11 @@ const viewContractLink = () => {
 
 const viewContractLinkSc = () => {
     viewContractLinkModalSc.value = true;
+
+};
+
+const viewSplitLink = () => {
+    viewSplitLinkModal.value = true;
 
 };
 
@@ -1580,6 +1604,27 @@ const createProductVehicle = () => {
     });
 };
 
+const trans_link_form = useForm({
+    link_type_id:5
+});
+
+const deleteTransLink = (id) => {
+
+    if (confirm("Sure you want to delete?")) {
+        trans_link_form.delete(route('trans_link.split.delete',id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                swal(usePage().props.jetstream.flash?.banner || '');
+            },
+            onError: (e) => {
+                console.log(e);
+            },
+        });
+    }
+
+
+};
+
 
 
 const header_styler = computed(() => "sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-1 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell");
@@ -1631,6 +1676,8 @@ const deleteAssignedComm =  (id) => {
         );
     }
 };
+
+
 
 </script>
 
@@ -1882,7 +1929,14 @@ const deleteAssignedComm =  (id) => {
                                                         <div class="text-lg font-bold text-black" v-if="transaction.a_mq">
                                                             MQ{{ transaction.a_mq }}
                                                         </div>
-                                                        <div class="font-light text-sm italic">(ID:{{ transaction.id }})</div>
+                                                        <div v-if="transaction.is_split_load" class="font-light text-sm italic text-indigo-400">
+                                                          <span class="flex items-center">
+                                                            <icon name="arrow-split" class="w-3 h-3"/>
+                                                            (ID: {{ transaction.id }})
+                                                          </span>
+                                                                                                                </div>
+
+                                                        <div v-else class="font-light text-sm italic">(ID:{{ transaction.id }})</div>
                                                         <div v-if="transaction.old_id" class="font-light text-sm italic">(OLD:{{ transaction.old_id }})</div>
 
                                                     </td>
@@ -1990,10 +2044,16 @@ const deleteAssignedComm =  (id) => {
                             <div class="relative border-b border-gray-200 pb-5 sm:pb-0">
                                 <div class="md:flex md:items-center md:justify-between">
                                     <h3 class="text-base font-semibold leading-6 text-gray-900">Selected
-                                        Transaction</h3>
-                                    <div class="mt-3 flex md:absolute md:right-0 md:top-3 md:mt-0">
-                                        <div v-if="selected_transaction.a_mq" class="py-2 inline-flex text-xl font-bold text-black">MQ{{ selected_transaction.a_mq }}</div>
-                                        <div class="py-3 ml-2 inline-flex text-sm font-light text-gray-900">(ID:{{ selected_transaction.id }})</div>
+                                        Transaction
+
+                                        <div>
+                                            <div v-if="selected_transaction.a_mq" class="py-2 inline-flex text-xl font-bold text-black">MQ{{ selected_transaction.a_mq }}</div>
+                                            <div class="py-3 ml-2 inline-flex text-sm font-light text-gray-900">(ID:{{ selected_transaction.id }})</div>
+                                        </div>
+
+                                    </h3>
+
+                                    <div class="mt-4 flex md:absolute md:right-0 md:top-3 md:mt-0">
 
                                         <button @click="cloneTransportTrans"
                                                 class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -3000,10 +3060,10 @@ const deleteAssignedComm =  (id) => {
                                                 </div>
 
 
-                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                                                <dl class="-my-3 divide-y divide-gray-100 px-6 py-2 text-sm leading-6">
 
-                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                        <dt class="text-gray-500">Split Load</dt>
+<!--                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Split Load 2</dt>
                                                         <dd class="flex items-start gap-x-2">
                                                             <div>
                                                                 <SwitchGroup as="div" class="flex m-2 items-center">
@@ -3015,6 +3075,62 @@ const deleteAssignedComm =  (id) => {
                                                                 </SwitchGroup>
                                                             </div>
                                                         </dd>
+                                                    </div>-->
+
+                                                    <div class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Split Load Primary</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div>
+                                                                <SwitchGroup as="div" class="flex m-2 items-center">
+                                                                    <Switch v-model="combined_Form.is_split_load_primary"
+                                                                            :class="[combined_Form.is_split_load_primary ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                                                <span aria-hidden="true"
+                                                                      :class="[combined_Form.is_split_load_primary ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"/>
+                                                                    </Switch>
+                                                                </SwitchGroup>
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+
+                                                    <div v-if="!combined_Form.is_split_load_primary" class="flex justify-between gap-x-4 py-3">
+                                                        <dt class="text-gray-500">Split Load Primary ID</dt>
+                                                        <dd class="flex items-start gap-x-2">
+                                                            <div v-if="primary_linked_trans_split" >
+
+                                                                <div v-if="primary_linked_trans_split">
+
+                                                                    <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: primary_linked_trans_split.id }">
+                                                                        ID {{primary_linked_trans_split.id}}
+                                                                    </Link>
+                                                                </div>
+                                                            </div>
+
+                                                            <div v-else >
+                                                                Nothing linked
+                                                            </div>
+                                                        </dd>
+                                                    </div>
+
+                                                    <div v-if="!combined_Form.is_split_load_primary">
+
+                                                        <SecondaryButton class="m-1 mt-3"
+                                                                         @click="viewSplitLink">
+                                                            Link Split Trade
+                                                        </SecondaryButton>
+
+                                                        <SecondaryButton class="m-1 mt-3"
+                                                                         @click="deleteTransLink(selected_transaction.id)">
+                                                            Remove Link
+                                                        </SecondaryButton>
+
+                                                        <SplitLinkModal
+                                                            s                                                            :show="viewSplitLinkModal"
+                                                            @close="closeSplitLink"
+                                                            :mq_trans_id="selected_transaction.id"
+                                                            :link_type_id="5"
+                                                        />
+
                                                     </div>
 
                                                     <!--                                                    <div class="flex justify-between gap-x-4 py-3">
@@ -3555,7 +3671,7 @@ const deleteAssignedComm =  (id) => {
                                         </ul>
                                     </div>
 
-                                    <div v-if="selectedTabId === 11">
+                                    <div v-if="selectedTabId === 111">
 
 
                                         <div>
@@ -8005,6 +8121,231 @@ const deleteAssignedComm =  (id) => {
                                                 </form>
 
                                             </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div v-if="selectedTabId === 13">
+
+                                        <div>
+                                            <table v-if="linked_trans_split != null" class="min-w-full divide-y divide-gray-300">
+                                                <thead>
+                                                <tr >
+                                                    <th scope="col"
+                                                        class="whitespace py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                                        ID
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        MQ
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        Customer
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        Transporter
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        Supplier
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        Product
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        BU Incoming
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        BU Outgoing
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        Units in
+                                                    </th>
+
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        Units Out
+                                                    </th>
+
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        Tons in
+                                                    </th>
+
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        Tons in
+                                                    </th>
+
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        GP/TON
+                                                    </th>
+
+                                                    <th scope="col"
+                                                        class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        GP %
+                                                    </th>
+
+
+                                                </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-200 bg-white">
+
+                                                <tr  v-for="n in linked_trans_split" :key="n.id" :value="n"  class="hover:bg-gray-100 focus-within:bg-gray-100">
+                                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+
+                                                        <div v-if="n.transport_transaction.is_split_load_primary" class="font-bold text-indigo-400">
+
+                                                            <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: n.transport_transaction.id }">
+                                                                {{n.transport_transaction.id}} Primary
+                                                            </Link>
+
+                                                        </div>
+
+                                                        <div v-else>
+                                                            <Link href="/transaction_summary" method="get" target="_blank" :data="{ selected_trans_id: n.transport_transaction.id }">
+                                                                {{n.transport_transaction.id}}
+                                                            </Link>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div v-if="n.transport_transaction.a_mq">
+                                                           MQ {{n.transport_transaction.a_mq}}
+                                                        </div>
+                                                        <div v-else>
+                                                            No MQ
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                        <div>
+                                                            {{n.transport_transaction.customer.last_legal_name}}
+                                                        </div>
+
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            {{n.transport_transaction.transporter.last_legal_name}}
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            {{n.transport_transaction.supplier.last_legal_name}}
+                                                        </div>
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            {{n.transport_transaction.product.name}}
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            {{n.transport_transaction.transport_load.billing_units_incoming.name}}
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            <div>
+                                                                {{n.transport_transaction.transport_load.billing_units_incoming.name}}
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            <div>
+                                                                {{n.transport_transaction.transport_load.no_units_incoming}}
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            <div>
+                                                                {{n.transport_transaction.transport_load.no_units_outgoing}}
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            <div>
+                                                                {{n.transport_transaction.transport_finance.weight_ton_incoming_actual}}
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            <div>
+                                                                {{n.transport_transaction.transport_finance.weight_ton_outgoing_actual}}
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            <div>
+                                                                {{n.transport_transaction.transport_finance.gross_profit_per_ton}}
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+
+                                                        <div>
+                                                            <div>
+                                                                {{n.transport_transaction.transport_finance.gross_profit_percent}}%
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+
+
+                                                </tr>
+
+                                                </tbody>
+
+                                                <tfoot>
+                                                <tr class="bg-gray-100">
+                                                    <td colspan="8" class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900 text-right">Total</td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">0</td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">0</td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">0</td>
+                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">0</td>
+                                                </tr>
+                                                </tfoot>
+                                            </table>
 
                                         </div>
 

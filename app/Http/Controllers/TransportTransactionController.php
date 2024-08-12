@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Response;
 use Inertia\ResponseFactory;
+use JetBrains\PhpStorm\ArrayShape;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -553,6 +554,17 @@ class TransportTransactionController extends Controller
 
     }
 
+    #[ArrayShape(["transport_trans" => "mixed", "contract_types" => "mixed"])] public function getPrimarySplit(): array
+    {
+        $transport_trans = TransportTransaction::where('is_split_load_primary',1)->where('contract_type_id', 4)->with('Product')->with('TransportLoad')->with('Customer')->with('Supplier')
+            ->orderBy('id', 'desc')->get();
+        $contract_types = ContractType::all();
+
+        return array("transport_trans" => $transport_trans, "contract_types" => $contract_types);
+
+    }
+
+
 
     /**
      * Display the specified resource.
@@ -737,6 +749,9 @@ class TransportTransactionController extends Controller
                 'traders_notes_transport' => $request->traders_notes_transport,
                 'is_transaction_done' => $request->is_transaction_done,
                 'is_split_load' => $request->is_split_load,
+                'is_split_load_primary' => $request->is_split_load_primary,
+                'is_split_load_member' => $request->is_split_load_member,
+
             ]
         );
 

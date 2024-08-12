@@ -23,9 +23,11 @@ class TransportTransaction extends Model
 
     use LogsActivity;
 
-    public $fillable = ['id','old_id','old_deal_ticket','a_mq','contract_type_id','contract_no','supplier_id','customer_id','customer_id_2','customer_id_3','customer_id_4','customer_id_5','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
+    //sl_id, is_split_load_primary, is_split_load_member
+
+    public $fillable = ['id','old_id','old_deal_ticket','a_mq','sl_id','sl_global_id','contract_type_id','contract_no','supplier_id','customer_id','customer_id_2','customer_id_3','customer_id_4','customer_id_5','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes',
         'product_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes',
-        'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at','is_split_load'];
+        'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at','is_split_load','is_split_load_primary','is_split_load_member'];
 
 
     protected $casts = [
@@ -34,12 +36,16 @@ class TransportTransaction extends Model
     ];
 
 
-
-
     public function TransLinks(): HasMany
     {
         return $this->hasMany(TransLink::class,'transport_trans_id');
     }
+
+    public function TransLinkSplits(): HasMany
+    {
+        return $this->hasMany(TransLinkSplit::class,'transport_trans_id');
+    }
+
 
     public function TransportStatus(): HasMany
     {

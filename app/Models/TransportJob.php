@@ -46,4 +46,9 @@ class TransportJob extends Model
     {
         return $this->belongsTo(LoadingHourOption::class,'loading_hours_to_id');
     }
+
+    public function RateBasis(): BelongsTo
+    {
+        return $this->belongsTo(TransportRateBasis::class,'transport_rate_basis_id');
+    }
 }

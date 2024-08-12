@@ -21,6 +21,7 @@ use App\Models\Supplier;
 use App\Models\TermsOfPayment;
 use App\Models\TransactionSummary;
 use App\Models\TransLink;
+use App\Models\TransLinkSplit;
 use App\Models\Transporter;
 use App\Models\TransportRateBasis;
 use App\Models\TransportTransaction;
@@ -141,6 +142,43 @@ class TransactionSummaryController extends Controller
                 $linked_trans_other = TransLink::where('transport_trans_id','=',$transportTransaction->id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
                     ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
 
+                //linked_trans_split
+
+
+             $is_primary_split = $transportTransaction->is_split_load_primary;
+
+                $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id','=',$transportTransaction->id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance')->with('TransportLoad'))->first();
+
+
+                 $linked_trans_split = null;
+                 $primary_trans = null;
+
+                if (isset($primary_linked_trans_split->transport_trans_id)){
+
+                    $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
+
+                    // $linked_trans_split = TransLinkSplit::where('transport_trans_id','=',$primary_linked_trans_split->transport_trans_id)->orWhere('linked_transport_trans_id','=',$primary_linked_trans_split->transport_trans_id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                    //    ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
+
+                    $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
+                        ->with(['TransportTransaction' => function ($query) {
+                            $query->with([
+                                'Customer',
+                                'Supplier',
+                                'Transporter',
+                                'Product',
+                                'TransportFinance',
+                                'TransportLoad' => function ($query) {
+                                    $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing']);
+                                }
+                            ])->orderBy('sl_global_id', 'asc');  // Ordering by sl_global_id
+                        }])
+                        ->get();
+
+                }
+
+
         }
 
 
@@ -179,7 +217,9 @@ class TransactionSummaryController extends Controller
                 'linked_trans_sc'=>$linked_trans_sc,
                 'linked_trans_pc'=>$linked_trans_pc,
                 'linked_trans_other'=>$linked_trans_other,
-                'model_activity'=>$model_activity
+                'model_activity'=>$model_activity,
+                'linked_trans_split'=>$linked_trans_split,
+                'primary_linked_trans_split'=>$primary_trans
 
 
             ]
@@ -287,9 +327,42 @@ class TransactionSummaryController extends Controller
                 'traders_notes_customer' => $request->traders_notes_customer,
                 'traders_notes_transport' => $request->traders_notes_transport,
                 'is_transaction_done' => $request->is_transaction_done,
-                'is_split_load' => $request->is_split_load,
+                'is_split_load' => $request->is_split_load_primary,
+                'is_split_load_primary' => $request->is_split_load_primary,
+                'is_split_load_member' => $request->is_split_load_member,
             ]
         );
+
+        if (!$request->is_split_load_primary){
+
+          $linked_trans =  TransLinkSplit::where('transport_trans_id','=',$request->transport_trans_id)->get();
+
+
+          if (count($linked_trans)>0){
+              foreach ($linked_trans as $trans){
+
+                  $trade = $trans->linked_transport_trans_id;
+
+                  $trans_link_split = TransLinkSplit::where('linked_transport_trans_id','=',trim($trade))->where('trans_link_type_id','=',5)->withTrashed()->get();
+
+                  //remove old links
+                  if (count($trans_link_split) >=1){
+                      foreach ($trans_link_split as $link){
+                          $link->forceDelete();
+                      }
+                  }
+                  $trans_link = TransportTransaction::where('id',$trade)->first();
+
+                  $trans_link->is_split_load = false;
+                  $trans_link->is_split_load_member = false;
+                  $trans_link->is_split_load_primary = false;
+                  $trans_link->save();
+
+              }
+          }
+
+        }
+
 
         //'no_units' => ['required', 'numeric', 'gt:0'],
 
