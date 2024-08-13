@@ -38,7 +38,7 @@ class TransactionSummaryController extends Controller
     public function index(Request $request)
     {
 
-       // error_log('Some message here.');
+        // error_log('Some message here.');
 
         $filters = $request->only([
             'supplier_name',
@@ -69,32 +69,30 @@ class TransactionSummaryController extends Controller
         $selected_trans_id = $request['selected_trans_id'] ?? $first_transaction_id;
 
         $transportTransaction = TransportTransaction::where('id', $selected_trans_id)->with('ContractType')->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
-            ->with('TransportLoad')->with('DealTicket')->with('Supplier',fn($query) => $query->with('TermsOfPayment')->with('contactable',fn($query) => $query->with('numberable')->with('emailable')))
-            ->with('Customer',fn($query) => $query->with('contactable',fn($query) => $query->with('numberable')->with('emailable'))->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
-            ->with('Customer_2',fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
-            ->with('Customer_3',fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
-            ->with('Customer_4',fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
-            ->with('Customer_5',fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
-            ->with('TransportFinance')->with('Transporter',fn($query) => $query->with('contactable',fn($query) => $query->with('numberable')->with('emailable')))
+            ->with('TransportLoad')->with('DealTicket')->with('Supplier', fn($query) => $query->with('TermsOfPayment')->with('contactable', fn($query) => $query->with('numberable')->with('emailable')))
+            ->with('Customer', fn($query) => $query->with('contactable', fn($query) => $query->with('numberable')->with('emailable'))->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
+            ->with('Customer_2', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
+            ->with('Customer_3', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
+            ->with('Customer_4', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
+            ->with('Customer_5', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
+            ->with('TransportFinance')->with('Transporter', fn($query) => $query->with('contactable', fn($query) => $query->with('numberable')->with('emailable')))
             ->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))->with('AssignedUserComm', fn($query) => $query->with('AssignedUserSupplier')->with('AssignedUserCustomer'))
             ->with('TransportJob', fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo')
                 ->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle', fn($query) => $query->with('VehicleType'))))->first();
-
 
 
         $deal_ticket = $transportTransaction?->DealTicket;
         $purchase_order = $transportTransaction?->PurchaseOrder;
         $transport_order = $transportTransaction?->TransportOrder;
         $sales_order = $transportTransaction?->SalesOrder;
-        $model_activity = Activity::where('subject_type','App\Models\TransportTransaction')->where('subject_id',$transportTransaction?->id)->get();
+        $model_activity = Activity::where('subject_type', 'App\Models\TransportTransaction')->where('subject_id', $transportTransaction?->id)->get();
 
         $rules_with_approvals = null;
 
-        if ($deal_ticket != null){
+        if ($deal_ticket != null) {
             $deal_ticket->calculateRules();
             $rules_with_approvals = $deal_ticket->getAppliedRules();
         }
-
 
 
         $start_date = (Carbon::now()->tz('Africa/Johannesburg')->startOfMonth())->toDateString();
@@ -121,12 +119,12 @@ class TransactionSummaryController extends Controller
         $all_invoice_statuses = InvoiceStatus::all();
 
         $all_terms_of_payments = TermsOfPayment::all();
-        $all_vehicle_types= VehicleType::all();
+        $all_vehicle_types = VehicleType::all();
 
 
         $linked_trans = null;
 
-        if ($transportTransaction != null){
+        if ($transportTransaction != null) {
 
 
             /*   1     •	sc_to_pc
@@ -135,48 +133,71 @@ class TransactionSummaryController extends Controller
             • 4	mq_to_sc
 */
 
-                $linked_trans_sc = TransLink::where('linked_transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id','=',4)->with('TransportTransactionPc',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                    ->with('Product')->with('TransportFinance') ->with('TransportLoad'))->get();
-                $linked_trans_pc = TransLink::where('linked_transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id','=',3)->with('TransportTransactionPc',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                    ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
-                $linked_trans_other = TransLink::where('transport_trans_id','=',$transportTransaction->id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                    ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
+            $linked_trans_sc = TransLink::where('linked_transport_trans_id', '=', $transportTransaction->id)->where('trans_link_type_id', '=', 4)->with('TransportTransactionPc', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
+            $linked_trans_pc = TransLink::where('linked_transport_trans_id', '=', $transportTransaction->id)->where('trans_link_type_id', '=', 3)->with('TransportTransactionPc', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
+            $linked_trans_other = TransLink::where('transport_trans_id', '=', $transportTransaction->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
 
-                //linked_trans_split
+            //linked_trans_split
 
 
-             $is_primary_split = $transportTransaction->is_split_load_primary;
+            $is_primary_split = $transportTransaction->is_split_load_primary;
 
-                $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id','=',$transportTransaction->id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+            $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id', '=', $transportTransaction->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
                 ->with('Product')->with('TransportFinance')->with('TransportLoad'))->first();
 
 
-                 $linked_trans_split = null;
-                 $primary_trans = null;
+            $linked_trans_split = null;
+            $primary_trans = null;
+            $split_totals = [];
 
-                if (isset($primary_linked_trans_split->transport_trans_id)){
+            if (isset($primary_linked_trans_split->transport_trans_id)) {
 
-                    $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
+                $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
 
-                    // $linked_trans_split = TransLinkSplit::where('transport_trans_id','=',$primary_linked_trans_split->transport_trans_id)->orWhere('linked_transport_trans_id','=',$primary_linked_trans_split->transport_trans_id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                    //    ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
+                // $linked_trans_split = TransLinkSplit::where('transport_trans_id','=',$primary_linked_trans_split->transport_trans_id)->orWhere('linked_transport_trans_id','=',$primary_linked_trans_split->transport_trans_id)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                //    ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
 
-                    $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
-                        ->with(['TransportTransaction' => function ($query) {
-                            $query->with([
-                                'Customer',
-                                'Supplier',
-                                'Transporter',
-                                'Product',
-                                'TransportFinance',
-                                'TransportLoad' => function ($query) {
-                                    $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing']);
-                                }
-                            ])->orderBy('sl_global_id', 'asc');  // Ordering by sl_global_id
-                        }])
-                        ->get();
+                $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
+                    ->with(['TransportTransaction' => function ($query) {
+                        $query->with([
+                            'Customer',
+                            'Supplier',
+                            'Transporter',
+                            'Product',
+                            'TransportFinance',
+                            'TransportLoad' => function ($query) {
+                                $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing']);
+                            }
+                        ])->orderBy('sl_global_id', 'asc');  // Ordering by sl_global_id
+                    }])
+                    ->get();
 
+                $transport_load_no_units_incoming = 0;
+                $transport_load_no_units_outgoing = 0;
+                $transport_finance_weight_ton_incoming_actual = 0;
+                $transport_finance_weight_ton_outgoing_actual = 0;
+                $transport_finance_gross_profit_per_ton = 0;
+
+                foreach ($linked_trans_split as $trans) {
+
+                    $transport_load_no_units_incoming +=  $trans->TransportTransaction->TransportLoad->no_units_incoming;
+                    $transport_load_no_units_outgoing += $trans->TransportTransaction->TransportLoad->no_units_outgoing;
+                    $transport_finance_weight_ton_incoming_actual += $trans->TransportTransaction->TransportFinance->weight_ton_incoming_actual;
+                    $transport_finance_weight_ton_outgoing_actual += $trans->TransportTransaction->TransportFinance->weight_ton_outgoing_actual;
+                    $transport_finance_gross_profit_per_ton += $trans->TransportTransaction->TransportFinance->gross_profit_per_ton;
                 }
+
+
+                $split_totals = ['transport_load_no_units_incoming' => round($transport_load_no_units_incoming,2),
+                    'transport_load_no_units_outgoing' => round($transport_load_no_units_outgoing,2),
+                    'transport_finance_weight_ton_incoming_actual' => round($transport_finance_weight_ton_incoming_actual,2),
+                    'transport_finance_weight_ton_outgoing_actual'=>round($transport_finance_weight_ton_outgoing_actual,2),
+                    'transport_finance_gross_profit_per_ton' => round($transport_finance_gross_profit_per_ton,2)];
+
+            }
 
 
         }
@@ -187,9 +208,9 @@ class TransactionSummaryController extends Controller
             [
                 'filters' => $filters,
                 'transactions' => $transactions,
-                'selected_transaction'=>$transportTransaction,
-                'start_date'=>$start_date,
-                'end_date'=>$end_date,
+                'selected_transaction' => $transportTransaction,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
                 'all_customers' => $customers,
                 'all_products' => $products,
                 'contract_types' => $contract_types,
@@ -203,23 +224,24 @@ class TransactionSummaryController extends Controller
                 'loading_hour_options' => $loading_hour_options,
                 'all_drivers' => $all_drivers,
                 'all_vehicles' => $all_vehicles,
-                'all_vehicle_types'=>$all_vehicle_types,
+                'all_vehicle_types' => $all_vehicle_types,
                 'all_transport_rates' => $all_transport_rates,
                 'all_status_entities' => $all_status_entities,
                 'all_status_types' => $all_status_types,
-                'all_invoice_statuses'=>$all_invoice_statuses,
-                'rules_with_approvals'=>$rules_with_approvals,
-                'deal_ticket'=>$deal_ticket,
-                'transport_order'=>$transport_order,
-                'purchase_order'=>$purchase_order,
-                'sales_order'=>$sales_order,
-                'all_terms_of_payments'=>$all_terms_of_payments,
-                'linked_trans_sc'=>$linked_trans_sc,
-                'linked_trans_pc'=>$linked_trans_pc,
-                'linked_trans_other'=>$linked_trans_other,
-                'model_activity'=>$model_activity,
-                'linked_trans_split'=>$linked_trans_split,
-                'primary_linked_trans_split'=>$primary_trans
+                'all_invoice_statuses' => $all_invoice_statuses,
+                'rules_with_approvals' => $rules_with_approvals,
+                'deal_ticket' => $deal_ticket,
+                'transport_order' => $transport_order,
+                'purchase_order' => $purchase_order,
+                'sales_order' => $sales_order,
+                'all_terms_of_payments' => $all_terms_of_payments,
+                'linked_trans_sc' => $linked_trans_sc,
+                'linked_trans_pc' => $linked_trans_pc,
+                'linked_trans_other' => $linked_trans_other,
+                'model_activity' => $model_activity,
+                'linked_trans_split' => $linked_trans_split,
+                'primary_linked_trans_split' => $primary_trans,
+                'split_totals' => $split_totals
 
 
             ]
@@ -267,8 +289,8 @@ class TransactionSummaryController extends Controller
     {
         $update_related_models = 1;
 
-        if (isset($request->update_related_models)){
-            $update_related_models=$request->update_related_models;
+        if (isset($request->update_related_models)) {
+            $update_related_models = $request->update_related_models;
         }
 
         $request->validate([
@@ -333,33 +355,33 @@ class TransactionSummaryController extends Controller
             ]
         );
 
-        if (!$request->is_split_load_primary){
+        if (!$request->is_split_load_primary) {
 
-          $linked_trans =  TransLinkSplit::where('transport_trans_id','=',$request->transport_trans_id)->get();
+            $linked_trans = TransLinkSplit::where('transport_trans_id', '=', $request->transport_trans_id)->get();
 
 
-          if (count($linked_trans)>0){
-              foreach ($linked_trans as $trans){
+            if (count($linked_trans) > 0) {
+                foreach ($linked_trans as $trans) {
 
-                  $trade = $trans->linked_transport_trans_id;
+                    $trade = $trans->linked_transport_trans_id;
 
-                  $trans_link_split = TransLinkSplit::where('linked_transport_trans_id','=',trim($trade))->where('trans_link_type_id','=',5)->withTrashed()->get();
+                    $trans_link_split = TransLinkSplit::where('linked_transport_trans_id', '=', trim($trade))->where('trans_link_type_id', '=', 5)->withTrashed()->get();
 
-                  //remove old links
-                  if (count($trans_link_split) >=1){
-                      foreach ($trans_link_split as $link){
-                          $link->forceDelete();
-                      }
-                  }
-                  $trans_link = TransportTransaction::where('id',$trade)->first();
+                    //remove old links
+                    if (count($trans_link_split) >= 1) {
+                        foreach ($trans_link_split as $link) {
+                            $link->forceDelete();
+                        }
+                    }
+                    $trans_link = TransportTransaction::where('id', $trade)->first();
 
-                  $trans_link->is_split_load = false;
-                  $trans_link->is_split_load_member = false;
-                  $trans_link->is_split_load_primary = false;
-                  $trans_link->save();
+                    $trans_link->is_split_load = false;
+                    $trans_link->is_split_load_member = false;
+                    $trans_link->is_split_load_primary = false;
+                    $trans_link->save();
 
-              }
-          }
+                }
+            }
 
         }
 
@@ -367,28 +389,28 @@ class TransactionSummaryController extends Controller
         //'no_units' => ['required', 'numeric', 'gt:0'],
 
         $request->validate([
-            'confirmed_by_id.id'=>['required', 'integer'],
-            'confirmed_by_type_id.id'=>['required', 'integer'],
-            'packaging_incoming_id.id'=>['required', 'integer'],
-            'packaging_outgoing_id.id'=>['required', 'integer'],
-            'product_source_id.id'=>['required', 'integer'],
-            'product_grade_perc'=>['nullable'],
-            'no_units_incoming'=>['nullable', 'numeric'],
-            'billing_units_incoming_id.id'=>['required', 'integer'],
-            'no_units_outgoing'=>['nullable', 'numeric'],
-            'no_units_outgoing_2'=>['nullable', 'numeric'],
-            'no_units_outgoing_3'=>['nullable', 'numeric'],
-            'no_units_outgoing_4'=>['nullable', 'numeric'],
-            'no_units_outgoing_5'=>['nullable', 'numeric'],
-            'billing_units_outgoing_id.id'=>['required'],
-            'is_weighbridge_certificate_received'=>['nullable', 'boolean'],
-            'delivery_note'=>['nullable'],
-            'calculated_route_distance'=>['nullable', 'numeric'],
-            'collection_address_id.id'=>['required', 'integer'],
-            'delivery_address_id.id'=>['required', 'integer'],
-            'delivery_address_id_2.id'=>['nullable', 'integer'],
-            'delivery_address_id_3.id'=>['nullable', 'integer'],
-            'delivery_address_id_4.id'=>['nullable', 'integer']
+            'confirmed_by_id.id' => ['required', 'integer'],
+            'confirmed_by_type_id.id' => ['required', 'integer'],
+            'packaging_incoming_id.id' => ['required', 'integer'],
+            'packaging_outgoing_id.id' => ['required', 'integer'],
+            'product_source_id.id' => ['required', 'integer'],
+            'product_grade_perc' => ['nullable'],
+            'no_units_incoming' => ['nullable', 'numeric'],
+            'billing_units_incoming_id.id' => ['required', 'integer'],
+            'no_units_outgoing' => ['nullable', 'numeric'],
+            'no_units_outgoing_2' => ['nullable', 'numeric'],
+            'no_units_outgoing_3' => ['nullable', 'numeric'],
+            'no_units_outgoing_4' => ['nullable', 'numeric'],
+            'no_units_outgoing_5' => ['nullable', 'numeric'],
+            'billing_units_outgoing_id.id' => ['required'],
+            'is_weighbridge_certificate_received' => ['nullable', 'boolean'],
+            'delivery_note' => ['nullable'],
+            'calculated_route_distance' => ['nullable', 'numeric'],
+            'collection_address_id.id' => ['required', 'integer'],
+            'delivery_address_id.id' => ['required', 'integer'],
+            'delivery_address_id_2.id' => ['nullable', 'integer'],
+            'delivery_address_id_3.id' => ['nullable', 'integer'],
+            'delivery_address_id_4.id' => ['nullable', 'integer']
         ],
             [
                 'packaging_incoming_id.id' => 'Need to select a valid incoming package option!',
@@ -407,7 +429,7 @@ class TransactionSummaryController extends Controller
 
         $transportLoad = $transportTransaction->TransportLoad;
 
-        $no_units_outgoing_total=$request->no_units_outgoing+$request->no_units_outgoing_2+$request->no_units_outgoing_3+$request->no_units_outgoing_4;
+        $no_units_outgoing_total = $request->no_units_outgoing + $request->no_units_outgoing_2 + $request->no_units_outgoing_3 + $request->no_units_outgoing_4;
 
         $is_updated = $transportLoad->update(
             [
@@ -430,10 +452,10 @@ class TransactionSummaryController extends Controller
                 'calculated_route_distance' => $request->calculated_route_distance,
                 'collection_address_id' => $request->collection_address_id['id'],
                 'delivery_address_id' => $request->delivery_address_id['id'],
-                'delivery_address_id_2' =>$request->delivery_address_id_2 === null? null: $request->delivery_address_id_2['id'],
-                'delivery_address_id_3' =>$request->delivery_address_id_3 === null? null:  $request->delivery_address_id_3['id'],
-                'delivery_address_id_4' => $request->delivery_address_id_4 === null? null: $request->delivery_address_id_4['id'],
-                'delivery_address_id_5' => $request->delivery_address_id_4 === null? null: $request->delivery_address_id_5['id'],
+                'delivery_address_id_2' => $request->delivery_address_id_2 === null ? null : $request->delivery_address_id_2['id'],
+                'delivery_address_id_3' => $request->delivery_address_id_3 === null ? null : $request->delivery_address_id_3['id'],
+                'delivery_address_id_4' => $request->delivery_address_id_4 === null ? null : $request->delivery_address_id_4['id'],
+                'delivery_address_id_5' => $request->delivery_address_id_4 === null ? null : $request->delivery_address_id_5['id'],
             ]
         );
 
@@ -441,31 +463,31 @@ class TransactionSummaryController extends Controller
 
         $transportJob->update(
             $request->validate([
-                'supplier_loading_number'=>['nullable','string'],
-                'customer_order_number'=>['nullable','string'],
-                'supplier_loading_number_2'=>['nullable','string'],
-                'customer_order_number_2'=>['nullable','string'],
-                'supplier_loading_number_3'=>['nullable','string'],
-                'customer_order_number_3'=>['nullable','string'],
-                'supplier_loading_number_4'=>['nullable','string'],
-                'customer_order_number_4'=>['nullable','string'],
-                'supplier_loading_number_5'=>['nullable','string'],
-                'customer_order_number_5'=>['nullable','string'],
-                'number_loads' => ['nullable','numeric'],
-                'is_multi_loads' => ['nullable','boolean'],
-                'is_approved' => ['nullable','boolean'],
-                'is_transport_costs_inc_price' => ['nullable','boolean'],
-                'is_product_zero_rated' => ['nullable','boolean'],
-                'loading_hours_from_id' => ['required', 'integer','exists:loading_hour_options,id'],
-                'loading_hours_to_id' => ['required', 'integer','exists:loading_hour_options,id'],
-                'offloading_hours_from_id' => ['required', 'integer','exists:loading_hour_options,id'],
-                'offloading_hours_to_id' => ['required', 'integer','exists:loading_hour_options,id'],
-                'loading_instructions' => ['nullable','string'],
-                'offloading_instructions' => ['nullable','string'],
-                'loading_contact' => ['nullable','string'],
-                'loading_contact_no' => ['nullable','string'],
-                'offloading_contact' => ['nullable','string'],
-                'offloading_contact_no' => ['nullable','string']
+                'supplier_loading_number' => ['nullable', 'string'],
+                'customer_order_number' => ['nullable', 'string'],
+                'supplier_loading_number_2' => ['nullable', 'string'],
+                'customer_order_number_2' => ['nullable', 'string'],
+                'supplier_loading_number_3' => ['nullable', 'string'],
+                'customer_order_number_3' => ['nullable', 'string'],
+                'supplier_loading_number_4' => ['nullable', 'string'],
+                'customer_order_number_4' => ['nullable', 'string'],
+                'supplier_loading_number_5' => ['nullable', 'string'],
+                'customer_order_number_5' => ['nullable', 'string'],
+                'number_loads' => ['nullable', 'numeric'],
+                'is_multi_loads' => ['nullable', 'boolean'],
+                'is_approved' => ['nullable', 'boolean'],
+                'is_transport_costs_inc_price' => ['nullable', 'boolean'],
+                'is_product_zero_rated' => ['nullable', 'boolean'],
+                'loading_hours_from_id' => ['required', 'integer', 'exists:loading_hour_options,id'],
+                'loading_hours_to_id' => ['required', 'integer', 'exists:loading_hour_options,id'],
+                'offloading_hours_from_id' => ['required', 'integer', 'exists:loading_hour_options,id'],
+                'offloading_hours_to_id' => ['required', 'integer', 'exists:loading_hour_options,id'],
+                'loading_instructions' => ['nullable', 'string'],
+                'offloading_instructions' => ['nullable', 'string'],
+                'loading_contact' => ['nullable', 'string'],
+                'loading_contact_no' => ['nullable', 'string'],
+                'offloading_contact' => ['nullable', 'string'],
+                'offloading_contact_no' => ['nullable', 'string']
             ])
 
         );
@@ -476,22 +498,22 @@ class TransactionSummaryController extends Controller
         $transportDriverVehicle = $transportJob->TransportDriverVehicle[0];
 
         $request->validate([
-            'regular_driver_id.id' => ['required', 'integer','exists:regular_drivers,id'],
-            'regular_vehicle_id.id' => ['required', 'integer','exists:regular_vehicles,id'],
-            'weighbridge_upload_weight' => ['required','numeric'],
-            'weighbridge_offload_weight' => ['required','numeric'],
-            'is_cancelled' => ['required','boolean'],
-            'is_loaded' => ['required','boolean'],
-            'is_onroad' => ['required','boolean'],
-            'is_delivered' => ['required','boolean'],
-            'is_transport_scheduled' => ['required','boolean'],
-            'is_paid' => ['required','boolean'],
-            'is_payment_overdue' => ['required','boolean'],
-            'traders_notes' => ['nullable','string'],
-            'operations_alert_notes' => ['nullable','string'],
-            'driver_vehicle_loading_number' => ['nullable','string'],
-            'trailer_reg_1' => ['nullable','string'],
-            'trailer_reg_2' => ['nullable','string']
+            'regular_driver_id.id' => ['required', 'integer', 'exists:regular_drivers,id'],
+            'regular_vehicle_id.id' => ['required', 'integer', 'exists:regular_vehicles,id'],
+            'weighbridge_upload_weight' => ['required', 'numeric'],
+            'weighbridge_offload_weight' => ['required', 'numeric'],
+            'is_cancelled' => ['required', 'boolean'],
+            'is_loaded' => ['required', 'boolean'],
+            'is_onroad' => ['required', 'boolean'],
+            'is_delivered' => ['required', 'boolean'],
+            'is_transport_scheduled' => ['required', 'boolean'],
+            'is_paid' => ['required', 'boolean'],
+            'is_payment_overdue' => ['required', 'boolean'],
+            'traders_notes' => ['nullable', 'string'],
+            'operations_alert_notes' => ['nullable', 'string'],
+            'driver_vehicle_loading_number' => ['nullable', 'string'],
+            'trailer_reg_1' => ['nullable', 'string'],
+            'trailer_reg_2' => ['nullable', 'string']
         ]);
 
         $cur_date = (Carbon::now())->toDateString();
@@ -505,7 +527,7 @@ class TransactionSummaryController extends Controller
         $date_onroad = $request->is_onroad && (!($transportDriverVehicle->is_onroad)) ? $cur_date : $transportDriverVehicle->date_onroad;
         $date_delivered = $request->is_delivered && (!($transportDriverVehicle->is_delivered)) ? $cur_date : $transportDriverVehicle->date_delivered;
         $date_scheduled = $request->is_transport_scheduled && (!($transportDriverVehicle->is_transport_scheduled)) ? $cur_date : $transportDriverVehicle->date_scheduled;
-        $date_paid = $request->is_paid && (!($transportDriverVehicle->is_paid)) ? $cur_date : $transportDriverVehicle->date_paid ;
+        $date_paid = $request->is_paid && (!($transportDriverVehicle->is_paid)) ? $cur_date : $transportDriverVehicle->date_paid;
         $date_payment_overdue = $request->is_payment_overdue && (!($transportDriverVehicle->is_payment_overdue)) ? $cur_date : $transportDriverVehicle->date_payment_overdue;
 
         $is_updated = $transportDriverVehicle->update(
@@ -525,15 +547,15 @@ class TransactionSummaryController extends Controller
                 'operations_alert_notes' => $request->operations_alert_notes,
                 'is_weighbridge_variance' => $is_weighbridge_variance,
                 'date_cancelled' => $date_cancelled,
-                'date_loaded' =>  $date_loaded,
+                'date_loaded' => $date_loaded,
                 'date_onroad' => $date_onroad,
                 'date_delivered' => $date_delivered,
                 'date_scheduled' => $date_scheduled,
                 'date_paid' => $date_paid,
                 'date_payment_overdue' => $date_payment_overdue,
-                'driver_vehicle_loading_number'=>$request->driver_vehicle_loading_number,
-                'trailer_reg_1'=>$request->trailer_reg_1,
-                'trailer_reg_2'=>$request->trailer_reg_2
+                'driver_vehicle_loading_number' => $request->driver_vehicle_loading_number,
+                'trailer_reg_1' => $request->trailer_reg_1,
+                'trailer_reg_2' => $request->trailer_reg_2
             ]
         );
 
@@ -546,54 +568,54 @@ class TransactionSummaryController extends Controller
         $can_edit_adjusted_gp = $user->can('edit_adjusted_gp');
 
 
-        if($can_edit_adjusted_gp){
+        if ($can_edit_adjusted_gp) {
 
             $is_updated = $transportFinance->update(
                 $request->validate([
-                    'transport_rate_basis_id'=>['required', 'integer','exists:transport_rate_bases,id'],
-                    'cost_price_per_unit' => ['required','numeric'],
-                    'selling_price_per_unit' => ['required','numeric'],
-                    'selling_price_2'=>['nullable','numeric'],
-                    'selling_price_3'=>['nullable','numeric'],
-                    'selling_price_4'=>['nullable','numeric'],
-                    'selling_price_5'=>['nullable','numeric'],
-                    'adjusted_gp'=> ['required','numeric'],
-                    'adjusted_gp_notes'=> ['nullable','string'],
-                    'transport_rate' => ['nullable','numeric'],
-                    'transport_cost_2' => ['nullable','numeric'],
-                    'transport_cost_3' => ['nullable','numeric'],
-                    'transport_cost_4' => ['nullable','numeric'],
-                    'transport_cost_5' => ['nullable','numeric'],
-                    'additional_cost_1' => ['nullable','numeric'],
-                    'additional_cost_2' => ['nullable','numeric'],
-                    'additional_cost_3' => ['nullable','numeric'],
-                    'additional_cost_desc_1' => ['nullable','string'],
-                    'additional_cost_desc_2' => ['nullable','string'],
-                    'additional_cost_desc_3' => ['nullable','string']
+                    'transport_rate_basis_id' => ['required', 'integer', 'exists:transport_rate_bases,id'],
+                    'cost_price_per_unit' => ['required', 'numeric'],
+                    'selling_price_per_unit' => ['required', 'numeric'],
+                    'selling_price_2' => ['nullable', 'numeric'],
+                    'selling_price_3' => ['nullable', 'numeric'],
+                    'selling_price_4' => ['nullable', 'numeric'],
+                    'selling_price_5' => ['nullable', 'numeric'],
+                    'adjusted_gp' => ['required', 'numeric'],
+                    'adjusted_gp_notes' => ['nullable', 'string'],
+                    'transport_rate' => ['nullable', 'numeric'],
+                    'transport_cost_2' => ['nullable', 'numeric'],
+                    'transport_cost_3' => ['nullable', 'numeric'],
+                    'transport_cost_4' => ['nullable', 'numeric'],
+                    'transport_cost_5' => ['nullable', 'numeric'],
+                    'additional_cost_1' => ['nullable', 'numeric'],
+                    'additional_cost_2' => ['nullable', 'numeric'],
+                    'additional_cost_3' => ['nullable', 'numeric'],
+                    'additional_cost_desc_1' => ['nullable', 'string'],
+                    'additional_cost_desc_2' => ['nullable', 'string'],
+                    'additional_cost_desc_3' => ['nullable', 'string']
                 ])
             );
 
-        }else{
+        } else {
             $is_updated = $transportFinance->update(
                 $request->validate([
-                    'transport_rate_basis_id'=>['required', 'integer','exists:transport_rate_bases,id'],
-                    'cost_price_per_unit' => ['required','numeric'],
-                    'selling_price_per_unit' => ['required','numeric'],
-                    'selling_price_2'=>['nullable','numeric'],
-                    'selling_price_3'=>['nullable','numeric'],
-                    'selling_price_4'=>['nullable','numeric'],
-                    'selling_price_5'=>['nullable','numeric'],
-                    'transport_rate' => ['nullable','numeric'],
-                    'transport_cost_2' => ['nullable','numeric'],
-                    'transport_cost_3' => ['nullable','numeric'],
-                    'transport_cost_4' => ['nullable','numeric'],
-                    'transport_cost_5' => ['nullable','numeric'],
-                    'additional_cost_1' => ['nullable','numeric'],
-                    'additional_cost_2' => ['nullable','numeric'],
-                    'additional_cost_3' => ['nullable','numeric'],
-                    'additional_cost_desc_1' => ['nullable','string'],
-                    'additional_cost_desc_2' => ['nullable','string'],
-                    'additional_cost_desc_3' => ['nullable','string']
+                    'transport_rate_basis_id' => ['required', 'integer', 'exists:transport_rate_bases,id'],
+                    'cost_price_per_unit' => ['required', 'numeric'],
+                    'selling_price_per_unit' => ['required', 'numeric'],
+                    'selling_price_2' => ['nullable', 'numeric'],
+                    'selling_price_3' => ['nullable', 'numeric'],
+                    'selling_price_4' => ['nullable', 'numeric'],
+                    'selling_price_5' => ['nullable', 'numeric'],
+                    'transport_rate' => ['nullable', 'numeric'],
+                    'transport_cost_2' => ['nullable', 'numeric'],
+                    'transport_cost_3' => ['nullable', 'numeric'],
+                    'transport_cost_4' => ['nullable', 'numeric'],
+                    'transport_cost_5' => ['nullable', 'numeric'],
+                    'additional_cost_1' => ['nullable', 'numeric'],
+                    'additional_cost_2' => ['nullable', 'numeric'],
+                    'additional_cost_3' => ['nullable', 'numeric'],
+                    'additional_cost_desc_1' => ['nullable', 'string'],
+                    'additional_cost_desc_2' => ['nullable', 'string'],
+                    'additional_cost_desc_3' => ['nullable', 'string']
                 ])
             );
         }
@@ -629,9 +651,9 @@ class TransactionSummaryController extends Controller
                 'is_printed' => $request->is_printed,
             ]);
 
-        $found_customer = Customer::where('id',$customer_id)->first();
+        $found_customer = Customer::where('id', $customer_id)->first();
 
-        if($found_customer->exists()){
+        if ($found_customer->exists()) {
             $terms_of_payment = $found_customer->TermsOfPayment->days;
             $terms_of_payment_days = is_numeric($terms_of_payment) ? $terms_of_payment : 0;
             $invoice_date = Carbon::parse($request->invoice_date)->tz('Africa/Johannesburg');
@@ -639,20 +661,20 @@ class TransactionSummaryController extends Controller
         }
 
 
-        $invoice_balance=0;
-        $invoice_overdue=0;
+        $invoice_balance = 0;
+        $invoice_overdue = 0;
 
-        if ($request->invoice_amount_paid < $request->invoice_amount){
+        if ($request->invoice_amount_paid < $request->invoice_amount) {
 
             $invoice_balance = ($request->invoice_amount - $request->invoice_amount_paid);
 
-            $customer = Customer::where('id',$request->customer_id['id'])->first();
+            $customer = Customer::where('id', $request->customer_id['id'])->first();
 
             $day_to_add = $customer->TermsOfPayment->days;
             $invoice_date = Carbon::create($transportInvoiceDetails->invoice_date);
             $adjusted_date = $invoice_date->addDays($day_to_add);
 
-            if($adjusted_date < $cur_date){
+            if ($adjusted_date < $cur_date) {
                 $invoice_overdue = $invoice_balance;
             }
 
@@ -667,14 +689,14 @@ class TransactionSummaryController extends Controller
                 'is_invoice_paid' => $request->is_invoice_paid,
                 'invoice_no' => $request->invoice_no,
                 'invoice_paid_date' => Carbon::parse($request->invoice_paid_date)->tz('Africa/Johannesburg'),
-                'invoice_pay_by_date' => $invoice_pay_by_date?? Carbon::parse($request->invoice_date)->tz('Africa/Johannesburg'),
+                'invoice_pay_by_date' => $invoice_pay_by_date ?? Carbon::parse($request->invoice_date)->tz('Africa/Johannesburg'),
                 'invoice_date' => Carbon::parse($request->invoice_date)->tz('Africa/Johannesburg'),
                 'invoice_amount' => $request->invoice_amount,
                 'invoice_amount_paid' => $request->invoice_amount_paid,
                 'status_id' => $request->status_id,
                 'notes' => $request->notes,
-                'overdue'=>$invoice_overdue,
-                'outstanding'=>$invoice_balance
+                'overdue' => $invoice_overdue,
+                'outstanding' => $invoice_balance
             ]);
 
 

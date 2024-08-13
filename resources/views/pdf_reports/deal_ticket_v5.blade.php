@@ -112,14 +112,17 @@
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 12px;">
                         <b><span>Approved Deal Ticket:</span> <span>MQ</span>
+
                             @if($transport_trans->is_split_load)
                                 <span>{{$split_data['primary_linked_trans_split']->a_mq}}</span>
                             @else
                                 <span>{{$transport_trans->a_mq}}</span>
                             @endif
 
+
                         </b>
                     </td>
+
                 </tr>
 
                 <tr>
@@ -262,7 +265,9 @@
 
                             </table>
                         </div>
+
                         <br>
+
                         <li class="section_heading">Split Summary Overview</li>
                         <div>
                             <table class="table_sections" style="width:100%;">
@@ -306,8 +311,10 @@
 
                             </table>
                         </div>
+
                         <br>
-                        <div class="">
+
+                        <div>
                             <table class="table_sections" style="width:100%;">
                                 <tbody>
                                 <tr class="table_sections">
@@ -327,7 +334,7 @@
                                         <td style="width: 12.5%;" class="table_sections table_row_value">
                                             MQ{{$deal->TransportTransaction->a_mq}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming_actual,2)}}</td>
+                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportFinance->weight_ton_incoming_actual}}</td>
                                         <td style="width: 12.5%;" class="table_sections table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton_actual,2), 2, '.', ' ')}}</td>
                                         <td style="width: 12.5%;"
@@ -335,7 +342,7 @@
                                         <td style="width: 12.5%;" class="table_sections table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton_actual,2), 2, '.', ' ')}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_outgoing_actual,2)}}</td>
+                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportFinance->weight_ton_outgoing_actual}}</td>
                                         <td style="width: 12.5%;" class="table_sections table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->selling_price_per_ton_actual,2), 2, '.', ' ')}}</td>
                                         <td style="width: 12.5%;" class="table_sections table_row_value">
@@ -349,8 +356,10 @@
                             </table>
                         </div>
 
+                        <br>
+
                         @foreach ($split_data['linked_trans_split'] as $deal)
-                            <br>
+
                             <li class="section_heading">Product Information [MQ{{$deal->TransportTransaction->a_mq}}]</li>
                             <div>
                                 <table class="table_sections" style="width:100%;">
@@ -371,7 +380,7 @@
                                             Outgoing
                                         </td>
                                         <td class="table_sections table_row_value"
-                                            style="width: 25%;">{{ round($deal->TransportTransaction->TransportFinance->weight_ton_outgoing,2) }}</td>
+                                            style="width: 25%;">{{ $deal->TransportTransaction->TransportFinance->weight_ton_outgoing }}</td>
                                     </tr>
                                     <tr class="table_sections">
                                         <td class="table_sections table_row_heading" style="width: 25%;">Packaging
@@ -1275,11 +1284,16 @@
                                 <td class=" table_row_heading">Trading Director</td>
                                 <td class=" table_row_heading">Financial Director</td>
                             </tr>
+
                             </tbody>
 
                         </table>
                     </div>
+
+
                 @endif
+
+
             </ol>
 
 
@@ -1289,13 +1303,15 @@
 
 
 <footer>
+
     <div>
         <span>SilverGro Feed & Grain</span>
-        <span>| Generated by {{$user_name}}</span>
+<!--        <span>| Generated by {{$user_name}}</span>
         <span>on {{$now}}</span>
         <span>| version {{$app_version}}</span>
-        <span>| Page: </span> <span class="page_num"> </span>
+        <span>| Page: </span> <span class="page_num"> </span>-->
     </div>
+    <div></div>
 </footer>
 
 

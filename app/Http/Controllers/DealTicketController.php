@@ -242,7 +242,7 @@ class DealTicketController extends Controller
             'purchase_order'=>$purchase_order
         ];
 
-        $pdf = PDF::loadView('pdf_reports.deal_ticket_v2',$data);
+        $pdf = PDF::loadView('pdf_reports.deal_ticket_v3',$data);
         $pdf->setPaper('A4', 'portrait');
         $pdf->setEncryption($transport_trans->id);
 

@@ -201,7 +201,8 @@ const props = defineProps({
     linked_trans_other: Object,
     linked_trans_split: Object,
     primary_linked_trans_split:Object,
-    model_activity: Object
+    model_activity: Object,
+    split_totals:Object
 });
 
 
@@ -7428,9 +7429,11 @@ const deleteAssignedComm =  (id) => {
                                                         <div class="flex justify-between gap-x-4 py-3">
                                                             <dt class="text-gray-500">Generate Final</dt>
                                                             <dd class="flex items-start gap-x-2">
-                                                                <SecondaryButton @click="createFinalDealTicket">
+
+                                                                Temp hidden
+<!--                                                                <SecondaryButton @click="createFinalDealTicket">
                                                                     Generate
-                                                                </SecondaryButton>
+                                                                </SecondaryButton>-->
                                                             </dd>
                                                         </div>
                                                         <div class="flex justify-between gap-x-4 py-3">
@@ -8228,40 +8231,40 @@ const deleteAssignedComm =  (id) => {
 
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap  px-2 py-2 text-sm font-medium text-gray-900">
                                                         <div>
                                                             {{n.transport_transaction.customer.last_legal_name}}
                                                         </div>
 
                                                     </td>
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap  px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             {{n.transport_transaction.transporter.last_legal_name}}
                                                         </div>
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap  px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             {{n.transport_transaction.supplier.last_legal_name}}
                                                         </div>
                                                     </td>
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap  px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             {{n.transport_transaction.product.name}}
                                                         </div>
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap  px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             {{n.transport_transaction.transport_load.billing_units_incoming.name}}
                                                         </div>
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap  px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             <div>
@@ -8271,7 +8274,7 @@ const deleteAssignedComm =  (id) => {
 
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             <div>
@@ -8281,7 +8284,7 @@ const deleteAssignedComm =  (id) => {
 
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             <div>
@@ -8291,7 +8294,7 @@ const deleteAssignedComm =  (id) => {
 
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             <div>
@@ -8301,7 +8304,7 @@ const deleteAssignedComm =  (id) => {
 
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             <div>
@@ -8311,7 +8314,7 @@ const deleteAssignedComm =  (id) => {
 
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             <div>
@@ -8321,7 +8324,7 @@ const deleteAssignedComm =  (id) => {
 
                                                     </td>
 
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-medium text-gray-900">
 
                                                         <div>
                                                             <div>
@@ -8338,11 +8341,13 @@ const deleteAssignedComm =  (id) => {
 
                                                 <tfoot>
                                                 <tr class="bg-gray-100">
-                                                    <td colspan="8" class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900 text-right">Total</td>
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">0</td>
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">0</td>
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">0</td>
-                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-semibold text-gray-900">0</td>
+                                                    <td colspan="8" class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900 text-right">Total</td>
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_load_no_units_incoming"]}}</td>
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_load_no_units_outgoing"]}}</td>
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_finance_weight_ton_incoming_actual"]}}</td>
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_finance_weight_ton_outgoing_actual"]}}</td>
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900"></td>
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900"></td>
                                                 </tr>
                                                 </tfoot>
                                             </table>
