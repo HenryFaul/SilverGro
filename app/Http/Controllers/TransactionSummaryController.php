@@ -325,7 +325,7 @@ class TransactionSummaryController extends Controller
             [
                 'contract_type_id' => $request->contract_type_id['id'],
                 'supplier_id' => $request->supplier_id['id'],
-                'customer_id' => $request->is_split_load ? 2 : $request->customer_id['id'],
+                'customer_id' =>  $request->customer_id['id'],
                 'customer_id_2' => isset($request->customer_id_2) ? $request->customer_id_2['id'] : null,
                 'customer_id_3' => isset($request->customer_id_3) ? $request->customer_id_3['id'] : null,
                 'customer_id_4' => isset($request->customer_id_4) ? $request->customer_id_4['id'] : null,

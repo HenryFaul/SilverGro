@@ -66,7 +66,7 @@ class TransportFinance extends Model
         $transport_Load = ($transport_Finance->TransportLoad);
         $assigned_user_comm = $transport_Finance->AssignedUserComm;
         $transport_trans = $transport_Finance->TransportTransaction;
-        $is_split_load = $transport_trans->is_split_load;
+        $is_split_load = false;
         $deal_ticket = $transport_trans->DealTicket;
         $driver_vehicles = $transport_trans->TransportDriverVehicle;
 
