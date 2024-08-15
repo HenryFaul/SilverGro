@@ -51,7 +51,8 @@ class TransactionSummaryController extends Controller
             'contract_type_id',
             'id',
             'selected_trans_id',
-            'old_id'
+            'old_id',
+            'a_mq'
         ]);
 
         $paginate = $request['show'] ?? 25;
