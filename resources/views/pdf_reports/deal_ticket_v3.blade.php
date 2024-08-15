@@ -350,7 +350,7 @@
                         </div>
 
                         @foreach ($split_data['linked_trans_split'] as $deal)
-                            <br>
+                            <div class="page-break"></div>
                             <li class="section_heading">Product Information [MQ{{$deal->TransportTransaction->a_mq}}]</li>
                             <div>
                                 <table class="table_sections" style="width:100%;">
