@@ -350,7 +350,7 @@ class TransactionSummaryController extends Controller
                 'traders_notes_customer' => $request->traders_notes_customer,
                 'traders_notes_transport' => $request->traders_notes_transport,
                 'is_transaction_done' => $request->is_transaction_done,
-                'is_split_load' => $request->is_split_load,
+                'is_split_load' => ($request->is_split_load_primary ||$request->is_split_load_member),
                 'is_split_load_primary' => $request->is_split_load_primary,
                 'is_split_load_member' => $request->is_split_load_member,
             ]
