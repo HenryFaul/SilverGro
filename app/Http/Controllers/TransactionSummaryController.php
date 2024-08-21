@@ -374,7 +374,6 @@ class TransactionSummaryController extends Controller
 
             $linked_trans = TransLinkSplit::where('transport_trans_id', '=', $request->transport_trans_id)->get();
 
-
             if (count($linked_trans) > 0) {
                 foreach ($linked_trans as $trans) {
 
@@ -444,8 +443,6 @@ class TransactionSummaryController extends Controller
 
         $transportLoad = $transportTransaction->TransportLoad;
 
-        $no_units_outgoing_total = $request->no_units_outgoing + $request->no_units_outgoing_2 + $request->no_units_outgoing_3 + $request->no_units_outgoing_4;
-
         $is_updated = $transportLoad->update(
             [
                 'confirmed_by_id' => $request->confirmed_by_id['id'],
@@ -491,7 +488,7 @@ class TransactionSummaryController extends Controller
                 'number_loads' => ['nullable', 'numeric'],
                 'is_multi_loads' => ['nullable', 'boolean'],
                 'is_approved' => ['nullable', 'boolean'],
-                'is_transport_costs_inc_price' => ['nullable', 'boolean'],
+                'is_transport_costs_inc_price' => ['boolean'],
                 'is_product_zero_rated' => ['nullable', 'boolean'],
                 'loading_hours_from_id' => ['required', 'integer', 'exists:loading_hour_options,id'],
                 'loading_hours_to_id' => ['required', 'integer', 'exists:loading_hour_options,id'],

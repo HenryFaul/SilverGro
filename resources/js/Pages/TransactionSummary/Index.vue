@@ -508,7 +508,6 @@ let updateSelectValues = () => {
     combined_Form.is_transaction_done = props.selected_transaction.is_transaction_done;
     combined_Form.is_split_load = props.selected_transaction.is_split_load;
 
-    combined_Form.is_split_load = props.selected_transaction.is_split_load;
 
     combined_Form.is_split_load_primary = props.selected_transaction.is_split_load_primary;
     combined_Form.is_split_load_member = props.selected_transaction.is_split_load_member;

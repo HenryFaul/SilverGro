@@ -34,7 +34,6 @@ class TransportFinance extends Model
     ];
 
 
-
     public function TransportRateBasis(): BelongsTo
     {
         return $this->belongsTo(TransportRateBasis::class);
@@ -64,8 +63,10 @@ class TransportFinance extends Model
 
         $transport_Finance = $this;
         $transport_Load = ($transport_Finance->TransportLoad);
+
         $assigned_user_comm = $transport_Finance->AssignedUserComm;
         $transport_trans = $transport_Finance->TransportTransaction;
+        $transport_job = ($transport_trans->TransportJob);
         $is_split_load = false;
         $deal_ticket = $transport_trans->DealTicket;
         $driver_vehicles = $transport_trans->TransportDriverVehicle;
@@ -89,30 +90,31 @@ class TransportFinance extends Model
         //$weight_ton_outgoing = $no_units_outgoing_total * ($billing_units_outgoing_id->kgs) / 1000;
         //$selling_price_actual = $actual_tons_out * $transport_Finance->selling_price_per_unit;
 
-        $sp_div = ($transport_Load->BillingUnitsOutgoing->kgs) ==1000?1:($transport_Load->BillingUnitsOutgoing->kgs)*1000;
+        $sp_div = ($transport_Load->BillingUnitsOutgoing->kgs) == 1000 ? 1 : ($transport_Load->BillingUnitsOutgoing->kgs) / 1000;
 
-        if($transport_Finance->selling_price_per_unit>0 && $transport_Load->BillingUnitsOutgoing->kgs>0){
-            $selling_price_actual = ($actual_tons_out/$sp_div * $transport_Finance->selling_price_per_unit);
+        if ($transport_Finance->selling_price_per_unit > 0 && $transport_Load->BillingUnitsOutgoing->kgs > 0) {
+            $selling_price_actual = ($actual_tons_out / $sp_div * $transport_Finance->selling_price_per_unit);
         } else {
-            $selling_price_actual=0;
+            $selling_price_actual = 0;
         }
 
         //cost_price = no_units_incoming * cost_price_per_unit
         $cost_price = $transport_Load->no_units_incoming * $transport_Finance->cost_price_per_unit;
         //$cost_price_actual = $actual_tons_in * $transport_Finance->cost_price_per_unit;
-        $cp_div=($transport_Load->BillingUnitsIncoming->kgs) == 1000?1:($transport_Load->BillingUnitsIncoming->kgs)*1000;
+        $cp_div = ($transport_Load->BillingUnitsIncoming->kgs) == 1000 ? 1 : ($transport_Load->BillingUnitsIncoming->kgs) / 1000;
 
-        if($transport_Finance->cost_price_per_unit>0 && $transport_Load->BillingUnitsIncoming->kgs>0){
-            $cost_price_actual = ($actual_tons_in/$cp_div * $transport_Finance->cost_price_per_unit);
+
+        if ($transport_Finance->cost_price_per_unit > 0 && $transport_Load->BillingUnitsIncoming->kgs > 0) {
+            $cost_price_actual = ($actual_tons_in / $cp_div * $transport_Finance->cost_price_per_unit);
         } else {
-            $cost_price_actual=0;
+            $cost_price_actual = 0;
         }
 
         //Update cost price
 
         //units calc
-        if ($is_split_load){
-            $no_units_outgoing_total = $transport_Load->no_units_outgoing_2 + $transport_Load->no_units_outgoing_3 + $transport_Load->no_units_outgoing_4+ $transport_Load->no_units_outgoing_5;
+        if ($is_split_load) {
+            $no_units_outgoing_total = $transport_Load->no_units_outgoing_2 + $transport_Load->no_units_outgoing_3 + $transport_Load->no_units_outgoing_4 + $transport_Load->no_units_outgoing_5;
         } else {
             $no_units_outgoing_total = $transport_Load->no_units_outgoing;
         }
@@ -135,8 +137,7 @@ class TransportFinance extends Model
         //selling_price_per_ton = selling_price / weight_ton_incoming
 
 
-
-        $selling_price_per_ton = $selling_price / ($weight_ton_outgoing== 0 ? 1 : $weight_ton_outgoing);
+        $selling_price_per_ton = $selling_price / ($weight_ton_outgoing == 0 ? 1 : $weight_ton_outgoing);
         $selling_price_per_ton_actual = $selling_price_actual / ($actual_tons_out == 0 ? 1 : $actual_tons_out);
 
         //load_insurance_per_ton = selling_price_per_ton*1.1
@@ -156,10 +157,10 @@ class TransportFinance extends Model
 
         if ($transport_Finance->transport_rate_basis_id === 3) {
             $transport_cost = $transport_Finance->transport_rate;
-            $transport_rate_per_ton = $transport_cost/($weight_ton_incoming>0?$weight_ton_incoming:1);
+            $transport_rate_per_ton = $transport_cost / ($weight_ton_incoming > 0 ? $weight_ton_incoming : 1);
             //actual
             $transport_cost_actual = $transport_Finance->transport_rate;
-            $transport_rate_per_ton_actual = $transport_cost_actual/($actual_tons_in > 0 ? $actual_tons_in : 1);
+            $transport_rate_per_ton_actual = $transport_cost_actual / ($actual_tons_in > 0 ? $actual_tons_in : 1);
 
         } else if ($weight_ton_incoming > 0) {
             $transport_cost = $transport_Finance->transport_rate * $weight_ton_incoming;
@@ -195,7 +196,7 @@ class TransportFinance extends Model
 
         $total_cost_price = 0;
 
-        if ($transport_Finance->is_transport_costs_inc_price) {
+        if ($transport_job->is_transport_costs_inc_price) {
             $total_cost_price = $cost_price + $transport_Finance->additional_cost_1 + $transport_Finance->additional_cost_2 + $transport_Finance->additional_cost_3;
             $total_cost_price_actual = $cost_price_actual + $transport_Finance->additional_cost_1 + $transport_Finance->additional_cost_2 + $transport_Finance->additional_cost_3;
         } else {
