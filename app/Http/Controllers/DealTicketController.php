@@ -95,6 +95,9 @@ class DealTicketController extends Controller
             $sum_weight_ton_incoming = 0;
             $sum_weight_ton_outgoing = 0;
 
+            $sum_weight_ton_incoming_planned = 0;
+            $sum_weight_ton_outgoing_planned = 0;
+
 
             $first = $linked_trans_split->first();
             $first_transporter_id = $first->TransportTransaction->transporter_id;
@@ -150,6 +153,9 @@ class DealTicketController extends Controller
                     $sum_weight_ton_incoming += $transport_finance->weight_ton_incoming_actual;
                     $sum_weight_ton_outgoing += $transport_finance->weight_ton_outgoing_actual;
 
+                    $sum_weight_ton_incoming_planned += $transport_finance->weight_ton_incoming;
+                    $sum_weight_ton_outgoing_planned += $transport_finance->weight_ton_outgoing;
+
                 }
 
             }
@@ -170,6 +176,8 @@ class DealTicketController extends Controller
                 'is_transport_rate_same' => $is_transport_rate_same,
                 'sum_weight_ton_incoming' => $sum_weight_ton_incoming,
                 'sum_weight_ton_outgoing' => $sum_weight_ton_outgoing,
+                'sum_weight_ton_incoming_planned' => $sum_weight_ton_incoming_planned,
+                'sum_weight_ton_outgoing_planned' => $sum_weight_ton_outgoing_planned,
             ];
 
         }

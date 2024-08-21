@@ -180,14 +180,26 @@ class TransactionSummaryController extends Controller
                 $transport_load_no_units_outgoing = 0;
                 $transport_finance_weight_ton_incoming_actual = 0;
                 $transport_finance_weight_ton_outgoing_actual = 0;
+
+                $transport_finance_weight_ton_incoming_planned = 0;
+                $transport_finance_weight_ton_outgoing_planned = 0;
+
                 $transport_finance_gross_profit_per_ton = 0;
 
                 foreach ($linked_trans_split as $trans) {
 
                     $transport_load_no_units_incoming +=  $trans->TransportTransaction->TransportLoad->no_units_incoming;
                     $transport_load_no_units_outgoing += $trans->TransportTransaction->TransportLoad->no_units_outgoing;
+
+
                     $transport_finance_weight_ton_incoming_actual += $trans->TransportTransaction->TransportFinance->weight_ton_incoming_actual;
                     $transport_finance_weight_ton_outgoing_actual += $trans->TransportTransaction->TransportFinance->weight_ton_outgoing_actual;
+
+                    $transport_finance_weight_ton_incoming_planned += $trans->TransportTransaction->TransportFinance->weight_ton_incoming;
+                    $transport_finance_weight_ton_outgoing_planned += $trans->TransportTransaction->TransportFinance->weight_ton_outgoing;
+
+
+
                     $transport_finance_gross_profit_per_ton += $trans->TransportTransaction->TransportFinance->gross_profit_per_ton;
                 }
 
@@ -196,6 +208,8 @@ class TransactionSummaryController extends Controller
                     'transport_load_no_units_outgoing' => round($transport_load_no_units_outgoing,2),
                     'transport_finance_weight_ton_incoming_actual' => round($transport_finance_weight_ton_incoming_actual,2),
                     'transport_finance_weight_ton_outgoing_actual'=>round($transport_finance_weight_ton_outgoing_actual,2),
+                    'transport_finance_weight_ton_incoming_planned' => round($transport_finance_weight_ton_incoming_planned,2),
+                    'transport_finance_weight_ton_outgoing_planned'=>round($transport_finance_weight_ton_outgoing_planned,2),
                     'transport_finance_gross_profit_per_ton' => round($transport_finance_gross_profit_per_ton,2)];
 
             }

@@ -8179,12 +8179,12 @@ const deleteAssignedComm =  (id) => {
 
                                                     <th scope="col"
                                                         class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                        Tons in
+                                                        Plan Tons in
                                                     </th>
 
                                                     <th scope="col"
                                                         class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                        Tons in
+                                                        Plan Tons out
                                                     </th>
 
                                                     <th scope="col"
@@ -8298,7 +8298,7 @@ const deleteAssignedComm =  (id) => {
 
                                                         <div>
                                                             <div>
-                                                                {{n.transport_transaction.transport_finance.weight_ton_incoming_actual}}
+                                                                {{n.transport_transaction.transport_finance.weight_ton_incoming}}
                                                             </div>
                                                         </div>
 
@@ -8308,7 +8308,7 @@ const deleteAssignedComm =  (id) => {
 
                                                         <div>
                                                             <div>
-                                                                {{n.transport_transaction.transport_finance.weight_ton_outgoing_actual}}
+                                                                {{n.transport_transaction.transport_finance.weight_ton_outgoing}}
                                                             </div>
                                                         </div>
 
@@ -8344,8 +8344,8 @@ const deleteAssignedComm =  (id) => {
                                                     <td colspan="8" class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900 text-right">Total</td>
                                                     <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_load_no_units_incoming"]}}</td>
                                                     <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_load_no_units_outgoing"]}}</td>
-                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_finance_weight_ton_incoming_actual"]}}</td>
-                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_finance_weight_ton_outgoing_actual"]}}</td>
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_finance_weight_ton_incoming_planned"]}}</td>
+                                                    <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900">{{split_totals["transport_finance_weight_ton_outgoing_planned"]}}</td>
                                                     <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900"></td>
                                                     <td class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900"></td>
                                                 </tr>

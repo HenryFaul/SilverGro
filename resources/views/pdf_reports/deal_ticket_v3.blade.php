@@ -244,14 +244,30 @@
 
                                 <tr class="table_sections">
                                     <td class="table_sections table_row_heading" style="width: 25%;">
-                                        sum_weight_ton_incoming
+                                        sum_weight_ton_incoming_planned
+                                    </td>
+                                    <td class="table_sections table_row_value"
+                                        style="width: 25%;">
+                                        {{$split_data['sum_weight_ton_incoming_planned']}} tons
+                                    </td>
+                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                        sum_weight_ton_outgoing_planned
+                                    </td>
+                                    <td class="table_sections table_row_value" style="width: 25%;">
+                                        {{$split_data['sum_weight_ton_outgoing_planned']}} tons
+                                    </td>
+                                </tr>
+
+                                <tr class="table_sections">
+                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                        sum_weight_ton_incoming_actual
                                     </td>
                                     <td class="table_sections table_row_value"
                                         style="width: 25%;">
                                         {{$split_data['sum_weight_ton_incoming']}} tons
                                     </td>
                                     <td class="table_sections table_row_heading" style="width: 25%;">
-                                        sum_weight_ton_outgoing
+                                        sum_weight_ton_outgoing_actual
                                     </td>
                                     <td class="table_sections table_row_value" style="width: 25%;">
                                         {{$split_data['sum_weight_ton_outgoing']}} tons
@@ -308,17 +324,58 @@
                         </div>
                         <br>
                         <div class="">
+                            <p>Planned:</p>
                             <table class="table_sections" style="width:100%;">
                                 <tbody>
                                 <tr class="table_sections">
                                     <td style="width: 12.5%;" class="table_sections table_row_heading">Deal Ticket</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Tons In</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Cost/Ton</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Tons In</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Cost/Ton</td>
                                     <td style="width: 12.5%;" class="table_sections table_row_heading">Load basis</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Rate/Ton</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Tons Out</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Price/Ton</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">GP/Ton</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Rate/Ton</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Tons Out</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Price/Ton</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan GP/Ton</td>
+                                </tr>
+
+                                @foreach ($split_data['linked_trans_split'] as $deal)
+
+                                    <tr class="table_sections" style="width:100%;">
+                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            MQ{{$deal->TransportTransaction->a_mq}}</td>
+                                        <td style="width: 12.5%;"
+                                            class="table_sections table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming,2)}}</td>
+                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton,2), 2, '.', ' ')}}</td>
+                                        <td style="width: 12.5%;"
+                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportJob->RateBasis->name}}</td>
+                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}</td>
+                                        <td style="width: 12.5%;"
+                                            class="table_sections table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_outgoing,2)}}</td>
+                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->selling_price_per_ton,2), 2, '.', ' ')}}</td>
+                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->gross_profit_per_ton,2), 2, '.', ' ')}}</td>
+                                    </tr>
+
+                                @endforeach
+
+                                </tbody>
+
+                            </table>
+                            <p>Actual:</p>
+                            <table class="table_sections" style="width:100%;">
+                                <tbody>
+                                <tr class="table_sections">
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Deal Ticket</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual Tons In</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual Cost/Ton</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Load basis</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual Rate/Ton</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual Tons Out</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual Price/Ton</td>
+                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual GP/Ton</td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
