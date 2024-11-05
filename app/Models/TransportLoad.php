@@ -40,7 +40,11 @@ class TransportLoad extends Model
 
     public function PackagingOutgoing(): BelongsTo
     {
-        return $this->belongsTo(Packaging::class);
+        return $this->belongsTo(Packaging::class,'packaging_outgoing_id');
+    }
+    public function PackagingIncoming(): BelongsTo
+    {
+        return $this->belongsTo(Packaging::class,'packaging_incoming_id');
     }
 
     public function CollectionAddress(): BelongsTo
