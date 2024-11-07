@@ -5,6 +5,7 @@
         "build": "vite build && vite build --ssr"
     },
     "devDependencies": {
+        "@eslint/js": "^8.57.1",
         "@inertiajs/vue3": "^1.0.0",
         "@tailwindcss/forms": "^0.5.2",
         "@tailwindcss/typography": "^0.5.2",
@@ -12,8 +13,14 @@
         "@vue/server-renderer": "^3.2.31",
         "autoprefixer": "^10.4.7",
         "axios": "^1.1.2",
+        "eslint": "^9.13.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "eslint-plugin-vue": "^9.30.0",
+        "globals": "^15.11.0",
         "laravel-vite-plugin": "^0.7.2",
         "postcss": "^8.4.14",
+        "prettier": "^3.3.3",
         "tailwindcss": "^3.1.0",
         "vite": "^4.0.0",
         "vue": "^3.2.31"

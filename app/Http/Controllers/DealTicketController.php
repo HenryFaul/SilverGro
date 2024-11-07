@@ -63,9 +63,6 @@ class DealTicketController extends Controller
 
             $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
 
-
-            // dd($primary_linked_trans_split->TransportTransaction);
-
             $linked_trans_split = null;
 
             if (isset($primary_linked_trans_split->transport_trans_id)) {

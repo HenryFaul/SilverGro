@@ -719,7 +719,7 @@ class DatabaseSeeder extends Seeder
             'days_overdue_allowed_id'=>1,
             'customer_rating_id'=>1,'customer_parent_id'=>$customer_parent->id]);
 
-       $customer_2 = Customer::create(['last_legal_name'=>'Split Customer','terms_of_payment_id'=>1,
+   /*    $customer_2 = Customer::create(['last_legal_name'=>'Split Customer','terms_of_payment_id'=>1,
             'invoice_basis_id'=>1,
             'terms_of_payment_basis_id'=>2,
             'days_overdue_allowed_id'=>1,
@@ -738,7 +738,7 @@ class DatabaseSeeder extends Seeder
             'longitude' => 0,
             'latitude' => 0,
             'directions' => 'Address per split customer',
-        ]);
+        ]);*/
 
 
         //TransportRateBasis

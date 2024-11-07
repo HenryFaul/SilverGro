@@ -32,7 +32,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->unique(['trans_link_type_id','transport_trans_id','linked_transport_trans_id'], 'unique_link');
+            $table->unique(['trans_link_type_id','transport_trans_id','linked_transport_trans_id'], 'unique_link_trans');
         });
     }
 
