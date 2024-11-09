@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AssignedUserComm;
 use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -181,27 +182,29 @@ class StaffController extends Controller
     public function staffComm(Request $request)
     {
 
-        $staffMembers = Staff::with('User')->with('AssignedSupplierComm')->get();
+        $user_comm = AssignedUserComm::with('AssignedUserSupplier')->with('AssignedUserCustomer')->get();
 
-        // Add total supplier commission for each staff member
-        $staffMembers = $staffMembers->map(function ($staff) {
-            $totalSupplierComm = $staff->SupplierComm ? $staff->SupplierComm->sum('supplier_comm') : 0;
-
+        $groupedCommissions = $user_comm->groupBy(function ($comm) {
+            return $comm->AssignedUserSupplier ? $comm->AssignedUserSupplier->first_name : 'Unknown';
+        })->map(function ($items, $supplierName) {
             return [
-                'id' => $staff->id,
-                'name' => $staff->user->name, // Assuming the Staff model has a 'name' attribute
-                'total_supplier_comm' => $totalSupplierComm,
-                // Add any other attributes you want to include
+                'Staff Name' => $supplierName,
+                'total_supplier_comm' => $items->sum('supplier_comm'),
             ];
         });
 
-        // Pass the modified collection to the Inertia front-end
+// Convert to array if necessary for easier usage in the front-end
+        $groupedCommissionsArray = $groupedCommissions->values()->toArray();
+
+
+// Return to inertia
         return inertia(
             'Staff/StaffComm',
             [
-                'staffMembers' => $staffMembers,
+                'supplierCommissions' => $groupedCommissionsArray
             ]
         );
+
 
     }
 }
