@@ -146,7 +146,6 @@ class TransportApprovalController extends Controller
 
                     //Notify desire
                     $user_desire = User::find(6);
-
                     $user_desire->notify(
                         new DealTicketApproved($deal_ticket, $transport_transaction)
                     );
