@@ -30,9 +30,9 @@ class Staff extends Model
         return $this->belongsTo(User::class,'user_id');
     }
 
-    public function SupplierComm(): BelongsTo
+    public function AssignedSupplierComm(): HasMany
     {
-        return $this->belongsTo(AssignedUserComm::class);
+        return $this->hasMany(AssignedUserComm::class, 'assigned_user_supplier_id');
     }
 
 }

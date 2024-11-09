@@ -181,7 +181,7 @@ class StaffController extends Controller
     public function staffComm(Request $request)
     {
 
-        $staffMembers = Staff::with('User')->with('SupplierComm')->get();
+        $staffMembers = Staff::with('User')->with('AssignedSupplierComm')->get();
 
         // Add total supplier commission for each staff member
         $staffMembers = $staffMembers->map(function ($staff) {
