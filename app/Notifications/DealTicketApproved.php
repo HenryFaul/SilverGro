@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Mail\DealTicketNotification;
 use App\Models\DealTicket;
 use App\Models\TransportTransaction;
 use Illuminate\Bus\Queueable;
@@ -36,12 +37,16 @@ class DealTicketApproved extends Notification
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toMail(object $notifiable): DealTicketNotification
     {
-        return (new MailMessage)
+       /* return (new MailMessage)
                     ->line('The introduction to the notification.')
                     ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->line('Thank you for using our application!');*/
+
+        // Use the mailable you created for the markdown email
+        return (new DealTicketNotification($this->dealTicket, $this->transaction))
+            ->to($notifiable->email);
     }
 
     /**

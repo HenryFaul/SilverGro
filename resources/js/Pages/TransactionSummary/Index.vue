@@ -10631,10 +10631,9 @@ const deleteAssignedComm = (id) => {
                             <div class="flex justify-between gap-x-4 py-3">
                               <dt class="text-gray-500">Generate Final</dt>
                               <dd class="flex items-start gap-x-2">
-                                Temp hidden
-                                <!--                                                                <SecondaryButton @click="createFinalDealTicket">
-                                                                                                                                    Generate
-                                                                                                                                </SecondaryButton>-->
+                                <SecondaryButton @click="createFinalDealTicket">
+                                  Generate
+                                </SecondaryButton>
                               </dd>
                             </div>
                             <div class="flex justify-between gap-x-4 py-3">
@@ -11154,7 +11153,7 @@ const deleteAssignedComm = (id) => {
                           <div v-else>Sales order Not Active</div>
                         </dl>
                       </li>
-                      <li
+                      <!--                      <li
                         v-if="
                           selected_transaction.contract_type_id === 3 ||
                           selected_transaction.contract_type_id === 4
@@ -11217,7 +11216,7 @@ const deleteAssignedComm = (id) => {
                           </div>
                           <div v-else>Not split load</div>
                         </dl>
-                      </li>
+                      </li>-->
                     </ul>
                   </div>
 

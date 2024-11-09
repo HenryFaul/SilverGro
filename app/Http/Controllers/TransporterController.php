@@ -92,7 +92,7 @@ class TransporterController extends Controller
      */
     public function show(Transporter $transporter)
     {
-        $transporter->load('TermsOfPayment')->load('contactable');
+        $transporter->load('TermsOfPayment')->load('contactable')->load('addressable');
 
         $terms_of_payments = TermsOfPayment::all();
         $contact_type = ContactType::all();

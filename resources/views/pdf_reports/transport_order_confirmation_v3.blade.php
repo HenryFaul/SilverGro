@@ -3,14 +3,17 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <title>Transport Order Confirmation</title>
+    <title>Split Transport Order Confirmation</title>
     <style>
         @page {
-            margin: 100px 40px;
+            margin: 100px 50px 80px 50px; /* Adjusted bottom margin for footer */
             font-family: sans-serif;
         }
 
         body {
+            margin-top: 5px;
+            padding: 5px;
+            margin-right: 10px;
 
         }
 
@@ -28,7 +31,7 @@
             bottom: -60px;
             left: 0;
             right: 0;
-            height: 30px;
+            height: 40px;
             font-size: 10px;
             color: #0f0f0f;
             line-height: 25px;
@@ -79,7 +82,7 @@
         }
 
         .section_heading {
-            font-size: 12px;
+            font-size: 14px;
             font-weight: bold;
             margin-bottom: 1px;
             padding-bottom: 0px;
@@ -102,22 +105,6 @@
             margin-bottom: 1px
         }
 
-        /* Add this CSS to your stylesheet */
-        .indented-list {
-            list-style-type: decimal;
-            padding-left: 30px;
-        }
-
-        .indented-list li {
-            margin: 0;
-            padding-left: 5px;
-            text-indent: -20px;
-        }
-
-        .indented-list li::marker {
-            font-weight: bold;
-        }
-
 
     </style>
 </head>
@@ -127,7 +114,7 @@
     <table style="width:100%;">
         <tr>
             <td>
-                <img style="float: left;" src="{{ $logo }}" width="225" height="105" />
+                <img style="float: left;" src="{{ $logo }}" width="202" height="95" />
             </td>
             <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;"><span>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
             </td>
@@ -177,7 +164,7 @@
                             <td class="table_sections table_row_value"
                                 colspan="3">{{$transport_trans->Transporter->last_legal_name}}</td>
                         </tr>
-                       <tr class="table_sections">
+                        <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width:25%;">Business address</td>
                             <td class="table_sections table_row_value" colspan="3">
                             </td>
@@ -222,7 +209,7 @@
                     </table>
 
                 </div>
-                    <br>
+                <br>
                 <li class="section_heading">Transport Details</li>
                 <div>
                     <table class="table_sections" style="width:100%;">
@@ -432,7 +419,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Delivery Address</td>
                             <td class="table_sections table_row_value" colspan="3">
-                               {{$transport_trans->TransportLoad->DeliveryAddress->line_1}}
+                                {{$transport_trans->TransportLoad->DeliveryAddress->line_1}}
 
                                 @if($transport_trans->TransportLoad->DeliveryAddress->line_2)
                                     {{$transport_trans->TransportLoad->DeliveryAddress->line_2}}
@@ -443,11 +430,11 @@
                                 @endif
 
                                 @if($transport_trans->TransportLoad->DeliveryAddress->country)
-                               {{$transport_trans->TransportLoad->DeliveryAddress->country}}
+                                    {{$transport_trans->TransportLoad->DeliveryAddress->country}}
                                 @endif
 
                                 @if($transport_trans->TransportLoad->DeliveryAddress->code)
-                                  {{$transport_trans->TransportLoad->DeliveryAddress->code}}
+                                    {{$transport_trans->TransportLoad->DeliveryAddress->code}}
                                 @endif
 
                             </td>
@@ -503,9 +490,9 @@
 
                     </table>
                 </div>
-                    <br>
+                <br>
 
-                    <li class="section_heading">Standard Terms and Conditions</li>
+                <li class="section_heading">Standard Terms and Conditions</li>
                 <div class="table_row_value">
 
                     <div class="table_row_value">
@@ -561,55 +548,49 @@
 
                     </div>
                 </div>
-                    <li class="section_heading">Special Notes</li>
+                <li class="section_heading">Special Notes</li>
+                <div class="table_row_value">
+
                     <div class="table_row_value">
-
                         <div class="table_row_value">
-                            <div class="table_row_value">
-                                <ol class="indented-list">
-                                    @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
-                                        <li>
-                                            Customer to check for broken or wet bags and make comments with qualities on delivery documentation, and bring this to the transporters attention.
-                                        </li>
-                                        <li>
-                                            If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain immediately.
+                            <ol class="indented-list">
+                                @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
+                                    <li>
+                                        Customer to check for broken or wet bags and make comments with qualities on delivery documentation, and bring this to the transporters attention.
+                                    </li>
+                                    <li>
+                                        If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain immediately.
 
-                                        </li>
+                                    </li>
                                     <li>
                                         Driver and Customer to do a bag count and sign for goods on the transporters delivery documentation / Proof of Delivery (POD).
                                     </li>
 
-                                    @endif
+                                @endif
 
-                                        @if(str_contains(strtolower($transport_trans->product->name), 'bagged') && str_contains(strtolower($transport_trans->product->name), 'chop'))
-                                            <li>
-                                                Customer to use with 7 days of delivery.
-                                            </li>
-                                        @endif
+                                @if(str_contains(strtolower($transport_trans->product->name), 'bagged') && str_contains(strtolower($transport_trans->product->name), 'chop'))
+                                    <li>
+                                        Customer to use with 7 days of delivery.
+                                    </li>
+                                @endif
 
-                                        @if(str_contains(strtolower($transport_trans->TransportLoad->ProductSource->name), 'import'))
-                                            <li>
-                                                In the event that goods described in this contract are to be delivered out of an African territory, such as Malawi, Zimbabwe, Zambia or Mozambique, no warranty is given in regard to delivery or delivery time.  It is hereby agreed that there can be no claim for late, or non delivery by the Seller.
+                                @if(str_contains(strtolower($transport_trans->TransportLoad->ProductSource->name), 'import'))
+                                    <li>
+                                        In the event that goods described in this contract are to be delivered out of an African territory, such as Malawi, Zimbabwe, Zambia or Mozambique, no warranty is given in regard to delivery or delivery time.  It is hereby agreed that there can be no claim for late, or non delivery by the Seller.
 
-                                            </li>
-                                        @endif
-                                </ol>
-                            </div>
-
+                                    </li>
+                                @endif
+                            </ol>
                         </div>
-                    </div>
-
-                    <div>
-
-
-
 
                     </div>
+                </div>
 
+                <div>
 
-
-                    <br>
-                    <p class="section_heading">Prepared for sivergro Feed & Grain by {{$user_name}} at {{$now}} <span></span></p>
+                </div>
+                <br>
+                <p class="section_heading">Prepared for sivergro Feed & Grain by {{$user_name}} at {{$now}} <span></span></p>
                 <div>
                     <table class="" style="width:100%;">
                         <tbody>
@@ -659,32 +640,33 @@
     </div>
 </main>
 
+
 <footer>
-    <div style="width: 100%; position: relative;">
-        <div style="float: left;">
-            <span>SilverGro Feed & Grain</span>
-            <span>| Generated by {{$user_name}}</span>
-            <span>| version {{$app_version}}</span>
-        </div>
-        <div style="float: right;">
+    <script type="text/php">
+        // Define default values if not set
+        if (!isset($user_name)) {
+            $user_name = 'Unknown User';
+        }
 
-            <script type="text/php">
-                if (isset($pdf)) {
-                    $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
-                    $size = 8;
-                    $font = $fontMetrics->getFont("sans-serif");
-                    $width = $fontMetrics->get_text_width($text, $font, $size);
+        if (!isset($app_version)) {
+            $app_version = '1.0';
+        }
 
-                    // Set x position closer to the right side
-                    $x = 500; // Adjust 30 to a suitable value if needed
-                    $y = $pdf->get_height() - 45; // Position from the bottom
+        if (isset($pdf) && $PAGE_NUM > 1) {
+            // Set up footer text
+            $left_text = "SilverGro Feed & Grain | Generated by {$user_name} | version {$app_version}";
+            $page_text = "Page {$PAGE_NUM} of {$PAGE_COUNT}";
 
-                    $pdf->page_text($x, $y, $text, $font, $size);
-                }
+            // Set font properties
+            $font = $fontMetrics->getFont("sans-serif");
+            $size = 8;
 
-            </script>
-        </div>
-    </div>
+            // Positioning
+            $y = $pdf->get_height() - 45;
+            $pdf->text(50, $y, $left_text, $font, $size);
+            $pdf->text($pdf->get_width() - 100, $y, $page_text, $font, $size);
+        }
+    </script>
 </footer>
 
 
