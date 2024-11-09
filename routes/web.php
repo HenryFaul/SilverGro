@@ -384,6 +384,10 @@ Route::middleware([
 
     Route::get('/excel_report/trade/generate/{file_name}', [TransportTransactionController::class, 'download'])->middleware('auth')->name('excel_report.transactions.download');
 
+    //Staff comm
+
+    Route::get('/staff_comm', [StaffController::class, 'staffComm'])->middleware('auth')->name('staff.comm');
+
 
 
 });

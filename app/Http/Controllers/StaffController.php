@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
 use App\Models\Staff;
-use App\Models\Transporter;
 use App\Models\User;
-use App\Rules\StaffAssignRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\Rules\Password;
@@ -24,7 +21,7 @@ class StaffController extends Controller
             'isActive',
             'field',
             'direction',
-            'show'
+            'show',
         ]);
 
         $paginate = $request['show'] ?? 10;
@@ -47,31 +44,30 @@ class StaffController extends Controller
         //
     }
 
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'first_name' => ['required','string'],
-            'last_legal_name' => ['required','string','string'],
-            'nickname' => ['nullable','string'],
-            'title' => ['nullable','string'],
-            'id_reg_no' => ['nullable','string','unique:staff,id_reg_no'],
-            'job_description' => ['nullable','string'],
+            'first_name' => ['required', 'string'],
+            'last_legal_name' => ['required', 'string', 'string'],
+            'nickname' => ['nullable', 'string'],
+            'title' => ['nullable', 'string'],
+            'id_reg_no' => ['nullable', 'string', 'unique:staff,id_reg_no'],
+            'job_description' => ['nullable', 'string'],
             'password_confirmation' => ['required'],
-            'password'=> ['required', 'string', new Password,'required_with:password_confirmation','same:password_confirmation'],
-            'email'=> ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', new Password, 'required_with:password_confirmation', 'same:password_confirmation'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
         ]);
 
-        $user =  User::create([
+        $user = User::create([
             'name' => $request->first_name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
-        if($user->exists()){
+        if ($user->exists()) {
             Staff::create([
                 'first_name' => $request->first_name,
                 'last_legal_name' => $request->last_legal_name,
@@ -79,13 +75,12 @@ class StaffController extends Controller
                 'title' => $request->title,
                 'id_reg_no' => $request->id_reg_no,
                 'job_description' => $request->job_description,
-                'user_id'=> $user->id
+                'user_id' => $user->id,
             ]);
 
             $request->session()->flash('flash.bannerStyle', 'success');
             $request->session()->flash('flash.banner', 'Staff created');
         }
-
 
         return redirect()->back();
 
@@ -96,7 +91,7 @@ class StaffController extends Controller
      */
     public function show(Staff $staff)
     {
-        $staff = User::where('id','=',$staff->user_id)->with('roles')->with('Staff')->first();
+        $staff = User::where('id', '=', $staff->user_id)->with('roles')->with('Staff')->first();
 
         $all_roles_in_database = Role::all();
         $permissions = $staff?->getPermissionsViaRoles()->unique('name')->pluck('name');
@@ -105,8 +100,8 @@ class StaffController extends Controller
             'Staff/Show',
             [
                 'staff' => $staff,
-                'all_roles'=>$all_roles_in_database,
-                'permissions'=>$permissions
+                'all_roles' => $all_roles_in_database,
+                'permissions' => $permissions,
             ]
         );
     }
@@ -128,46 +123,43 @@ class StaffController extends Controller
         //Update the system user first name field to align with staff
         $user = $staff->User()->first();
 
-        if ($request->email != $user->email){
+        if ($request->email != $user->email) {
             $request->validate([
-                'email'=> ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             ]);
         }
 
-        if ($request->password != null || $request->password !=''){
+        if ($request->password != null || $request->password != '') {
             $request->validate([
-                'password'=> ['required', 'string', new Password],
+                'password' => ['required', 'string', new Password],
             ]);
         }
 
         $staff->update(
             $request->validate([
-                'first_name' => ['nullable','string'],
-                'last_legal_name' => ['nullable','string'],
-                'nickname' => ['nullable','string'],
-                'title' => ['nullable','string'],
-                'id_reg_no' => ['nullable','string'],
-                'is_active' => ['nullable','boolean'],
-                'job_description' => ['nullable','string'],
+                'first_name' => ['nullable', 'string'],
+                'last_legal_name' => ['nullable', 'string'],
+                'nickname' => ['nullable', 'string'],
+                'title' => ['nullable', 'string'],
+                'id_reg_no' => ['nullable', 'string'],
+                'is_active' => ['nullable', 'boolean'],
+                'job_description' => ['nullable', 'string'],
             ])
         );
 
-
-
-        if($user->exists() ){
-            if($request->password != null && $request->password != ''){
+        if ($user->exists()) {
+            if ($request->password != null && $request->password != '') {
                 $user->update([
                     'name' => $request->first_name,
                     'email' => $request->email,
-                    'password' => Hash::make($request->password)
+                    'password' => Hash::make($request->password),
                 ]);
-            }else{
+            } else {
                 $user->update([
                     'name' => $request->first_name,
-                    'email' => $request->email
+                    'email' => $request->email,
                 ]);
             }
-
 
         }
 
@@ -183,6 +175,33 @@ class StaffController extends Controller
     public function destroy(Staff $staff)
     {
         //
+
+    }
+
+    public function staffComm(Request $request)
+    {
+
+        $staffMembers = Staff::with('User')->with('SupplierComm')->get();
+
+        // Add total supplier commission for each staff member
+        $staffMembers = $staffMembers->map(function ($staff) {
+            $totalSupplierComm = $staff->SupplierComm ? $staff->SupplierComm->sum('supplier_comm') : 0;
+
+            return [
+                'id' => $staff->id,
+                'name' => $staff->user->name, // Assuming the Staff model has a 'name' attribute
+                'total_supplier_comm' => $totalSupplierComm,
+                // Add any other attributes you want to include
+            ];
+        });
+
+        // Pass the modified collection to the Inertia front-end
+        return inertia(
+            'Staff/StaffComm',
+            [
+                'staffMembers' => $staffMembers,
+            ]
+        );
 
     }
 }
