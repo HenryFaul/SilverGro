@@ -184,6 +184,7 @@ class StaffController extends Controller
 
         $user_comm = AssignedUserComm::with('AssignedUserSupplier')->with('AssignedUserCustomer')
             ->with('TransportTransaction', fn($query) => $query->where('a_mq','<>',null))
+            ->where('supplier_comm','>',0)
             ->get();
 
         $groupedCommissions = $user_comm->groupBy(function ($comm) {
