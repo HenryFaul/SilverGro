@@ -182,7 +182,9 @@ class StaffController extends Controller
     public function staffComm(Request $request)
     {
 
-        $user_comm = AssignedUserComm::with('AssignedUserSupplier')->with('AssignedUserCustomer')->get();
+        $user_comm = AssignedUserComm::with('AssignedUserSupplier')->with('AssignedUserCustomer')
+            ->with('TransportTransaction', fn($query) => $query->where('a_mq','<>',null))
+            ->get();
 
         $groupedCommissions = $user_comm->groupBy(function ($comm) {
             return $comm->AssignedUserSupplier ? $comm->AssignedUserSupplier->first_name : 'Unknown';

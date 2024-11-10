@@ -10,7 +10,6 @@ import CustomerSlideOver from '@/Components/UI/CustomerSlideOver.vue';
 import { CalculatorIcon, FlagIcon } from '@heroicons/vue/20/solid';
 
 const swal = inject('$swal');
-import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
 
 const props = defineProps({
   supplierCommissions: Object,
@@ -22,6 +21,10 @@ let NiceNumber = (_number) => {
 };
 
 const permissions = computed(() => usePage().props.permissions);
+const roles_permissions = computed(() => usePage().props.roles_permissions);
+const can_see = computed(() =>
+  usePage().props.roles_permissions.permissions.includes('edit_adjusted_gp')
+);
 </script>
 
 <template>
@@ -39,7 +42,9 @@ const permissions = computed(() => usePage().props.permissions);
             <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
               <div class="flex col-span-6">
                 <div>
-                  <h1 class="text-xl font-bold mb-4">Staff Commissions</h1>
+                  <h1 class="text-xl font-bold mb-4">
+                    Staff Commissions (Approved trades only)
+                  </h1>
 
                   <table class="min-w-full border-separate border-spacing-0">
                     <thead>
@@ -62,7 +67,7 @@ const permissions = computed(() => usePage().props.permissions);
                         </th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="can_see">
                       <tr
                         v-for="(commission, index) in supplierCommissions"
                         :key="index"
@@ -80,6 +85,12 @@ const permissions = computed(() => usePage().props.permissions);
                         <td class="border-b border-gray-200 px-3 py-2">
                           {{ NiceNumber(commission.total_supplier_comm) }}
                         </td>
+                      </tr>
+                    </tbody>
+
+                    <tbody v-else>
+                      <tr>
+                        <td>Not allowed to see this</td>
                       </tr>
                     </tbody>
                   </table>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AssignedUserComm extends Model
@@ -24,5 +25,10 @@ class AssignedUserComm extends Model
     public function AssignedUserCustomer(): BelongsTo
     {
         return $this->belongsTo(Staff::class,'assigned_user_customer_id');
+    }
+
+    public function TransportTransaction(): BelongsTo
+    {
+        return $this->belongsTo(TransportTransaction::class);
     }
 }
