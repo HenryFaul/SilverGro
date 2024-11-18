@@ -559,11 +559,11 @@ const row_styler = computed(
                     <div class="col-span-4 flex">
                       <div>
                         <secondary-button class="" @click="filter"
-                          >Search</secondary-button
-                        >
+                          >Search
+                        </secondary-button>
                         <secondary-button class="ml-1" @click="clear"
-                          >Clear</secondary-button
-                        >
+                          >Clear
+                        </secondary-button>
                         <secondary-button class="ml-1" @click="toggleDetails"
                           >Toggle
                         </secondary-button>
@@ -758,7 +758,10 @@ const row_styler = computed(
                               'hover:bg-gray-100 text-sm focus-within:bg-gray-100',
                             ]"
                           >
-                            <td :class="row_styler">
+                            <td
+                              v-if="transaction.transporter != null"
+                              :class="row_styler"
+                            >
                               <Link
                                 href="/transaction_summary"
                                 method="get"
@@ -784,13 +787,22 @@ const row_styler = computed(
                             </td>
 
                             <td :class="row_styler">
-                              {{ transaction.supplier.last_legal_name }}
+                              <div v-if="transaction.supplier">
+                                {{ transaction.supplier.last_legal_name }}
+                              </div>
+                              <div v-else>none</div>
                             </td>
                             <td :class="row_styler">
-                              {{ transaction.customer.last_legal_name }}
+                              <div v-if="transaction.customer">
+                                {{ transaction.customer.last_legal_name }}
+                              </div>
+                              <div v-else>none</div>
                             </td>
                             <td :class="row_styler">
-                              {{ transaction.transporter.last_legal_name }}
+                              <div v-if="transporter.customer">
+                                {{ transaction.transporter.last_legal_name }}
+                              </div>
+                              <div v-else>none</div>
                             </td>
 
                             <td :class="row_styler">
