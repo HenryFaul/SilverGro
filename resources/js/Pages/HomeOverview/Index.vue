@@ -758,84 +758,102 @@ const row_styler = computed(
                               'hover:bg-gray-100 text-sm focus-within:bg-gray-100',
                             ]"
                           >
-                            <td
-                              v-if="transaction.transporter != null"
-                              :class="row_styler"
+                            <div
+                              v-if="
+                                transaction.customer != null &&
+                                transaction.customer !== ''
+                              "
                             >
-                              <Link
-                                href="/transaction_summary"
-                                method="get"
-                                target="_blank"
-                                :data="{ selected_trans_id: transaction.id }"
+                              <td
+                                v-if="transaction.transporter != null"
+                                :class="row_styler"
                               >
-                                <span class="font-bold" v-if="transaction.a_mq">
-                                  (MQ:{{ transaction.a_mq }})
-                                </span>
-                                <span>(ID:{{ transaction.id }})</span>
-                                <span> </span>
-                                <span>(Old:{{ transaction.old_id }})</span>
-                              </Link>
-                            </td>
-                            <td :class="row_styler">
-                              {{ transaction.contract_type.name }}
-                            </td>
+                                <Link
+                                  href="/transaction_summary"
+                                  method="get"
+                                  target="_blank"
+                                  :data="{ selected_trans_id: transaction.id }"
+                                >
+                                  <span
+                                    class="font-bold"
+                                    v-if="transaction.a_mq"
+                                  >
+                                    (MQ:{{ transaction.a_mq }})
+                                  </span>
+                                  <span>(ID:{{ transaction.id }})</span>
+                                  <span> </span>
+                                  <span>(Old:{{ transaction.old_id }})</span>
+                                </Link>
+                              </td>
+                              <td :class="row_styler">
+                                {{ transaction.contract_type.name }}
+                              </td>
 
-                            <td :class="row_styler">
-                              {{
-                                NiceTDate(transaction.transport_date_earliest)
-                              }}
-                            </td>
+                              <td :class="row_styler">
+                                {{
+                                  NiceTDate(transaction.transport_date_earliest)
+                                }}
+                              </td>
 
-                            <td :class="row_styler">
-                              <div v-if="transaction.supplier.last_legal_name">
-                                {{ transaction.supplier.last_legal_name }}
-                              </div>
-                              <div v-else>none</div>
-                            </td>
-                            <td :class="row_styler">
-                              <div v-if="transaction.customer.last_legal_name">
-                                {{ transaction.customer.last_legal_name }}
-                              </div>
-                              <div v-else>none</div>
-                            </td>
-                            <td :class="row_styler">
-                              <div v-if="transaction.customer.last_legal_name">
-                                {{ transaction.transporter.last_legal_name }}
-                              </div>
-                              <div v-else>none</div>
-                            </td>
+                              <td :class="row_styler">
+                                <div
+                                  v-if="transaction.supplier.last_legal_name"
+                                >
+                                  {{ transaction.supplier.last_legal_name }}
+                                </div>
+                                <div v-else>none</div>
+                              </td>
+                              <td :class="row_styler">
+                                <div
+                                  v-if="transaction.customer.last_legal_name"
+                                >
+                                  {{ transaction.customer.last_legal_name }}
+                                </div>
+                                <div v-else>none</div>
+                              </td>
+                              <td :class="row_styler">
+                                <div
+                                  v-if="transaction.customer.last_legal_name"
+                                >
+                                  {{ transaction.transporter.last_legal_name }}
+                                </div>
+                                <div v-else>none</div>
+                              </td>
 
-                            <td :class="row_styler">
-                              {{ transaction.product.name }}
-                            </td>
+                              <td :class="row_styler">
+                                {{ transaction.product.name }}
+                              </td>
 
-                            <td v-if="showDetails" :class="row_styler">
-                              {{ transaction.transport_load.no_units_incoming }}
-                            </td>
+                              <td v-if="showDetails" :class="row_styler">
+                                {{
+                                  transaction.transport_load.no_units_incoming
+                                }}
+                              </td>
 
-                            <td v-if="showDetails" :class="row_styler">
-                              {{
-                                NiceNumber(
-                                  transaction.transport_finance.cost_price
-                                )
-                              }}
-                            </td>
+                              <td v-if="showDetails" :class="row_styler">
+                                {{
+                                  NiceNumber(
+                                    transaction.transport_finance.cost_price
+                                  )
+                                }}
+                              </td>
 
-                            <td v-if="showDetails" :class="row_styler">
-                              {{
-                                NiceNumber(
-                                  transaction.transport_finance.selling_price
-                                )
-                              }}
-                            </td>
+                              <td v-if="showDetails" :class="row_styler">
+                                {{
+                                  NiceNumber(
+                                    transaction.transport_finance.selling_price
+                                  )
+                                }}
+                              </td>
 
-                            <td v-if="showDetails" :class="row_styler">
-                              {{
-                                NiceNumber(
-                                  transaction.transport_finance.gross_profit
-                                )
-                              }}
-                            </td>
+                              <td v-if="showDetails" :class="row_styler">
+                                {{
+                                  NiceNumber(
+                                    transaction.transport_finance.gross_profit
+                                  )
+                                }}
+                              </td>
+                            </div>
                           </tr>
                         </tbody>
                       </table>
