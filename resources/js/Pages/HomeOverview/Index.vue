@@ -787,19 +787,19 @@ const row_styler = computed(
                             </td>
 
                             <td :class="row_styler">
-                              <div v-if="transaction.supplier">
+                              <div v-if="transaction.supplier.last_legal_name">
                                 {{ transaction.supplier.last_legal_name }}
                               </div>
                               <div v-else>none</div>
                             </td>
                             <td :class="row_styler">
-                              <div v-if="transaction.customer">
+                              <div v-if="transaction.customer.last_legal_name">
                                 {{ transaction.customer.last_legal_name }}
                               </div>
                               <div v-else>none</div>
                             </td>
                             <td :class="row_styler">
-                              <div v-if="transaction.customer">
+                              <div v-if="transaction.customer.last_legal_name">
                                 {{ transaction.transporter.last_legal_name }}
                               </div>
                               <div v-else>none</div>
