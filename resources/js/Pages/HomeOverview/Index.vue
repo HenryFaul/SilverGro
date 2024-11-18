@@ -423,8 +423,9 @@ const row_styler = computed(
       </h2>
     </template>
 
-    <div v-if="selected_transaction" class="p-1 h-screen">
+    <div class="p-1 h-screen">
       <div
+        v-if="selected_transaction != null"
         class="bg-white h-3/4 overflow-x-auto m-2 p-2 shadow-xl sm:rounded-lg"
       >
         <div>
@@ -432,176 +433,6 @@ const row_styler = computed(
             <div class="mt-3 flow-root">
               <div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-2 align-middle">
-                  <!--                                    <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
-                                        <div class="flex col-span-6">
-                                            <div>
-                                                <div class="ml-3 text-indigo-400 text-sm font-bold">
-                                                    Start Date
-                                                </div>
-                                                <div class="w-48">
-                                                    <VueDatePicker v-model="filterForm.start_date"
-                                                                   :format="formatStart"
-                                                                   :teleport="true"
-                                                    ></VueDatePicker>
-                                                </div>
-
-                                            </div>
-                                            <div class="ml-2">
-                                                <div class="ml-3 text-indigo-400 text-sm font-bold">
-                                                    End Date
-                                                </div>
-                                                <div class="w-48">
-                                                    <VueDatePicker v-model="filterForm.end_date"
-                                                                   :format="format"
-                                                                   :teleport="true"
-                                                    ></VueDatePicker>
-                                                </div>
-                                            </div>
-
-                                            <div class="mt-5 ml-2">
-                                                <select v-model="filterForm.show"
-                                                        class="input-filter-l  w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                                    <option :value=5>5</option>
-                                                    <option :value=10>10</option>
-                                                    <option :value=25>25</option>
-                                                    <option :value=100>100</option>
-                                                    <option :value=200>200</option>
-                                                    <option :value=500>500</option>
-                                                </select>
-
-                                            </div>
-
-                                            <div class="mt-5 ml-2">
-                                                <input v-model.number="filterForm.old_id" aria-label="Search"
-                                                       class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                       placeholder="old contract no..."
-                                                       type="search"/>
-                                            </div>
-
-
-                                        </div>
-                                        <div class="col-span-4 flex">
-                                            <input v-model.number="filterForm.supplier_name" aria-label="Search"
-                                                   class="block w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="supplier name..."
-                                                   type="search"/>
-
-                                            <input v-model.number="filterForm.customer_name" aria-label="Search"
-                                                   class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="customer name..."
-                                                   type="search"/>
-
-                                            <input v-model.number="filterForm.transporter_name" aria-label="Search"
-                                                   class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="transporter name..."
-                                                   type="search"/>
-
-                                            <input v-model.number="filterForm.product_name" aria-label="Search"
-                                                   class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="product name..."
-                                                   type="search"/>
-
-                                            <input v-model.number="filterForm.id" aria-label="Search"
-                                                   class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                   placeholder="contract no..."
-                                                   type="search"/>
-
-
-                                        </div>
-                                        <div class="col-span-4 flex">
-
-                                            <div>
-                                                <secondary-button class="" @click="filter">Search</secondary-button>
-                                                <secondary-button class=" ml-1" @click="clear">Clear</secondary-button>
-                                                <secondary-button class=" ml-1" @click="toggleDetails">Toggle
-                                                </secondary-button>
-                                            </div>
-
-                                            <div class="flex ml-6">
-                                                <div class="relative flex items-start">
-                                                    <div class="flex h-6 items-center">
-                                                        <input id="mon" v-model="mon"
-                                                               aria-describedby="candidates-description"
-                                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                                               name="mon" type="checkbox"/>
-                                                    </div>
-                                                    <div class="ml-3 text-sm leading-6">
-                                                        <label class="font-medium text-gray-900" for="mon">Mon</label>
-                                                    </div>
-                                                </div>
-                                                <div class="relative ml-2 flex items-start">
-                                                    <div class="flex h-6 items-center">
-                                                        <input id="tue" v-model="tue"
-                                                               aria-describedby="candidates-description"
-                                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                                               name="tue" type="checkbox"/>
-                                                    </div>
-                                                    <div class="ml-3 text-sm leading-6">
-                                                        <label class="font-medium text-gray-900" for="tue">Tue</label>
-                                                    </div>
-                                                </div>
-                                                <div class="relative ml-2 flex items-start">
-                                                    <div class="flex h-6 items-center">
-                                                        <input id="wed" v-model="wed"
-                                                               aria-describedby="candidates-description"
-                                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                                               name="wed" type="checkbox"/>
-                                                    </div>
-                                                    <div class="ml-3 text-sm leading-6">
-                                                        <label class="font-medium text-gray-900" for="wed">Wed</label>
-                                                    </div>
-                                                </div>
-                                                <div class="relative ml-2 flex items-start">
-                                                    <div class="flex h-6 items-center">
-                                                        <input id="thu" v-model="thu"
-                                                               aria-describedby="candidates-description"
-                                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                                               name="thu" type="checkbox"/>
-                                                    </div>
-                                                    <div class="ml-3 text-sm leading-6">
-                                                        <label class="font-medium text-gray-900" for="thu">Thu</label>
-                                                    </div>
-                                                </div>
-                                                <div class="relative ml-2 flex items-start">
-                                                    <div class="flex h-6 items-center">
-                                                        <input id="fri" v-model="fri"
-                                                               aria-describedby="candidates-description"
-                                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                                               name="fri" type="checkbox"/>
-                                                    </div>
-                                                    <div class="ml-3 text-sm leading-6">
-                                                        <label class="font-medium text-gray-900" for="fri">Fri</label>
-                                                    </div>
-                                                </div>
-                                                <div class="relative ml-2 flex items-start">
-                                                    <div class="flex h-6 items-center">
-                                                        <input id="sat" v-model="sat"
-                                                               aria-describedby="candidates-description"
-                                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                                               name="sat" type="checkbox"/>
-                                                    </div>
-                                                    <div class="ml-3 text-sm leading-6">
-                                                        <label class="font-medium text-gray-900" for="sat">Sat</label>
-                                                    </div>
-                                                </div>
-                                                <div class="relative ml-2 flex items-start">
-                                                    <div class="flex h-6 items-center">
-                                                        <input id="sun" v-model="sun"
-                                                               aria-describedby="candidates-description"
-                                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                                               name="sun" type="checkbox"/>
-                                                    </div>
-                                                    <div class="ml-3 text-sm leading-6">
-                                                        <label class="font-medium text-gray-900" for="sun">Sun</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-span-4 mb-3">
-                                        </div>
-
-                                    </div>-->
                   <div
                     class="ml-4 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-6"
                   >
@@ -916,7 +747,7 @@ const row_styler = computed(
                             </th>
                           </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="filteredTrans.length > 1">
                           <tr
                             v-for="(transaction, index) in filteredTrans"
                             :key="transaction.id"
@@ -1012,7 +843,10 @@ const row_styler = computed(
         </div>
       </div>
 
-      <div class="sticky bg-white m-2 p-2 shadow-xl sm:rounded-lg">
+      <div
+        v-if="selected_transaction != null"
+        class="sticky bg-white m-2 p-2 shadow-xl sm:rounded-lg"
+      >
         <div>
           <div class="px-4 sm:px-6 lg:px-8">
             <div>
@@ -1182,10 +1016,6 @@ const row_styler = computed(
           </div>
         </div>
       </div>
-    </div>
-
-    <div v-else>
-      <p>No data</p>
     </div>
   </AppLayout>
 </template>
