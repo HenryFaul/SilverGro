@@ -799,7 +799,7 @@ const row_styler = computed(
                               <div v-else>none</div>
                             </td>
                             <td :class="row_styler">
-                              <div v-if="transporter.customer">
+                              <div v-if="transaction.customer">
                                 {{ transaction.transporter.last_legal_name }}
                               </div>
                               <div v-else>none</div>
