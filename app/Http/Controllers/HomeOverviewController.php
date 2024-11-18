@@ -78,6 +78,8 @@ class HomeOverviewController extends Controller
 
         $linked_trans = null;
 
+        $linked_trans_other = null;
+
         if ($transportTransaction != null){
 
             $linked_trans_other = TransLink::where('transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id',3)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
