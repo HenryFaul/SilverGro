@@ -9,24 +9,6 @@ import Icon from '@/Components/Icon.vue';
 import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
-import {
-  EllipsisHorizontalIcon,
-  CheckIcon,
-  ChevronUpDownIcon,
-  PaperClipIcon,
-  XCircleIcon,
-  InformationCircleIcon,
-  ExclamationTriangleIcon,
-  XMarkIcon,
-  TruckIcon,
-} from '@heroicons/vue/20/solid';
-import InputError from '@/Components/InputError.vue';
-import AreaInput from '@/Components/AreaInput.vue';
-import SectionBorder from '@/Components/SectionBorder.vue';
-import DriverVehicleModal from '@/Components/UI/DriverVehicleModal.vue';
-import DriverVehicleModalAdd from '@/Components/UI/DriverVehicleModal.vue';
-import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
 
 const swal = inject('$swal');
 
@@ -200,18 +182,18 @@ const newTradeAdded = () => {
 };
 
 const filterForm = useForm({
-  isActive: props.filters.isActive ?? null,
-  field: props.filters.field ?? null,
-  direction: props.filters.direction ?? 'asc',
-  show: props.filters.show ?? 25,
-  supplier_name: props.filters.supplier_name ?? null,
-  customer_name: props.filters.customer_name ?? null,
-  transporter_name: props.filters.transporter_name ?? null,
-  product_name: props.filters.product_name ?? null,
-  start_date: props.filters.start_date ?? null,
-  end_date: props.filters.end_date ?? null,
-  id: props.filters.id ?? null,
-  selected_trans_id: props.selected_transaction.id ?? null,
+  isActive: props.filters?.isActive ?? null,
+  field: props.filters?.field ?? null,
+  direction: props.filters?.direction ?? 'asc',
+  show: props.filters?.show ?? 25,
+  supplier_name: props.filters?.supplier_name ?? null,
+  customer_name: props.filters?.customer_name ?? null,
+  transporter_name: props.filters?.transporter_name ?? null,
+  product_name: props.filters?.product_name ?? null,
+  start_date: props.filters?.start_date ?? null,
+  end_date: props.filters?.end_date ?? null,
+  id: props.filters?.id ?? null,
+  selected_trans_id: props.selected_transaction?.id ?? null,
   new_trade_added: false,
   old_id: null,
 });
@@ -318,20 +300,30 @@ let fri = ref(true);
 let sat = ref(true);
 let sun = ref(true);
 
-let filteredTrans = computed(() =>
-  mon.value &&
-  tue.value &&
-  wed.value &&
-  thu.value &&
-  fri.value &&
-  sat.value &&
-  sun.value
-    ? props.transactions.data
-    : props.transactions.data.filter((trans) => {
-        return dayIncluded(trans.transport_date_earliest);
-      })
-);
+let filteredTrans = computed(() => {
+  // Ensure props.transactions and props.transactions.data are defined
+  if (!props.transactions?.data) {
+    return []; // Return an empty array if transactions or data is null/undefined
+  }
 
+  // Check if all day values are true
+  if (
+    mon.value &&
+    tue.value &&
+    wed.value &&
+    thu.value &&
+    fri.value &&
+    sat.value &&
+    sun.value
+  ) {
+    return props.transactions.data; // Return all transactions if all days are selected
+  }
+
+  // Otherwise, filter transactions based on the dayIncluded function
+  return props.transactions.data.filter((trans) => {
+    return dayIncluded(trans.transport_date_earliest);
+  });
+});
 let updateSelectedTrans = async (_id) => {
   filterForm.selected_trans_id = _id;
   filter();
@@ -425,7 +417,6 @@ const row_styler = computed(
 
     <div class="p-1 h-screen">
       <div
-        v-if="selected_transaction != null"
         class="bg-white h-3/4 overflow-x-auto m-2 p-2 shadow-xl sm:rounded-lg"
       >
         <div>
@@ -559,11 +550,11 @@ const row_styler = computed(
                     <div class="col-span-4 flex">
                       <div>
                         <secondary-button class="" @click="filter"
-                          >Search
-                        </secondary-button>
+                          >Search</secondary-button
+                        >
                         <secondary-button class="ml-1" @click="clear"
-                          >Clear
-                        </secondary-button>
+                          >Clear</secondary-button
+                        >
                         <secondary-button class="ml-1" @click="toggleDetails"
                           >Toggle
                         </secondary-button>
@@ -747,7 +738,7 @@ const row_styler = computed(
                             </th>
                           </tr>
                         </thead>
-                        <tbody v-if="filteredTrans.length > 1">
+                        <tbody>
                           <tr
                             v-for="(transaction, index) in filteredTrans"
                             :key="transaction.id"
@@ -758,112 +749,84 @@ const row_styler = computed(
                               'hover:bg-gray-100 text-sm focus-within:bg-gray-100',
                             ]"
                           >
-                            <div
-                              v-if="
-                                transaction.customer != null &&
-                                transaction.customer !== ''
-                              "
-                            >
-                              <td
-                                v-if="transaction.transporter != null"
-                                :class="row_styler"
+                            <td :class="row_styler">
+                              <Link
+                                href="/transaction_summary"
+                                method="get"
+                                target="_blank"
+                                :data="{ selected_trans_id: transaction.id }"
                               >
-                                <Link
-                                  href="/transaction_summary"
-                                  method="get"
-                                  target="_blank"
-                                  :data="{ selected_trans_id: transaction.id }"
-                                >
-                                  <span
-                                    class="font-bold"
-                                    v-if="transaction.a_mq"
-                                  >
-                                    (MQ:{{ transaction.a_mq }})
-                                  </span>
-                                  <span>(ID:{{ transaction.id }})</span>
-                                  <span> </span>
-                                  <span>(Old:{{ transaction.old_id }})</span>
-                                </Link>
-                              </td>
-                              <td :class="row_styler">
-                                {{ transaction.contract_type.name }}
-                              </td>
+                                <span class="font-bold" v-if="transaction.a_mq">
+                                  (MQ:{{ transaction.a_mq }})
+                                </span>
+                                <span>(ID:{{ transaction.id }})</span>
+                                <span> </span>
+                                <span>(Old:{{ transaction.old_id }})</span>
+                              </Link>
+                            </td>
+                            <td :class="row_styler">
+                              {{ transaction.contract_type.name }}
+                            </td>
 
-                              <td :class="row_styler">
-                                {{
-                                  NiceTDate(transaction.transport_date_earliest)
-                                }}
-                              </td>
+                            <td :class="row_styler">
+                              {{
+                                NiceTDate(transaction.transport_date_earliest)
+                              }}
+                            </td>
 
-                              <td :class="row_styler">
-                                <div
-                                  v-if="transaction.supplier.last_legal_name"
-                                >
-                                  {{ transaction.supplier.last_legal_name }}
-                                </div>
-                                <div v-else>none</div>
-                              </td>
-                              <td :class="row_styler">
-                                <div
-                                  v-if="transaction.customer.last_legal_name"
-                                >
-                                  {{ transaction.customer.last_legal_name }}
-                                </div>
-                                <div v-else>none</div>
-                              </td>
-                              <td :class="row_styler">
-                                <div
-                                  v-if="transaction.customer.last_legal_name"
-                                >
-                                  {{ transaction.transporter.last_legal_name }}
-                                </div>
-                                <div v-else>none</div>
-                              </td>
+                            <td :class="row_styler">
+                              {{ transaction.supplier.last_legal_name }}
+                            </td>
+                            <td :class="row_styler">
+                              {{ transaction.customer.last_legal_name }}
+                            </td>
+                            <td :class="row_styler">
+                              {{ transaction.transporter.last_legal_name }}
+                            </td>
 
-                              <td :class="row_styler">
-                                {{ transaction.product.name }}
-                              </td>
+                            <td :class="row_styler">
+                              {{ transaction.product.name }}
+                            </td>
 
-                              <td v-if="showDetails" :class="row_styler">
-                                {{
-                                  transaction.transport_load.no_units_incoming
-                                }}
-                              </td>
+                            <td v-if="showDetails" :class="row_styler">
+                              {{ transaction.transport_load.no_units_incoming }}
+                            </td>
 
-                              <td v-if="showDetails" :class="row_styler">
-                                {{
-                                  NiceNumber(
-                                    transaction.transport_finance.cost_price
-                                  )
-                                }}
-                              </td>
+                            <td v-if="showDetails" :class="row_styler">
+                              {{
+                                NiceNumber(
+                                  transaction.transport_finance.cost_price
+                                )
+                              }}
+                            </td>
 
-                              <td v-if="showDetails" :class="row_styler">
-                                {{
-                                  NiceNumber(
-                                    transaction.transport_finance.selling_price
-                                  )
-                                }}
-                              </td>
+                            <td v-if="showDetails" :class="row_styler">
+                              {{
+                                NiceNumber(
+                                  transaction.transport_finance.selling_price
+                                )
+                              }}
+                            </td>
 
-                              <td v-if="showDetails" :class="row_styler">
-                                {{
-                                  NiceNumber(
-                                    transaction.transport_finance.gross_profit
-                                  )
-                                }}
-                              </td>
-                            </div>
+                            <td v-if="showDetails" :class="row_styler">
+                              {{
+                                NiceNumber(
+                                  transaction.transport_finance.gross_profit
+                                )
+                              }}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
 
-                    <div
-                      v-if="transactions.data.length"
-                      class="w-full flex justify-center mt-5 mb-4"
-                    >
-                      <PaginationModified :links="transactions.links" />
+                    <div v-if="transactions">
+                      <div
+                        v-if="transactions.data.length"
+                        class="w-full flex justify-center mt-5 mb-4"
+                      >
+                        <PaginationModified :links="transactions.links" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -873,10 +836,7 @@ const row_styler = computed(
         </div>
       </div>
 
-      <div
-        v-if="selected_transaction != null"
-        class="sticky bg-white m-2 p-2 shadow-xl sm:rounded-lg"
-      >
+      <div class="sticky bg-white m-2 p-2 shadow-xl sm:rounded-lg">
         <div>
           <div class="px-4 sm:px-6 lg:px-8">
             <div>
