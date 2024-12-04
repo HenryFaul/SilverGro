@@ -9005,7 +9005,7 @@ const deleteAssignedComm = (id) => {
                       role="list"
                     >
                       <li
-                        v-if="selected_transaction.contract_type_id === 4"
+                        v-if="selected_transaction.contract_type_id != 1"
                         class="overflow-hidden rounded-xl border border-gray-200"
                       >
                         <div
@@ -9045,13 +9045,6 @@ const deleteAssignedComm = (id) => {
                               >
                                 (OLD:{{ selected_transaction.old_id }})
                               </div>
-                              <!--                                                            <div v-if="selected_transaction.contract_type_id ===4"
-                                                                                                                             class="mb-2 text-gray-400">OLD
-                                                                                                                            {{ selected_transaction.contract_type.name }}{{ selected_transaction.deal_ticket.old_id }}
-                                                                                                                        </div>
-                                                                                                                        <div v-else class="mb-2 text-gray-400">
-                                                                                                                            {{ selected_transaction.contract_type.name }}{{ selected_transaction.old_id }}
-                                                                                                                        </div>-->
                             </div>
 
                             <div v-else class="text-red-400 mt-3">
