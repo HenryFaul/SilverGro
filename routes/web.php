@@ -13,6 +13,7 @@ use App\Http\Controllers\DataImports\DataImportController;
 use App\Http\Controllers\DealTicketController;
 use App\Http\Controllers\DebtorStandingController;
 use App\Http\Controllers\EmailContactDetailController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeOverviewController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationSeenController;
@@ -392,4 +393,4 @@ Route::middleware([
 
 });
 
-
+Route::get('/health', [HealthController::class, 'index'])->name('health.index');
