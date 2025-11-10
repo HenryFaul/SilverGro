@@ -52,6 +52,7 @@ import {
   formatWeight,
 } from '@/composables/useNumberFormatters';
 import { truncateText } from '@/composables/useTextFormatters';
+import { useTransactionFilters } from '@/composables/useTransactionFilters';
 
 // Keep using local naming for backward compatibility
 const NiceDay = getNiceDay;
@@ -189,7 +190,7 @@ computed(() =>
 );
 const selectedSplitCustomer = ref(2);
 
-let isLoading = ref(false);
+// isLoading now comes from useTransactionFilters composable
 let isUpdating = ref(false);
 
 const selectedTabId = ref(0);
@@ -216,175 +217,33 @@ const closeSplitLink = () => {
   viewSplitLinkModal.value = false;
 };
 
+// Declare updateSelectValues first (defined below)
+let updateSelectValues;
+
+// Initialize transaction filters composable
+const {
+  filterForm,
+  isLoading,
+  mon,
+  tue,
+  wed,
+  thu,
+  fri,
+  sat,
+  sun,
+  filteredTrans,
+  filter,
+  sort,
+  updateSelectedTrans,
+  clear,
+} = useTransactionFilters(props, () => updateSelectValues());
+
 const newTradeAdded = () => {
   filterForm.new_trade_added = true;
 };
 
-const filterForm = useForm({
-  isActive: props.filters.isActive ?? null,
-  field: props.filters.field ?? null,
-  direction: props.filters.direction ?? 'asc',
-  show: props.filters.show ?? 25,
-  supplier_name: props.filters.supplier_name ?? null,
-  customer_name: props.filters.customer_name ?? null,
-  transporter_name: props.filters.transporter_name ?? null,
-  product_name: props.filters.product_name ?? null,
-  start_date: props.filters.start_date ?? null,
-  end_date: props.filters.end_date ?? null,
-  contract_type_id: props.filters.contract_type_id ?? null,
-  id: props.filters.id ?? null,
-  selected_trans_id: props.selected_transaction.id ?? null,
-  new_trade_added: false,
-  old_id: null,
-  a_mq: null,
-});
-
-let filter = debounce(() => {
-  isLoading.value = true;
-  filterForm.get(route('transaction_summary.index'), {
-    preserveState: true,
-    preserveScroll: true,
-    onFinish: (visit) => {
-      updateSelectValues();
-      isLoading.value = false;
-    },
-  });
-}, 150);
-
-let sort = (field) => {
-  filterForm.field = field;
-  filterForm.direction = filterForm.direction === 'asc' ? 'desc' : 'asc';
-  filter();
-};
-
-watch(
-  () => filterForm.a_mq,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.supplier_name,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.customer_name,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.transporter_name,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.product_name,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.show,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.start_date,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.end_date,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.contract_type_id,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.id,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-watch(
-  () => filterForm.old_id,
-  (exampleField, prevExampleField) => {
-    filter();
-  }
-);
-
-let mon = ref(true);
-let tue = ref(true);
-let wed = ref(true);
-let thu = ref(true);
-let fri = ref(true);
-let sat = ref(true);
-let sun = ref(true);
-
-let filteredTrans = computed(() =>
-  mon.value &&
-  tue.value &&
-  wed.value &&
-  thu.value &&
-  fri.value &&
-  sat.value &&
-  sun.value
-    ? props.transactions.data
-    : props.transactions.data.filter((trans) => {
-        return dayIncluded(trans.transport_date_earliest);
-      })
-);
-
-let updateSelectedTrans = async (_id) => {
-  filterForm.selected_trans_id = _id;
-  filter();
-};
-
-const clear = () => {
-  filterForm.supplier_name = null;
-  filterForm.customer_name = null;
-  filterForm.transporter_name = null;
-  filterForm.product_name = null;
-  filterForm.start_date = null;
-  filterForm.end_date = null;
-  filterForm.contract_type_id = null;
-  filterForm.id = null;
-  filterForm.old_id = null;
-  filterForm.a_mq = null;
-
-  mon.value = true;
-  tue.value = true;
-  wed.value = true;
-  thu.value = true;
-  fri.value = true;
-  sat.value = true;
-  sun.value = true;
-
-  filter();
-};
-
-let updateSelectValues = () => {
+// Define updateSelectValues
+updateSelectValues = () => {
   //transport_approval_Form
   transport_approval_Form.transport_trans_id = props.selected_transaction.id;
   transport_approval_Form.transport_job_id =
