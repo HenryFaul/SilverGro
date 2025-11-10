@@ -53,6 +53,7 @@ import {
 } from '@/composables/useNumberFormatters';
 import { truncateText } from '@/composables/useTextFormatters';
 import { useTransactionFilters } from '@/composables/useTransactionFilters';
+import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
 
 // Keep using local naming for backward compatibility
 const NiceDay = getNiceDay;
@@ -1869,14 +1870,7 @@ const deleteTransLink = (id) => {
   }
 };
 
-const header_styler = computed(
-  () =>
-    'sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-1 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell'
-);
-const row_styler = computed(
-  () =>
-    'whitespace-nowrap border-b px-3 py-1 text-sm text-gray-500 lg:table-cell'
-);
+// header_styler and row_styler moved to TransactionTable components
 
 const doCreatedTrade = (_id) => {
   filterForm.selected_trans_id = _id;
@@ -2207,248 +2201,19 @@ const deleteAssignedComm = (id) => {
                       @created_trade="doCreatedTrade"
                     />
                   </div>
-                  <div class="">
-                    <div class="overflow-y-auto h-64">
-                      <table
-                        class="min-w-full border-separate border-spacing-0"
-                      >
-                        <thead>
-                          <tr>
-                            <th
-                              class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
-                              scope="col"
-                            >
-                              ID
-                            </th>
-                            <th :class="header_styler" scope="col">TYPE</th>
-                            <th :class="header_styler" scope="col">DATE</th>
-                            <th :class="header_styler" scope="col">SUPPLIER</th>
-                            <th :class="header_styler" scope="col">CUSTOMER</th>
-                            <th :class="header_styler" scope="col">
-                              TRANSPORTER
-                            </th>
-                            <th :class="header_styler" scope="col">PRODUCT</th>
 
-                            <th
-                              v-if="showDetails"
-                              scope="col"
-                              :class="header_styler"
-                            >
-                              D/T
-                            </th>
-                            <th
-                              v-if="showDetails"
-                              scope="col"
-                              :class="header_styler"
-                            >
-                              P/O
-                            </th>
-                            <th
-                              v-if="showDetails"
-                              scope="col"
-                              :class="header_styler"
-                            >
-                              S/O
-                            </th>
-                            <th
-                              v-if="showDetails"
-                              scope="col"
-                              :class="header_styler"
-                            >
-                              T/O
-                            </th>
-                            <th
-                              v-if="showDetails"
-                              scope="col"
-                              :class="header_styler"
-                            >
-                              WB
-                            </th>
-                            <th
-                              v-if="showDetails"
-                              scope="col"
-                              :class="header_styler"
-                            >
-                              INV
-                            </th>
-
-                            <th :class="header_styler" scope="col">NOTES</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr
-                            @click="updateSelectedTrans(transaction.id)"
-                            v-for="(transaction, index) in filteredTrans"
-                            :key="transaction.id"
-                            :class="[
-                              transaction.id === props.selected_transaction.id
-                                ? 'bg-indigo-300'
-                                : '',
-                              'hover:bg-gray-100 text-sm focus-within:bg-gray-100',
-                            ]"
-                          >
-                            <td :class="row_styler">
-                              <div
-                                class="text-lg font-bold text-black"
-                                v-if="transaction.a_mq"
-                              >
-                                MQ{{ transaction.a_mq }}
-                              </div>
-                              <div
-                                v-if="transaction.is_split_load"
-                                class="font-light text-sm italic text-indigo-400"
-                              >
-                                <span class="flex items-center">
-                                  <icon name="arrow-split" class="w-3 h-3" />
-                                  (ID:
-                                  {{ transaction.id }})
-                                </span>
-                              </div>
-
-                              <div v-else class="font-light text-sm italic">
-                                (ID:{{ transaction.id }})
-                              </div>
-                              <div
-                                v-if="transaction.old_id"
-                                class="font-light text-sm italic"
-                              >
-                                (OLD:{{ transaction.old_id }})
-                              </div>
-                            </td>
-                            <td :class="row_styler">
-                              {{ transaction.contract_type.name }}
-                            </td>
-
-                            <td :class="row_styler">
-                              {{
-                                NiceTDate(transaction.transport_date_earliest)
-                              }}
-                            </td>
-
-                            <td :class="row_styler">
-                              {{ transaction.supplier.last_legal_name }}
-                            </td>
-                            <td :class="row_styler">
-                              {{ transaction.customer.last_legal_name }}
-                            </td>
-                            <td :class="row_styler">
-                              {{ transaction.transporter.last_legal_name }}
-                            </td>
-
-                            <td :class="row_styler">
-                              {{ transaction.product.name }}
-                            </td>
-
-                            <td
-                              v-if="showDetails && transaction.deal_ticket"
-                              :class="row_styler"
-                            >
-                              <check-icon
-                                v-if="transaction.deal_ticket.is_active"
-                                class="w-5 h-5 fill-green-300"
-                              />
-                              <x-mark-icon
-                                v-else
-                                class="w-5 h-5 fill-red-400"
-                              />
-                            </td>
-
-                            <td
-                              v-if="showDetails && transaction.purchase_order"
-                              :class="row_styler"
-                            >
-                              <check-icon
-                                v-if="transaction.purchase_order.is_active"
-                                class="w-5 h-5 fill-green-300"
-                              />
-                              <x-mark-icon
-                                v-else
-                                class="w-5 h-5 fill-red-400"
-                              />
-                            </td>
-
-                            <td
-                              v-if="showDetails && transaction.sales_order"
-                              :class="row_styler"
-                            >
-                              <check-icon
-                                v-if="transaction.sales_order.is_active"
-                                class="w-5 h-5 fill-green-300"
-                              />
-                              <x-mark-icon
-                                v-else
-                                class="w-5 h-5 fill-red-400"
-                              />
-                            </td>
-
-                            <td
-                              v-if="showDetails && transaction.transport_order"
-                              :class="row_styler"
-                            >
-                              <check-icon
-                                v-if="transaction.transport_order.is_active"
-                                class="w-5 h-5 fill-green-300"
-                              />
-                              <x-mark-icon
-                                v-else
-                                class="w-5 h-5 fill-red-400"
-                              />
-                            </td>
-
-                            <td
-                              v-if="showDetails && transaction.transport_load"
-                              :class="row_styler"
-                            >
-                              <check-icon
-                                v-if="
-                                  transaction.transport_load
-                                    .is_weighbridge_certificate_received
-                                "
-                                class="w-5 h-5 fill-green-300"
-                              />
-                              <x-mark-icon
-                                v-else
-                                class="w-5 h-5 fill-red-400"
-                              />
-                            </td>
-
-                            <td
-                              v-if="
-                                showDetails && transaction.transport_invoice
-                              "
-                              :class="row_styler"
-                            >
-                              <check-icon
-                                v-if="transaction.transport_invoice.is_active"
-                                class="w-5 h-5 fill-green-300"
-                              />
-                              <x-mark-icon
-                                v-else
-                                class="w-5 h-5 fill-red-400"
-                              />
-                            </td>
-
-                            <td :class="row_styler">
-                              <div v-if="transaction.process_notes">
-                                <base-tooltip
-                                  :content="transaction.process_notes"
-                                >
-                                  {{ TrunkCateText(transaction.process_notes) }}
-                                </base-tooltip>
-                              </div>
-                              <div v-else>None...</div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div
-                      v-if="transactions.data.length"
-                      class="w-full flex justify-center mt-5 mb-4"
-                    >
-                      <PaginationModified :links="transactions.links" />
-                    </div>
-                  </div>
+                  <!-- Transaction Table Component -->
+                  <transaction-table
+                    :transactions="transactions"
+                    :filtered-transactions="filteredTrans"
+                    :selected-transaction="selected_transaction"
+                    :show-details="showDetails"
+                    :is-loading="isLoading"
+                    :sort-field="filterForm.field"
+                    :sort-direction="filterForm.direction"
+                    @sort="sort"
+                    @select-transaction="updateSelectedTrans"
+                  />
                 </div>
               </div>
             </div>

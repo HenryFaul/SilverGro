@@ -12,7 +12,7 @@ Break down the 11,836-line Index.vue into digestible, maintainable components wh
 
 ## Refactoring Steps
 
-### Phase 1: Extract Utility Functions (Step 1) ✅ IN PROGRESS
+### Phase 1: Extract Utility Functions (Step 1) ✅ COMPLETE
 **Goal:** Create composables for utility functions
 **Files to create:**
 - `useDateFormatters.js` - Date formatting functions
@@ -30,7 +30,7 @@ Break down the 11,836-line Index.vue into digestible, maintainable components wh
 
 **Testing:** Verify all date/number displays still work correctly
 
-### Phase 2: Extract Filter Logic (Step 2)
+### Phase 2: Extract Filter Logic (Step 2) ✅ COMPLETE
 **Goal:** Create filter composable
 **Files to create:**
 - `useTransactionFilters.js`
@@ -117,6 +117,8 @@ Each step is committed separately. If issues arise:
 
 ## Current Status
 - Branch: `feature/refactor-transaction-summary` ✅
-- Step: **1 - Extracting Utility Functions** 🔄
-- Next: Create date/number formatter composables
+- Phase 1: **Utility Functions** ✅ COMPLETE (Commit: 07c58db)
+- Phase 2: **Filter Logic** ✅ COMPLETE (Commit: 871279e)
+- Progress: **2/7 phases (28%)** 🔄
+- Next: Phase 3 - Extract table component
 
