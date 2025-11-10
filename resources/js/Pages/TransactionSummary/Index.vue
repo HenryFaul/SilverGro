@@ -37,6 +37,29 @@ import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
 import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
 import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
 
+// Import formatter composables
+import {
+  getNiceDay,
+  formatNiceDate,
+  formatShortDate,
+  isDayIncluded as checkDayIncluded,
+} from '@/composables/useDateFormatters';
+import {
+  formatNiceNumber,
+  formatNiceVariance,
+  formatCurrency,
+  formatPercentage,
+  formatWeight,
+} from '@/composables/useNumberFormatters';
+import { truncateText } from '@/composables/useTextFormatters';
+
+// Keep using local naming for backward compatibility
+const NiceDay = getNiceDay;
+const NiceTDate = formatNiceDate;
+const NiceNumber = formatNiceNumber;
+const NiceVariance = formatNiceVariance;
+const TrunkCateText = truncateText;
+
 let dayIncluded = (_date) => {
   let _day = NiceDay(_date);
   switch (_day) {
@@ -59,136 +82,19 @@ let dayIncluded = (_date) => {
   }
 };
 
-let NiceDay = (_date) => {
-  return new Date(_date).getDay();
-};
+// Date format functions - using composables
+const format = () => formatShortDate(filterForm.end_date);
+const formatStart = () => formatShortDate(filterForm.start_date);
 
-let NiceTDate = (date) => {
-  const _date = new Date(date);
-  const day = _date.getDate();
-  const month = _date
-    .toLocaleString('en', {
-      month: 'short',
-      timeZone: 'Africa/Johannesburg',
-    })
-    .toUpperCase();
-  const dayString = _date
-    .toLocaleString('en', {
-      weekday: 'short',
-      timeZone: 'Africa/Johannesburg',
-    })
-    .toUpperCase();
-  const year = _date.getFullYear();
-  return `${dayString} ${day}/${month}/${year}`;
-};
+const formatEarly = () =>
+  formatShortDate(combined_Form.transport_date_earliest);
 
-let TrunkCateText = (_text) => {
-  return _text.length > 40 ? _text.slice(0, 40) + '...' : _text;
-};
-
-const format = () => {
-  const _date = new Date(filterForm.end_date);
-  const day = _date.getDate();
-  const month = _date
-    .toLocaleString('en', {
-      month: 'short',
-      timeZone: 'Africa/Johannesburg',
-    })
-    .toUpperCase();
-  const year = _date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
-const formatStart = () => {
-  const _date = new Date(filterForm.start_date);
-  const day = _date.getDate();
-  const month = _date
-    .toLocaleString('en', {
-      month: 'short',
-      timeZone: 'Africa/Johannesburg',
-    })
-    .toUpperCase();
-  const year = _date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
-let NiceNumber = (_number) => {
-  let val = (_number / 1).toFixed(2).replace('.', '.');
-  return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-};
-
-let NiceVariance = (val_in, val_out) => {
-  if (!isNaN(val_in) && !isNaN(val_out)) {
-    let variance = val_in - val_out;
-    return variance.toFixed(4);
-  }
-  return 0;
-};
-
-const formatEarly = () => {
-  const _date = new Date(combined_Form.transport_date_earliest);
-  const day = _date.getDate();
-  const month = _date
-    .toLocaleString('en', {
-      month: 'short',
-      timeZone: 'Africa/Johannesburg',
-    })
-    .toUpperCase();
-  const year = _date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
-const formatLate = () => {
-  const _date = new Date(combined_Form.transport_date_latest);
-  const day = _date.getDate();
-  const month = _date
-    .toLocaleString('en', {
-      month: 'short',
-      timeZone: 'Africa/Johannesburg',
-    })
-    .toUpperCase();
-  const year = _date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
-const formatInvoicePdDay = () => {
-  const _date = new Date(combined_Form.invoice_paid_date);
-  const day = _date.getDate();
-  const month = _date
-    .toLocaleString('en', {
-      month: 'short',
-      timeZone: 'Africa/Johannesburg',
-    })
-    .toUpperCase();
-  const year = _date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
-const formatInvoicePayByDay = () => {
-  const _date = new Date(combined_Form.invoice_pay_by_date);
-  const day = _date.getDate();
-  const month = _date
-    .toLocaleString('en', {
-      month: 'short',
-      timeZone: 'Africa/Johannesburg',
-    })
-    .toUpperCase();
-  const year = _date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
-const formatInvoiceDate = () => {
-  const _date = new Date(combined_Form.invoice_date);
-  const day = _date.getDate();
-  const month = _date
-    .toLocaleString('en', {
-      month: 'short',
-      timeZone: 'Africa/Johannesburg',
-    })
-    .toUpperCase();
-  const year = _date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
+const formatLate = () => formatShortDate(combined_Form.transport_date_latest);
+const formatInvoicePdDay = () =>
+  formatShortDate(combined_Form.invoice_paid_date);
+const formatInvoicePayByDay = () =>
+  formatShortDate(combined_Form.invoice_pay_by_date);
+const formatInvoiceDate = () => formatShortDate(combined_Form.invoice_date);
 
 const props = defineProps({
   transactions: Object,
