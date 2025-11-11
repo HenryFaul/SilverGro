@@ -38,6 +38,7 @@ import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
 import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
 
 import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
+import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
 import { useTransactionFilters } from '@/composables/useTransactionFilters';
 // Import formatter composables
 import { formatShortDate } from '@/composables/useDateFormatters';
@@ -2003,21 +2004,11 @@ const deleteAssignedComm = (id) => {
                 </div>
                 <div class="mt-1">
                   <div class="hidden sm:block">
-                    <nav class="-mb-px flex space-x-8">
-                      <button
-                        v-for="tab in tabs"
-                        @click="selectTab(tab.id)"
-                        :key="tab.id"
-                        :class="[
-                          tab.id === selectedTabId
-                            ? 'border-indigo-500 text-indigo-600'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                          'whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium',
-                        ]"
-                      >
-                        {{ tab.name }}
-                      </button>
-                    </nav>
+                    <transaction-tab-nav
+                      :tabs="tabs"
+                      :selected-tab-id="selectedTabId"
+                      @select="selectTab"
+                    />
                   </div>
                 </div>
               </div>
