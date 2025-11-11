@@ -7,5 +7,5 @@
 </template>
 
 <script setup>
-import Box from './Box.vue'
+import Box from './Box.vue';
 </script>
