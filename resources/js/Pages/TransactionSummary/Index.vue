@@ -39,6 +39,7 @@ import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav
 import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
 import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
 import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
+import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
 import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue';
 
 const NiceVariance = formatNiceVariance;
@@ -2234,38 +2235,9 @@ const deleteAssignedComm = (id) => {
                         "
                       />
 
-                      <li
-                        class="overflow-hidden rounded-xl border border-gray-200"
-                      >
-                        <div
-                          class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6"
-                        >
-                          <div
-                            class="text-sm font-medium leading-6 text-gray-900"
-                          >
-                            Supplier Notes
-                          </div>
-                        </div>
-                        <dl
-                          class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6"
-                        >
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <AreaInput
-                              id="supplier_notes"
-                              v-model="combined_Form.suppliers_notes"
-                              :rows="12"
-                              placeholder="Optional notes..."
-                              type="text"
-                              class="mt-1 block w-1/3"
-                            />
-
-                            <InputError
-                              class="mt-2"
-                              :message="combined_Form.errors.suppliers_notes"
-                            />
-                          </div>
-                        </dl>
-                      </li>
+                      <transaction-supplier-notes-card
+                        :combined-form="combined_Form"
+                      />
                     </ul>
                   </div>
 
