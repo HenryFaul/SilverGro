@@ -1,10 +1,10 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+  import { Head } from '@inertiajs/vue3';
+  import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 
-defineProps({
-  terms: String,
-});
+  defineProps({
+    terms: String,
+  });
 </script>
 
 <template>
@@ -19,8 +19,7 @@ defineProps({
 
         <div
           class="w-full sm:max-w-2xl mt-6 p-6 bg-white shadow-md overflow-hidden sm:rounded-lg prose"
-          v-html="terms"
-        />
+          v-html="terms" />
       </div>
     </div>
   </div>

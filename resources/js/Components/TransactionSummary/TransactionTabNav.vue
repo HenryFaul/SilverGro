@@ -1,21 +1,21 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+  import { defineProps, defineEmits } from 'vue';
 
-const props = defineProps({
-  tabs: {
-    type: Array,
-    required: true,
-    // Expected shape: [{ id: Number|String, name: String }]
-  },
-  selectedTabId: {
-    type: [Number, String],
-    required: true,
-  },
-});
+  const props = defineProps({
+    tabs: {
+      type: Array,
+      required: true,
+      // Expected shape: [{ id: Number|String, name: String }]
+    },
+    selectedTabId: {
+      type: [Number, String],
+      required: true,
+    },
+  });
 
-const emit = defineEmits(['select']);
+  const emit = defineEmits(['select']);
 
-const handleSelect = (id) => emit('select', id);
+  const handleSelect = (id) => emit('select', id);
 </script>
 
 <template>
@@ -30,8 +30,7 @@ const handleSelect = (id) => emit('select', id);
           : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
         'whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium',
       ]"
-      type="button"
-    >
+      type="button">
       {{ tab.name }}
     </button>
   </nav>

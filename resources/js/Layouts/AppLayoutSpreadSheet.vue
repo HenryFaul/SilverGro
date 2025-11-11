@@ -1,32 +1,32 @@
 <script setup>
-import { computed, ref } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
-import ApplicationMark from '@/Components/ApplicationMark.vue';
-import Banner from '@/Components/Banner.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import {
-  LinkIcon,
-  PlusIcon,
-  QuestionMarkCircleIcon,
-  TableCellsIcon,
-} from '@heroicons/vue/20/solid';
+  import { computed, ref } from 'vue';
+  import { Head, Link, router } from '@inertiajs/vue3';
+  import ApplicationMark from '@/Components/ApplicationMark.vue';
+  import Banner from '@/Components/Banner.vue';
+  import Dropdown from '@/Components/Dropdown.vue';
+  import DropdownLink from '@/Components/DropdownLink.vue';
+  import NavLink from '@/Components/NavLink.vue';
+  import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+  import {
+    LinkIcon,
+    PlusIcon,
+    QuestionMarkCircleIcon,
+    TableCellsIcon,
+  } from '@heroicons/vue/20/solid';
 
-defineProps({
-  title: String,
-});
+  defineProps({
+    title: String,
+  });
 
-const classesSetup = computed(() => {
-  return false
-    ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
-    : '';
-});
+  const classesSetup = computed(() => {
+    return false
+      ? 'border-b-2 border-indigo-400  focus:outline-none focus:border-indigo-700 transition'
+      : '';
+  });
 
-const logout = () => {
-  router.post(route('logout'));
-};
+  const logout = () => {
+    router.post(route('logout'));
+  };
 </script>
 
 <template>
@@ -43,17 +43,14 @@ const logout = () => {
             <div class="flex">
               <!-- Logo -->
               <div class="shrink-0 flex items-center">
-                <Link :href="route('dashboard')">
-                  Custom Spreadsheet view
-                </Link>
+                <Link :href="route('dashboard')">Custom Spreadsheet view</Link>
               </div>
 
               <!-- Navigation Links -->
               <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                 <NavLink
                   :href="route('dashboard')"
-                  :active="route().current('dashboard')"
-                >
+                  :active="route().current('dashboard')">
                   Back to SilverGro
                 </NavLink>
               </div>

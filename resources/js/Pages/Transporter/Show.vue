@@ -1,119 +1,115 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { computed, ref, watch, inject } from 'vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { router, useForm, usePage, Link } from '@inertiajs/vue3';
-import Icon from '@/Components/Icon.vue';
-import InputError from '@/Components/InputError.vue';
-import AreaInput from '@/Components/AreaInput.vue';
-import SectionBorder from '@/Components/SectionBorder.vue';
-import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid';
+  import AppLayout from '@/Layouts/AppLayout.vue';
+  import { computed, ref, watch, inject } from 'vue';
+  import SecondaryButton from '@/Components/SecondaryButton.vue';
+  import { router, useForm, usePage, Link } from '@inertiajs/vue3';
+  import Icon from '@/Components/Icon.vue';
+  import InputError from '@/Components/InputError.vue';
+  import AreaInput from '@/Components/AreaInput.vue';
+  import SectionBorder from '@/Components/SectionBorder.vue';
+  import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid';
 
-import NumberContactDetailModal from '@/Components/UI/NumberContactDetailModal.vue';
-import EmailContactDetailModal from '@/Components/UI/EmailContactDetailModal.vue';
-import ContactModal from '@/Components/UI/ContactModal.vue';
-import AddressModal from '@/Components/UI/AddressModal.vue';
+  import NumberContactDetailModal from '@/Components/UI/NumberContactDetailModal.vue';
+  import EmailContactDetailModal from '@/Components/UI/EmailContactDetailModal.vue';
+  import ContactModal from '@/Components/UI/ContactModal.vue';
+  import AddressModal from '@/Components/UI/AddressModal.vue';
 
-const swal = inject('$swal');
-const viewContactModal = ref(false);
+  const swal = inject('$swal');
+  const viewContactModal = ref(false);
 
-const props = defineProps({
-  transporter: Object,
-  terms_of_payments: Object,
-  contact_type: Object,
-});
-const permissions = computed(() => usePage().props.permissions);
+  const props = defineProps({
+    transporter: Object,
+    terms_of_payments: Object,
+    contact_type: Object,
+  });
+  const permissions = computed(() => usePage().props.permissions);
 
-/*
+  /*
 'id','first_name','last_legal_name','nickname','title','job_description','id_reg_no','is_active',
     'terms_of_payment_id','account_number','comment','is_git'*/
 
-let Form = useForm({
-  first_name: props.transporter == null ? '' : props.transporter.first_name,
-  last_legal_name:
-    props.transporter == null ? '' : props.transporter.last_legal_name,
-  nickname: props.transporter == null ? '' : props.transporter.nickname,
-  title: props.transporter == null ? '' : props.transporter.title,
-  job_description:
-    props.transporter == null ? '' : props.transporter.job_description,
-  id_reg_no: props.transporter == null ? '' : props.transporter.id_reg_no,
-  is_active: props.transporter == null ? 1 : props.transporter.is_active,
-  terms_of_payment_id:
-    props.transporter == null ? '' : props.transporter.terms_of_payment_id,
-  account_number:
-    props.transporter == null ? '' : props.transporter.account_number,
-  is_git: props.transporter == null ? 1 : props.transporter.is_git,
-  comment: props.transporter == null ? '' : props.transporter.comment,
-});
-
-const emptyErrors = computed(
-  () =>
-    Object.keys(Form.errors).length === 0 && Form.errors.constructor === Object
-);
-
-const updateTransporter = () => {
-  Form.put(route('transporter.update', props.transporter.id), {
-    preserveScroll: true,
-    onSuccess: () => {
-      swal(usePage().props.jetstream.flash?.banner || '');
-      toggleEdit();
-    },
+  let Form = useForm({
+    first_name: props.transporter == null ? '' : props.transporter.first_name,
+    last_legal_name: props.transporter == null ? '' : props.transporter.last_legal_name,
+    nickname: props.transporter == null ? '' : props.transporter.nickname,
+    title: props.transporter == null ? '' : props.transporter.title,
+    job_description: props.transporter == null ? '' : props.transporter.job_description,
+    id_reg_no: props.transporter == null ? '' : props.transporter.id_reg_no,
+    is_active: props.transporter == null ? 1 : props.transporter.is_active,
+    terms_of_payment_id:
+      props.transporter == null ? '' : props.transporter.terms_of_payment_id,
+    account_number: props.transporter == null ? '' : props.transporter.account_number,
+    is_git: props.transporter == null ? 1 : props.transporter.is_git,
+    comment: props.transporter == null ? '' : props.transporter.comment,
   });
-};
 
-const closeContactModal = () => {
-  viewContactModal.value = false;
-};
+  const emptyErrors = computed(
+    () => Object.keys(Form.errors).length === 0 && Form.errors.constructor === Object
+  );
 
-const editDisabled = ref(true);
-const toggleEdit = () => {
-  editDisabled.value = !editDisabled.value;
-};
+  const updateTransporter = () => {
+    Form.put(route('transporter.update', props.transporter.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+        swal(usePage().props.jetstream.flash?.banner || '');
+        toggleEdit();
+      },
+    });
+  };
 
-const viewNumberContactDetailModal = ref(false);
-const viewEmailContactDetailModal = ref(false);
+  const closeContactModal = () => {
+    viewContactModal.value = false;
+  };
 
-const viewNumberContactDetail = () => {
-  viewNumberContactDetailModal.value = true;
-};
+  const editDisabled = ref(true);
+  const toggleEdit = () => {
+    editDisabled.value = !editDisabled.value;
+  };
 
-const viewEmailContactDetail = () => {
-  viewEmailContactDetailModal.value = true;
-};
+  const viewNumberContactDetailModal = ref(false);
+  const viewEmailContactDetailModal = ref(false);
 
-const closeNumberContactDetailModal = () => {
-  viewNumberContactDetailModal.value = false;
-};
+  const viewNumberContactDetail = () => {
+    viewNumberContactDetailModal.value = true;
+  };
 
-const closeEmailDetailModal = () => {
-  viewEmailContactDetailModal.value = false;
-};
+  const viewEmailContactDetail = () => {
+    viewEmailContactDetailModal.value = true;
+  };
 
-const relatedClass = ref('App\\Models\\Transporter');
-const relatedClassContact = ref('App\\Models\\Contact');
+  const closeNumberContactDetailModal = () => {
+    viewNumberContactDetailModal.value = false;
+  };
 
-const viewAddressModal = ref(false);
-const currentAddress = ref(null);
-const currentContact = ref(null);
+  const closeEmailDetailModal = () => {
+    viewEmailContactDetailModal.value = false;
+  };
 
-const viewAddress = (address) => {
-  currentAddress.value = address;
-  viewAddressModal.value = true;
-};
+  const relatedClass = ref('App\\Models\\Transporter');
+  const relatedClassContact = ref('App\\Models\\Contact');
 
-const viewContact = (contact) => {
-  currentContact.value = contact;
-  viewContactModal.value = true;
-};
+  const viewAddressModal = ref(false);
+  const currentAddress = ref(null);
+  const currentContact = ref(null);
 
-const closeModal = () => {
-  viewAddressModal.value = false;
-};
+  const viewAddress = (address) => {
+    currentAddress.value = address;
+    viewAddressModal.value = true;
+  };
 
-const roles_permissions = computed(() => usePage().props.roles_permissions);
-const can_update_transporter = computed(() =>
-  usePage().props.roles_permissions.permissions.includes('update_transporter')
-);
+  const viewContact = (contact) => {
+    currentContact.value = contact;
+    viewContactModal.value = true;
+  };
+
+  const closeModal = () => {
+    viewAddressModal.value = false;
+  };
+
+  const roles_permissions = computed(() => usePage().props.roles_permissions);
+  const can_update_transporter = computed(() =>
+    usePage().props.roles_permissions.permissions.includes('update_transporter')
+  );
 </script>
 
 <template>
@@ -135,19 +131,15 @@ const can_update_transporter = computed(() =>
                 : editDisabled
                   ? 'm-2 p-2'
                   : 'm-2 p-2 rounded-md rounded-md shadow-sm border border-indigo-500'
-            "
-          >
+            ">
             <div class="">
               <form>
                 <div class="text-lg mb-4 text-indigo-400">General details</div>
                 <div class="space-y-12">
                   <div
-                    class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3"
-                  >
+                    class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
                     <div>
-                      <h2
-                        class="text-base font-semibold leading-7 text-gray-900"
-                      >
+                      <h2 class="text-base font-semibold leading-7 text-gray-900">
                         Static Information
                       </h2>
                       <p class="mt-1 text-sm leading-6 text-gray-600">
@@ -156,14 +148,13 @@ const can_update_transporter = computed(() =>
                     </div>
 
                     <div
-                      class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2"
-                    >
+                      class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
                       <div class="sm:col-span-3">
                         <label
                           for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >First name</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          First name
+                        </label>
                         <div class="mt-2">
                           <input
                             v-model="Form.title"
@@ -171,18 +162,19 @@ const can_update_transporter = computed(() =>
                             type="text"
                             name="title"
                             id="title"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
-                        <InputError class="mt-2" :message="Form.errors.title" />
+                        <InputError
+                          class="mt-2"
+                          :message="Form.errors.title" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
                           for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >First name</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          First name
+                        </label>
                         <div class="mt-2">
                           <input
                             v-model="Form.first_name"
@@ -191,21 +183,19 @@ const can_update_transporter = computed(() =>
                             name="first_name"
                             id="first_name"
                             autocomplete="given-name"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                         <InputError
                           class="mt-2"
-                          :message="Form.errors.first_name"
-                        />
+                          :message="Form.errors.first_name" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
                           for="last_legal_name"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >Last / Legal name</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          Last / Legal name
+                        </label>
                         <div class="mt-2">
                           <input
                             v-model="Form.last_legal_name"
@@ -214,21 +204,19 @@ const can_update_transporter = computed(() =>
                             name="last_legal_name"
                             id="last_legal_name"
                             autocomplete="family-name"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                         <InputError
                           class="mt-2"
-                          :message="Form.errors.last_legal_name"
-                        />
+                          :message="Form.errors.last_legal_name" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
                           for="nickname"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >Nick name</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          Nick name
+                        </label>
                         <div class="mt-2">
                           <input
                             v-model="Form.nickname"
@@ -237,21 +225,19 @@ const can_update_transporter = computed(() =>
                             name="nickname"
                             id="nickname"
                             autocomplete="nickname"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                         <InputError
                           class="mt-2"
-                          :message="Form.errors.nickname"
-                        />
+                          :message="Form.errors.nickname" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
                           for="id_reg_no"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >Id/Reg no</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          Id/Reg no
+                        </label>
                         <div class="mt-2">
                           <input
                             v-model="Form.id_reg_no"
@@ -260,42 +246,38 @@ const can_update_transporter = computed(() =>
                             name="id_reg_no"
                             id="id_reg_no"
                             autocomplete="id_reg_no"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                         <InputError
                           class="mt-2"
-                          :message="Form.errors.id_reg_no"
-                        />
+                          :message="Form.errors.id_reg_no" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
                           for="id_reg_no"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >Status</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          Status
+                        </label>
                         <div class="mt-2">
                           <select
                             v-model="Form.is_active"
-                            class="input-filter-l block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
+                            class="input-filter-l block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             <option :value="1">Active</option>
                             <option :value="0">Inactive</option>
                           </select>
                         </div>
                         <InputError
                           class="mt-2"
-                          :message="Form.errors.is_active"
-                        />
+                          :message="Form.errors.is_active" />
                       </div>
 
                       <div class="sm:col-span-6">
                         <label
                           for="comments"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >Comments</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          Comments
+                        </label>
                         <AreaInput
                           id="comments"
                           :rows="6"
@@ -303,23 +285,18 @@ const can_update_transporter = computed(() =>
                           v-model="Form.comment"
                           type="text"
                           class="mt-1 block w-full"
-                          :disabled="editDisabled"
-                        />
+                          :disabled="editDisabled" />
                         <InputError
                           class="mt-2"
-                          :message="Form.errors.comment"
-                        />
+                          :message="Form.errors.comment" />
                       </div>
                     </div>
                   </div>
 
                   <div
-                    class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3"
-                  >
+                    class="grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3">
                     <div>
-                      <h2
-                        class="text-base font-semibold leading-7 text-gray-900"
-                      >
+                      <h2 class="text-base font-semibold leading-7 text-gray-900">
                         Additional Information
                       </h2>
                       <p class="mt-1 text-sm leading-6 text-gray-600">
@@ -328,73 +305,65 @@ const can_update_transporter = computed(() =>
                     </div>
 
                     <div
-                      class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2"
-                    >
+                      class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
                       <div class="sm:col-span-3">
                         <label
                           for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >Account number</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          Account number
+                        </label>
                         <div class="mt-2">
                           <input
                             v-model="Form.account_number"
                             type="text"
                             :disabled="editDisabled"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                           <InputError
                             class="mt-2"
-                            :message="Form.errors.account_number"
-                          />
+                            :message="Form.errors.account_number" />
                         </div>
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
                           for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >Payment terms</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          Payment terms
+                        </label>
                         <div class="mt-2">
                           <select
                             v-model="Form.terms_of_payment_id"
-                            class="input-filter-l block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
+                            class="input-filter-l block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             <option
                               v-for="n in props.terms_of_payments"
                               :key="n.id"
-                              :value="n.id"
-                            >
+                              :value="n.id">
                               {{ n.value }}
                             </option>
                           </select>
                           <InputError
                             class="mt-2"
-                            :message="Form.errors.terms_of_payments"
-                          />
+                            :message="Form.errors.terms_of_payments" />
                         </div>
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
                           for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900"
-                          >Is Git</label
-                        >
+                          class="block text-sm font-medium leading-6 text-gray-900">
+                          Is Git
+                        </label>
                         <div class="mt-2">
                           <select
                             v-model="Form.is_git"
-                            class="input-filter-l block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          >
+                            class="input-filter-l block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             <option :value="1">Active</option>
                             <option :value="0">Inactive</option>
                           </select>
 
                           <InputError
                             class="mt-2"
-                            :message="Form.errors.is_git"
-                          />
+                            :message="Form.errors.is_git" />
                         </div>
                       </div>
                     </div>
@@ -405,16 +374,14 @@ const can_update_transporter = computed(() =>
                   <SecondaryButton
                     v-if="can_update_transporter"
                     class="m-1"
-                    @click="toggleEdit"
-                  >
+                    @click="toggleEdit">
                     Edit
                   </SecondaryButton>
 
                   <SecondaryButton
                     v-if="!editDisabled && can_update_transporter"
                     @click="updateTransporter"
-                    class="m-1"
-                  >
+                    class="m-1">
                     Save
                   </SecondaryButton>
                 </div>
@@ -429,15 +396,12 @@ const can_update_transporter = computed(() =>
             <div class="">
               <div class="text-lg mb-2 text-indigo-400">Addresses</div>
 
-              <SecondaryButton @click="viewAddress(null)">
-                Add (+)
-              </SecondaryButton>
+              <SecondaryButton @click="viewAddress(null)">Add (+)</SecondaryButton>
 
               <form class="mt-5">
-                <label
-                  class="block mb-1 text-gray-500 dark:text-gray-300 font-medium"
-                  >All addresses:</label
-                >
+                <label class="block mb-1 text-gray-500 dark:text-gray-300 font-medium">
+                  All addresses:
+                </label>
                 <div>
                   <div>
                     <div v-if="viewAddressModal">
@@ -446,8 +410,7 @@ const can_update_transporter = computed(() =>
                         :related_id="transporter.id"
                         :related_class="relatedClass"
                         :show="viewAddressModal"
-                        @close="closeModal"
-                      />
+                        @close="closeModal" />
                     </div>
 
                     <ul class="w-3/2">
@@ -455,25 +418,21 @@ const can_update_transporter = computed(() =>
                         v-for="n in transporter.addressable"
                         :key="n.id"
                         :value="n.id"
-                        class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50"
-                      >
+                        class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
                         <div class="flex row mt-1">
                           <div class="flex-none w-1/6">
                             <icon
                               v-if="n.address_type_id === 1"
                               name="truck"
-                              class="mr-2 w-6 h-6 fill-green-200"
-                            />
+                              class="mr-2 w-6 h-6 fill-green-200" />
                             <icon
                               v-if="n.address_type_id === 2"
                               name="house"
-                              class="mr-2 w-6 h-6 fill-green-200"
-                            />
+                              class="mr-2 w-6 h-6 fill-green-200" />
                             <icon
                               v-if="n.address_type_id === 3"
                               name="envelope"
-                              class="mr-2 w-6 h-6 fill-green-200"
-                            />
+                              class="mr-2 w-6 h-6 fill-green-200" />
                           </div>
 
                           <div class="flex-auto w-3/6">
@@ -485,14 +444,12 @@ const can_update_transporter = computed(() =>
                             <icon
                               v-if="n.is_primary === 1"
                               name="tick-circle"
-                              class="mr-2 w-6 h-6 fill-green-200"
-                            />
+                              class="mr-2 w-6 h-6 fill-green-200" />
                           </div>
                           <div class="flex-auto w-1/6">
                             <SecondaryButton
                               class="ml-2"
-                              @click="viewAddress(n)"
-                            >
+                              @click="viewAddress(n)">
                               View
                             </SecondaryButton>
                           </div>
@@ -512,94 +469,79 @@ const can_update_transporter = computed(() =>
             <div class="">
               <div class="text-lg mb-2 text-indigo-400">Contacts</div>
 
-              <SecondaryButton @click="viewContact(null)">
-                Add (+)
-              </SecondaryButton>
+              <SecondaryButton @click="viewContact(null)">Add (+)</SecondaryButton>
 
               <contact-modal
                 :contact="null"
                 :related_id="transporter.id"
                 :related_class="relatedClass"
                 :show="viewContactModal"
-                @close="closeContactModal"
-              />
+                @close="closeContactModal" />
 
               <div class="mt-5">
-                <label
-                  class="block mb-1 text-gray-500 dark:text-gray-300 font-medium"
-                  >All contacts:</label
-                >
+                <label class="block mb-1 text-gray-500 dark:text-gray-300 font-medium">
+                  All contacts:
+                </label>
                 <ul class="w-3/2">
                   <li
                     v-for="n in transporter.contactable"
                     :key="n.id"
                     :value="n.id"
-                    class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50"
-                  >
+                    class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
                     <number-contact-detail-modal
                       :related_id="n.id"
                       :contact_type="contact_type"
                       :related_class="relatedClassContact"
                       :show="viewNumberContactDetailModal"
-                      @close="closeNumberContactDetailModal"
-                    />
+                      @close="closeNumberContactDetailModal" />
 
                     <email-contact-detail-modal
                       :related_id="n.id"
                       :contact_type="contact_type"
                       :related_class="relatedClassContact"
                       :show="viewEmailContactDetailModal"
-                      @close="closeEmailDetailModal"
-                    />
+                      @close="closeEmailDetailModal" />
 
                     <div class="flex row mt-1">
                       <div class="flex-none w-1/6">
                         <icon
                           name="person"
-                          class="mr-2 w-6 h-6 fill-green-200"
-                        />
+                          class="mr-2 w-6 h-6 fill-green-200" />
                       </div>
 
                       <div class="flex-auto w-3/6">
                         {{ n.title }} {{ n.first_name }} {{ n.last_legal_name }}
 
-                        <div v-if="n.job_description">
-                          ({{ n.job_description }})
-                        </div>
+                        <div v-if="n.job_description">({{ n.job_description }})</div>
                       </div>
                       <div class="flex-auto w-1/6">
                         <icon
                           v-if="n.is_primary === 1"
                           name="tick-circle"
-                          class="mr-2 w-6 h-6 fill-green-200"
-                        />
+                          class="mr-2 w-6 h-6 fill-green-200" />
                       </div>
                       <div class="flex-auto w-1/6">
                         <SecondaryButton
                           class="ml-2"
-                          @click="viewNumberContactDetail"
-                        >
+                          @click="viewNumberContactDetail">
                           <PhoneIcon
                             class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                          />
+                            aria-hidden="true" />
                         </SecondaryButton>
 
                         <SecondaryButton
                           class="ml-2"
-                          @click="viewEmailContactDetail"
-                        >
+                          @click="viewEmailContactDetail">
                           <EnvelopeIcon
                             class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                          />
+                            aria-hidden="true" />
                         </SecondaryButton>
 
                         <Link
                           class="inline-flex items-center ml-2 mt-3 px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
-                          :href="route('contact.show', n.id)"
-                          >View</Link
-                        >
+                          :href="route('contact.show', n.id)">
+                          View
+                        </Link>
                       </div>
                     </div>
                   </li>

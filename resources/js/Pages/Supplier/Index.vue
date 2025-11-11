@@ -1,96 +1,94 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { computed, ref, watch } from 'vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { router, useForm, usePage, Link } from '@inertiajs/vue3';
-import { debounce, throttle } from 'lodash';
-import PaginationModified from '@/Components/UI/PaginationModified.vue';
-import Icon from '@/Components/Icon.vue';
-import SupplierSlideOver from '@/Components/UI/SupplierSlideOver.vue';
+  import AppLayout from '@/Layouts/AppLayout.vue';
+  import { computed, ref, watch } from 'vue';
+  import SecondaryButton from '@/Components/SecondaryButton.vue';
+  import { router, useForm, usePage, Link } from '@inertiajs/vue3';
+  import { debounce, throttle } from 'lodash';
+  import PaginationModified from '@/Components/UI/PaginationModified.vue';
+  import Icon from '@/Components/Icon.vue';
+  import SupplierSlideOver from '@/Components/UI/SupplierSlideOver.vue';
 
-const props = defineProps({
-  suppliers: Object,
-  filters: Object,
-});
-const permissions = computed(() => usePage().props.permissions);
-
-const filterForm = useForm({
-  searchName: props.filters.searchName ?? null,
-  isActive: props.filters.isActive ?? null,
-  field: props.filters.field ?? null,
-  direction: props.filters.direction ?? 'asc',
-  show: props.filters.show ?? 10,
-});
-
-const viewSupplierSlideOver = ref(false);
-
-const showSupplierSlideOver = () => {
-  viewSupplierSlideOver.value = true;
-};
-
-const closeSupplierSlideOver = () => {
-  viewSupplierSlideOver.value = false;
-};
-
-let curClient = ref(null);
-let showModel = ref(false);
-
-let tableStats = ref(
-  'Showing page ' +
-    props.suppliers.current_page +
-    '  of ' +
-    props.suppliers.total +
-    ' entries.'
-);
-
-let filter = debounce(() => {
-  filterForm.get(route('supplier.index'), {
-    preserveState: true,
-    preserveScroll: true,
+  const props = defineProps({
+    suppliers: Object,
+    filters: Object,
   });
-}, 150);
+  const permissions = computed(() => usePage().props.permissions);
 
-let sort = (field) => {
-  filterForm.field = field;
-  filterForm.direction = filterForm.direction === 'asc' ? 'desc' : 'asc';
-  filter();
-};
+  const filterForm = useForm({
+    searchName: props.filters.searchName ?? null,
+    isActive: props.filters.isActive ?? null,
+    field: props.filters.field ?? null,
+    direction: props.filters.direction ?? 'asc',
+    show: props.filters.show ?? 10,
+  });
 
-watch(
-  () => filterForm.searchName,
-  (exampleField, prevExampleField) => {
+  const viewSupplierSlideOver = ref(false);
+
+  const showSupplierSlideOver = () => {
+    viewSupplierSlideOver.value = true;
+  };
+
+  const closeSupplierSlideOver = () => {
+    viewSupplierSlideOver.value = false;
+  };
+
+  let curClient = ref(null);
+  let showModel = ref(false);
+
+  let tableStats = ref(
+    'Showing page ' +
+      props.suppliers.current_page +
+      '  of ' +
+      props.suppliers.total +
+      ' entries.'
+  );
+
+  let filter = debounce(() => {
+    filterForm.get(route('supplier.index'), {
+      preserveState: true,
+      preserveScroll: true,
+    });
+  }, 150);
+
+  let sort = (field) => {
+    filterForm.field = field;
+    filterForm.direction = filterForm.direction === 'asc' ? 'desc' : 'asc';
     filter();
-  }
-);
+  };
 
-watch(
-  () => filterForm.show,
-  (exampleField, prevExampleField) => {
+  watch(
+    () => filterForm.searchName,
+    (exampleField, prevExampleField) => {
+      filter();
+    }
+  );
+
+  watch(
+    () => filterForm.show,
+    (exampleField, prevExampleField) => {
+      filter();
+    }
+  );
+
+  const clear = () => {
+    filterForm.searchName = null;
+    filterForm.isActive = null;
     filter();
-  }
-);
+  };
 
-const clear = () => {
-  filterForm.searchName = null;
-  filterForm.isActive = null;
-  filter();
-};
+  const edit = (id) => {
+    router.get('supplier/' + id);
+  };
 
-const edit = (id) => {
-  router.get('supplier/' + id);
-};
-
-const completeFunction = (val) => {
-  showModel.value = false;
-};
+  const completeFunction = (val) => {
+    showModel.value = false;
+  };
 </script>
 
 <template>
   <AppLayout title="Suppliers">
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Suppliers
-      </h2>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Suppliers</h2>
     </template>
 
     <div class="py-12">
@@ -107,14 +105,12 @@ const completeFunction = (val) => {
                 v-model.number="filterForm.searchName"
                 aria-label="Search"
                 placeholder="Search name or reg..."
-                class="block w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
+                class="block w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
 
               <div class="mt-2">
                 <select
                   v-model="filterForm.isActive"
-                  class="input-filter-l block w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
+                  class="input-filter-l block w-3/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                   <option :value="null">All</option>
                   <option value="active">Active Only</option>
                   <option value="inactive">Inactive Only</option>
@@ -123,30 +119,34 @@ const completeFunction = (val) => {
               <div class="mt-2">
                 <select
                   v-model="filterForm.show"
-                  class="input-filter-l block w-1/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
+                  class="input-filter-l block w-1/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                   <option :value="5">5</option>
                   <option :value="10">10</option>
                   <option :value="25">25</option>
                   <option :value="100">100</option>
                 </select>
               </div>
-              <secondary-button @click="filter" class="mt-3"
-                >Search</secondary-button
-              >
-              <secondary-button @click="clear" class="mt-3 ml-1"
-                >Clear</secondary-button
-              >
-              <secondary-button @click="showSupplierSlideOver" class="mt-3 ml-1"
-                >Add (+)</secondary-button
-              >
+              <secondary-button
+                @click="filter"
+                class="mt-3">
+                Search
+              </secondary-button>
+              <secondary-button
+                @click="clear"
+                class="mt-3 ml-1">
+                Clear
+              </secondary-button>
+              <secondary-button
+                @click="showSupplierSlideOver"
+                class="mt-3 ml-1">
+                Add (+)
+              </secondary-button>
             </div>
             <div>
               <div>
                 <supplier-slide-over
                   :show="viewSupplierSlideOver"
-                  @close="closeSupplierSlideOver"
-                />
+                  @close="closeSupplierSlideOver" />
               </div>
 
               <div class="bg-white rounded-md shadow overflow-x-auto">
@@ -155,12 +155,11 @@ const completeFunction = (val) => {
                     <tr class="text-left font-bold">
                       <th
                         scope="col"
-                        class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase"
-                      >
+                        class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase">
                         <span
                           class="inline-flex py-3 px-6 w-full justify-between"
-                          @click="sort('first_name')"
-                          >First
+                          @click="sort('first_name')">
+                          First
 
                           <svg
                             v-if="
@@ -170,11 +169,9 @@ const completeFunction = (val) => {
                             xmlns="http://www.w3.org/2000/svg"
                             class="h-4 w-4"
                             viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
+                            fill="currentColor">
                             <path
-                              d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z"
-                            />
+                              d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" />
                           </svg>
 
                           <svg
@@ -185,22 +182,19 @@ const completeFunction = (val) => {
                             xmlns="http://www.w3.org/2000/svg"
                             class="h-4 w-4"
                             viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
+                            fill="currentColor">
                             <path
-                              d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z"
-                            />
+                              d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
                           </svg>
                         </span>
                       </th>
                       <th
                         scope="col"
-                        class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase"
-                      >
+                        class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase">
                         <span
                           class="inline-flex py-3 px-6 w-full justify-between"
-                          @click="sort('last_name')"
-                          >Last/Legal
+                          @click="sort('last_name')">
+                          Last/Legal
 
                           <icon
                             name="tick-asc"
@@ -208,8 +202,7 @@ const completeFunction = (val) => {
                               filterForm.field === 'last_name' &&
                               filterForm.direction === 'asc'
                             "
-                            class="mr-2 w-6 h-6"
-                          />
+                            class="mr-2 w-6 h-6" />
 
                           <icon
                             name="tick-desc"
@@ -217,26 +210,22 @@ const completeFunction = (val) => {
                               filterForm.field === 'last_name' &&
                               filterForm.direction === 'desc'
                             "
-                            class="mr-2 w-6 h-6"
-                          />
+                            class="mr-2 w-6 h-6" />
                         </span>
                       </th>
                       <th
                         scope="col"
-                        class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase"
-                      >
+                        class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase">
                         Reg no
                       </th>
                       <th
                         scope="col"
-                        class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase"
-                      >
+                        class="w-3/12 text-xs font-semibold tracking-wider text-left text-white uppercase">
                         Active
                       </th>
                       <th
                         scope="col"
-                        class="w-1/12 text-xs font-semibold tracking-wider text-left text-white uppercase"
-                      >
+                        class="w-1/12 text-xs font-semibold tracking-wider text-left text-white uppercase">
                         Actions
                       </th>
                     </tr>
@@ -246,8 +235,7 @@ const completeFunction = (val) => {
                       @click="edit(supplier.id)"
                       v-for="(supplier, index) in suppliers.data"
                       :key="supplier.id"
-                      class="hover:bg-gray-100 focus-within:bg-gray-100"
-                    >
+                      class="hover:bg-gray-100 focus-within:bg-gray-100">
                       <td class="py-4 px-6 whitespace-nowrap">
                         {{ supplier.first_name }}
                       </td>
@@ -266,13 +254,11 @@ const completeFunction = (val) => {
                             viewBox="0 0 24 24"
                             stroke-width="1.5"
                             stroke="currentColor"
-                            class="w-6 h-6"
-                          >
+                            class="w-6 h-6">
                             <path
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                              d="M4.5 12.75l6 6 9-13.5"
-                            />
+                              d="M4.5 12.75l6 6 9-13.5" />
                           </svg>
                         </div>
                         <div v-else>
@@ -282,13 +268,11 @@ const completeFunction = (val) => {
                             viewBox="0 0 24 24"
                             stroke-width="1.5"
                             stroke="currentColor"
-                            class="w-6 h-6"
-                          >
+                            class="w-6 h-6">
                             <path
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                              d="M6 18L18 6M6 6l12 12"
-                            />
+                              d="M6 18L18 6M6 6l12 12" />
                           </svg>
                         </div>
                       </td>
@@ -296,9 +280,9 @@ const completeFunction = (val) => {
                       <td class="py-4 px-6 whitespace-nowrap">
                         <Link
                           class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          :href="route('supplier.show', supplier.id)"
-                          >View</Link
-                        >
+                          :href="route('supplier.show', supplier.id)">
+                          View
+                        </Link>
                       </td>
                     </tr>
                   </tbody>
@@ -310,8 +294,7 @@ const completeFunction = (val) => {
             </div>
             <div
               v-if="suppliers.data.length"
-              class="w-full flex justify-center mt-5 mb-4"
-            >
+              class="w-full flex justify-center mt-5 mb-4">
               <PaginationModified :links="suppliers.links" />
             </div>
           </div>
