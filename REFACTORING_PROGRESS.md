@@ -17,18 +17,20 @@
 4. ✅ TransactionSupplierAccountCard component (already existed)
 5. ✅ **TransactionSupplierCard** - NEW (Supplier selection, loading number, PC linking)
 6. ✅ **TransactionProductCard** - NEW (Product details, billing units, packaging)
+7. ✅ **TransactionSupplierNotesCard** - NEW (Supplier notes textarea)
+8. ✅ **TransactionProductIncomingCard** - NEW (Incoming product details)
 
-### Lines Reduced: ~220 lines removed from Index.vue
+### Lines Reduced: ~610 lines removed from Index.vue (250 + 360)
 
 ### Still TODO in Supplier Tab (Tab 0):
 - [ ] Supplier Notes card (simple, can extract next)
 
-## Phase 3: Product Tab (Tab 1) - NEXT
+## Phase 3: Product Tab (Tab 1) - IN PROGRESS
 Cards to extract:
-- [ ] Product Source card
-- [ ] Product Incoming card
-- [ ] Product Outgoing card
-- [ ] Confirmed Details card
+- [x] **Product Incoming Card** - DONE (~360 lines removed)
+- [ ] Product Outgoing card (~200 lines)
+- [ ] Calculations card (~100 lines)
+- [ ] Additional cards (TBD)
 
 ## Phase 4: Customer Tab (Tab 2)
 Cards to extract:
@@ -79,9 +81,9 @@ Cards to extract:
 ## Metrics
 
 ### Current Status:
-- **Components Created:** 2 new + 4 existing = 6 total
-- **Lines Removed:** ~220 lines
-- **Tabs Refactored:** 0.5 / 11 (Supplier tab partially done)
+- **Components Created:** 4 new + 4 existing = 8 total
+- **Lines Removed:** ~610 lines (6.5% of target)
+- **Tabs Refactored:** 1.25 / 11 (Supplier complete, Product 25% done)
 - **Build Status:** ✅ Successful
 - **Runtime Status:** ✅ Working
 
