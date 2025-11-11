@@ -37,6 +37,8 @@ import TransactionTable from '@/Components/TransactionSummary/TransactionTable.v
 import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
 import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
 import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
+import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
+import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
 import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue';
 
 const NiceVariance = formatNiceVariance;
@@ -2194,184 +2196,18 @@ const deleteAssignedComm = (id) => {
                       class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8"
                       role="list"
                     >
-                      <li
-                        class="overflow-hidden rounded-xl border border-gray-200"
-                      >
-                        <div
-                          class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6"
-                        >
-                          <div
-                            class="text-sm font-medium leading-6 text-gray-900"
-                          >
-                            Supplier Details
-                          </div>
-                        </div>
-                        <dl
-                          class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6"
-                        >
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dd class="flex items-start gap-x-2">
-                              <div>
-                                <Combobox
-                                  as="div"
-                                  v-model="combined_Form.supplier_id"
-                                >
-                                  <div class="relative mt-2">
-                                    <ComboboxInput
-                                      class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="
-                                        supplierQuery = $event.target.value
-                                      "
-                                      :display-value="
-                                        (supplier) => supplier?.last_legal_name
-                                      "
-                                    />
-                                    <ComboboxButton
-                                      class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
-                                    >
-                                      <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true"
-                                      />
-                                    </ComboboxButton>
-
-                                    <ComboboxOptions
-                                      v-if="filteredSuppliers.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-                                    >
-                                      <ComboboxOption
-                                        v-for="supplier in filteredSuppliers"
-                                        :key="supplier.id"
-                                        :value="supplier"
-                                        as="template"
-                                        v-slot="{ active, selected }"
-                                      >
-                                        <ul>
-                                          <li
-                                            :class="[
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                                              active
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'text-gray-900',
-                                            ]"
-                                          >
-                                            <span
-                                              :class="[
-                                                'block truncate',
-                                                selected && 'font-semibold',
-                                              ]"
-                                            >
-                                              {{ supplier.last_legal_name }}
-                                            </span>
-
-                                            <span
-                                              v-if="selected"
-                                              :class="[
-                                                'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                active
-                                                  ? 'text-white'
-                                                  : 'text-indigo-600',
-                                              ]"
-                                            >
-                                              <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true"
-                                            /></span>
-                                          </li>
-                                        </ul>
-                                      </ComboboxOption>
-                                    </ComboboxOptions>
-                                  </div>
-                                </Combobox>
-                              </div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">
-                              Supplier loading number
-                            </dt>
-                            <dd class="flex items-start gap-x-2">
-                              <input
-                                v-model="combined_Form.supplier_loading_number"
-                                type="text"
-                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                              />
-                            </dd>
-                          </div>
-
-                          <div
-                            v-if="selected_transaction.contract_type_id === 4"
-                            class="flex justify-between gap-x-4 py-3"
-                          >
-                            <dt class="text-gray-500">PC Linked</dt>
-                            <dd class="flex items-start gap-x-2">
-                              <div v-if="filteredLinkedContractsPc[0]">
-                                <div>
-                                  PC:{{
-                                    filteredLinkedContractsPc[0]
-                                      .transport_trans_id
-                                  }}
-                                </div>
-                                <div>
-                                  {{
-                                    filteredLinkedContractsPc[0]
-                                      .transport_transaction_pc.customer
-                                      .last_legal_name
-                                  }}
-                                </div>
-                                <div>
-                                  {{
-                                    filteredLinkedContractsPc[0]
-                                      .transport_transaction_pc.supplier
-                                      .last_legal_name
-                                  }}
-                                </div>
-                                <div>
-                                  {{
-                                    filteredLinkedContractsPc[0]
-                                      .transport_transaction_pc.product.name
-                                  }}
-                                </div>
-                                <div>
-                                  {{
-                                    filteredLinkedContractsPc[0]
-                                      .transport_transaction_pc.transport_load
-                                      .no_units_incoming
-                                  }}
-                                </div>
-                              </div>
-                              <div v-else>Nothing linked..</div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dd class="text-gray-700">
-                              <div>
-                                <div
-                                  v-if="
-                                    selected_transaction.contract_type_id === 4
-                                  "
-                                >
-                                  <SecondaryButton
-                                    class="m-1 mt-3"
-                                    @click="viewContractLink"
-                                  >
-                                    Link MQ to PC
-                                  </SecondaryButton>
-
-                                  <ContractLinkModal
-                                    :show="viewContractLinkModal"
-                                    @close="closeContractLink"
-                                    :mq_trans_id="selected_transaction.id"
-                                    :link_type_id="3"
-                                  />
-                                </div>
-                              </div>
-                            </dd>
-                          </div>
-                        </dl>
-                      </li>
+                      <transaction-supplier-card
+                        :combined-form="combined_Form"
+                        :selected-transaction="selected_transaction"
+                        :filtered-suppliers="filteredSuppliers"
+                        :filtered-linked-contracts-pc="
+                          filteredLinkedContractsPc
+                        "
+                        :show-contract-link-modal="viewContractLinkModal"
+                        @update:supplier-query="supplierQuery = $event"
+                        @view-contract-link="viewContractLink"
+                        @close-contract-link="closeContractLink"
+                      />
 
                       <transaction-supplier-account-card
                         :combined-form="combined_Form"
@@ -2383,229 +2219,20 @@ const deleteAssignedComm = (id) => {
                         "
                       />
 
-                      <li
-                        class="overflow-hidden rounded-xl border border-gray-200"
-                      >
-                        <div
-                          class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6"
-                        >
-                          <div
-                            class="text-sm font-medium leading-6 text-gray-900"
-                          >
-                            Product Details
-                          </div>
-                        </div>
-                        <dl
-                          class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6"
-                        >
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Product</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{ selected_transaction.product.name }}
-                              </div>
-                            </dd>
-                          </div>
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">
-                              Billing Units incoming
-                            </dt>
-                            <dd class="text-gray-700">
-                              <Combobox
-                                as="div"
-                                v-model="
-                                  combined_Form.billing_units_incoming_id
-                                "
-                              >
-                                <div class="relative mt-2">
-                                  <ComboboxInput
-                                    class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="
-                                      billingUnitsIncomingQuery =
-                                        $event.target.value
-                                    "
-                                    :display-value="(units) => units?.name"
-                                  />
-                                  <ComboboxButton
-                                    class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
-                                  >
-                                    <ChevronUpDownIcon
-                                      class="h-5 w-5 text-gray-400"
-                                      aria-hidden="true"
-                                    />
-                                  </ComboboxButton>
-
-                                  <ComboboxOptions
-                                    v-if="
-                                      filteredBillingUnitsIncoming.length > 0
-                                    "
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-                                  >
-                                    <ComboboxOption
-                                      v-for="units in filteredBillingUnitsIncoming"
-                                      :key="units.id"
-                                      :value="units"
-                                      as="template"
-                                      v-slot="{ active, selected }"
-                                    >
-                                      <ul>
-                                        <li
-                                          :class="[
-                                            'relative cursor-default select-none py-2 pl-3 pr-9',
-                                            active
-                                              ? 'bg-indigo-600 text-white'
-                                              : 'text-gray-900',
-                                          ]"
-                                        >
-                                          <span
-                                            :class="[
-                                              'block truncate',
-                                              selected && 'font-semibold',
-                                            ]"
-                                          >
-                                            {{ units.name }}
-                                          </span>
-
-                                          <span
-                                            v-if="selected"
-                                            :class="[
-                                              'absolute inset-y-0 right-0 flex items-center pr-4',
-                                              active
-                                                ? 'text-white'
-                                                : 'text-indigo-600',
-                                            ]"
-                                          >
-                                            <CheckIcon
-                                              class="h-5 w-5"
-                                              aria-hidden="true"
-                                            />
-                                          </span>
-                                        </li>
-                                      </ul>
-                                    </ComboboxOption>
-                                  </ComboboxOptions>
-                                </div>
-                              </Combobox>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Packaging</dt>
-                            <dd class="text-gray-700">
-                              <Combobox
-                                as="div"
-                                v-model="combined_Form.packaging_incoming_id"
-                              >
-                                <div class="relative mt-2">
-                                  <ComboboxInput
-                                    class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="
-                                      packageIncomingQuery = $event.target.value
-                                    "
-                                    :display-value="
-                                      (packaging) => packaging?.name
-                                    "
-                                  />
-                                  <ComboboxButton
-                                    class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
-                                  >
-                                    <ChevronUpDownIcon
-                                      class="h-5 w-5 text-gray-400"
-                                      aria-hidden="true"
-                                    />
-                                  </ComboboxButton>
-
-                                  <ComboboxOptions
-                                    v-if="filteredPackageIncoming.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-                                  >
-                                    <ComboboxOption
-                                      v-for="packaging in filteredPackageIncoming"
-                                      :key="packaging.id"
-                                      :value="packaging"
-                                      as="template"
-                                      v-slot="{ active, selected }"
-                                    >
-                                      <ul>
-                                        <li
-                                          :class="[
-                                            'relative cursor-default select-none py-2 pl-3 pr-9',
-                                            active
-                                              ? 'bg-indigo-600 text-white'
-                                              : 'text-gray-900',
-                                          ]"
-                                        >
-                                          <span
-                                            :class="[
-                                              'block truncate',
-                                              selected && 'font-semibold',
-                                            ]"
-                                          >
-                                            {{ packaging.name }}
-                                          </span>
-
-                                          <span
-                                            v-if="selected"
-                                            :class="[
-                                              'absolute inset-y-0 right-0 flex items-center pr-4',
-                                              active
-                                                ? 'text-white'
-                                                : 'text-indigo-600',
-                                            ]"
-                                          >
-                                            <CheckIcon
-                                              class="h-5 w-5"
-                                              aria-hidden="true"
-                                            />
-                                          </span>
-                                        </li>
-                                      </ul>
-                                    </ComboboxOption>
-                                  </ComboboxOptions>
-                                </div>
-                              </Combobox>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Cost Price / Unit</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{
-                                  selected_transaction.transport_finance
-                                    .cost_price_per_unit
-                                }}
-                              </div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Cost Price / Ton</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{
-                                  selected_transaction.transport_finance
-                                    .cost_price_per_ton
-                                }}
-                              </div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Total Cost Price</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{
-                                  NiceNumber(
-                                    selected_transaction.transport_finance
-                                      .cost_price
-                                  )
-                                }}
-                              </div>
-                            </dd>
-                          </div>
-                        </dl>
-                      </li>
+                      <transaction-product-card
+                        :combined-form="combined_Form"
+                        :selected-transaction="selected_transaction"
+                        :filtered-billing-units-incoming="
+                          filteredBillingUnitsIncoming
+                        "
+                        :filtered-package-incoming="filteredPackageIncoming"
+                        @update:billing-units-incoming-query="
+                          billingUnitsIncomingQuery = $event
+                        "
+                        @update:package-incoming-query="
+                          packageIncomingQuery = $event
+                        "
+                      />
 
                       <li
                         class="overflow-hidden rounded-xl border border-gray-200"
