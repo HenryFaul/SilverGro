@@ -44,7 +44,7 @@ Break down the 11,836-line Index.vue into digestible, maintainable components wh
 
 **Testing:** Verify filtering still works
 
-### Phase 3: Extract Table Component (Step 3)
+### Phase 3: Extract Table Component (Step 3) ✅ COMPLETE
 **Goal:** Create reusable table component
 **Files to create:**
 - `TransactionTable.vue`
@@ -58,7 +58,7 @@ Break down the 11,836-line Index.vue into digestible, maintainable components wh
 
 **Testing:** Verify table displays and sorts correctly
 
-### Phase 4: Extract Filter UI Component (Step 4)
+### Phase 4: Extract Filter UI Component (Step 4) ✅ COMPLETE
 **Goal:** Create filter UI component
 **Files to create:**
 - `TransactionFilters.vue`
@@ -108,17 +108,11 @@ Break down the 11,836-line Index.vue into digestible, maintainable components wh
 - ✅ Build succeeds
 - ✅ No console errors
 
-## Rollback Strategy
-Each step is committed separately. If issues arise:
-1. Test the specific step
-2. Fix the issue
-3. OR rollback the last commit
-4. Continue from previous working state
-
 ## Current Status
 - Branch: `feature/refactor-transaction-summary` ✅
 - Phase 1: **Utility Functions** ✅ COMPLETE (Commit: 07c58db)
 - Phase 2: **Filter Logic** ✅ COMPLETE (Commit: 871279e)
-- Progress: **2/7 phases (28%)** 🔄
-- Next: Phase 3 - Extract table component
-
+- Phase 3: **Table Component** ✅ COMPLETE (Commit: 1c6c08f)
+- Phase 4: **Filter UI Component** ✅ COMPLETE (Commit: 75f1d43)
+- Progress: **4/7 phases (57%)** 🔄
+- Next: Phase 5 - Extract detail tabs

@@ -37,13 +37,10 @@ import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
 import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
 import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
 
+import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
+import { useTransactionFilters } from '@/composables/useTransactionFilters';
 // Import formatter composables
-import {
-  getNiceDay,
-  formatNiceDate,
-  formatShortDate,
-  isDayIncluded as checkDayIncluded,
-} from '@/composables/useDateFormatters';
+import { formatShortDate } from '@/composables/useDateFormatters';
 import {
   formatNiceNumber,
   formatNiceVariance,
@@ -51,39 +48,12 @@ import {
   formatPercentage,
   formatWeight,
 } from '@/composables/useNumberFormatters';
-import { truncateText } from '@/composables/useTextFormatters';
-import { useTransactionFilters } from '@/composables/useTransactionFilters';
-import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
 import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
 
 // Keep using local naming for backward compatibility
-const NiceDay = getNiceDay;
-const NiceTDate = formatNiceDate;
 const NiceNumber = formatNiceNumber;
 const NiceVariance = formatNiceVariance;
-const TrunkCateText = truncateText;
 
-let dayIncluded = (_date) => {
-  let _day = NiceDay(_date);
-  switch (_day) {
-    case 1:
-      return mon.value;
-    case 2:
-      return tue.value;
-    case 3:
-      return wed.value;
-    case 4:
-      return thu.value;
-    case 5:
-      return fri.value;
-    case 6:
-      return sat.value;
-    case 7:
-      return sun.value;
-    default:
-      return false;
-  }
-};
 
 // Date format functions - using composables
 const format = () => formatShortDate(filterForm.end_date);
