@@ -151,7 +151,7 @@
                   Link MQ to SC
                 </SecondaryButton>
 
-                <ContractLinkModalSc
+                <ContractLinkModal
                   :link_type_id="4"
                   :mq_trans_id="selectedTransaction.id"
                   :show="viewContractLinkModalSc"
@@ -556,12 +556,13 @@
   import SecondaryButton from '@/Components/SecondaryButton.vue';
   import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
   import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
-  import ContractLinkModalSc from '@/Components/UI/ContractLinkModalSc.vue';
+  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
   import AreaInput from '@/Components/AreaInput.vue';
   import InputError from '@/Components/InputError.vue';
-  import { useNumberFormatters } from '@/Composables/useNumberFormatters.js';
+  import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
 
-  const { NiceNumber } = useNumberFormatters();
+  // Use formatNiceNumber directly
+  const NiceNumber = formatNiceNumber;
 
   defineProps({
     combinedForm: {
