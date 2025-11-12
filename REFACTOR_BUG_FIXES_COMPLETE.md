@@ -56,38 +56,64 @@ Uncaught (in promise) Maximum recursive updates exceeded in component <Combobox>
 
 ### Cause
 
-The `TransactionSupplierCard.vue` component was emitting `update:supplierQuery` without receiving `supplierQuery` as a
-prop, creating a reactive dependency loop.
+The `TransactionSupplierCard.vue` component was directly mutating the `combinedForm.supplier_id` prop through `v-model`,
+which is an anti-pattern in Vue. When a child component tries to mutate a prop directly, especially within a reactive
+context like Combobox, it creates a recursive update loop.
 
 ### Solution
 
 **1. Updated TransactionSupplierCard.vue:**
 
+Added a computed property with getter/setter to handle v-model without mutating the prop:
+
 ```javascript
-// Added supplierQuery prop
+import { computed } from 'vue';
+
 const props = defineProps({
-  // ...existing props
-  supplierQuery: {
-    type: String,
-    default: '',
-  },
+    // ...existing props
+    supplierQuery: { type: String, default: '' },
 });
 
-// Changed to use emit variable
+// Added update:supplier emit
 const emit = defineEmits([
-  'update:supplierQuery',
-  'view-contract-link', 
-  'close-contract-link',
+    'update:supplierQuery',
+    'update:supplier',        // NEW
+    'view-contract-link',
+    'close-contract-link',
 ]);
+
+// Computed property prevents direct prop mutation
+const selectedSupplier = computed({
+    get() {
+        return props.combinedForm.supplier_id;
+    },
+    set(value) {
+        emit('update:supplier', value);
+    }
+});
+```
+
+Updated Combobox v-model:
+
+```vue
+<!-- BEFORE: Direct prop mutation -->
+<Combobox v-model="combinedForm.supplier_id" as="div">
+
+    <!-- AFTER: Using computed property -->
+    <Combobox v-model="selectedSupplier" as="div">
 ```
 
 **2. Updated Index.vue:**
 
+Added event handler for supplier updates:
+
 ```vue
+
 <transaction-supplier-card
-  :supplier-query="supplierQuery"              <!-- Added prop binding -->
-  @update:supplier-query="supplierQuery = $event"
-  ... />
+    :supplier-query="supplierQuery"
+    @update:supplier-query="supplierQuery = $event"
+    @update:supplier="combined_Form.supplier_id = $event"
+    ... />
 ```
 
 ### Impact
