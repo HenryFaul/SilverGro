@@ -1538,6 +1538,7 @@
                         :show-contract-link-modal="viewContractLinkModal"
                         :supplier-query="supplierQuery"
                         @update:supplier-query="supplierQuery = $event"
+                        @update:supplier="combined_Form.supplier_id = $event"
                         @view-contract-link="viewContractLink"
                         @close-contract-link="closeContractLink" />
 

@@ -9,7 +9,7 @@
         <dd class="flex items-start gap-x-2">
           <div>
             <Combobox
-              v-model="combinedForm.supplier_id"
+              v-model="selectedSupplier"
               as="div">
               <div class="relative mt-2">
                 <ComboboxInput
@@ -129,12 +129,19 @@
 </template>
 
 <script setup>
-import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, } from '@headlessui/vue';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
+  import { computed } from 'vue';
+  import {
+    Combobox,
+    ComboboxButton,
+    ComboboxInput,
+    ComboboxOption,
+    ComboboxOptions,
+  } from '@headlessui/vue';
+  import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
+  import SecondaryButton from '@/Components/SecondaryButton.vue';
+  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
 
-const props = defineProps({
+  const props = defineProps({
     combinedForm: {
       type: Object,
       required: true,
@@ -163,7 +170,18 @@ const props = defineProps({
 
   const emit = defineEmits([
     'update:supplierQuery',
+    'update:supplier',
     'view-contract-link',
     'close-contract-link',
   ]);
+
+  // Computed property for v-model to avoid mutating prop directly
+  const selectedSupplier = computed({
+    get() {
+      return props.combinedForm.supplier_id;
+    },
+    set(value) {
+      emit('update:supplier', value);
+    },
+  });
 </script>
