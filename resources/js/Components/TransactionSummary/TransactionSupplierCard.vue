@@ -9,12 +9,11 @@
         <dd class="flex items-start gap-x-2">
           <div>
             <Combobox
-              v-model="selectedSupplier"
-              :by="'id'"
+              v-model="selectedSupplierModel"
               as="div">
               <div class="relative mt-2">
                 <ComboboxInput
-                  :display-value="(supplier) => supplier?.last_legal_name"
+                  :display-value="displaySupplierName"
                   class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   @change="emit('update:supplierQuery', $event.target.value)" />
                 <ComboboxButton
@@ -31,7 +30,7 @@
                     v-for="supplier in filteredSuppliers"
                     :key="supplier.id"
                     v-slot="{ active, selected }"
-                    :value="supplier"
+                    :value="supplier.id"
                     as="template">
                     <ul>
                       <li
@@ -130,7 +129,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { computed, nextTick } from 'vue';
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, } from '@headlessui/vue';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
@@ -170,29 +169,51 @@ const props = defineProps({
     'close-contract-link',
   ]);
 
-  // Use local ref instead of computed property to break reactive chain
-  const selectedSupplier = ref(props.combinedForm.supplier_id);
+  // Helper to safely get ID from object or primitive
+  const getId = (value) => {
+    if (value === null || value === undefined) return null;
+    return typeof value === 'object' ? value.id : value;
+  };
 
-  const getId = (obj) => (obj && typeof obj === 'object' ? obj.id : obj);
+  // Helper to find supplier by ID
+  const findSupplierById = (id) => {
+    if (!id) return null;
+    return props.filteredSuppliers.find((s) => s.id === id) || null;
+  };
 
-  // Watch prop changes and update local ref (one-way sync) if ID changed
-  watch(
-    () => props.combinedForm.supplier_id,
-    (newValue) => {
-      if (getId(newValue) !== getId(selectedSupplier.value)) {
-        selectedSupplier.value = newValue;
-      }
-    }
-  );
+  // Simple computed for current supplier ID from the form
+  const currentSupplierId = computed(() => getId(props.combinedForm.supplier_id));
 
-  // Watch local ref changes and emit to parent if ID changed
-  watch(
-    selectedSupplier,
-    (newValue) => {
-      if (getId(newValue) !== getId(props.combinedForm.supplier_id)) {
-        emit('update:supplier', newValue);
-      }
+  // Simple computed for current supplier object
+  const currentSupplier = computed(() => findSupplierById(currentSupplierId.value));
+
+  // Display function for the input
+  const displaySupplierName = () => currentSupplier.value?.last_legal_name || '';
+
+  // Flag to prevent recursive updates during our own updates
+  let isUpdating = false;
+
+  // Simple v-model that breaks all reactive chains
+  const selectedSupplierModel = computed({
+    get() {
+      return currentSupplierId.value;
     },
-    { deep: false }
-  );
+    set(newId) {
+      if (isUpdating) return; // Prevent recursion during our own updates
+      if (newId === currentSupplierId.value) return; // No actual change
+
+      isUpdating = true;
+
+      // Use double nextTick to completely break out of current reactive cycle
+      nextTick(() => {
+        nextTick(() => {
+          const supplier = findSupplierById(newId);
+          if (supplier) {
+            emit('update:supplier', supplier);
+          }
+          isUpdating = false;
+        });
+      });
+    },
+  });
 </script>
