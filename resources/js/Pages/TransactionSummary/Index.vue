@@ -1676,12 +1676,8 @@
                       @close-contract-link-sc="closeContractLinkSc" />
                   </div>
 
-                  <!-- OLD TAB 2 CONTENT - TO BE REMOVED AFTER TESTING
-                  <div v-if="false && selectedTabId === 2">
-                    <ul
-                      class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8"
-                      role="list">
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
+                  <!-- Tab 111: Multi-Customer Table (Split loads) -->
+                  <div v-if="selectedTabId === 111">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
