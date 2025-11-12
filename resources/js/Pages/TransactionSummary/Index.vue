@@ -1097,6 +1097,9 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
   const handleSupplierUpdate = (newSupplier) => {
     // Direct assignment without any reactive checks
     combined_Form.supplier_id = newSupplier;
+
+    // Clear collection address when supplier changes (old address is invalid for new supplier)
+    combined_Form.collection_address_id = null;
   };
 
   const cloneTransportTrans = () => {

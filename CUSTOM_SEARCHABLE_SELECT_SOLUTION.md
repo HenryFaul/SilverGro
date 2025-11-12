@@ -5,31 +5,37 @@
 
 ## The Challenge
 
-The native select worked but **removed the critical search/filter functionality** that users need to find suppliers quickly in a large list.
+The native select worked but **removed the critical search/filter functionality** that users need to find suppliers
+quickly in a large list.
 
 ## The Solution: Custom Searchable Select
 
-I've implemented a **custom searchable dropdown** that provides all the functionality of HeadlessUI Combobox **without the reactive loop issues**.
+I've implemented a **custom searchable dropdown** that provides all the functionality of HeadlessUI Combobox **without
+the reactive loop issues**.
 
 ## Key Features
 
 ### ✅ Full Search Functionality
+
 - **Live filtering** as you type
 - **Case-insensitive** search
 - **Immediate results** without API calls
 
 ### ✅ Keyboard Navigation
+
 - **Arrow Up/Down** - Navigate through options
 - **Enter** - Select highlighted option
 - **Escape** - Close dropdown
 - **Tab** - Natural form navigation
 
 ### ✅ Mouse Interaction
+
 - **Click to select** - Direct selection
 - **Hover highlighting** - Visual feedback
 - **Dropdown toggle** - Open/close button
 
 ### ✅ Visual Polish
+
 - **Selected indicator** - Check icon on current selection
 - **Highlighted state** - Blue background on hover/keyboard nav
 - **Smooth transitions** - Professional feel
@@ -38,6 +44,7 @@ I've implemented a **custom searchable dropdown** that provides all the function
 ## Architecture: Why This Avoids Loops
 
 ### 🎯 Local UI State Only
+
 ```javascript
 // These refs only control UI display - never touch form data
 const showDropdown = ref(false);        // Show/hide dropdown
@@ -46,6 +53,7 @@ const highlightedIndex = ref(0);        // Keyboard navigation
 ```
 
 ### 🎯 Pure Functions for Data
+
 ```javascript
 // All data operations are pure functions reading from props
 const getCurrentSupplierId = () => getId(props.combinedForm.supplier_id);
@@ -54,88 +62,103 @@ const isSelected = (supplier) => supplier.id === getCurrentSupplierId();
 ```
 
 ### 🎯 Debounced Async Emit
+
 ```javascript
 const selectSupplier = (supplier) => {
-  if (updatePending) return; // Prevent rapid fire
-  updatePending = true;
-  closeDropdown();
-  
-  // Async emit breaks any reactive chains
-  setTimeout(() => {
-    emit('update:supplier', supplier);
-    setTimeout(() => updatePending = false, 100);
-  }, 0);
+    if (updatePending) return; // Prevent rapid fire
+    updatePending = true;
+    closeDropdown();
+
+    // Async emit breaks any reactive chains
+    setTimeout(() => {
+        emit('update:supplier', supplier);
+        setTimeout(() => updatePending = false, 100);
+    }, 0);
 };
 ```
 
 ## How It Works
 
 ### 1. **Dropdown Toggle**
+
 ```vue
+
 <button @click="toggleDropdown">
-  <ChevronUpDownIcon />
+    <ChevronUpDownIcon />
 </button>
 ```
+
 Opens/closes dropdown, focuses search input.
 
 ### 2. **Search Input**
+
 ```vue
 <input
-  v-model="localSearchQuery"
-  @focus="showDropdown = true"
-  @keydown.enter="selectHighlighted"
-  @keydown.down="highlightNext"
+    v-model="localSearchQuery"
+    @focus="showDropdown = true"
+    @keydown.enter="selectHighlighted"
+    @keydown.down="highlightNext"
 />
 ```
+
 Filters suppliers as you type, supports keyboard nav.
 
 ### 3. **Filtered Results**
+
 ```vue
+
 <div v-show="showDropdown">
-  <div
-    v-for="(supplier, index) in getFilteredSuppliers()"
-    @mousedown.prevent="selectSupplier(supplier)"
-    :class="{ highlighted: index === highlightedIndex }">
-    {{ supplier.last_legal_name }}
-  </div>
+    <div
+        v-for="(supplier, index) in getFilteredSuppliers()"
+        @mousedown.prevent="selectSupplier(supplier)"
+        :class="{ highlighted: index === highlightedIndex }">
+        {{ supplier.last_legal_name }}
+    </div>
 </div>
 ```
+
 Displays filtered list with selection handlers.
 
 ### 4. **Selection Handler**
+
 ```javascript
-selectSupplier(supplier) {
-  closeDropdown();
-  setTimeout(() => emit('update:supplier', supplier), 0);
+selectSupplier(supplier)
+{
+    closeDropdown();
+    setTimeout(() => emit('update:supplier', supplier), 0);
 }
 ```
+
 Async emit prevents reactive loops.
 
 ## Why This Solves the Problem
 
-| Aspect | HeadlessUI | Custom Solution |
-|--------|------------|----------------|
-| Internal State | ✅ Complex reactive | ❌ None |
-| Form Data Binding | ✅ Direct v-model | ❌ Read-only |
-| Event Handling | ✅ Synchronous | ✅ Async debounced |
-| Reactive Loops | ❌ Possible | ✅ Impossible |
-| Search/Filter | ✅ Yes | ✅ Yes |
-| Keyboard Nav | ✅ Yes | ✅ Yes |
-| Customizable | ❌ Limited | ✅ Full control |
+| Aspect            | HeadlessUI         | Custom Solution   |
+|-------------------|--------------------|-------------------|
+| Internal State    | ✅ Complex reactive | ❌ None            |
+| Form Data Binding | ✅ Direct v-model   | ❌ Read-only       |
+| Event Handling    | ✅ Synchronous      | ✅ Async debounced |
+| Reactive Loops    | ❌ Possible         | ✅ Impossible      |
+| Search/Filter     | ✅ Yes              | ✅ Yes             |
+| Keyboard Nav      | ✅ Yes              | ✅ Yes             |
+| Customizable      | ❌ Limited          | ✅ Full control    |
 
 ## Comparison with Previous Attempts
 
 ### ❌ HeadlessUI with Isolation
+
 - Still had internal reactive state
 - Couldn't fully control lifecycle
 - Loop occurred in HeadlessUI code
 
 ### ❌ Native Select
+
 - No search functionality
 - Poor UX for large lists
 - Not customizable
 
 ### ✅ Custom Searchable Select
+
 - **No external dependencies** = No hidden reactive state
 - **Full control** = Predictable behavior
 - **Search enabled** = Good UX
@@ -145,6 +168,7 @@ Async emit prevents reactive loops.
 ## Implementation Details
 
 ### State Management
+
 ```javascript
 // UI state (safe - local only)
 const showDropdown = ref(false);
@@ -157,6 +181,7 @@ getFilteredSuppliers() // Filters props.filteredSuppliers
 ```
 
 ### Update Flow
+
 ```
 User types → localSearchQuery updates → getFilteredSuppliers() re-filters
 User clicks → selectSupplier() → setTimeout → emit → parent updates
@@ -181,21 +206,25 @@ Parent updates → getCurrentSupplierId() reads new value → display updates
 ## Benefits
 
 ### 🚀 Performance
+
 - No HeadlessUI overhead
 - Simple DOM updates
 - Efficient filtering
 
 ### 🎯 Reliability
+
 - No external reactive dependencies
 - Predictable behavior
 - Easy to debug
 
 ### 🎨 Customizable
+
 - Full styling control
 - Can add features easily
 - No library constraints
 
 ### 📦 Maintainable
+
 - Simple code
 - Clear data flow
 - Well documented
@@ -203,12 +232,14 @@ Parent updates → getCurrentSupplierId() reads new value → display updates
 ## Pattern for Other Components
 
 This same pattern can be applied to:
+
 - Customer dropdowns
 - Product dropdowns
 - Transport dropdowns
 - Any searchable select
 
 **Template:**
+
 1. Local UI state refs only
 2. Pure functions reading from props
 3. Async debounced emit
