@@ -6,10 +6,10 @@
 
 - **Tab 0 (Supplier)** - Uses TransactionSupplierCard ✅
 - **Tab 1 (Product)** - Uses Product card components ✅
+- **Tab 2 (Customer)** - Uses TransactionCustomerTab ✅ **JUST COMPLETED!**
 
 ### ❌ Still Inline (Need Extraction)
 
-- **Tab 2 (Customer)** - Large table with 5 customers + addresses
 - **Tab 3 (Transport)** - Partial (has TransactionTransporterSelect but rest inline)
 - **Tab 4 (Pricing)** - All inline
 - **Tab 5 (Invoice)** - All inline

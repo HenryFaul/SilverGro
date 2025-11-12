@@ -542,26 +542,26 @@
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
-import {
-  Combobox,
-  ComboboxButton,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
-  Switch,
-  SwitchGroup,
-} from '@headlessui/vue';
-import { CheckIcon, ChevronUpDownIcon, XCircleIcon } from '@heroicons/vue/20/solid';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
-import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
-import ContractLinkModalSc from '@/Components/UI/ContractLinkModalSc.vue';
-import AreaInput from '@/Components/AreaInput.vue';
-import InputError from '@/Components/InputError.vue';
-import { useNumberFormatters } from '@/Composables/useNumberFormatters.js';
+  import { Link } from '@inertiajs/vue3';
+  import {
+    Combobox,
+    ComboboxButton,
+    ComboboxInput,
+    ComboboxOption,
+    ComboboxOptions,
+    Switch,
+    SwitchGroup,
+  } from '@headlessui/vue';
+  import { CheckIcon, ChevronUpDownIcon, XCircleIcon } from '@heroicons/vue/20/solid';
+  import SecondaryButton from '@/Components/SecondaryButton.vue';
+  import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
+  import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
+  import ContractLinkModalSc from '@/Components/UI/ContractLinkModalSc.vue';
+  import AreaInput from '@/Components/AreaInput.vue';
+  import InputError from '@/Components/InputError.vue';
+  import { useNumberFormatters } from '@/Composables/useNumberFormatters.js';
 
-const { NiceNumber } = useNumberFormatters();
+  const { NiceNumber } = useNumberFormatters();
 
   defineProps({
     combinedForm: {
