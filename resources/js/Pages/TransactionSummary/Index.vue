@@ -1,64 +1,61 @@
 <script setup>
-  import { computed, onBeforeMount, ref } from 'vue';
-  import { Link, useForm, usePage } from '@inertiajs/vue3';
-  import AppLayout from '@/Layouts/AppLayout.vue';
-  import InputError from '@/Components/InputError.vue';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import {
-    Combobox,
-    ComboboxButton,
-    ComboboxInput,
-    ComboboxOption,
-    ComboboxOptions,
-    Switch,
-    SwitchGroup,
-  } from '@headlessui/vue';
-  import {
-    CheckIcon,
-    ChevronUpDownIcon,
-    ExclamationTriangleIcon,
-    XCircleIcon,
-    XMarkIcon,
-  } from '@heroicons/vue/20/solid';
-  import AreaInput from '@/Components/AreaInput.vue';
-  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
-  import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
-  import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
-  import VueDatePicker from '@vuepic/vue-datepicker';
-  import '@vuepic/vue-datepicker/dist/main.css';
-  import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
-  import { useTransactionTabs } from '@/Composables/useTransactionTabs.js';
-  import { useSupplierTab } from '@/Composables/TransactionSummary/useSupplierTab.js';
-  import { useCustomerTab } from '@/Composables/TransactionSummary/useCustomerTab.js';
-  import { useProductTab } from '@/Composables/TransactionSummary/useProductTab.js';
-  import { useTransportTab } from '@/Composables/TransactionSummary/useTransportTab.js';
-  import { useTransactionModals } from '@/Composables/TransactionSummary/useTransactionModals.js';
-  import { useTransactionToggles } from '@/Composables/TransactionSummary/useTransactionToggles.js';
-  import { useTransactionForms } from '@/Composables/TransactionSummary/useTransactionForms.js';
-  import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
-  import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
-  import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
-  import {
-    formatNiceNumber,
-    formatNiceVariance,
-  } from '@/Composables/useNumberFormatters.js';
-  import { formatShortDate } from '@/Composables/useDateFormatters.js';
-  import Swal from 'sweetalert2';
-  import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
-  import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
-  import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
-  import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
-  import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
-  import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
-  import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
-  import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
-  import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
-  import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
-  import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
-  import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
-  import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
+import { computed, onBeforeMount, ref } from 'vue';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import InputError from '@/Components/InputError.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+  Switch,
+  SwitchGroup,
+} from '@headlessui/vue';
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  ExclamationTriangleIcon,
+  XCircleIcon,
+  XMarkIcon,
+} from '@heroicons/vue/20/solid';
+import AreaInput from '@/Components/AreaInput.vue';
+import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
+import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
+import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
+import { useTransactionTabs } from '@/Composables/useTransactionTabs.js';
+import { useSupplierTab } from '@/Composables/TransactionSummary/useSupplierTab.js';
+import { useCustomerTab } from '@/Composables/TransactionSummary/useCustomerTab.js';
+import { useProductTab } from '@/Composables/TransactionSummary/useProductTab.js';
+import { useTransportTab } from '@/Composables/TransactionSummary/useTransportTab.js';
+import { useTransactionModals } from '@/Composables/TransactionSummary/useTransactionModals.js';
+import { useTransactionToggles } from '@/Composables/TransactionSummary/useTransactionToggles.js';
+import { useTransactionForms } from '@/Composables/TransactionSummary/useTransactionForms.js';
+import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
+import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
+import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
+import { formatNiceNumber, formatNiceVariance, } from '@/Composables/useNumberFormatters.js';
+import { formatShortDate } from '@/Composables/useDateFormatters.js';
+import Swal from 'sweetalert2';
+import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
+import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
+import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
+import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
+import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
+import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
+import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
+import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
+import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
+import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
+import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
+import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
+import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
 
-  // Expose Swal globally for legacy code
+// Expose Swal globally for legacy code
   if (typeof window !== 'undefined') {
     window.Swal = Swal;
     window.swal = Swal.fire.bind(Swal);
@@ -1096,15 +1093,9 @@
     updateCombined_Form();
   };
 
-  // Handle supplier update from child component
+  // Handle supplier update from child component - no reactive logic
   const handleSupplierUpdate = (newSupplier) => {
-    const getId = (obj) => (obj && typeof obj === 'object' ? obj.id : obj);
-    const currentId = getId(combined_Form.supplier_id);
-    const nextId = getId(newSupplier);
-
-    if (currentId === nextId) return; // Skip if no change
-
-    // Simple assignment without reactive complications
+    // Direct assignment without any reactive checks
     combined_Form.supplier_id = newSupplier;
   };
 
