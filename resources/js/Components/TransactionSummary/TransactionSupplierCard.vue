@@ -10,6 +10,7 @@
           <div>
             <Combobox
               v-model="selectedSupplier"
+              :by="'id'"
               as="div">
               <div class="relative mt-2">
                 <ComboboxInput
@@ -129,19 +130,13 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue';
-  import {
-    Combobox,
-    ComboboxButton,
-    ComboboxInput,
-    ComboboxOption,
-    ComboboxOptions,
-  } from '@headlessui/vue';
-  import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
+import { ref, watch } from 'vue';
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, } from '@headlessui/vue';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
 
-  const props = defineProps({
+const props = defineProps({
     combinedForm: {
       type: Object,
       required: true,
@@ -175,13 +170,29 @@
     'close-contract-link',
   ]);
 
-  // Computed property for v-model to avoid mutating prop directly
-  const selectedSupplier = computed({
-    get() {
-      return props.combinedForm.supplier_id;
+  // Use local ref instead of computed property to break reactive chain
+  const selectedSupplier = ref(props.combinedForm.supplier_id);
+
+  const getId = (obj) => (obj && typeof obj === 'object' ? obj.id : obj);
+
+  // Watch prop changes and update local ref (one-way sync) if ID changed
+  watch(
+    () => props.combinedForm.supplier_id,
+    (newValue) => {
+      if (getId(newValue) !== getId(selectedSupplier.value)) {
+        selectedSupplier.value = newValue;
+      }
+    }
+  );
+
+  // Watch local ref changes and emit to parent if ID changed
+  watch(
+    selectedSupplier,
+    (newValue) => {
+      if (getId(newValue) !== getId(props.combinedForm.supplier_id)) {
+        emit('update:supplier', newValue);
+      }
     },
-    set(value) {
-      emit('update:supplier', value);
-    },
-  });
+    { deep: false }
+  );
 </script>
