@@ -51,6 +51,8 @@
   import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
   import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
   import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
+  import TransactionCustomerTab from '@/Components/TransactionSummary/TransactionCustomerTab.vue';
+  import TransactionTransporterSelect from '@/Components/TransactionSummary/TransactionTransporterSelect.vue';
   import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
   import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
   import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
@@ -1651,7 +1653,31 @@
                     </ul>
                   </div>
 
+                  <!-- Tab 2: Customer -->
                   <div v-if="selectedTabId === 2">
+                    <TransactionCustomerTab
+                      :combined-form="combined_Form"
+                      :selected-transaction="selected_transaction"
+                      :filtered-customers="filteredCustomers"
+                      :filtered-delivery-address="filteredDeliveryAddress"
+                      :filtered-billing-units-outgoing="filteredBillingUnitsOutgoing"
+                      :filtered-package-outgoing="filteredPackageOutgoing"
+                      :filtered-linked-contracts-sc="filteredLinkedContractsSc"
+                      :primary-linked-trans-split="primary_linked_trans_split"
+                      :view-split-link-modal="viewSplitLinkModal"
+                      :view-contract-link-modal-sc="viewContractLinkModalSc"
+                      @update:delivery-address-query="deliveryAddressQuery = $event"
+                      @update:billing-units-outgoing-query="billingUnitsOutgoingQuery = $event"
+                      @update:package-outgoing-query="packageOutgoingQuery = $event"
+                      @view-split-link="viewSplitLink"
+                      @close-split-link="closeSplitLink"
+                      @delete-trans-link="deleteTransLink"
+                      @view-contract-link-sc="viewContractLinkSc"
+                      @close-contract-link-sc="closeContractLinkSc" />
+                  </div>
+
+                  <!-- OLD TAB 2 CONTENT - TO BE REMOVED AFTER TESTING
+                  <div v-if="false && selectedTabId === 2">
                     <ul
                       class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8"
                       role="list">
@@ -2275,7 +2301,9 @@
                       </li>
                     </ul>
                   </div>
+                  END OLD TAB 2 CONTENT -->
 
+                  <!-- Tab 111: Multi-Customer Table (Split loads) -->
                   <div v-if="selectedTabId === 111">
                     <div>
                       <table class="min-w-full divide-y divide-gray-300">
