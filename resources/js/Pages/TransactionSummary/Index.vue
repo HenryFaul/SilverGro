@@ -1,6 +1,6 @@
 <script setup>
-  import { ref, computed, watch, onBeforeMount } from 'vue';
-  import { router, useForm, usePage, Link } from '@inertiajs/vue3';
+  import { computed, onBeforeMount, ref } from 'vue';
+  import { Link, useForm, usePage } from '@inertiajs/vue3';
   import AppLayout from '@/Layouts/AppLayout.vue';
   import InputError from '@/Components/InputError.vue';
   import SecondaryButton from '@/Components/SecondaryButton.vue';
@@ -14,8 +14,8 @@
     SwitchGroup,
   } from '@headlessui/vue';
   import {
-    ChevronUpDownIcon,
     CheckIcon,
+    ChevronUpDownIcon,
     ExclamationTriangleIcon,
     XCircleIcon,
     XMarkIcon,
@@ -27,11 +27,23 @@
   import VueDatePicker from '@vuepic/vue-datepicker';
   import '@vuepic/vue-datepicker/dist/main.css';
   import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
+  import { useTransactionTabs } from '@/Composables/useTransactionTabs.js';
+  import { useSupplierTab } from '@/Composables/TransactionSummary/useSupplierTab.js';
+  import { useCustomerTab } from '@/Composables/TransactionSummary/useCustomerTab.js';
+  import { useProductTab } from '@/Composables/TransactionSummary/useProductTab.js';
+  import { useTransportTab } from '@/Composables/TransactionSummary/useTransportTab.js';
+  import { useTransactionModals } from '@/Composables/TransactionSummary/useTransactionModals.js';
+  import { useTransactionToggles } from '@/Composables/TransactionSummary/useTransactionToggles.js';
+  import { useTransactionForms } from '@/Composables/TransactionSummary/useTransactionForms.js';
+  import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
+  import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
+  import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
   import {
     formatNiceNumber,
     formatNiceVariance,
   } from '@/Composables/useNumberFormatters.js';
   import { formatShortDate } from '@/Composables/useDateFormatters.js';
+  import Swal from 'sweetalert2';
   import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
   import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
   import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
@@ -44,7 +56,13 @@
   import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
   import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
   import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
-  import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue';
+  import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
+
+  // Expose Swal globally for legacy code
+  if (typeof window !== 'undefined') {
+    window.Swal = Swal;
+    window.swal = Swal.fire.bind(Swal);
+  }
 
   const NiceVariance = formatNiceVariance;
   const NiceNumber = formatNiceNumber;
@@ -101,50 +119,52 @@
 
   onBeforeMount(async () => {});
 
-  const tabs_split = [
-    { id: 0, name: 'Supplier', current: true },
-    { id: 1, name: 'Product', current: false },
-    { id: 2, name: 'Customer', current: false },
-    { id: 3, name: 'Transport', current: false },
-    { id: 4, name: 'Pricing', current: false },
-    { id: 6, name: 'Process Control', current: false },
-    { id: 5, name: 'Invoice', current: false },
-    { id: 8, name: 'Documents', current: false },
-    { id: 7, name: 'Linked Trades', current: false },
-    { id: 9, name: 'Log', current: false },
-    { id: 12, name: 'Staff allocation', current: false },
-    { id: 13, name: 'Split Trades', current: false },
-  ];
-
-  const tabs_non_split = [
-    { id: 0, name: 'Supplier', current: true },
-    { id: 1, name: 'Product', current: false },
-    { id: 2, name: 'Customer', current: false },
-    { id: 3, name: 'Transport', current: false },
-    { id: 4, name: 'Pricing', current: false },
-    { id: 6, name: 'Process Control', current: false },
-    { id: 5, name: 'Invoice', current: false },
-    { id: 8, name: 'Documents', current: false },
-    { id: 7, name: 'Linked Trades', current: false },
-    { id: 9, name: 'Log', current: false },
-    { id: 12, name: 'Staff allocation', current: false },
-  ];
-
-  let tabs = computed(() =>
-    props.selected_transaction.is_split_load ? tabs_split : tabs_non_split
+  // tabs and tab selection moved to composable for cleaner code
+  const { tabs, selectedTabId, selectTab } = useTransactionTabs(
+    computed(() => props.selected_transaction.is_split_load)
   );
 
-  let supplierQuery = ref('');
+  // Tab-specific query filters moved to composables for cleaner code
+  const { supplierQuery, filteredSuppliers } = useSupplierTab(props);
 
-  const filteredSuppliers = computed(() =>
-    supplierQuery.value === ''
-      ? props.all_suppliers
-      : props.all_suppliers.filter((supplier) => {
-          return supplier.last_legal_name
-            .toLowerCase()
-            .includes(supplierQuery.value.toLowerCase());
-        })
-  );
+  const {
+    customerQuery,
+    filteredCustomers,
+    customerQuery2,
+    filteredCustomers2,
+    customerQuery3,
+    filteredCustomers3,
+    customerQuery4,
+    filteredCustomers4,
+    customerQuery5,
+    filteredCustomers5,
+  } = useCustomerTab(props);
+
+  const {
+    productQuery,
+    filteredProducts,
+    productSourceQuery,
+    filteredProductSources,
+    billingUnitsIncomingQuery,
+    filteredBillingUnitsIncoming,
+    packageIncomingQuery,
+    filteredPackageIncoming,
+    billingUnitsOutgoingQuery,
+    filteredBillingUnitsOutgoing,
+    packageOutgoingQuery,
+    filteredPackageOutgoing,
+    contractTypeQuery,
+    filteredContractTypes,
+  } = useProductTab(props);
+
+  const {
+    transporterQuery,
+    filteredTransporters,
+    selectedVehicleQuery,
+    filteredSelectedVehicles,
+    selectedDriverQuery,
+    filteredSelectedDrivers,
+  } = useTransportTab(props);
 
   const permissions = computed(() => usePage().props.permissions);
   const roles_permissions = computed(() => usePage().props.roles_permissions);
@@ -156,29 +176,76 @@
   // isLoading now comes from useTransactionFilters composable
   let isUpdating = ref(false);
 
-  const selectedTabId = ref(0);
-  const selectTab = (id) => {
-    selectedTabId.value = id;
-  };
-  const viewTradeSlideOver = ref(false);
+  // selectedTabId and selectTab now come from useTransactionTabs composable
 
-  const showTradeSlideOver = () => {
-    viewTradeSlideOver.value = true;
-  };
-  const closeTradeSlideOver = () => {
-    viewTradeSlideOver.value = false;
-  };
-  const closeContractLink = () => {
-    viewContractLinkModal.value = false;
-  };
+  // All modal state and handlers now come from useTransactionModals composable
+  const {
+    currentDriverVehicle,
+    viewDriverVehicleModal,
+    viewDriverVehicleNewModal,
+    viewDriverVehicle,
+    viewDriverNewVehicle,
+    closeDriverVehicleModal,
+    viewContractLinkModal,
+    viewContractLinkModalSc,
+    viewContractLink,
+    viewContractLinkSc,
+    closeContractLink,
+    closeContractLinkSc,
+    viewSplitLinkModal,
+    viewSplitLink,
+    closeSplitLink,
+    currentAssignedComm,
+    viewAssignedCommModal,
+    viewAssignedCommNewModal,
+    viewAssignedComm,
+    viewAssignedNewComm,
+    closeAssignedComm,
+    closeAssignedNewComm,
+    viewTradeSlideOver,
+    showTradeSlideOver,
+    closeTradeSlideOver,
+  } = useTransactionModals();
 
-  const closeContractLinkSc = () => {
-    viewContractLinkModalSc.value = false;
-  };
+  // All toggle state (show/hide UI elements) from useTransactionToggles composable
+  const {
+    showDetails,
+    toggleDetails,
+    showDriver,
+    toggleShowDriver,
+    showVehicle,
+    toggleShowVehicle,
+  } = useTransactionToggles();
 
-  const closeSplitLink = () => {
-    viewSplitLinkModal.value = false;
-  };
+  // Small forms (driver, vehicle, trans link) from useTransactionForms composable
+  const {
+    driverForm,
+    createDriver,
+    vehicleForm,
+    createVehicle,
+    transLinkForm,
+    deleteTransLink,
+  } = useTransactionForms();
+
+  // Status and approval forms from useTransactionStatusForms composable
+  const {
+    statusForm,
+    createStatus,
+    deleteStatus,
+    transportApprovalForm,
+    salesOrderForm,
+    activateSalesOrder,
+    sendSalesOrder,
+    receiveSalesOrder,
+    purchaseOrderForm,
+    activatePurchaseOrder,
+    sendPurchaseOrder,
+    receivePurchaseOrder,
+    transportOrderForm,
+    activateTransportOrder,
+    sendTransportOrder,
+    receiveTransportOrder,
+  } = useTransactionStatusForms(props, isUpdating);
 
   // Declare updateSelectValues first (defined below)
   let updateSelectValues;
@@ -207,17 +274,16 @@
 
   // Define updateSelectValues
   updateSelectValues = () => {
-    //transport_approval_Form
-    transport_approval_Form.transport_trans_id = props.selected_transaction.id;
-    transport_approval_Form.transport_job_id =
-      props.selected_transaction.transport_job.id;
-    transport_approval_Form.deal_ticket_id = props.selected_transaction.deal_ticket.id;
+    //transportApprovalForm (from composable)
+    transportApprovalForm.transport_trans_id = props.selected_transaction.id;
+    transportApprovalForm.transport_job_id = props.selected_transaction.transport_job.id;
+    transportApprovalForm.deal_ticket_id = props.selected_transaction.deal_ticket.id;
 
     //temp_form
     temp_form.transport_trans_id = props.selected_transaction.id;
 
-    //status form
-    status_Form.transport_trans_id = props.selected_transaction.id;
+    //statusForm (from composable)
+    statusForm.transport_trans_id = props.selected_transaction.id;
 
     //combined_Form
     combined_Form.contract_type_id = props.contract_types.find(
@@ -392,28 +458,26 @@
     combined_Form.calculated_route_distance =
       props.selected_transaction.transport_load.calculated_route_distance;
 
-    //Sales Order
+    //salesOrderForm (from composable)
+    salesOrderForm.transport_trans_id = props.sales_order.transport_trans_id;
+    salesOrderForm.confirmed_by_type_id = props.sales_order.confirmed_by_type_id;
+    salesOrderForm.is_active = props.sales_order.is_active;
+    salesOrderForm.is_so_conf_sent = props.sales_order.is_so_conf_sent;
+    salesOrderForm.is_so_conf_received = props.sales_order.is_so_conf_received;
 
-    salesOrder_Form.transport_trans_id = props.sales_order.transport_trans_id;
-    salesOrder_Form.confirmed_by_type_id = props.sales_order.confirmed_by_type_id;
-    salesOrder_Form.is_active = props.sales_order.is_active;
-    salesOrder_Form.is_so_conf_sent = props.sales_order.is_so_conf_sent;
-    salesOrder_Form.is_so_conf_received = props.sales_order.is_so_conf_received;
+    //purchaseOrderForm (from composable)
+    purchaseOrderForm.transport_trans_id = props.purchase_order.transport_trans_id;
+    purchaseOrderForm.confirmed_by_type_id = props.purchase_order.confirmed_by_type_id;
+    purchaseOrderForm.is_active = props.purchase_order.is_active;
+    purchaseOrderForm.is_po_sent = props.purchase_order.is_po_sent;
+    purchaseOrderForm.is_po_received = props.purchase_order.is_po_received;
 
-    //Purchase Order
-    purchaseOrder_Form.transport_trans_id = props.purchase_order.transport_trans_id;
-    purchaseOrder_Form.confirmed_by_type_id = props.purchase_order.confirmed_by_type_id;
-    purchaseOrder_Form.is_active = props.purchase_order.is_active;
-    purchaseOrder_Form.is_po_sent = props.purchase_order.is_po_sent;
-    purchaseOrder_Form.is_po_received = props.purchase_order.is_po_received;
-
-    //Transport Order
-
-    transportOrder_Form.transport_trans_id = props.transport_order.transport_trans_id;
-    transportOrder_Form.confirmed_by_type_id = props.transport_order.confirmed_by_type_id;
-    transportOrder_Form.is_active = props.transport_order.is_active;
-    transportOrder_Form.is_to_sent = props.transport_order.is_to_sent;
-    transportOrder_Form.is_to_received = props.transport_order.is_to_received;
+    //transportOrderForm (from composable)
+    transportOrderForm.transport_trans_id = props.transport_order.transport_trans_id;
+    transportOrderForm.confirmed_by_type_id = props.transport_order.confirmed_by_type_id;
+    transportOrderForm.is_active = props.transport_order.is_active;
+    transportOrderForm.is_to_sent = props.transport_order.is_to_sent;
+    transportOrderForm.is_to_received = props.transport_order.is_to_received;
 
     //combined_Form
 
@@ -625,42 +689,7 @@
       combined_Form.transport_cost_5
   );
 
-  let status_Form = useForm({
-    transport_trans_id: props.selected_transaction.id,
-    status_entity_id: 1,
-    status_type_id: 1,
-  });
-
-  let transport_approval_Form = useForm({
-    transport_trans_id: props.selected_transaction.id,
-    transport_job_id: props.selected_transaction.transport_job.id,
-    deal_ticket_id: props.selected_transaction.deal_ticket.id,
-  });
-
-  //'old_id','transport_trans_id','confirmed_by_type_id','confirmed_by_id','type','comment','is_active','is_printed','is_so_conf_sent','is_so_conf_received'
-  let salesOrder_Form = useForm({
-    transport_trans_id: props.sales_order.transport_trans_id,
-    confirmed_by_type_id: props.sales_order.confirmed_by_type_id,
-    is_active: props.sales_order.is_active,
-    is_so_conf_sent: props.sales_order.is_so_conf_sent,
-    is_so_conf_received: props.sales_order.is_so_conf_received,
-  });
-
-  let purchaseOrder_Form = useForm({
-    transport_trans_id: props.purchase_order.transport_trans_id,
-    confirmed_by_type_id: props.purchase_order.confirmed_by_type_id,
-    is_active: props.purchase_order.is_active,
-    is_po_sent: props.purchase_order.is_po_sent,
-    is_po_received: props.purchase_order.is_po_received,
-  });
-
-  let transportOrder_Form = useForm({
-    transport_trans_id: props.transport_order.transport_trans_id,
-    confirmed_by_type_id: props.transport_order.confirmed_by_type_id,
-    is_active: props.transport_order.is_active,
-    is_to_sent: props.transport_order.is_to_sent,
-    is_to_received: props.transport_order.is_to_received,
-  });
+  // Status and order forms now provided by useTransactionStatusForms composable
 
   let combined_Form = useForm({
     //TransportTrans
@@ -1020,18 +1049,17 @@
     update_related_models: 0,
   });
 
-  //Errors
-
-  let emptyErrorsTrans = computed(
-    () =>
-      Object.keys(combined_Form.errors).length === 0 &&
-      combined_Form.errors.constructor === Object
-  );
-  let paymentTerms = computed(() =>
-    props.all_terms_of_payments.find(
-      (element) => element.id === combined_Form.customer_id.terms_of_payment_id
-    )
-  );
+  // Computed values (filters, sums, validation) from useTransactionComputed composable
+  const {
+    filteredLinkedContractsMq,
+    filteredLinkedContractsPc,
+    filteredLinkedContractsSc,
+    sumLinkedContractsMq,
+    sumLinkedContractsPc,
+    emptyErrorsTrans,
+    paymentTerms,
+    getTitle,
+  } = useTransactionComputed(props, combined_Form);
 
   //combined_Form.contract_type_id = props.contract_types.find(element => element.id === props.selected_transaction.contract_type_id);
 
@@ -1049,18 +1077,20 @@
       {
         preserveScroll: true,
         onSuccess: () => {
-          swal(usePage().props.jetstream.flash?.banner || '');
+          Swal.fire(usePage().props.jetstream.flash?.banner || '');
 
           //endTime = performance.now()
           //console.log(`Call to transportTrans took ${(endTime - startTime)/1000} seconds`);
           startTime = 0;
           endTime = 0;
-          isUpdating.value = false;
         },
         onError: (error) => {
-          isUpdating.value = false;
           alert('Something went wrong on the Transaction');
           console.log(error);
+        },
+        onFinish: () => {
+          // Always reset loading state when request completes (success or error)
+          isUpdating.value = false;
         },
       }
     );
@@ -1074,169 +1104,31 @@
     temp_form.post(route('transport_transaction.clone'), {
       preserveScroll: true,
       onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
+        window.swal(usePage().props.jetstream.flash?.banner || '');
       },
       onError: (error) => {
         isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
+        window.swal(usePage().props.jetstream.flash?.banner || '');
       },
     });
   };
 
-  const activateSalesOrder = () => {
-    isUpdating.value = true;
-
-    salesOrder_Form.post(route('sales_order.activate'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-        isUpdating.value = false;
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
-
-  const activatePurchaseOrder = () => {
-    isUpdating.value = true;
-
-    purchaseOrder_Form.post(route('purchase_order.activate'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-        isUpdating.value = false;
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
-
-  const activateTransportOrder = () => {
-    isUpdating.value = true;
-
-    transportOrder_Form.post(route('transport_order.activate'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-        isUpdating.value = false;
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
-
-  const sendSalesOrder = () => {
-    isUpdating.value = true;
-
-    salesOrder_Form.post(route('sales_order.send'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-        isUpdating.value = false;
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
-
-  const sendPurchaseOrder = () => {
-    isUpdating.value = true;
-
-    purchaseOrder_Form.post(route('purchase_order.send'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-        isUpdating.value = false;
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
-
-  const sendTransportOrder = () => {
-    isUpdating.value = true;
-
-    transportOrder_Form.post(route('transport_order.send'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-        isUpdating.value = false;
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
-
-  const receiveSalesOrder = () => {
-    isUpdating.value = true;
-
-    salesOrder_Form.post(route('sales_order.received'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-        isUpdating.value = false;
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
-
-  const receivePurchaseOrder = () => {
-    isUpdating.value = true;
-
-    purchaseOrder_Form.post(route('purchase_order.received'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-        isUpdating.value = false;
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
-
-  const receiveTransportOrder = () => {
-    isUpdating.value = true;
-
-    transportOrder_Form.post(route('transport_order.received'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-        isUpdating.value = false;
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
+  // Order activation, send, and receive handlers now provided by useTransactionStatusForms composable
 
   const temp_form = useForm({
     transport_trans_id: props.selected_transaction.id,
   });
+
+  // Helper functions from useTransactionHelpers composable
+  const { vehicleSlideProps, getComponentProps, doCreatedTrade, deleteAssignedComm } =
+    useTransactionHelpers(filterForm, filter, temp_form);
 
   const deleteDriverVehicle = (id) => {
     if (confirm('Sure you want to delete?')) {
       temp_form.delete(route('transport_driver_vehicle.destroy', id), {
         preserveScroll: true,
         onSuccess: () => {
-          swal(usePage().props.jetstream.flash?.banner || '');
+          window.swal(usePage().props.jetstream.flash?.banner || '');
         },
         onError: (e) => {
           close();
@@ -1249,11 +1141,11 @@
   };
 
   const createApproval = () => {
-    transport_approval_Form.post(route('trans_approval.approve'), {
+    transportApprovalForm.post(route('trans_approval.approve'), {
       preserveScroll: true,
       onSuccess: () => {
         filter();
-        swal(usePage().props.jetstream.flash?.banner || '');
+        window.swal(usePage().props.jetstream.flash?.banner || '');
       },
       onError: (e) => {
         console.log(e);
@@ -1262,11 +1154,11 @@
   };
 
   const createActivation = () => {
-    transport_approval_Form.post(route('trans_approval.activate'), {
+    transportApprovalForm.post(route('trans_approval.activate'), {
       preserveScroll: true,
       onSuccess: () => {
         filter();
-        swal(usePage().props.jetstream.flash?.banner || '');
+        window.swal(usePage().props.jetstream.flash?.banner || '');
       },
       onError: (e) => {
         console.log(e);
@@ -1278,7 +1170,7 @@
     temp_form.post(route('pdf_report.deal_ticket_final'), {
       preserveScroll: true,
       onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
+        window.swal(usePage().props.jetstream.flash?.banner || '');
       },
       onError: (e) => {
         console.log(e);
@@ -1293,6 +1185,11 @@
       .then((res) => {});
   };
 
+  // NOTE: All filter queries (customer, product, transport, etc.) are now provided by composables
+  // See: useCustomerTab, useProductTab, useTransportTab, useSupplierTab
+  // This removed ~250 lines of duplicated filter logic
+
+  // Address filters for specific form fields (these filter addressable relationships)
   let collectionAddressQuery = ref('');
 
   const filteredCollectionAddress = computed(() =>
@@ -1365,422 +1262,25 @@
         })
   );
 
-  let billingUnitsIncomingQuery = ref('');
+  // Modal state removed - now provided by useTransactionModals composable
+  // filteredLinkedContracts and sumLinkedContracts now provided by useTransactionComputed composable
 
-  const filteredBillingUnitsIncoming = computed(() =>
-    billingUnitsIncomingQuery.value === ''
-      ? props.all_billing_units
-      : props.all_billing_units.filter((type) => {
-          return type.name
-            .toLowerCase()
-            .includes(billingUnitsIncomingQuery.value.toLowerCase());
-        })
-  );
+  // showDetails and toggleDetails now provided by useTransactionToggles composable
+  // createStatus and deleteStatus now provided by useTransactionStatusForms composable
 
-  let packageIncomingQuery = ref('');
+  // getTitle now provided by useTransactionComputed composable
 
-  const filteredPackageIncoming = computed(() =>
-    packageIncomingQuery.value === ''
-      ? props.all_packaging
-      : props.all_packaging.filter((type) => {
-          return type.name
-            .toLowerCase()
-            .includes(packageIncomingQuery.value.toLowerCase());
-        })
-  );
+  // showDriver, showVehicle, toggleShowDriver, toggleShowVehicle now provided by useTransactionToggles composable
+  // driverForm, vehicleForm now provided by useTransactionForms composable
+  // vehicleSlideProps, getComponentProps now provided by useTransactionHelpers composable
 
-  let productQuery = ref('');
-
-  const filteredProducts = computed(() =>
-    productQuery.value === ''
-      ? props.all_products
-      : props.all_products.filter((product) => {
-          return product.name.toLowerCase().includes(productQuery.value.toLowerCase());
-        })
-  );
-
-  let productSourceQuery = ref('');
-
-  const filteredProductSources = computed(() =>
-    productSourceQuery.value === ''
-      ? props.all_product_sources
-      : props.all_product_sources.filter((type) => {
-          return type.name.toLowerCase().includes(productSourceQuery.value.toLowerCase());
-        })
-  );
-
-  let billingUnitsOutgoingQuery = ref('');
-
-  const filteredBillingUnitsOutgoing = computed(() =>
-    billingUnitsOutgoingQuery.value === ''
-      ? props.all_billing_units
-      : props.all_billing_units.filter((type) => {
-          return type.name
-            .toLowerCase()
-            .includes(billingUnitsOutgoingQuery.value.toLowerCase());
-        })
-  );
-
-  let packageOutgoingQuery = ref('');
-
-  const filteredPackageOutgoing = computed(() =>
-    packageOutgoingQuery.value === ''
-      ? props.all_packaging
-      : props.all_packaging.filter((type) => {
-          return type.name
-            .toLowerCase()
-            .includes(packageOutgoingQuery.value.toLowerCase());
-        })
-  );
-
-  let customerQuery = ref('');
-
-  const filteredCustomers = computed(() =>
-    customerQuery.value === ''
-      ? props.all_customers
-      : props.all_customers.filter((customer) => {
-          return customer.last_legal_name
-            .toLowerCase()
-            .includes(customerQuery.value.toLowerCase());
-        })
-  );
-
-  let customerQuery2 = ref('');
-
-  const filteredCustomers2 = computed(() =>
-    customerQuery2.value === ''
-      ? props.all_customers
-      : props.all_customers.filter((customer) => {
-          return customer.last_legal_name
-            .toLowerCase()
-            .includes(customerQuery2.value.toLowerCase());
-        })
-  );
-
-  let customerQuery3 = ref('');
-
-  const filteredCustomers3 = computed(() =>
-    customerQuery3.value === ''
-      ? props.all_customers
-      : props.all_customers.filter((customer) => {
-          return customer.last_legal_name
-            .toLowerCase()
-            .includes(customerQuery3.value.toLowerCase());
-        })
-  );
-
-  let customerQuery4 = ref('');
-
-  const filteredCustomers4 = computed(() =>
-    customerQuery4.value === ''
-      ? props.all_customers
-      : props.all_customers.filter((customer) => {
-          return customer.last_legal_name
-            .toLowerCase()
-            .includes(customerQuery4.value.toLowerCase());
-        })
-  );
-
-  let customerQuery5 = ref('');
-
-  const filteredCustomers5 = computed(() =>
-    customerQuery3.value === ''
-      ? props.all_customers
-      : props.all_customers.filter((customer) => {
-          return customer.last_legal_name
-            .toLowerCase()
-            .includes(customerQuery5.value.toLowerCase());
-        })
-  );
-
-  let selectedVehicleQuery = ref('');
-
-  const filteredSelectedVehicles = computed(() =>
-    selectedVehicleQuery.value === ''
-      ? props.all_vehicles
-      : props.all_vehicles.filter((vehicle) => {
-          return vehicle.reg_no
-            .toLowerCase()
-            .includes(selectedVehicleQuery.value.toLowerCase());
-        })
-  );
-
-  let selectedDriverQuery = ref('');
-
-  const filteredSelectedDrivers = computed(() =>
-    selectedDriverQuery.value === ''
-      ? props.all_drivers
-      : props.all_drivers.filter((driver) => {
-          return driver.first_name
-            .toLowerCase()
-            .includes(selectedDriverQuery.value.toLowerCase());
-        })
-  );
-
-  let transporterQuery = ref('');
-  const filteredTransporters = computed(() =>
-    transporterQuery.value === ''
-      ? props.all_transporters
-      : props.all_transporters.filter((transporter) => {
-          return transporter.last_legal_name
-            .toLowerCase()
-            .includes(transporterQuery.value.toLowerCase());
-        })
-  );
-
-  let contractTypeQuery = ref('');
-
-  const filteredContractTypes = computed(() =>
-    contractTypeQuery.value === ''
-      ? props.contract_types
-      : props.contract_types.filter((type) => {
-          return type.name.toLowerCase().includes(contractTypeQuery.value.toLowerCase());
-        })
-  );
-
-  let currentDriverVehicle = ref(null);
-  let viewDriverVehicleModal = ref(false);
-  let viewDriverVehicleNewModal = ref(false);
-
-  const viewDriverVehicle = (driver_vehicle) => {
-    currentDriverVehicle.value = driver_vehicle;
-    viewDriverVehicleModal.value = true;
-  };
-
-  const viewDriverNewVehicle = () => {
-    viewDriverVehicleNewModal.value = true;
-  };
-
-  const closeDriverVehicleModal = () => {
-    viewDriverVehicleModal.value = false;
-    viewDriverVehicleNewModal.value = false;
-  };
-
-  let viewContractLinkModal = ref(false);
-
-  let viewContractLinkModalSc = ref(false);
-
-  let viewSplitLinkModal = ref(false);
-
-  const viewContractLink = () => {
-    viewContractLinkModal.value = true;
-  };
-
-  const viewContractLinkSc = () => {
-    viewContractLinkModalSc.value = true;
-  };
-
-  const viewSplitLink = () => {
-    viewSplitLinkModal.value = true;
-  };
-
-  const filteredLinkedContractsMq = computed(() =>
-    props.linked_trans.filter((trans_link) => {
-      return trans_link.trans_link_type_id === 3;
-    })
-  );
-
-  const filteredLinkedContractsPc = computed(() =>
-    props.linked_trans_pc.filter((trans_link) => {
-      return trans_link.trans_link_type_id === 3;
-    })
-  );
-
-  const filteredLinkedContractsSc = computed(() =>
-    props.linked_trans_sc.filter((trans_link) => {
-      return trans_link.trans_link_type_id === 4;
-    })
-  );
-
-  const sumLinkedContractsMq = computed(() => {
-    let sum = 0;
-    //transport_transaction.transport_finance.gross_profit
-    if (props.linked_trans != null) {
-      for (let linked of props.linked_trans) {
-        if (linked.trans_link_type_id === 3) {
-          if (linked.transport_transaction != null) {
-            sum += linked.transport_transaction.transport_finance.gross_profit;
-          }
-        }
-      }
-    }
-    return sum;
-  });
-
-  const sumLinkedContractsPc = computed(() => {
-    let sum = 0;
-    //transport_transaction.transport_finance.gross_profit
-
-    if (props.linked_trans != null) {
-      for (let linked of props.linked_trans) {
-        if (linked.trans_link_type_id === 3) {
-          if (linked.transport_transaction_pc != null) {
-            sum += linked.transport_transaction_pc.transport_finance.gross_profit;
-          }
-        }
-      }
-    }
-    return sum;
-  });
-
-  let showDetails = ref(true);
-
-  const toggleDetails = () => {
-    showDetails.value === true ? (showDetails.value = false) : (showDetails.value = true);
-  };
-
-  const createStatus = () => {
-    status_Form.post(route('transport_status.store'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-      onError: (e) => {
-        console.log(e);
-      },
-    });
-  };
-
-  const deleteStatus = (id) => {
-    status_Form.delete(route('transport_status.destroy', id), {
-      preserveScroll: true,
-      onSuccess: () => {
-        swal(usePage().props.jetstream.flash?.banner || '');
-      },
-      onError: (e) => {
-        console.log(e);
-      },
-    });
-  };
-
-  const getTitle = computed(() => {
-    if (props.selected_transaction.a_mq != null) {
-      return 'MQ' + props.selected_transaction.a_mq;
-    } else {
-      return 'ID:' + props.selected_transaction.id;
-    }
-  });
-
-  let showDriver = ref(false);
-  let showVehicle = ref(false);
-
-  const toggleShowDriver = () => {
-    showDriver.value = !showDriver.value;
-  };
-
-  const toggleShowVehicle = () => {
-    showVehicle.value = !showVehicle.value;
-  };
-
-  let driverForm = useForm({
-    first_name: null,
-    last_name: null,
-    cell_no: null,
-    comment: null,
-  });
-
-  let vehicleForm = useForm({
-    vehicle_type_id: 1,
-    comment: null,
-    reg_no: null,
-  });
-
-  let vehicleSlideProps = ref(null);
-
-  const getComponentProps = () => {
-    axios.get(route('props.vehicle_slide_over')).then((res) => {
-      vehicleSlideProps.value = res.data['vehicle_types'];
-    });
-  };
-
-  const createProduct = () => {
-    driverForm.post(route('regular_driver.store'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        driverForm.first_name = null;
-        driverForm.last_name = null;
-        driverForm.cell_no = null;
-        driverForm.comment = null;
-        toggleShowDriver();
-      },
-      onError: (e) => {
-        console.log(e);
-      },
-    });
-  };
-
-  const createProductVehicle = () => {
-    vehicleForm.post(route('regular_vehicle.store'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        toggleShowVehicle();
-      },
-      onError: (e) => {
-        console.log(e);
-      },
-    });
-  };
-
-  const trans_link_form = useForm({
-    link_type_id: 5,
-  });
-
-  const deleteTransLink = (id) => {
-    if (confirm('Sure you want to delete?')) {
-      trans_link_form.delete(route('trans_link.split.delete', id), {
-        preserveScroll: true,
-        onSuccess: () => {
-          swal(usePage().props.jetstream.flash?.banner || '');
-        },
-        onError: (e) => {
-          console.log(e);
-        },
-      });
-    }
-  };
+  // createDriver, createVehicle, deleteTransLink now provided by useTransactionForms composable
+  // Wrapper functions to pass toggle handlers
+  const createProduct = () => createDriver(toggleShowDriver);
+  const createProductVehicle = () => createVehicle(toggleShowVehicle);
 
   // header_styler and row_styler moved to TransactionTable components
-
-  const doCreatedTrade = (_id) => {
-    filterForm.selected_trans_id = _id;
-    filter();
-  };
-
-  let currentAssignedComm = ref(null);
-  let viewAssignedCommModal = ref(false);
-  let viewAssignedCommNewModal = ref(false);
-
-  const viewAssignedComm = (assigned_user_comm) => {
-    currentAssignedComm.value = assigned_user_comm;
-    viewAssignedCommModal.value = true;
-  };
-
-  const viewAssignedNewComm = () => {
-    currentAssignedComm.value = null;
-    viewAssignedCommNewModal.value = true;
-  };
-
-  const closeAssignedComm = () => {
-    viewContractLinkModal.value = false;
-  };
-
-  const closeAssignedNewComm = () => {
-    viewAssignedCommNewModal.value = false;
-  };
-
-  const deleteAssignedComm = (id) => {
-    if (confirm('Sure you want to delete?')) {
-      temp_form.delete(route('assigned_user_comm.destroy', id), {
-        preserveScroll: true,
-        onSuccess: () => {
-          swal(usePage().props.jetstream.flash?.banner || '');
-        },
-        onError: (e) => {
-          console.log(e);
-        },
-      });
-    }
-  };
+  // doCreatedTrade, deleteAssignedComm now provided by useTransactionHelpers composable
 </script>
 
 <template>
@@ -1801,19 +1301,19 @@
                 <div class="inline-block min-w-full py-2 align-middle">
                   <!-- Transaction Filters Component -->
                   <transaction-filters
-                    :filter-form="filterForm"
                     :contract-types="contract_types"
-                    :mon="mon"
-                    :tue="tue"
-                    :wed="wed"
-                    :thu="thu"
+                    :filter-form="filterForm"
+                    :format-end="format"
+                    :format-start="formatStart"
                     :fri="fri"
+                    :mon="mon"
                     :sat="sat"
                     :sun="sun"
-                    :format-start="formatStart"
-                    :format-end="format"
-                    @search="filter"
+                    :thu="thu"
+                    :tue="tue"
+                    :wed="wed"
                     @clear="clear"
+                    @search="filter"
                     @add-trade="showTradeSlideOver"
                     @toggle-details="toggleDetails"
                     @update:mon="mon = $event"
@@ -1833,13 +1333,13 @@
 
                   <!-- Transaction Table Component -->
                   <transaction-table
-                    :transactions="transactions"
                     :filtered-transactions="filteredTrans"
+                    :is-loading="isLoading"
                     :selected-transaction="selected_transaction"
                     :show-details="showDetails"
-                    :is-loading="isLoading"
-                    :sort-field="filterForm.field"
                     :sort-direction="filterForm.direction"
+                    :sort-field="filterForm.field"
+                    :transactions="transactions"
                     @sort="sort"
                     @select-transaction="updateSelectedTrans" />
                 </div>
@@ -1872,15 +1372,15 @@
 
                   <div class="mt-4 flex md:absolute md:right-0 md:top-3 md:mt-0">
                     <button
-                      @click="cloneTransportTrans"
                       class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      type="button">
+                      type="button"
+                      @click="cloneTransportTrans">
                       Clone
                     </button>
                     <button
-                      @click.prevent="updateAll"
                       class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      type="button">
+                      type="button"
+                      @click.prevent="updateAll">
                       <exclamation-triangle-icon
                         v-if="isUpdating"
                         class="w-3 h-3 animate-spin mr-2 fill-white" />
@@ -1891,22 +1391,22 @@
                 <div class="mt-1">
                   <div class="hidden sm:block">
                     <transaction-tab-nav
-                      :tabs="tabs"
                       :selected-tab-id="selectedTabId"
+                      :tabs="tabs"
                       @select="selectTab" />
                   </div>
                 </div>
               </div>
               <div class="m-1 p-1">
                 <div
-                  class="mb-1"
-                  v-if="!emptyErrorsTrans">
+                  v-if="!emptyErrorsTrans"
+                  class="mb-1">
                   <div class="rounded-md bg-red-50 p-4">
                     <div class="flex">
                       <div class="flex-shrink-0">
                         <XCircleIcon
-                          class="h-5 w-5 text-red-400"
-                          aria-hidden="true" />
+                          aria-hidden="true"
+                          class="h-5 w-5 text-red-400" />
                       </div>
                       <div class="ml-3">
                         <h3 class="text-sm font-medium text-red-800">
@@ -1914,8 +1414,8 @@
                         </h3>
                         <div class="mt-2 text-lg text-red-700">
                           <ul
-                            role="list"
-                            class="list-disc space-y-1 pl-5">
+                            class="list-disc space-y-1 pl-5"
+                            role="list">
                             <li v-if="!emptyErrorsTrans">
                               Transaction errors (see appropriate tab)
                             </li>
@@ -1924,99 +1424,97 @@
 
                         <div class="mt-1 ml-6">
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors['confirmed_by_id.id']" />
+                            :message="combined_Form.errors['confirmed_by_id.id']"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors['confirmed_by_type_id.id']" />
+                            :message="combined_Form.errors['confirmed_by_type_id.id']"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors['packaging_incoming_id.id']" />
+                            :message="combined_Form.errors['packaging_incoming_id.id']"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors['packaging_outgoing_id.id']" />
+                            :message="combined_Form.errors['packaging_outgoing_id.id']"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
                             :message="
                               combined_Form.errors['billing_units_incoming_id.id']
-                            " />
+                            "
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
                             :message="
                               combined_Form.errors['billing_units_outgoing_id.id']
-                            " />
+                            "
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors['collection_address_id.id']" />
+                            :message="combined_Form.errors['collection_address_id.id']"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors['delivery_address_id.id']" />
+                            :message="combined_Form.errors['delivery_address_id.id']"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors['product_source_id.id']" />
+                            :message="combined_Form.errors['product_source_id.id']"
+                            class="mt-2" />
 
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.product_grade_perc" />
+                            :message="combined_Form.errors.product_grade_perc"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.no_units_incoming" />
+                            :message="combined_Form.errors.no_units_incoming"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.no_units_outgoing" />
+                            :message="combined_Form.errors.no_units_outgoing"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
                             :message="
                               combined_Form.errors.is_weighbridge_certificate_received
-                            " />
+                            "
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.delivery_note" />
+                            :message="combined_Form.errors.delivery_note"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.calculated_route_distance" />
+                            :message="combined_Form.errors.calculated_route_distance"
+                            class="mt-2" />
 
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.customer_order_number" />
+                            :message="combined_Form.errors.customer_order_number"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.supplier_loading_number" />
+                            :message="combined_Form.errors.supplier_loading_number"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.is_multi_loads" />
+                            :message="combined_Form.errors.is_multi_loads"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.is_approved" />
+                            :message="combined_Form.errors.is_approved"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="
-                              combined_Form.errors.is_transport_costs_inc_price
-                            " />
+                            :message="combined_Form.errors.is_transport_costs_inc_price"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.offloading_hours_from_id" />
+                            :message="combined_Form.errors.offloading_hours_from_id"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.offloading_hours_to_id" />
+                            :message="combined_Form.errors.offloading_hours_to_id"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.loading_hours_from_id" />
+                            :message="combined_Form.errors.loading_hours_from_id"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.loading_hours_to_id" />
+                            :message="combined_Form.errors.loading_hours_to_id"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.load_insurance_per_ton" />
+                            :message="combined_Form.errors.load_insurance_per_ton"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.total_load_insurance" />
+                            :message="combined_Form.errors.total_load_insurance"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.loading_instructions" />
+                            :message="combined_Form.errors.loading_instructions"
+                            class="mt-2" />
                           <InputError
-                            class="mt-2"
-                            :message="combined_Form.errors.offloading_instructions" />
+                            :message="combined_Form.errors.offloading_instructions"
+                            class="mt-2" />
                         </div>
                       </div>
                     </div>
@@ -2034,28 +1532,28 @@
                       role="list">
                       <transaction-supplier-card
                         :combined-form="combined_Form"
-                        :selected-transaction="selected_transaction"
-                        :filtered-suppliers="filteredSuppliers"
                         :filtered-linked-contracts-pc="filteredLinkedContractsPc"
+                        :filtered-suppliers="filteredSuppliers"
+                        :selected-transaction="selected_transaction"
                         :show-contract-link-modal="viewContractLinkModal"
                         @update:supplier-query="supplierQuery = $event"
                         @view-contract-link="viewContractLink"
                         @close-contract-link="closeContractLink" />
 
                       <transaction-supplier-account-card
-                        :combined-form="combined_Form"
-                        :selected-transaction="selected_transaction"
-                        :filtered-collection-address="filteredCollectionAddress"
                         :collection-address-query="collectionAddressQuery"
+                        :combined-form="combined_Form"
+                        :filtered-collection-address="filteredCollectionAddress"
+                        :selected-transaction="selected_transaction"
                         @update:collectionAddressQuery="
                           (v) => (collectionAddressQuery = v)
                         " />
 
                       <transaction-product-card
                         :combined-form="combined_Form"
-                        :selected-transaction="selected_transaction"
                         :filtered-billing-units-incoming="filteredBillingUnitsIncoming"
                         :filtered-package-incoming="filteredPackageIncoming"
+                        :selected-transaction="selected_transaction"
                         @update:billing-units-incoming-query="
                           billingUnitsIncomingQuery = $event
                         "
@@ -2071,10 +1569,10 @@
                       role="list">
                       <transaction-product-incoming-card
                         :combined-form="combined_Form"
-                        :filtered-products="filteredProducts"
                         :filtered-billing-units-incoming="filteredBillingUnitsIncoming"
                         :filtered-package-incoming="filteredPackageIncoming"
                         :filtered-product-sources="filteredProductSources"
+                        :filtered-products="filteredProducts"
                         @update:product-query="productQuery = $event"
                         @update:billing-units-incoming-query="
                           billingUnitsIncomingQuery = $event
@@ -2143,13 +1641,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.is_split_load_primary
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -2164,12 +1662,12 @@
                               <div v-if="primary_linked_trans_split">
                                 <div v-if="primary_linked_trans_split">
                                   <Link
-                                    href="/transaction_summary"
-                                    method="get"
-                                    target="_blank"
                                     :data="{
                                       selected_trans_id: primary_linked_trans_split.id,
-                                    }">
+                                    }"
+                                    href="/transaction_summary"
+                                    method="get"
+                                    target="_blank">
                                     ID
                                     {{ primary_linked_trans_split.id }}
                                   </Link>
@@ -2194,78 +1692,31 @@
                             </SecondaryButton>
 
                             <SplitLinkModal
-                              s
-                              :show="viewSplitLinkModal"
-                              @close="closeSplitLink"
+                              :link_type_id="5"
                               :mq_trans_id="selected_transaction.id"
-                              :link_type_id="5" />
+                              :show="viewSplitLinkModal"
+                              @close="closeSplitLink" />
                           </div>
-
-                          <!--                                                    <div class="flex justify-between gap-x-4 py-3">
-                                                                                                            <dd class="flex items-start gap-x-2">
-                                                                                                                <div>
-                                                                                                                    <p class="text-gray-500">Customer Parent</p>
-
-                                                                                                                    <Combobox as="div" v-model="combined_Form.customer_id.customer_parent_id">
-
-                                                                                                                        <div class="relative mt-2">
-
-                                                                                                                            <ComboboxInput
-                                                                                                                                class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                                                                                                                @change="customerParentQuery = $event.target.value"
-                                                                                                                                :display-value="(customer) => customer?.last_legal_name"/>
-                                                                                                                            <ComboboxButton
-                                                                                                                                class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                                                                                                                <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
-                                                                                                                                                   aria-hidden="true"/>
-                                                                                                                            </ComboboxButton>
-
-                                                                                                                            <ComboboxOptions v-if="filteredCustomersParents.length > 0"
-                                                                                                                                             class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                                                                                                                <ComboboxOption v-for="customer in filteredCustomersParents"
-                                                                                                                                                :key="customer.id" :value="customer"
-                                                                                                                                                as="template" v-slot="{ active, selected }">
-                                                                                                                                    <ul>
-                                                                                                                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
-                                                                                                                                                            <span
-                                                                                                                                                                :class="['block truncate', selected && 'font-semibold']">
-                                                                                                                                                              {{ customer.last_legal_name }}
-                                                                                                                                                            </span>
-
-                                                                                                                                            <span v-if="selected"
-                                                                                                                                                  :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
-                                                                                                                                                              <CheckIcon class="h-5 w-5" aria-hidden="true"/>
-                                                                                                                                                            </span>
-                                                                                                                                        </li>
-                                                                                                                                    </ul>
-                                                                                                                                </ComboboxOption>
-                                                                                                                            </ComboboxOptions>
-                                                                                                                        </div>
-                                                                                                                    </Combobox>
-                                                                                                                </div>
-                                                                                                            </dd>
-
-                                                                                                        </div>-->
 
                           <div class="flex justify-between gap-x-4 py-3">
                             <dd class="flex items-start gap-x-2">
                               <div>
                                 <p class="text-gray-500">Customer</p>
                                 <Combobox
-                                  as="div"
-                                  v-model="combined_Form.customer_id">
+                                  v-model="combined_Form.customer_id"
+                                  as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
-                                      class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery = $event.target.value"
                                       :display-value="
                                         (customer) => customer?.last_legal_name
-                                      " />
+                                      "
+                                      class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                      @change="customerQuery = $event.target.value" />
                                     <ComboboxButton
                                       class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"
+                                        class="h-5 w-5 text-gray-400" />
                                     </ComboboxButton>
 
                                     <ComboboxOptions
@@ -2274,9 +1725,9 @@
                                       <ComboboxOption
                                         v-for="customer in filteredCustomers"
                                         :key="customer.id"
+                                        v-slot="{ active, selected }"
                                         :value="customer"
-                                        as="template"
-                                        v-slot="{ active, selected }">
+                                        as="template">
                                         <ul>
                                           <li
                                             :class="[
@@ -2300,8 +1751,8 @@
                                                 active ? 'text-white' : 'text-indigo-600',
                                               ]">
                                               <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true" />
+                                                aria-hidden="true"
+                                                class="h-5 w-5" />
                                             </span>
                                           </li>
                                         </ul>
@@ -2318,8 +1769,8 @@
                             <dd class="flex items-start gap-x-2">
                               <input
                                 v-model="combined_Form.customer_order_number"
-                                type="text"
-                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </dd>
                           </div>
 
@@ -2329,8 +1780,8 @@
                               <input
                                 id="loading_no"
                                 v-model="combined_Form.driver_vehicle_loading_number"
-                                type="text"
-                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </dd>
                           </div>
 
@@ -2383,10 +1834,10 @@
                                   </SecondaryButton>
 
                                   <ContractLinkModalSc
-                                    :show="viewContractLinkModalSc"
-                                    @close="closeContractLinkSc"
+                                    :link_type_id="4"
                                     :mq_trans_id="selected_transaction.id"
-                                    :link_type_id="4" />
+                                    :show="viewContractLinkModalSc"
+                                    @close="closeContractLinkSc" />
                                 </div>
                               </div>
                             </dd>
@@ -2409,20 +1860,20 @@
                               <div>
                                 <div class="mt-2">
                                   <Combobox
-                                    as="div"
-                                    v-model="combined_Form.delivery_address_id">
+                                    v-model="combined_Form.delivery_address_id"
+                                    as="div">
                                     <div class="relative mt-2">
                                       <ComboboxInput
+                                        :display-value="(address) => address?.line_1"
                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="
                                           deliveryAddressQuery = $event.target.value
-                                        "
-                                        :display-value="(address) => address?.line_1" />
+                                        " />
                                       <ComboboxButton
                                         class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                         <ChevronUpDownIcon
-                                          class="h-5 w-5 text-gray-400"
-                                          aria-hidden="true" />
+                                          aria-hidden="true"
+                                          class="h-5 w-5 text-gray-400" />
                                       </ComboboxButton>
 
                                       <ComboboxOptions
@@ -2431,9 +1882,9 @@
                                         <ComboboxOption
                                           v-for="address in filteredDeliveryAddress"
                                           :key="address.id"
+                                          v-slot="{ active, selected }"
                                           :value="address"
-                                          as="template"
-                                          v-slot="{ active, selected }">
+                                          as="template">
                                           <ul>
                                             <li
                                               :class="[
@@ -2487,8 +1938,8 @@
                                                     : 'text-indigo-600',
                                                 ]">
                                                 <CheckIcon
-                                                  class="h-5 w-5"
-                                                  aria-hidden="true" />
+                                                  aria-hidden="true"
+                                                  class="h-5 w-5" />
                                               </span>
                                             </li>
                                           </ul>
@@ -2499,10 +1950,10 @@
                                 </div>
                                 <div class="mt-2">
                                   <Link
-                                    class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     :href="
                                       route('customer.show', combined_Form.customer_id)
-                                    ">
+                                    "
+                                    class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     + Add customer address
                                   </Link>
                                 </div>
@@ -2638,20 +2089,20 @@
                             <dt class="text-gray-500">Billing Units outgoing</dt>
                             <dd class="text-gray-700">
                               <Combobox
-                                as="div"
-                                v-model="combined_Form.billing_units_outgoing_id">
+                                v-model="combined_Form.billing_units_outgoing_id"
+                                as="div">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    :display-value="(units) => units?.name"
                                     class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="
                                       billingUnitsOutgoingQuery = $event.target.value
-                                    "
-                                    :display-value="(units) => units?.name" />
+                                    " />
                                   <ComboboxButton
                                     class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                     <ChevronUpDownIcon
-                                      class="h-5 w-5 text-gray-400"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5 text-gray-400" />
                                   </ComboboxButton>
 
                                   <ComboboxOptions
@@ -2660,9 +2111,9 @@
                                     <ComboboxOption
                                       v-for="units in filteredBillingUnitsOutgoing"
                                       :key="units.id"
+                                      v-slot="{ active, selected }"
                                       :value="units"
-                                      as="template"
-                                      v-slot="{ active, selected }">
+                                      as="template">
                                       <ul>
                                         <li
                                           :class="[
@@ -2686,8 +2137,8 @@
                                               active ? 'text-white' : 'text-indigo-600',
                                             ]">
                                             <CheckIcon
-                                              class="h-5 w-5"
-                                              aria-hidden="true" />
+                                              aria-hidden="true"
+                                              class="h-5 w-5" />
                                           </span>
                                         </li>
                                       </ul>
@@ -2702,18 +2153,20 @@
                             <dt class="text-gray-500">Packaging</dt>
                             <dd class="text-gray-700">
                               <Combobox
-                                as="div"
-                                v-model="combined_Form.packaging_outgoing_id">
+                                v-model="combined_Form.packaging_outgoing_id"
+                                as="div">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    :display-value="(packaging) => packaging?.name"
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="packageOutgoingQuery = $event.target.value"
-                                    :display-value="(packaging) => packaging?.name" />
+                                    @change="
+                                      packageOutgoingQuery = $event.target.value
+                                    " />
                                   <ComboboxButton
                                     class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                     <ChevronUpDownIcon
-                                      class="h-5 w-5 text-gray-400"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5 text-gray-400" />
                                   </ComboboxButton>
 
                                   <ComboboxOptions
@@ -2722,9 +2175,9 @@
                                     <ComboboxOption
                                       v-for="packaging in filteredPackageOutgoing"
                                       :key="packaging.id"
+                                      v-slot="{ active, selected }"
                                       :value="packaging"
-                                      as="template"
-                                      v-slot="{ active, selected }">
+                                      as="template">
                                       <ul>
                                         <li
                                           :class="[
@@ -2748,8 +2201,8 @@
                                               active ? 'text-white' : 'text-indigo-600',
                                             ]">
                                             <CheckIcon
-                                              class="h-5 w-5"
-                                              aria-hidden="true" />
+                                              aria-hidden="true"
+                                              class="h-5 w-5" />
                                           </span>
                                         </li>
                                       </ul>
@@ -2816,13 +2269,13 @@
                               id="customer_notes"
                               v-model="combined_Form.customer_notes"
                               :rows="12"
+                              class="mt-1 block w-1/3"
                               placeholder="Optional notes..."
-                              type="text"
-                              class="mt-1 block w-1/3" />
+                              type="text" />
 
                             <InputError
-                              class="mt-2"
-                              :message="combined_Form.errors.customer_notes" />
+                              :message="combined_Form.errors.customer_notes"
+                              class="mt-2" />
                           </div>
                         </dl>
                       </li>
@@ -2835,48 +2288,48 @@
                         <thead>
                           <tr>
                             <th
-                              scope="col"
-                              class="whitespace py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="whitespace py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               No
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Customer
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Address
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Deal ticket
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Customer order no
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Supplier loading no
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Unit Split
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Transport Split
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Selling Split
                             </th>
                           </tr>
@@ -2892,20 +2345,20 @@
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <div>
                                 <Combobox
-                                  as="div"
-                                  v-model="combined_Form.customer_id_2">
+                                  v-model="combined_Form.customer_id_2"
+                                  as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
-                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery2 = $event.target.value"
                                       :display-value="
                                         (customer) => customer?.last_legal_name
-                                      " />
+                                      "
+                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                      @change="customerQuery2 = $event.target.value" />
                                     <ComboboxButton
                                       class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"
+                                        class="h-5 w-5 text-gray-400" />
                                     </ComboboxButton>
 
                                     <ComboboxOptions
@@ -2914,9 +2367,9 @@
                                       <ComboboxOption
                                         v-for="customer in filteredCustomers2"
                                         :key="customer.id"
+                                        v-slot="{ active, selected }"
                                         :value="customer"
-                                        as="template"
-                                        v-slot="{ active, selected }">
+                                        as="template">
                                         <ul>
                                           <li
                                             :class="[
@@ -2940,8 +2393,8 @@
                                                 active ? 'text-white' : 'text-indigo-600',
                                               ]">
                                               <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true" />
+                                                aria-hidden="true"
+                                                class="h-5 w-5" />
                                             </span>
                                           </li>
                                         </ul>
@@ -2957,20 +2410,20 @@
                               <div>
                                 <div>
                                   <Combobox
-                                    as="div"
-                                    v-model="combined_Form.delivery_address_id_2">
+                                    v-model="combined_Form.delivery_address_id_2"
+                                    as="div">
                                     <div class="relative mt-2">
                                       <ComboboxInput
+                                        :display-value="(address) => address?.line_1"
                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="
                                           deliveryAddressQuery2 = $event.target.value
-                                        "
-                                        :display-value="(address) => address?.line_1" />
+                                        " />
                                       <ComboboxButton
                                         class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                         <ChevronUpDownIcon
-                                          class="h-5 w-5 text-gray-400"
-                                          aria-hidden="true" />
+                                          aria-hidden="true"
+                                          class="h-5 w-5 text-gray-400" />
                                       </ComboboxButton>
 
                                       <div v-if="filteredDeliveryAddress2 != null">
@@ -2980,9 +2433,9 @@
                                           <ComboboxOption
                                             v-for="address in filteredDeliveryAddress2"
                                             :key="address.id"
+                                            v-slot="{ active, selected }"
                                             :value="address"
-                                            as="template"
-                                            v-slot="{ active, selected }">
+                                            as="template">
                                             <ul>
                                               <li
                                                 :class="[
@@ -3036,8 +2489,8 @@
                                                       : 'text-indigo-600',
                                                   ]">
                                                   <CheckIcon
-                                                    class="h-5 w-5"
-                                                    aria-hidden="true" />
+                                                    aria-hidden="true"
+                                                    class="h-5 w-5" />
                                                 </span>
                                               </li>
                                             </ul>
@@ -3072,39 +2525,39 @@
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.customer_order_number_2"
-                                type="text"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </td>
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.supplier_loading_number_2"
-                                type="text"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.no_units_outgoing_2"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.transport_cost_2"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.selling_price_2"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
                           </tr>
 
@@ -3118,20 +2571,20 @@
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <div>
                                 <Combobox
-                                  as="div"
-                                  v-model="combined_Form.customer_id_3">
+                                  v-model="combined_Form.customer_id_3"
+                                  as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
-                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery3 = $event.target.value"
                                       :display-value="
                                         (customer) => customer?.last_legal_name
-                                      " />
+                                      "
+                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                      @change="customerQuery3 = $event.target.value" />
                                     <ComboboxButton
                                       class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"
+                                        class="h-5 w-5 text-gray-400" />
                                     </ComboboxButton>
 
                                     <ComboboxOptions
@@ -3140,9 +2593,9 @@
                                       <ComboboxOption
                                         v-for="customer in filteredCustomers3"
                                         :key="customer.id"
+                                        v-slot="{ active, selected }"
                                         :value="customer"
-                                        as="template"
-                                        v-slot="{ active, selected }">
+                                        as="template">
                                         <ul>
                                           <li
                                             :class="[
@@ -3166,8 +2619,8 @@
                                                 active ? 'text-white' : 'text-indigo-600',
                                               ]">
                                               <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true" />
+                                                aria-hidden="true"
+                                                class="h-5 w-5" />
                                             </span>
                                           </li>
                                         </ul>
@@ -3183,20 +2636,20 @@
                               <div>
                                 <div>
                                   <Combobox
-                                    as="div"
-                                    v-model="combined_Form.delivery_address_id_3">
+                                    v-model="combined_Form.delivery_address_id_3"
+                                    as="div">
                                     <div class="relative mt-2">
                                       <ComboboxInput
+                                        :display-value="(address) => address?.line_1"
                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="
                                           deliveryAddressQuery3 = $event.target.value
-                                        "
-                                        :display-value="(address) => address?.line_1" />
+                                        " />
                                       <ComboboxButton
                                         class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                         <ChevronUpDownIcon
-                                          class="h-5 w-5 text-gray-400"
-                                          aria-hidden="true" />
+                                          aria-hidden="true"
+                                          class="h-5 w-5 text-gray-400" />
                                       </ComboboxButton>
 
                                       <div v-if="filteredDeliveryAddress3 != null">
@@ -3206,9 +2659,9 @@
                                           <ComboboxOption
                                             v-for="address in filteredDeliveryAddress3"
                                             :key="address.id"
+                                            v-slot="{ active, selected }"
                                             :value="address"
-                                            as="template"
-                                            v-slot="{ active, selected }">
+                                            as="template">
                                             <ul>
                                               <li
                                                 :class="[
@@ -3262,8 +2715,8 @@
                                                       : 'text-indigo-600',
                                                   ]">
                                                   <CheckIcon
-                                                    class="h-5 w-5"
-                                                    aria-hidden="true" />
+                                                    aria-hidden="true"
+                                                    class="h-5 w-5" />
                                                 </span>
                                               </li>
                                             </ul>
@@ -3298,39 +2751,39 @@
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.customer_order_number_3"
-                                type="text"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </td>
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.supplier_loading_number_3"
-                                type="text"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.no_units_outgoing_3"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.transport_cost_3"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.selling_price_3"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
                           </tr>
 
@@ -3344,20 +2797,20 @@
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <div>
                                 <Combobox
-                                  as="div"
-                                  v-model="combined_Form.customer_id_4">
+                                  v-model="combined_Form.customer_id_4"
+                                  as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
-                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery4 = $event.target.value"
                                       :display-value="
                                         (customer) => customer?.last_legal_name
-                                      " />
+                                      "
+                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                      @change="customerQuery4 = $event.target.value" />
                                     <ComboboxButton
                                       class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"
+                                        class="h-5 w-5 text-gray-400" />
                                     </ComboboxButton>
 
                                     <ComboboxOptions
@@ -3366,9 +2819,9 @@
                                       <ComboboxOption
                                         v-for="customer in filteredCustomers4"
                                         :key="customer.id"
+                                        v-slot="{ active, selected }"
                                         :value="customer"
-                                        as="template"
-                                        v-slot="{ active, selected }">
+                                        as="template">
                                         <ul>
                                           <li
                                             :class="[
@@ -3392,8 +2845,8 @@
                                                 active ? 'text-white' : 'text-indigo-600',
                                               ]">
                                               <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true" />
+                                                aria-hidden="true"
+                                                class="h-5 w-5" />
                                             </span>
                                           </li>
                                         </ul>
@@ -3409,20 +2862,20 @@
                               <div>
                                 <div>
                                   <Combobox
-                                    as="div"
-                                    v-model="combined_Form.delivery_address_id_4">
+                                    v-model="combined_Form.delivery_address_id_4"
+                                    as="div">
                                     <div class="relative mt-2">
                                       <ComboboxInput
+                                        :display-value="(address) => address?.line_1"
                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="
                                           deliveryAddressQuery4 = $event.target.value
-                                        "
-                                        :display-value="(address) => address?.line_1" />
+                                        " />
                                       <ComboboxButton
                                         class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                         <ChevronUpDownIcon
-                                          class="h-5 w-5 text-gray-400"
-                                          aria-hidden="true" />
+                                          aria-hidden="true"
+                                          class="h-5 w-5 text-gray-400" />
                                       </ComboboxButton>
 
                                       <div v-if="filteredDeliveryAddress4 != null">
@@ -3432,9 +2885,9 @@
                                           <ComboboxOption
                                             v-for="address in filteredDeliveryAddress4"
                                             :key="address.id"
+                                            v-slot="{ active, selected }"
                                             :value="address"
-                                            as="template"
-                                            v-slot="{ active, selected }">
+                                            as="template">
                                             <ul>
                                               <li
                                                 :class="[
@@ -3488,8 +2941,8 @@
                                                       : 'text-indigo-600',
                                                   ]">
                                                   <CheckIcon
-                                                    class="h-5 w-5"
-                                                    aria-hidden="true" />
+                                                    aria-hidden="true"
+                                                    class="h-5 w-5" />
                                                 </span>
                                               </li>
                                             </ul>
@@ -3524,39 +2977,39 @@
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.customer_order_number_4"
-                                type="text"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </td>
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.supplier_loading_number_4"
-                                type="text"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.no_units_outgoing_4"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.transport_cost_4"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.selling_price_4"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
                           </tr>
 
@@ -3570,20 +3023,20 @@
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <div>
                                 <Combobox
-                                  as="div"
-                                  v-model="combined_Form.customer_id_5">
+                                  v-model="combined_Form.customer_id_5"
+                                  as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
-                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery5 = $event.target.value"
                                       :display-value="
                                         (customer) => customer?.last_legal_name
-                                      " />
+                                      "
+                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                      @change="customerQuery5 = $event.target.value" />
                                     <ComboboxButton
                                       class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"
+                                        class="h-5 w-5 text-gray-400" />
                                     </ComboboxButton>
 
                                     <ComboboxOptions
@@ -3592,9 +3045,9 @@
                                       <ComboboxOption
                                         v-for="customer in filteredCustomers5"
                                         :key="customer.id"
+                                        v-slot="{ active, selected }"
                                         :value="customer"
-                                        as="template"
-                                        v-slot="{ active, selected }">
+                                        as="template">
                                         <ul>
                                           <li
                                             :class="[
@@ -3618,8 +3071,8 @@
                                                 active ? 'text-white' : 'text-indigo-600',
                                               ]">
                                               <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true" />
+                                                aria-hidden="true"
+                                                class="h-5 w-5" />
                                             </span>
                                           </li>
                                         </ul>
@@ -3635,20 +3088,20 @@
                               <div>
                                 <div>
                                   <Combobox
-                                    as="div"
-                                    v-model="combined_Form.delivery_address_id_5">
+                                    v-model="combined_Form.delivery_address_id_5"
+                                    as="div">
                                     <div class="relative mt-2">
                                       <ComboboxInput
+                                        :display-value="(address) => address?.line_1"
                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="
                                           deliveryAddressQuery5 = $event.target.value
-                                        "
-                                        :display-value="(address) => address?.line_1" />
+                                        " />
                                       <ComboboxButton
                                         class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                         <ChevronUpDownIcon
-                                          class="h-5 w-5 text-gray-400"
-                                          aria-hidden="true" />
+                                          aria-hidden="true"
+                                          class="h-5 w-5 text-gray-400" />
                                       </ComboboxButton>
 
                                       <div v-if="filteredDeliveryAddress5 != null">
@@ -3658,9 +3111,9 @@
                                           <ComboboxOption
                                             v-for="address in filteredDeliveryAddress5"
                                             :key="address.id"
+                                            v-slot="{ active, selected }"
                                             :value="address"
-                                            as="template"
-                                            v-slot="{ active, selected }">
+                                            as="template">
                                             <ul>
                                               <li
                                                 :class="[
@@ -3714,8 +3167,8 @@
                                                       : 'text-indigo-600',
                                                   ]">
                                                   <CheckIcon
-                                                    class="h-5 w-5"
-                                                    aria-hidden="true" />
+                                                    aria-hidden="true"
+                                                    class="h-5 w-5" />
                                                 </span>
                                               </li>
                                             </ul>
@@ -3750,39 +3203,39 @@
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.customer_order_number_5"
-                                type="text"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </td>
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.supplier_loading_number_5"
-                                type="text"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.no_units_outgoing_5"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.transport_cost_5"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
                               <input
                                 v-model="combined_Form.selling_price_5"
-                                type="number"
-                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-32 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </td>
                           </tr>
 
@@ -3848,20 +3301,20 @@
                             <dd class="flex items-start gap-x-2">
                               <div>
                                 <Combobox
-                                  as="div"
-                                  v-model="combined_Form.transporter_id">
+                                  v-model="combined_Form.transporter_id"
+                                  as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
-                                      class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="transporterQuery = $event.target.value"
                                       :display-value="
                                         (transporter) => transporter?.last_legal_name
-                                      " />
+                                      "
+                                      class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                      @change="transporterQuery = $event.target.value" />
                                     <ComboboxButton
                                       class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"
+                                        class="h-5 w-5 text-gray-400" />
                                     </ComboboxButton>
 
                                     <ComboboxOptions
@@ -3870,9 +3323,9 @@
                                       <ComboboxOption
                                         v-for="transporter in filteredTransporters"
                                         :key="transporter.id"
+                                        v-slot="{ active, selected }"
                                         :value="transporter"
-                                        as="template"
-                                        v-slot="{ active, selected }">
+                                        as="template">
                                         <ul>
                                           <li
                                             :class="[
@@ -3896,8 +3349,8 @@
                                                 active ? 'text-white' : 'text-indigo-600',
                                               ]">
                                               <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true" />
+                                                aria-hidden="true"
+                                                class="h-5 w-5" />
                                             </span>
                                           </li>
                                         </ul>
@@ -3944,8 +3397,8 @@
                             <dd class="flex items-start gap-x-2">
                               <input
                                 v-model="combined_Form.number_loads"
-                                type="text"
-                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="text" />
                             </dd>
                           </div>
                         </dl>
@@ -3969,21 +3422,23 @@
 
                               <div>
                                 <Combobox
-                                  as="div"
-                                  v-model="combined_Form.regular_driver_id">
+                                  v-model="combined_Form.regular_driver_id"
+                                  as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
-                                      class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="selectedDriverQuery = $event.target.value"
                                       :display-value="
                                         (driver) =>
                                           driver?.first_name + ' ' + driver?.last_name
+                                      "
+                                      class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                      @change="
+                                        selectedDriverQuery = $event.target.value
                                       " />
                                     <ComboboxButton
                                       class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"
+                                        class="h-5 w-5 text-gray-400" />
                                     </ComboboxButton>
 
                                     <ComboboxOptions
@@ -3992,9 +3447,9 @@
                                       <ComboboxOption
                                         v-for="driver in filteredSelectedDrivers"
                                         :key="driver.id"
+                                        v-slot="{ active, selected }"
                                         :value="driver"
-                                        as="template"
-                                        v-slot="{ active, selected }">
+                                        as="template">
                                         <ul>
                                           <li
                                             :class="[
@@ -4018,8 +3473,8 @@
                                                 active ? 'text-white' : 'text-indigo-600',
                                               ]">
                                               <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true" />
+                                                aria-hidden="true"
+                                                class="h-5 w-5" />
                                             </span>
                                           </li>
                                         </ul>
@@ -4029,19 +3484,12 @@
                                 </Combobox>
                               </div>
 
-                              <!--                                                            <select v-model="combined_Form.regular_driver_id"
-                                                                                                                                class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                                                                                            <option v-for="n in props.all_drivers" :key="n.id" :value="n.id">
-                                                                                                                                {{n.first_name}} {{n.last_legal_name}}
-                                                                                                                            </option>
-                                                                                                                        </select>-->
-
                               <InputError
-                                class="mt-2"
-                                :message="combined_Form.errors.regular_driver_id" />
+                                :message="combined_Form.errors.regular_driver_id"
+                                class="mt-2" />
                               <div
-                                @click="toggleShowDriver"
-                                class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                @click="toggleShowDriver">
                                 + Add driver
                               </div>
 
@@ -4061,14 +3509,14 @@
                                     </div>
                                     <div class="sm:col-span-2">
                                       <input
-                                        v-model="driverForm.first_name"
-                                        type="text"
-                                        name="name"
                                         id="name"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                        v-model="driverForm.first_name"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        name="name"
+                                        type="text" />
                                       <InputError
-                                        class="mt-2"
-                                        :message="driverForm.errors.first_name" />
+                                        :message="driverForm.errors.first_name"
+                                        class="mt-2" />
                                     </div>
                                   </div>
 
@@ -4083,14 +3531,14 @@
                                     </div>
                                     <div class="sm:col-span-2">
                                       <input
-                                        v-model="driverForm.last_name"
-                                        type="text"
-                                        name="last_name"
                                         id="last_name"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                        v-model="driverForm.last_name"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        name="last_name"
+                                        type="text" />
                                       <InputError
-                                        class="mt-2"
-                                        :message="driverForm.errors.last_name" />
+                                        :message="driverForm.errors.last_name"
+                                        class="mt-2" />
                                     </div>
                                   </div>
 
@@ -4105,14 +3553,14 @@
                                     </div>
                                     <div class="sm:col-span-2">
                                       <input
-                                        v-model="driverForm.cell_no"
-                                        type="text"
-                                        name="cell_no"
                                         id="cell_no"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                        v-model="driverForm.cell_no"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        name="cell_no"
+                                        type="text" />
                                       <InputError
-                                        class="mt-2"
-                                        :message="driverForm.errors.cell_no" />
+                                        :message="driverForm.errors.cell_no"
+                                        class="mt-2" />
                                     </div>
                                   </div>
 
@@ -4123,14 +3571,14 @@
                                     <div class="sm:col-span-4">
                                       <AreaInput
                                         id="comments2"
-                                        :rows="6"
-                                        placeholder="Optional comments..."
                                         v-model="driverForm.comment"
-                                        type="text"
-                                        class="mt-1 block w-full" />
+                                        :rows="6"
+                                        class="mt-1 block w-full"
+                                        placeholder="Optional comments..."
+                                        type="text" />
                                       <InputError
-                                        class="mt-2"
-                                        :message="driverForm.errors.comment" />
+                                        :message="driverForm.errors.comment"
+                                        class="mt-2" />
                                     </div>
                                   </div>
 
@@ -4139,15 +3587,15 @@
                                     class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                                     <div class="flex justify-end space-x-3">
                                       <button
-                                        type="button"
                                         class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                        type="button"
                                         @click="toggleShowDriver">
                                         Cancel
                                       </button>
                                       <button
+                                        class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         type="button"
-                                        @click="createProduct"
-                                        class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        @click="createProduct">
                                         Create
                                       </button>
                                     </div>
@@ -4163,23 +3611,25 @@
 
                               <div>
                                 <Combobox
-                                  as="div"
-                                  v-model="combined_Form.regular_vehicle_id">
+                                  v-model="combined_Form.regular_vehicle_id"
+                                  as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
-                                      class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="selectedVehicleQuery = $event.target.value"
                                       :display-value="
                                         (vehicle) =>
                                           vehicle?.reg_no +
                                           ' ' +
                                           vehicle?.vehicle_type.name
+                                      "
+                                      class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                      @change="
+                                        selectedVehicleQuery = $event.target.value
                                       " />
                                     <ComboboxButton
                                       class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"
+                                        class="h-5 w-5 text-gray-400" />
                                     </ComboboxButton>
 
                                     <ComboboxOptions
@@ -4188,9 +3638,9 @@
                                       <ComboboxOption
                                         v-for="vehicle in filteredSelectedVehicles"
                                         :key="vehicle.id"
+                                        v-slot="{ active, selected }"
                                         :value="vehicle"
-                                        as="template"
-                                        v-slot="{ active, selected }">
+                                        as="template">
                                         <ul>
                                           <li
                                             :class="[
@@ -4214,8 +3664,8 @@
                                                 active ? 'text-white' : 'text-indigo-600',
                                               ]">
                                               <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true" />
+                                                aria-hidden="true"
+                                                class="h-5 w-5" />
                                             </span>
                                           </li>
                                         </ul>
@@ -4225,20 +3675,13 @@
                                 </Combobox>
                               </div>
 
-                              <!--                                                            <select v-model="combined_Form.regular_vehicle_id"
-                                                                                                                                class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                                                                                            <option v-for="n in props.all_vehicles" :key="n.id" :value="n.id">
-                                                                                                                                {{n.reg_no}} - {{n.vehicle_type.name}}
-                                                                                                                            </option>
-                                                                                                                        </select>-->
-
                               <InputError
-                                class="mt-2"
-                                :message="combined_Form.errors.regular_driver_id" />
+                                :message="combined_Form.errors.regular_driver_id"
+                                class="mt-2" />
 
                               <div
-                                @click="toggleShowVehicle"
-                                class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                @click="toggleShowVehicle">
                                 + Add vehicle
                               </div>
 
@@ -4261,14 +3704,14 @@
                                       </div>
                                       <div class="sm:col-span-2">
                                         <input
-                                          v-model="vehicleForm.reg_no"
-                                          type="text"
-                                          name="reg_no"
                                           id="reg_no"
-                                          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                          v-model="vehicleForm.reg_no"
+                                          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                          name="reg_no"
+                                          type="text" />
                                         <InputError
-                                          class="mt-2"
-                                          :message="vehicleForm.errors.reg_no" />
+                                          :message="vehicleForm.errors.reg_no"
+                                          class="mt-2" />
                                       </div>
                                     </div>
 
@@ -4293,8 +3736,8 @@
                                           </option>
                                         </select>
                                         <InputError
-                                          class="mt-2"
-                                          :message="vehicleForm.errors.vehicle_type_id" />
+                                          :message="vehicleForm.errors.vehicle_type_id"
+                                          class="mt-2" />
                                       </div>
                                     </div>
 
@@ -4305,14 +3748,14 @@
                                       <div class="sm:col-span-4">
                                         <AreaInput
                                           id="comments"
-                                          :rows="6"
-                                          placeholder="Optional comments..."
                                           v-model="vehicleForm.comment"
-                                          type="text"
-                                          class="mt-1 block w-full" />
+                                          :rows="6"
+                                          class="mt-1 block w-full"
+                                          placeholder="Optional comments..."
+                                          type="text" />
                                         <InputError
-                                          class="mt-2"
-                                          :message="vehicleForm.errors.comment" />
+                                          :message="vehicleForm.errors.comment"
+                                          class="mt-2" />
                                       </div>
                                     </div>
                                   </div>
@@ -4322,15 +3765,15 @@
                                     class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                                     <div class="flex justify-end space-x-3">
                                       <button
-                                        type="button"
                                         class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                        type="button"
                                         @click="toggleShowVehicle">
                                         Cancel
                                       </button>
                                       <button
+                                        class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         type="button"
-                                        @click="createProductVehicle"
-                                        class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        @click="createProductVehicle">
                                         Create
                                       </button>
                                     </div>
@@ -4383,8 +3826,8 @@
                                 <input
                                   id="trailer_reg_1"
                                   v-model="combined_Form.trailer_reg_1"
-                                  type="text"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                  type="text" />
                               </dd>
                             </div>
 
@@ -4394,8 +3837,8 @@
                                 <input
                                   id="trailer_reg_2"
                                   v-model="combined_Form.trailer_reg_2"
-                                  type="text"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                  type="text" />
                               </dd>
                             </div>
                           </dl>
@@ -4465,8 +3908,8 @@
                                   <input
                                     id="contact1"
                                     v-model="combined_Form.loading_contact"
-                                    type="text"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    type="text" />
                                 </dd>
                               </div>
 
@@ -4476,8 +3919,8 @@
                                   <input
                                     id="contact_no_1"
                                     v-model="combined_Form.loading_contact_no"
-                                    type="text"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    type="text" />
                                 </dd>
                               </div>
                             </dl>
@@ -4488,13 +3931,13 @@
                               id="loading_instructions"
                               v-model="combined_Form.loading_instructions"
                               :rows="2"
+                              class="mt-1 block w-1/3"
                               placeholder="Optional notes..."
-                              type="text"
-                              class="mt-1 block w-1/3" />
+                              type="text" />
 
                             <InputError
-                              class="mt-2"
-                              :message="combined_Form.errors.customer_notes" />
+                              :message="combined_Form.errors.customer_notes"
+                              class="mt-2" />
                           </div>
 
                           <div class="flex justify-between gap-x-4 py-1">
@@ -4550,8 +3993,8 @@
                                   <input
                                     id="contact2"
                                     v-model="combined_Form.offloading_contact"
-                                    type="text"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    type="text" />
                                 </dd>
                               </div>
 
@@ -4561,8 +4004,8 @@
                                   <input
                                     id="contact_no_2"
                                     v-model="combined_Form.offloading_contact_no"
-                                    type="text"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    type="text" />
                                 </dd>
                               </div>
                             </dl>
@@ -4573,9 +4016,9 @@
                               id="offloading_instructions"
                               v-model="combined_Form.offloading_instructions"
                               :rows="2"
+                              class="mt-1 block w-1/3"
                               placeholder="Optional notes..."
-                              type="text"
-                              class="mt-1 block w-1/3" />
+                              type="text" />
                           </div>
                         </dl>
                       </li>
@@ -4594,13 +4037,13 @@
                               id="transport_notes"
                               v-model="combined_Form.transport_notes"
                               :rows="6"
+                              class="mt-1 block w-1/3"
                               placeholder="Optional notes..."
-                              type="text"
-                              class="mt-1 block w-1/3" />
+                              type="text" />
 
                             <InputError
-                              class="mt-2"
-                              :message="combined_Form.errors.customer_notes" />
+                              :message="combined_Form.errors.customer_notes"
+                              class="mt-2" />
                           </div>
 
                           <div class="flex justify-between gap-x-4 py-3">
@@ -4613,8 +4056,8 @@
                                   :key="contact.id">
                                   <div>
                                     <Link
-                                      class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                      :href="route('contact.show', contact.id)">
+                                      :href="route('contact.show', contact.id)"
+                                      class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                       <span>{{ contact.first_name }}</span>
                                       <span>{{ contact.last_legal_name }}</span>
                                     </Link>
@@ -4652,8 +4095,8 @@
                                   :key="contact.id">
                                   <div>
                                     <Link
-                                      class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                      :href="route('contact.show', contact.id)">
+                                      :href="route('contact.show', contact.id)"
+                                      class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                       <span>{{ contact.first_name }}</span>
                                       <span>{{ contact.last_legal_name }}</span>
                                     </Link>
@@ -4691,8 +4134,8 @@
                                   :key="contact.id">
                                   <div>
                                     <Link
-                                      class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                      :href="route('contact.show', contact.id)">
+                                      :href="route('contact.show', contact.id)"
+                                      class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                       <span>{{ contact.first_name }}</span>
                                       <span>{{ contact.last_legal_name }}</span>
                                     </Link>
@@ -4763,18 +4206,20 @@
                             <dt class="text-gray-500">Supply Packaging</dt>
                             <dd class="text-gray-700">
                               <Combobox
-                                as="div"
-                                v-model="combined_Form.packaging_incoming_id">
+                                v-model="combined_Form.packaging_incoming_id"
+                                as="div">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    :display-value="(packaging) => packaging?.name"
                                     class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="packageIncomingQuery = $event.target.value"
-                                    :display-value="(packaging) => packaging?.name" />
+                                    @change="
+                                      packageIncomingQuery = $event.target.value
+                                    " />
                                   <ComboboxButton
                                     class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                     <ChevronUpDownIcon
-                                      class="h-5 w-5 text-gray-400"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5 text-gray-400" />
                                   </ComboboxButton>
 
                                   <ComboboxOptions
@@ -4783,9 +4228,9 @@
                                     <ComboboxOption
                                       v-for="packaging in filteredPackageIncoming"
                                       :key="packaging.id"
+                                      v-slot="{ active, selected }"
                                       :value="packaging"
-                                      as="template"
-                                      v-slot="{ active, selected }">
+                                      as="template">
                                       <ul>
                                         <li
                                           :class="[
@@ -4809,8 +4254,8 @@
                                               active ? 'text-white' : 'text-indigo-600',
                                             ]">
                                             <CheckIcon
-                                              class="h-5 w-5"
-                                              aria-hidden="true" />
+                                              aria-hidden="true"
+                                              class="h-5 w-5" />
                                           </span>
                                         </li>
                                       </ul>
@@ -4825,20 +4270,20 @@
                             <dt class="text-gray-500">Billing Units</dt>
                             <dd class="text-gray-700">
                               <Combobox
-                                as="div"
-                                v-model="combined_Form.billing_units_incoming_id">
+                                v-model="combined_Form.billing_units_incoming_id"
+                                as="div">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    :display-value="(units) => units?.name"
                                     class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="
                                       billingUnitsIncomingQuery = $event.target.value
-                                    "
-                                    :display-value="(units) => units?.name" />
+                                    " />
                                   <ComboboxButton
                                     class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                     <ChevronUpDownIcon
-                                      class="h-5 w-5 text-gray-400"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5 text-gray-400" />
                                   </ComboboxButton>
 
                                   <ComboboxOptions
@@ -4847,9 +4292,9 @@
                                     <ComboboxOption
                                       v-for="units in filteredBillingUnitsIncoming"
                                       :key="units.id"
+                                      v-slot="{ active, selected }"
                                       :value="units"
-                                      as="template"
-                                      v-slot="{ active, selected }">
+                                      as="template">
                                       <ul>
                                         <li
                                           :class="[
@@ -4873,8 +4318,8 @@
                                               active ? 'text-white' : 'text-indigo-600',
                                             ]">
                                             <CheckIcon
-                                              class="h-5 w-5"
-                                              aria-hidden="true" />
+                                              aria-hidden="true"
+                                              class="h-5 w-5" />
                                           </span>
                                         </li>
                                       </ul>
@@ -4906,8 +4351,8 @@
                             <dd class="text-gray-700">
                               <input
                                 v-model="combined_Form.cost_price_per_unit"
-                                type="number"
-                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </dd>
                           </div>
 
@@ -4970,8 +4415,8 @@
                               <div>
                                 <input
                                   v-model="combined_Form.transport_rate"
-                                  type="number"
-                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                  type="number" />
                               </div>
                             </dd>
                           </div>
@@ -5026,13 +4471,13 @@
                                     'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                   ]">
                                   <span
-                                    aria-hidden="true"
                                     :class="[
                                       combined_Form.is_transport_costs_inc_price
                                         ? 'translate-x-5'
                                         : 'translate-x-0',
                                       'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                    ]" />
+                                    ]"
+                                    aria-hidden="true" />
                                 </Switch>
                               </SwitchGroup>
                             </dd>
@@ -5073,18 +4518,20 @@
                             <dt class="text-gray-500">Selling Packaging</dt>
                             <dd class="flex items-start gap-x-2">
                               <Combobox
-                                as="div"
-                                v-model="combined_Form.packaging_outgoing_id">
+                                v-model="combined_Form.packaging_outgoing_id"
+                                as="div">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    :display-value="(packaging) => packaging?.name"
                                     class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="packageOutgoingQuery = $event.target.value"
-                                    :display-value="(packaging) => packaging?.name" />
+                                    @change="
+                                      packageOutgoingQuery = $event.target.value
+                                    " />
                                   <ComboboxButton
                                     class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                     <ChevronUpDownIcon
-                                      class="h-5 w-5 text-gray-400"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5 text-gray-400" />
                                   </ComboboxButton>
 
                                   <ComboboxOptions
@@ -5093,9 +4540,9 @@
                                     <ComboboxOption
                                       v-for="packaging in filteredPackageOutgoing"
                                       :key="packaging.id"
+                                      v-slot="{ active, selected }"
                                       :value="packaging"
-                                      as="template"
-                                      v-slot="{ active, selected }">
+                                      as="template">
                                       <ul>
                                         <li
                                           :class="[
@@ -5119,8 +4566,8 @@
                                               active ? 'text-white' : 'text-indigo-600',
                                             ]">
                                             <CheckIcon
-                                              class="h-5 w-5"
-                                              aria-hidden="true" />
+                                              aria-hidden="true"
+                                              class="h-5 w-5" />
                                           </span>
                                         </li>
                                       </ul>
@@ -5134,20 +4581,20 @@
                             <dt class="text-gray-500">Billing units</dt>
                             <dd class="flex items-start gap-x-2">
                               <Combobox
-                                as="div"
-                                v-model="combined_Form.billing_units_outgoing_id">
+                                v-model="combined_Form.billing_units_outgoing_id"
+                                as="div">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    :display-value="(units) => units?.name"
                                     class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="
                                       billingUnitsOutgoingQuery = $event.target.value
-                                    "
-                                    :display-value="(units) => units?.name" />
+                                    " />
                                   <ComboboxButton
                                     class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                     <ChevronUpDownIcon
-                                      class="h-5 w-5 text-gray-400"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5 text-gray-400" />
                                   </ComboboxButton>
 
                                   <ComboboxOptions
@@ -5156,9 +4603,9 @@
                                     <ComboboxOption
                                       v-for="units in filteredBillingUnitsOutgoing"
                                       :key="units.id"
+                                      v-slot="{ active, selected }"
                                       :value="units"
-                                      as="template"
-                                      v-slot="{ active, selected }">
+                                      as="template">
                                       <ul>
                                         <li
                                           :class="[
@@ -5182,8 +4629,8 @@
                                               active ? 'text-white' : 'text-indigo-600',
                                             ]">
                                             <CheckIcon
-                                              class="h-5 w-5"
-                                              aria-hidden="true" />
+                                              aria-hidden="true"
+                                              class="h-5 w-5" />
                                           </span>
                                         </li>
                                       </ul>
@@ -5215,8 +4662,8 @@
                             <dd class="text-gray-700">
                               <input
                                 v-model="combined_Form.selling_price_per_unit"
-                                type="number"
-                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                type="number" />
                             </dd>
                           </div>
 
@@ -5269,16 +4716,16 @@
                               <dt class="text-gray-500">
                                 <input
                                   v-model="combined_Form.additional_cost_desc_1"
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                   placeholder="Description..."
-                                  type="text"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  type="text" />
                               </dt>
                               <dd class="text-gray-700">
                                 <div>
                                   <input
                                     v-model="combined_Form.additional_cost_1"
-                                    type="number"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    type="number" />
                                 </div>
                               </dd>
                             </div>
@@ -5286,16 +4733,16 @@
                               <dt class="text-gray-500">
                                 <input
                                   v-model="combined_Form.additional_cost_desc_2"
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                   placeholder="Description..."
-                                  type="text"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  type="text" />
                               </dt>
                               <dd class="text-gray-700">
                                 <div>
                                   <input
                                     v-model="combined_Form.additional_cost_2"
-                                    type="number"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    type="number" />
                                 </div>
                               </dd>
                             </div>
@@ -5303,16 +4750,16 @@
                               <dt class="text-gray-500">
                                 <input
                                   v-model="combined_Form.additional_cost_desc_3"
+                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                   placeholder="Description..."
-                                  type="text"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  type="text" />
                               </dt>
                               <dd class="text-gray-700">
                                 <div>
                                   <input
                                     v-model="combined_Form.additional_cost_3"
-                                    type="number"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    type="number" />
                                 </div>
                               </dd>
                             </div>
@@ -5326,16 +4773,16 @@
                                 <dt class="text-gray-500">
                                   <input
                                     v-model="combined_Form.adjusted_gp_notes"
+                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     placeholder="Description..."
-                                    type="text"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    type="text" />
                                 </dt>
                                 <dd class="text-gray-700">
                                   <div>
                                     <input
                                       v-model="combined_Form.adjusted_gp"
-                                      type="number"
-                                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                      type="number" />
                                   </div>
                                 </dd>
                               </div>
@@ -5347,18 +4794,18 @@
                               <thead>
                                 <tr class="divide-x divide-gray-200">
                                   <th
-                                    scope="col"
-                                    class="py-2 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                    class="py-2 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                                    scope="col">
                                     Item
                                   </th>
                                   <th
-                                    scope="col"
-                                    class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    scope="col">
                                     Plan
                                   </th>
                                   <th
-                                    scope="col"
-                                    class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    scope="col">
                                     Actual
                                   </th>
                                 </tr>
@@ -5673,13 +5120,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.is_weighbridge_certificate_received
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -5713,8 +5160,8 @@
                               <div>
                                 <input
                                   v-model="combined_Form.weighbridge_upload_weight"
-                                  type="number"
-                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                  type="number" />
                               </div>
                             </dd>
                           </div>
@@ -5725,8 +5172,8 @@
                               <div>
                                 <input
                                   v-model="combined_Form.weighbridge_offload_weight"
-                                  type="number"
-                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                  type="number" />
                               </div>
                             </dd>
                           </div>
@@ -5749,9 +5196,9 @@
                             <AreaInput
                               v-model="combined_Form.notes"
                               :rows="4"
+                              class="mt-1 block w-full"
                               placeholder="Optional comments..."
-                              type="text"
-                              class="mt-1 block w-full" />
+                              type="text" />
                           </div>
                         </dl>
                       </li>
@@ -5769,23 +5216,14 @@
 
                         <dl
                           class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                          <!--                                                    <div>
-                                                                                                            <driver-vehicle-load-component
-                                                                                                                :transport_trans_id="props.selected_transaction.id"
-                                                                                                                :transport_job_id="props.selected_transaction.transport_job.id"
-                                                                                                                :driver_vehicle="props.selected_transaction.transport_job.transport_driver_vehicle[0]"
-                                                                                                                :all_drivers="props.all_drivers"
-                                                                                                                :all_vehicles="props.all_vehicles"/>
-                                                                                                        </div>-->
-
                           <div class="flex justify-between gap-x-4 py-1">
                             <dt class="text-gray-500">Invoice No</dt>
                             <dd class="flex items-start gap-x-2">
                               <div>
                                 <input
                                   v-model="combined_Form.invoice_no"
-                                  type="text"
-                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                  type="text" />
                               </div>
                             </dd>
                           </div>
@@ -5847,8 +5285,8 @@
                               <div>
                                 <input
                                   v-model="combined_Form.invoice_amount"
-                                  type="number"
-                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                  type="number" />
                               </div>
                             </dd>
                           </div>
@@ -5859,8 +5297,8 @@
                               <div>
                                 <input
                                   v-model="combined_Form.invoice_amount_paid"
-                                  type="number"
-                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                  type="number" />
                               </div>
                             </dd>
                           </div>
@@ -5907,13 +5345,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.is_transaction_done
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -5954,13 +5392,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.is_active
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -5982,13 +5420,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.is_invoiced
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -6010,13 +5448,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.is_invoice_paid
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -6058,8 +5496,8 @@
                                 ID:{{ selected_transaction.id }}
                               </div>
                               <div
-                                class="mb-2 text-gray-400"
-                                v-if="selected_transaction.old_id">
+                                v-if="selected_transaction.old_id"
+                                class="mb-2 text-gray-400">
                                 (OLD:{{ selected_transaction.old_id }})
                               </div>
                             </div>
@@ -6088,18 +5526,18 @@
                                           <thead>
                                             <tr>
                                               <th
-                                                scope="col"
-                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                                                scope="col">
                                                 Rule
                                               </th>
                                               <th
-                                                scope="col"
-                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                                                scope="col">
                                                 Role
                                               </th>
                                               <th
-                                                scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                                scope="col">
                                                 Approved
                                               </th>
                                             </tr>
@@ -6124,8 +5562,8 @@
                                                 class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                 <ul>
                                                   <li
-                                                    v-if="n.approvals.length > 0"
                                                     v-for="(m, index) in n.approvals"
+                                                    v-if="n.approvals.length > 0"
                                                     :key="index">
                                                     <div class="flex">
                                                       <span>
@@ -6177,18 +5615,18 @@
                                           <thead>
                                             <tr>
                                               <th
-                                                scope="col"
-                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                                                scope="col">
                                                 Rule
                                               </th>
                                               <th
-                                                scope="col"
-                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                                                scope="col">
                                                 Role
                                               </th>
                                               <th
-                                                scope="col"
-                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                                scope="col">
                                                 Approved
                                               </th>
                                             </tr>
@@ -6213,8 +5651,8 @@
                                                 class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                                 <ul>
                                                   <li
-                                                    v-if="n.approvals.length > 0"
                                                     v-for="(m, index) in n.approvals"
+                                                    v-if="n.approvals.length > 0"
                                                     :key="index">
                                                     <div class="flex">
                                                       <span>
@@ -6283,8 +5721,8 @@
 
                           <div class="mt-2">
                             <SecondaryButton
-                              @click="createApproval"
-                              class="m-1">
+                              class="m-1"
+                              @click="createApproval">
                               Approve
                             </SecondaryButton>
 
@@ -6297,8 +5735,8 @@
                                 '/pdf_report/deal_ticket_view/' +
                                 props.selected_transaction.id
                               "
-                              target="_blank"
-                              class="ml-3 mt-2 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                              class="ml-3 mt-2 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              target="_blank">
                               View (working doc)
                             </a>
                           </div>
@@ -6314,14 +5752,6 @@
                         </div>
                         <dl
                           class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                          <!--                                                    <driver-vehicle-state-component
-                                                                                                            :transport_trans_id="props.selected_transaction.id"
-                                                                                                            :transport_job_id="props.selected_transaction.transport_job.id"
-                                                                                                            :driver_vehicle="props.selected_transaction.transport_job.transport_driver_vehicle[0]"
-                                                                                                            :all_drivers="props.all_drivers"
-                                                                                                            :all_vehicles="props.all_vehicles"
-                                                                                                        />-->
-
                           <div class="flex justify-between gap-x-4 py-1">
                             <dt class="text-gray-500">Transport planned</dt>
                             <dd class="flex items-start gap-x-2">
@@ -6517,13 +5947,13 @@
                                     'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                   ]">
                                   <span
-                                    aria-hidden="true"
                                     :class="[
                                       combined_Form.is_cancelled
                                         ? 'translate-x-5'
                                         : 'translate-x-0',
                                       'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                    ]" />
+                                    ]"
+                                    aria-hidden="true" />
                                 </Switch>
                               </SwitchGroup>
                             </dd>
@@ -6557,13 +5987,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.include_in_calculations
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -6586,13 +6016,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.is_loaded
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -6615,13 +6045,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.is_delivered
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -6644,13 +6074,13 @@
                                       'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                                     ]">
                                     <span
-                                      aria-hidden="true"
                                       :class="[
                                         combined_Form.is_onroad
                                           ? 'translate-x-5'
                                           : 'translate-x-0',
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                      ]" />
+                                      ]"
+                                      aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
                               </div>
@@ -6662,18 +6092,18 @@
                             <dd class="flex items-start gap-x-2">
                               <div>
                                 <Combobox
-                                  as="div"
-                                  v-model="combined_Form.contract_type_id">
+                                  v-model="combined_Form.contract_type_id"
+                                  as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
+                                      :display-value="(type) => type?.name"
                                       class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="contractTypeQuery = $event.target.value"
-                                      :display-value="(type) => type?.name" />
+                                      @change="contractTypeQuery = $event.target.value" />
                                     <ComboboxButton
                                       class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        class="h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
+                                        aria-hidden="true"
+                                        class="h-5 w-5 text-gray-400" />
                                     </ComboboxButton>
 
                                     <ComboboxOptions
@@ -6682,9 +6112,9 @@
                                       <ComboboxOption
                                         v-for="type in filteredContractTypes"
                                         :key="type.id"
+                                        v-slot="{ active, selected }"
                                         :value="type"
-                                        as="template"
-                                        v-slot="{ active, selected }">
+                                        as="template">
                                         <ul>
                                           <li
                                             :class="[
@@ -6707,8 +6137,8 @@
                                                 active ? 'text-white' : 'text-indigo-600',
                                               ]">
                                               <CheckIcon
-                                                class="h-5 w-5"
-                                                aria-hidden="true" />
+                                                aria-hidden="true"
+                                                class="h-5 w-5" />
                                             </span>
                                           </li>
                                         </ul>
@@ -6727,9 +6157,9 @@
                               id="process_notes"
                               v-model="combined_Form.process_notes"
                               :rows="4"
+                              class="mt-1 block w-1/3"
                               placeholder="Optional notes..."
-                              type="text"
-                              class="mt-1 block w-1/3" />
+                              type="text" />
                           </div>
 
                           <div class="text-lg mb-2 text-indigo-400">Traders notes</div>
@@ -6739,9 +6169,9 @@
                               id="traders_notes"
                               v-model="combined_Form.traders_notes"
                               :rows="4"
+                              class="mt-1 block w-1/3"
                               placeholder="Optional notes..."
-                              type="text"
-                              class="mt-1 block w-1/3" />
+                              type="text" />
                           </div>
                         </dl>
                       </li>
@@ -6774,7 +6204,7 @@
                                       <div class="mt-2">
                                         <div class="">
                                           <select
-                                            v-model="status_Form.status_entity_id"
+                                            v-model="statusForm.status_entity_id"
                                             class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                             <option
                                               v-for="n in props.all_status_entities"
@@ -6794,7 +6224,7 @@
                                       <div class="mt-2">
                                         <div class="">
                                           <select
-                                            v-model="status_Form.status_type_id"
+                                            v-model="statusForm.status_type_id"
                                             class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                             <option
                                               v-for="n in props.all_status_types"
@@ -6811,8 +6241,8 @@
 
                                 <div class="col-span-4">
                                   <SecondaryButton
-                                    @click="createStatus"
-                                    class="">
+                                    class=""
+                                    @click="createStatus">
                                     Add Status (+)
                                   </SecondaryButton>
                                 </div>
@@ -6832,9 +6262,9 @@
                                                 <div class="flex">
                                                   <div class="flex-shrink-0">
                                                     <XCircleIcon
-                                                      @click="deleteStatus(n.id)"
+                                                      aria-hidden="true"
                                                       class="h-5 w-5 text-red-400 hover:text-black"
-                                                      aria-hidden="true" />
+                                                      @click="deleteStatus(n.id)" />
                                                   </div>
                                                   <div class="ml-3">
                                                     <h3
@@ -6893,66 +6323,6 @@
                                   Unallocated
                                 </div>
 
-                                <!--                                                                <div v-if="selected_transaction.contract_type_id === 2">
-
-                                                                                                                                    <div class="text-indigo-400 font-bold">
-                                                                                                                                        PC (MQ's linked to this contract)
-                                                                                                                                    </div>
-                                                                                                                                    <div>
-                                                                                                                                        <form class="mt-5">
-
-                                                                                                                                            <div class="px-4 sm:px-6 lg:px-8">
-                                                                                                                                                <div class="-mx-4 mt-8 flow-root sm:mx-0">
-                                                                                                                                                    <table class="min-w-full">
-                                                                                                                                                        <colgroup>
-                                                                                                                                                            <col class="w-full sm:w-1/2" />
-                                                                                                                                                            <col class="sm:w-1/6" />
-                                                                                                                                                            <col class="sm:w-1/6" />
-                                                                                                                                                            <col class="sm:w-1/6" />
-                                                                                                                                                        </colgroup>
-                                                                                                                                                        <thead class="border-b border-gray-300 text-gray-900">
-                                                                                                                                                        <tr>
-                                                                                                                                                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Parties</th>
-                                                                                                                                                            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">Product</th>
-                                                                                                                                                            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">GP</th>
-                                                                                                                                                            <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Action</th>
-                                                                                                                                                        </tr>
-                                                                                                                                                        </thead>
-                                                                                                                                                        <tbody>
-                                                                                                                                                        <tr v-for="contract in filteredLinkedContractsMq" :key="contract.id" class="border-b border-gray-200">
-
-
-                                                                                                                                                            <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                                                                                                                                                <div class="font-medium text-gray-900">{{contract.transport_transaction.supplier.last_legal_name}}</div>
-                                                                                                                                                                <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction.customer.last_legal_name}}</div>
-                                                                                                                                                                <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction.transporter.last_legal_name}}</div>
-                                                                                                                                                            </td>
-                                                                                                                                                            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{contract.transport_transaction.product.name}}</td>
-                                                                                                                                                            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ NiceNumber(contract.transport_transaction.transport_finance.gross_profit)}}</td>
-                                                                                                                                                            <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
-                                                                                                                                                                <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',contract.transport_transaction.id)" >View trans</Link>
-                                                                                                                                                            </td>
-
-
-                                                                                                                                                        </tr>
-                                                                                                                                                        </tbody>
-                                                                                                                                                        <tfoot>
-
-                                                                                                                                                        <tr>
-                                                                                                                                                            <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell sm:pl-0">Total GP</th>
-                                                                                                                                                            <td class="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">{{NiceNumber(sumLinkedContractsMq)}}</td>
-                                                                                                                                                            <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden">Total</th>
-                                                                                                                                                        </tr>
-                                                                                                                                                        </tfoot>
-                                                                                                                                                    </table>
-                                                                                                                                                </div>
-                                                                                                                                            </div>
-
-                                                                                                                                        </form>
-                                                                                                                                    </div>
-
-                                                                                                                                </div>-->
-
                                 <div v-if="selected_transaction.contract_type_id === 4">
                                   <div class="text-indigo-400 font-bold">MQ</div>
 
@@ -6963,10 +6333,10 @@
                                   </SecondaryButton>
 
                                   <ContractLinkModal
-                                    :show="viewContractLinkModal"
-                                    @close="closeContractLink"
+                                    :link_type_id="3"
                                     :mq_trans_id="selected_transaction.id"
-                                    :link_type_id="3" />
+                                    :show="viewContractLinkModal"
+                                    @close="closeContractLink" />
 
                                   <div class="mt-3">
                                     <div>PC linked to this MQ:</div>
@@ -6986,23 +6356,23 @@
                                                 class="border-b border-gray-300 text-gray-900">
                                                 <tr>
                                                   <th
-                                                    scope="col"
-                                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                                                    scope="col">
                                                     Parties
                                                   </th>
                                                   <th
-                                                    scope="col"
-                                                    class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
+                                                    class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell"
+                                                    scope="col">
                                                     Product
                                                   </th>
                                                   <th
-                                                    scope="col"
-                                                    class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
+                                                    class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell"
+                                                    scope="col">
                                                     GP
                                                   </th>
                                                   <th
-                                                    scope="col"
-                                                    class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">
+                                                    class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0"
+                                                    scope="col">
                                                     Action
                                                   </th>
                                                 </tr>
@@ -7062,28 +6432,28 @@
                                                   <td
                                                     class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
                                                     <Link
-                                                      href="/transaction_summary"
-                                                      class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                      method="get"
-                                                      target="_blank"
                                                       :data="{
                                                         selected_trans_id:
                                                           contract
                                                             .transport_transaction_pc.id,
-                                                      }">
+                                                      }"
+                                                      class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                      href="/transaction_summary"
+                                                      method="get"
+                                                      target="_blank">
                                                       Summary
                                                     </Link>
 
                                                     <Link
-                                                      href="/pc_overview"
-                                                      class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                      method="get"
-                                                      target="_blank"
                                                       :data="{
                                                         selected_trans_id:
                                                           contract
                                                             .transport_transaction_pc.id,
-                                                      }">
+                                                      }"
+                                                      class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                      href="/pc_overview"
+                                                      method="get"
+                                                      target="_blank">
                                                       Overview
                                                     </Link>
                                                   </td>
@@ -7121,67 +6491,6 @@
                                 <div v-if="selected_transaction.contract_type_id === 1">
                                   Unallocated
                                 </div>
-
-                                <!--                                                                <div v-if="selected_transaction.contract_type_id === 2">
-
-                                                                                                                                    <div class="text-indigo-400 font-bold">
-                                                                                                                                        SC (MQ's linked to this contract)
-                                                                                                                                    </div>
-                                                                                                                                    <div>
-                                                                                                                                        <form class="mt-5">
-
-                                                                                                                                            <div class="px-4 sm:px-6 lg:px-8">
-                                                                                                                                                <div class="-mx-4 mt-8 flow-root sm:mx-0">
-                                                                                                                                                    <table class="min-w-full">
-                                                                                                                                                        <colgroup>
-                                                                                                                                                            <col class="w-full sm:w-1/2" />
-                                                                                                                                                            <col class="sm:w-1/6" />
-                                                                                                                                                            <col class="sm:w-1/6" />
-                                                                                                                                                            <col class="sm:w-1/6" />
-                                                                                                                                                        </colgroup>
-                                                                                                                                                        <thead class="border-b border-gray-300 text-gray-900">
-                                                                                                                                                        <tr>
-                                                                                                                                                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Parties</th>
-                                                                                                                                                            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">Product</th>
-                                                                                                                                                            <th scope="col" class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">GP</th>
-                                                                                                                                                            <th scope="col" class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Action</th>
-                                                                                                                                                        </tr>
-                                                                                                                                                        </thead>
-                                                                                                                                                        <tbody>
-                                                                                                                                                        <tr v-for="contract in filteredLinkedContractsMq" :key="contract.id" class="border-b border-gray-200">
-
-
-                                                                                                                                                            <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                                                                                                                                                <div class="font-medium text-gray-900">{{contract.transport_transaction.supplier.last_legal_name}}</div>
-                                                                                                                                                                <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction.customer.last_legal_name}}</div>
-                                                                                                                                                                <div class="mt-1 truncate text-gray-500">{{contract.transport_transaction.transporter.last_legal_name}}</div>
-                                                                                                                                                            </td>
-                                                                                                                                                            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{contract.transport_transaction.product.name}}</td>
-                                                                                                                                                            <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ NiceNumber(contract.transport_transaction.transport_finance.gross_profit)}}</td>
-                                                                                                                                                            <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
-                                                                                                                                                                <Link class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :href="route('transport_transaction.show',contract.transport_transaction.id)" >View trans</Link>
-                                                                                                                                                            </td>
-
-
-                                                                                                                                                        </tr>
-                                                                                                                                                        </tbody>
-                                                                                                                                                        <tfoot>
-
-                                                                                                                                                        <tr>
-                                                                                                                                                            <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell sm:pl-0">Total GP</th>
-                                                                                                                                                            <td class="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">{{NiceNumber(sumLinkedContractsMq)}}</td>
-                                                                                                                                                            <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden">Total</th>
-                                                                                                                                                        </tr>
-                                                                                                                                                        </tfoot>
-                                                                                                                                                    </table>
-                                                                                                                                                </div>
-                                                                                                                                            </div>
-
-                                                                                                                                        </form>
-                                                                                                                                    </div>
-
-                                                                                                                                </div>-->
-
                                 <div v-if="selected_transaction.contract_type_id === 3">
                                   SC
                                 </div>
@@ -7196,10 +6505,10 @@
                                   </SecondaryButton>
 
                                   <ContractLinkModalSc
-                                    :show="viewContractLinkModalSc"
-                                    @close="closeContractLinkSc"
+                                    :link_type_id="4"
                                     :mq_trans_id="selected_transaction.id"
-                                    :link_type_id="4" />
+                                    :show="viewContractLinkModalSc"
+                                    @close="closeContractLinkSc" />
 
                                   <div class="mt-3">
                                     <div>SC linked to this MQ:</div>
@@ -7219,23 +6528,23 @@
                                                 class="border-b border-gray-300 text-gray-900">
                                                 <tr>
                                                   <th
-                                                    scope="col"
-                                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                                                    scope="col">
                                                     Parties
                                                   </th>
                                                   <th
-                                                    scope="col"
-                                                    class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
+                                                    class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell"
+                                                    scope="col">
                                                     Product
                                                   </th>
                                                   <th
-                                                    scope="col"
-                                                    class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell">
+                                                    class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell"
+                                                    scope="col">
                                                     GP
                                                   </th>
                                                   <th
-                                                    scope="col"
-                                                    class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">
+                                                    class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-0"
+                                                    scope="col">
                                                     Action
                                                   </th>
                                                 </tr>
@@ -7295,28 +6604,28 @@
                                                   <td
                                                     class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">
                                                     <Link
-                                                      href="/transaction_summary"
-                                                      class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                      method="get"
-                                                      target="_blank"
                                                       :data="{
                                                         selected_trans_id:
                                                           contract
                                                             .transport_transaction_pc.id,
-                                                      }">
+                                                      }"
+                                                      class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                      href="/transaction_summary"
+                                                      method="get"
+                                                      target="_blank">
                                                       Summary
                                                     </Link>
 
                                                     <Link
-                                                      href="/sc_overview"
-                                                      class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                      method="get"
-                                                      target="_blank"
                                                       :data="{
                                                         selected_trans_id:
                                                           contract
                                                             .transport_transaction_pc.id,
-                                                      }">
+                                                      }"
+                                                      class="m-1 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                      href="/sc_overview"
+                                                      method="get"
+                                                      target="_blank">
                                                       Overview
                                                     </Link>
                                                   </td>
@@ -7369,8 +6678,8 @@
                                     '/pdf_report/deal_ticket_view/' +
                                     props.selected_transaction.id
                                   "
-                                  target="_blank"
-                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                  target="_blank">
                                   View
                                 </a>
                               </dd>
@@ -7395,8 +6704,8 @@
                                         deal_ticket.report_path
                                       )
                                     "
-                                    target="_blank"
-                                    class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                    class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    target="_blank">
                                     Download
                                   </a>
                                 </div>
@@ -7409,8 +6718,8 @@
                           </div>
 
                           <div
-                            class="text-red-400"
-                            v-else>
+                            v-else
+                            class="text-red-400">
                             <p class="font-bold">Deal Ticket Not Active</p>
                             <p>(Activate via process control)</p>
                           </div>
@@ -7472,41 +6781,12 @@
                                     '/pdf_report/transport_order_confirmation_view/' +
                                     props.selected_transaction.id
                                   "
-                                  target="_blank"
-                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                  target="_blank">
                                   View
                                 </a>
                               </dd>
                             </div>
-                            <!--                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                    <dt class="text-gray-500">Generate Final</dt>
-                                                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                                                        <SecondaryButton @click="">
-                                                                                                                            Generate
-                                                                                                                        </SecondaryButton>
-                                                                                                                    </dd>
-                                                                                                                </div>
-                                                                                                                <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                    <dt class="text-gray-500">Download Final</dt>
-
-                                                                                                                    <dd class="flex items-start gap-x-2">
-
-                                                                                                                        <div v-if="deal_ticket.report_path">
-                                                                                                                            <a :href="route('pdf_report.deal_ticket_final.download',deal_ticket.report_path)" target="_blank"
-                                                                                                                               class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                                                                                                                Download
-                                                                                                                            </a>
-                                                                                                                        </div>
-
-                                                                                                                        <div v-else>
-                                                                                                                            <p>Not generated</p>
-                                                                                                                        </div>
-
-
-                                                                                                                    </dd>
-
-
-                                                                                                                </div>-->
                           </div>
 
                           <div v-else>
@@ -7580,39 +6860,12 @@
                                     '/pdf_report/purchase_order_view/' +
                                     props.selected_transaction.id
                                   "
-                                  target="_blank"
-                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                  target="_blank">
                                   View
                                 </a>
                               </dd>
                             </div>
-                            <!--                                                         <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                                                                            <dt class="text-gray-500">Generate Final</dt>
-                                                                                                                                                                            <dd class="flex items-start gap-x-2">
-                                                                                                                                                                                <SecondaryButton @click="">
-                                                                                                                                                                                    Generate
-                                                                                                                                                                                </SecondaryButton>
-                                                                                                                                                                            </dd>
-                                                                                                                                                                        </div>
-                                                                                                                 <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                                                                            <dt class="text-gray-500">Download Final</dt>
-
-                                                                                                                                                                            <dd class="flex items-start gap-x-2">
-
-                                                                                                                                                                                <div v-if="deal_ticket.report_path">
-                                                                                                                                                                                    <a :href="route('pdf_report.deal_ticket_final.download',deal_ticket.report_path)" target="_blank"
-                                                                                                                                                                                       class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                                                                                                                                                                        Download
-                                                                                                                                                                                    </a>
-                                                                                                                                                                                </div>
-
-                                                                                                                                                                                <div v-else>
-                                                                                                                                                                                    <p>Not generated</p>
-                                                                                                                                                                                </div>
-
-                                                                                                                                                                            </dd>
-
-                                                                                                                                                                        </div>-->
                           </div>
 
                           <div v-else>
@@ -7654,38 +6907,12 @@
                                     '/pdf_report/purchase_order_confirmation_view/' +
                                     props.selected_transaction.id
                                   "
-                                  target="_blank"
-                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                  target="_blank">
                                   View
                                 </a>
                               </dd>
                             </div>
-                            <!--                                                         <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                                                                            <dt class="text-gray-500">Generate Final</dt>
-                                                                                                                                                                            <dd class="flex items-start gap-x-2">
-                                                                                                                                                                                <SecondaryButton @click="">
-                                                                                                                                                                                    Generate
-                                                                                                                                                                                </SecondaryButton>
-                                                                                                                                                                            </dd>
-                                                                                                                                                                        </div>
-                                                                                                                <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                                                                            <dt class="text-gray-500">Download Final</dt>
-
-                                                                                                                                                                            <dd class="flex items-start gap-x-2">
-
-                                                                                                                                                                                <div v-if="deal_ticket.report_path">
-                                                                                                                                                                                    <a :href="route('pdf_report.deal_ticket_final.download',deal_ticket.report_path)" target="_blank"
-                                                                                                                                                                                       class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                                                                                                                                                                        Download
-                                                                                                                                                                                    </a>
-                                                                                                                                                                                </div>
-
-                                                                                                                                                                                <div v-else>
-                                                                                                                                                                                    <p>Not generated</p>
-                                                                                                                                                                                </div>
-
-                                                                                                                                                                            </dd>
-                                                                                                                                                                        </div>-->
                           </div>
 
                           <div v-else>Sales order Not Active</div>
@@ -7746,39 +6973,12 @@
                                     '/pdf_report/sales_order_view/' +
                                     props.selected_transaction.id
                                   "
-                                  target="_blank"
-                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                  target="_blank">
                                   View
                                 </a>
                               </dd>
                             </div>
-                            <!--                                                     <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                                                                            <dt class="text-gray-500">Generate Final</dt>
-                                                                                                                                                                            <dd class="flex items-start gap-x-2">
-                                                                                                                                                                                <SecondaryButton @click="">
-                                                                                                                                                                                    Generate
-                                                                                                                                                                                </SecondaryButton>
-                                                                                                                                                                            </dd>
-                                                                                                                                                                        </div>
-                                                                                                              <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                                                                            <dt class="text-gray-500">Download Final</dt>
-
-                                                                                                                                                                            <dd class="flex items-start gap-x-2">
-
-                                                                                                                                                                                <div v-if="deal_ticket.report_path">
-                                                                                                                                                                                    <a :href="route('pdf_report.deal_ticket_final.download',deal_ticket.report_path)" target="_blank"
-                                                                                                                                                                                       class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                                                                                                                                                                        Download
-                                                                                                                                                                                    </a>
-                                                                                                                                                                                </div>
-
-                                                                                                                                                                                <div v-else>
-                                                                                                                                                                                    <p>Not generated</p>
-                                                                                                                                                                                </div>
-
-                                                                                                                                                                            </dd>
-
-                                                                                                                                                                        </div>-->
                           </div>
 
                           <div v-else>
@@ -7818,107 +7018,17 @@
                                     '/pdf_report/sales_order_confirmation_view/' +
                                     props.selected_transaction.id
                                   "
-                                  target="_blank"
-                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                  target="_blank">
                                   View
                                 </a>
                               </dd>
                             </div>
-                            <!--                                                        <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                    <dt class="text-gray-500">Generate Final</dt>
-                                                                                                                    <dd class="flex items-start gap-x-2">
-                                                                                                                        <SecondaryButton @click="">
-                                                                                                                            Generate
-                                                                                                                        </SecondaryButton>
-                                                                                                                    </dd>
-                                                                                                                </div>
-                                                                                                                <div class="flex justify-between gap-x-4 py-3">
-                                                                                                                    <dt class="text-gray-500">Download Final</dt>
-
-                                                                                                                    <dd class="flex items-start gap-x-2">
-
-                                                                                                                        <div v-if="deal_ticket.report_path">
-                                                                                                                            <a :href="route('pdf_report.deal_ticket_final.download',deal_ticket.report_path)" target="_blank"
-                                                                                                                               class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                                                                                                                Download
-                                                                                                                            </a>
-                                                                                                                        </div>
-
-                                                                                                                        <div v-else>
-                                                                                                                            <p>Not generated</p>
-                                                                                                                        </div>
-
-                                                                                                                    </dd>
-                                                                                                                </div>-->
                           </div>
 
                           <div v-else>Sales order Not Active</div>
                         </dl>
                       </li>
-                      <!--                      <li
-                        v-if="
-                          selected_transaction.contract_type_id === 3 ||
-                          selected_transaction.contract_type_id === 4
-                        "
-                        class="overflow-hidden rounded-xl border border-gray-200"
-                      >
-                        <div
-                          class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6"
-                        >
-                          <div
-                            class="text-sm font-medium leading-6 text-gray-900"
-                          >
-                            Sales Order Confirmation Split (only)
-                          </div>
-                        </div>
-
-                        <dl
-                          class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6"
-                        >
-                          <div v-if="selected_transaction.is_split_load">
-                            <div v-if="sales_order.is_active">
-                              <div class="flex justify-between gap-x-4 py-3">
-                                <dt class="text-gray-500">Working Document</dt>
-                                <dd class="flex items-start gap-x-2">
-                                  <a
-                                    :href="
-                                      '/pdf_report/sales_order_confirmation_view_split/' +
-                                      props.selected_transaction.id +
-                                      '/' +
-                                      selectedSplitCustomer
-                                    "
-                                    target="_blank"
-                                    class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  >
-                                    View
-                                  </a>
-                                </dd>
-                              </div>
-                              <div class="flex justify-between gap-x-4 py-3">
-                                <dt class="text-gray-500">Split Customer</dt>
-                                <dd class="flex items-start gap-x-2">
-                                  <div>
-                                    <select
-                                      v-model="selectedSplitCustomer"
-                                      id="location"
-                                      name="location"
-                                      class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    >
-                                      <option :value="2">Split 2</option>
-                                      <option :value="3">Split 3</option>
-                                      <option :value="4">Split 4</option>
-                                      <option :value="5">Split 5</option>
-                                    </select>
-                                  </div>
-                                </dd>
-                              </div>
-                            </div>
-
-                            <div v-else>Sales order Not Active</div>
-                          </div>
-                          <div v-else>Not split load</div>
-                        </dl>
-                      </li>-->
                     </ul>
                   </div>
 
@@ -7929,33 +7039,33 @@
                         <thead>
                           <tr>
                             <th
-                              scope="col"
-                              class="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Id
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Date
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Event
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Subject ID
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Causer Type
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Causer ID
                             </th>
                           </tr>
@@ -8010,20 +7120,20 @@
                             class="mt-5 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-6">
                             <div class="col-span-4">
                               <SecondaryButton
-                                @click="viewAssignedNewComm"
-                                class="">
+                                class=""
+                                @click="viewAssignedNewComm">
                                 Add Comm User (+)
                               </SecondaryButton>
                               <div v-if="viewAssignedCommNewModal">
                                 <assigned-comm-modal
+                                  :all_staff="props.all_staff"
+                                  :assigned_user_comm="null"
                                   :show="viewAssignedCommNewModal"
-                                  @close="closeAssignedNewComm"
-                                  :transport_trans_id="selected_transaction.id"
                                   :transport_finance_id="
                                     selected_transaction.transport_finance.id
                                   "
-                                  :assigned_user_comm="null"
-                                  :all_staff="props.all_staff" />
+                                  :transport_trans_id="selected_transaction.id"
+                                  @close="closeAssignedNewComm" />
                               </div>
                             </div>
 
@@ -8113,14 +7223,14 @@
                                   <div class="mt-1 col-span-4">
                                     <div v-if="viewAssignedCommModal">
                                       <assigned-comm-modal
+                                        :all_staff="props.all_staff"
+                                        :assigned_user_comm="currentAssignedComm"
                                         :show="viewAssignedCommModal"
-                                        @close="closeAssignedComm"
-                                        :transport_trans_id="selected_transaction.id"
                                         :transport_finance_id="
                                           selected_transaction.transport_finance.id
                                         "
-                                        :assigned_user_comm="currentAssignedComm"
-                                        :all_staff="props.all_staff" />
+                                        :transport_trans_id="selected_transaction.id"
+                                        @close="closeAssignedComm" />
                                     </div>
 
                                     <SecondaryButton
@@ -8146,78 +7256,78 @@
                         <thead>
                           <tr>
                             <th
-                              scope="col"
-                              class="whitespace py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="whitespace py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               ID
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               MQ
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Customer
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Transporter
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Supplier
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Product
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               BU Incoming
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               BU Outgoing
                             </th>
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Units in
                             </th>
 
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Units Out
                             </th>
 
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Plan Tons in
                             </th>
 
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Plan Tons out
                             </th>
 
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               GP/TON
                             </th>
 
                             <th
-                              scope="col"
-                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="whitespace px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               GP %
                             </th>
                           </tr>
@@ -8234,12 +7344,12 @@
                                 v-if="n.transport_transaction.is_split_load_primary"
                                 class="font-bold text-indigo-400">
                                 <Link
-                                  href="/transaction_summary"
-                                  method="get"
-                                  target="_blank"
                                   :data="{
                                     selected_trans_id: n.transport_transaction.id,
-                                  }">
+                                  }"
+                                  href="/transaction_summary"
+                                  method="get"
+                                  target="_blank">
                                   {{ n.transport_transaction.id }}
                                   Primary
                                 </Link>
@@ -8247,12 +7357,12 @@
 
                               <div v-else>
                                 <Link
-                                  href="/transaction_summary"
-                                  method="get"
-                                  target="_blank"
                                   :data="{
                                     selected_trans_id: n.transport_transaction.id,
-                                  }">
+                                  }"
+                                  href="/transaction_summary"
+                                  method="get"
+                                  target="_blank">
                                   {{ n.transport_transaction.id }}
                                 </Link>
                               </div>
@@ -8392,8 +7502,8 @@
                         <tfoot>
                           <tr class="bg-gray-100">
                             <td
-                              colspan="8"
-                              class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900 text-right">
+                              class="whitespace-nowrap text-right px-2 py-2 text-sm font-semibold text-gray-900 text-right"
+                              colspan="8">
                               Total
                             </td>
                             <td
