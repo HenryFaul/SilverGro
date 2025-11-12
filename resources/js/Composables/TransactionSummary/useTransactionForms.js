@@ -60,7 +60,7 @@ export function useTransactionForms() {
       transLinkForm.delete(route('trans_link.split.delete', id), {
         preserveScroll: true,
         onSuccess: () => {
-          swal(usePage().props.jetstream.flash?.banner || '');
+          window.swal(usePage().props.jetstream.flash?.banner || '');
         },
         onError: (e) => {
           console.log(e);

@@ -9,18 +9,18 @@
         <dd class="flex items-start gap-x-2">
           <div>
             <Combobox
-              as="div"
-              v-model="combinedForm.supplier_id">
+              v-model="combinedForm.supplier_id"
+              as="div">
               <div class="relative mt-2">
                 <ComboboxInput
+                  :display-value="(supplier) => supplier?.last_legal_name"
                   class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  @change="$emit('update:supplierQuery', $event.target.value)"
-                  :display-value="(supplier) => supplier?.last_legal_name" />
+                  @change="emit('update:supplierQuery', $event.target.value)" />
                 <ComboboxButton
                   class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                   <ChevronUpDownIcon
-                    class="h-5 w-5 text-gray-400"
-                    aria-hidden="true" />
+                    aria-hidden="true"
+                    class="h-5 w-5 text-gray-400" />
                 </ComboboxButton>
 
                 <ComboboxOptions
@@ -29,9 +29,9 @@
                   <ComboboxOption
                     v-for="supplier in filteredSuppliers"
                     :key="supplier.id"
+                    v-slot="{ active, selected }"
                     :value="supplier"
-                    as="template"
-                    v-slot="{ active, selected }">
+                    as="template">
                     <ul>
                       <li
                         :class="[
@@ -48,8 +48,8 @@
                             active ? 'text-white' : 'text-indigo-600',
                           ]">
                           <CheckIcon
-                            class="h-5 w-5"
-                            aria-hidden="true" />
+                            aria-hidden="true"
+                            class="h-5 w-5" />
                         </span>
                       </li>
                     </ul>
@@ -67,8 +67,8 @@
         <dd class="flex items-start gap-x-2">
           <input
             v-model="combinedForm.supplier_loading_number"
-            type="text"
-            class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            type="text" />
         </dd>
       </div>
 
@@ -112,15 +112,15 @@
           <div v-if="selectedTransaction.contract_type_id === 4">
             <SecondaryButton
               class="m-1 mt-3"
-              @click="$emit('view-contract-link')">
+              @click="emit('view-contract-link')">
               Link MQ to PC
             </SecondaryButton>
 
             <ContractLinkModal
-              :show="showContractLinkModal"
-              @close="$emit('close-contract-link')"
+              :link_type_id="3"
               :mq_trans_id="selectedTransaction.id"
-              :link_type_id="3" />
+              :show="showContractLinkModal"
+              @close="emit('close-contract-link')" />
           </div>
         </dd>
       </div>
@@ -129,18 +129,12 @@
 </template>
 
 <script setup>
-  import {
-    Combobox,
-    ComboboxButton,
-    ComboboxInput,
-    ComboboxOption,
-    ComboboxOptions,
-  } from '@headlessui/vue';
-  import { ChevronUpDownIcon, CheckIcon } from '@heroicons/vue/20/solid';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, } from '@headlessui/vue';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
 
-  defineProps({
+const props = defineProps({
     combinedForm: {
       type: Object,
       required: true,
@@ -161,7 +155,15 @@
       type: Boolean,
       default: false,
     },
+    supplierQuery: {
+      type: String,
+      default: '',
+    },
   });
 
-  defineEmits(['update:supplierQuery', 'view-contract-link', 'close-contract-link']);
+  const emit = defineEmits([
+    'update:supplierQuery',
+    'view-contract-link',
+    'close-contract-link',
+  ]);
 </script>
