@@ -1,62 +1,65 @@
 <script setup>
-import { computed, onBeforeMount, ref, watch } from 'vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import {
-  Combobox,
-  ComboboxButton,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
-  Switch,
-  SwitchGroup,
-} from '@headlessui/vue';
-import {
-  CheckIcon,
-  ChevronUpDownIcon,
-  ExclamationTriangleIcon,
-  XCircleIcon,
-  XMarkIcon,
-} from '@heroicons/vue/20/solid';
-import AreaInput from '@/Components/AreaInput.vue';
-import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
-import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
-import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
-import { useTransactionTabs } from '@/Composables/useTransactionTabs.js';
-import { useSupplierTab } from '@/Composables/TransactionSummary/useSupplierTab.js';
-import { useCustomerTab } from '@/Composables/TransactionSummary/useCustomerTab.js';
-import { useProductTab } from '@/Composables/TransactionSummary/useProductTab.js';
-import { useTransportTab } from '@/Composables/TransactionSummary/useTransportTab.js';
-import { useTransactionModals } from '@/Composables/TransactionSummary/useTransactionModals.js';
-import { useTransactionToggles } from '@/Composables/TransactionSummary/useTransactionToggles.js';
-import { useTransactionForms } from '@/Composables/TransactionSummary/useTransactionForms.js';
-import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
-import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
-import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
-import { formatNiceNumber, formatNiceVariance, } from '@/Composables/useNumberFormatters.js';
-import { formatShortDate } from '@/Composables/useDateFormatters.js';
-import Swal from 'sweetalert2';
-import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
-import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
-import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
-import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
-import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
-import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
-import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
-import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
-import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
-import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
-import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
-import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
-import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
-import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
+  import { computed, onBeforeMount, ref, watch } from 'vue';
+  import { Link, useForm, usePage } from '@inertiajs/vue3';
+  import AppLayout from '@/Layouts/AppLayout.vue';
+  import InputError from '@/Components/InputError.vue';
+  import SecondaryButton from '@/Components/SecondaryButton.vue';
+  import {
+    Combobox,
+    ComboboxButton,
+    ComboboxInput,
+    ComboboxOption,
+    ComboboxOptions,
+    Switch,
+    SwitchGroup,
+  } from '@headlessui/vue';
+  import {
+    CheckIcon,
+    ChevronUpDownIcon,
+    ExclamationTriangleIcon,
+    XCircleIcon,
+    XMarkIcon,
+  } from '@heroicons/vue/20/solid';
+  import AreaInput from '@/Components/AreaInput.vue';
+  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
+  import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
+  import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
+  import VueDatePicker from '@vuepic/vue-datepicker';
+  import '@vuepic/vue-datepicker/dist/main.css';
+  import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
+  import { useTransactionTabs } from '@/Composables/useTransactionTabs.js';
+  import { useSupplierTab } from '@/Composables/TransactionSummary/useSupplierTab.js';
+  import { useCustomerTab } from '@/Composables/TransactionSummary/useCustomerTab.js';
+  import { useProductTab } from '@/Composables/TransactionSummary/useProductTab.js';
+  import { useTransportTab } from '@/Composables/TransactionSummary/useTransportTab.js';
+  import { useTransactionModals } from '@/Composables/TransactionSummary/useTransactionModals.js';
+  import { useTransactionToggles } from '@/Composables/TransactionSummary/useTransactionToggles.js';
+  import { useTransactionForms } from '@/Composables/TransactionSummary/useTransactionForms.js';
+  import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
+  import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
+  import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
+  import {
+    formatNiceNumber,
+    formatNiceVariance,
+  } from '@/Composables/useNumberFormatters.js';
+  import { formatShortDate } from '@/Composables/useDateFormatters.js';
+  import Swal from 'sweetalert2';
+  import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
+  import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
+  import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
+  import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
+  import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
+  import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
+  import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
+  import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
+  import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
+  import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
+  import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
+  import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
+  import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
+  import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
 
-// Expose Swal globally for legacy code
+  // Expose Swal globally for legacy code
   if (typeof window !== 'undefined') {
     window.Swal = Swal;
     window.swal = Swal.fire.bind(Swal);
@@ -2334,66 +2337,10 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                              <div>
-                                <Combobox
-                                  v-model="combined_Form.customer_id_2"
-                                  as="div">
-                                  <div class="relative mt-2">
-                                    <ComboboxInput
-                                      :display-value="
-                                        (customer) => customer?.last_legal_name
-                                      "
-                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery2 = $event.target.value" />
-                                    <ComboboxButton
-                                      class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                      <ChevronUpDownIcon
-                                        aria-hidden="true"
-                                        class="h-5 w-5 text-gray-400" />
-                                    </ComboboxButton>
-
-                                    <ComboboxOptions
-                                      v-if="filteredCustomers2.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      <ComboboxOption
-                                        v-for="customer in filteredCustomers2"
-                                        :key="customer.id"
-                                        v-slot="{ active, selected }"
-                                        :value="customer"
-                                        as="template">
-                                        <ul>
-                                          <li
-                                            :class="[
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                                              active
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'text-gray-900',
-                                            ]">
-                                            <span
-                                              :class="[
-                                                'block truncate',
-                                                selected && 'font-semibold',
-                                              ]">
-                                              {{ customer.last_legal_name }}
-                                            </span>
-
-                                            <span
-                                              v-if="selected"
-                                              :class="[
-                                                'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                active ? 'text-white' : 'text-indigo-600',
-                                              ]">
-                                              <CheckIcon
-                                                aria-hidden="true"
-                                                class="h-5 w-5" />
-                                            </span>
-                                          </li>
-                                        </ul>
-                                      </ComboboxOption>
-                                    </ComboboxOptions>
-                                  </div>
-                                </Combobox>
-                              </div>
+                              <TransactionCustomerSelect
+                                v-model="combined_Form.customer_id_2"
+                                :customers="filteredCustomers2"
+                                label="Customer 2" />
                             </td>
 
                             <td
@@ -2560,66 +2507,10 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                              <div>
-                                <Combobox
-                                  v-model="combined_Form.customer_id_3"
-                                  as="div">
-                                  <div class="relative mt-2">
-                                    <ComboboxInput
-                                      :display-value="
-                                        (customer) => customer?.last_legal_name
-                                      "
-                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery3 = $event.target.value" />
-                                    <ComboboxButton
-                                      class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                      <ChevronUpDownIcon
-                                        aria-hidden="true"
-                                        class="h-5 w-5 text-gray-400" />
-                                    </ComboboxButton>
-
-                                    <ComboboxOptions
-                                      v-if="filteredCustomers3.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      <ComboboxOption
-                                        v-for="customer in filteredCustomers3"
-                                        :key="customer.id"
-                                        v-slot="{ active, selected }"
-                                        :value="customer"
-                                        as="template">
-                                        <ul>
-                                          <li
-                                            :class="[
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                                              active
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'text-gray-900',
-                                            ]">
-                                            <span
-                                              :class="[
-                                                'block truncate',
-                                                selected && 'font-semibold',
-                                              ]">
-                                              {{ customer.last_legal_name }}
-                                            </span>
-
-                                            <span
-                                              v-if="selected"
-                                              :class="[
-                                                'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                active ? 'text-white' : 'text-indigo-600',
-                                              ]">
-                                              <CheckIcon
-                                                aria-hidden="true"
-                                                class="h-5 w-5" />
-                                            </span>
-                                          </li>
-                                        </ul>
-                                      </ComboboxOption>
-                                    </ComboboxOptions>
-                                  </div>
-                                </Combobox>
-                              </div>
+                              <TransactionCustomerSelect
+                                v-model="combined_Form.customer_id_3"
+                                :customers="filteredCustomers3"
+                                label="Customer 3" />
                             </td>
 
                             <td
@@ -2786,66 +2677,10 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                              <div>
-                                <Combobox
-                                  v-model="combined_Form.customer_id_4"
-                                  as="div">
-                                  <div class="relative mt-2">
-                                    <ComboboxInput
-                                      :display-value="
-                                        (customer) => customer?.last_legal_name
-                                      "
-                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery4 = $event.target.value" />
-                                    <ComboboxButton
-                                      class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                      <ChevronUpDownIcon
-                                        aria-hidden="true"
-                                        class="h-5 w-5 text-gray-400" />
-                                    </ComboboxButton>
-
-                                    <ComboboxOptions
-                                      v-if="filteredCustomers4.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      <ComboboxOption
-                                        v-for="customer in filteredCustomers4"
-                                        :key="customer.id"
-                                        v-slot="{ active, selected }"
-                                        :value="customer"
-                                        as="template">
-                                        <ul>
-                                          <li
-                                            :class="[
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                                              active
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'text-gray-900',
-                                            ]">
-                                            <span
-                                              :class="[
-                                                'block truncate',
-                                                selected && 'font-semibold',
-                                              ]">
-                                              {{ customer.last_legal_name }}
-                                            </span>
-
-                                            <span
-                                              v-if="selected"
-                                              :class="[
-                                                'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                active ? 'text-white' : 'text-indigo-600',
-                                              ]">
-                                              <CheckIcon
-                                                aria-hidden="true"
-                                                class="h-5 w-5" />
-                                            </span>
-                                          </li>
-                                        </ul>
-                                      </ComboboxOption>
-                                    </ComboboxOptions>
-                                  </div>
-                                </Combobox>
-                              </div>
+                              <TransactionCustomerSelect
+                                v-model="combined_Form.customer_id_4"
+                                :customers="filteredCustomers4"
+                                label="Customer 4" />
                             </td>
 
                             <td
@@ -3012,66 +2847,10 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
 
                             <td
                               class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                              <div>
-                                <Combobox
-                                  v-model="combined_Form.customer_id_5"
-                                  as="div">
-                                  <div class="relative mt-2">
-                                    <ComboboxInput
-                                      :display-value="
-                                        (customer) => customer?.last_legal_name
-                                      "
-                                      class="w-80 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery5 = $event.target.value" />
-                                    <ComboboxButton
-                                      class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                      <ChevronUpDownIcon
-                                        aria-hidden="true"
-                                        class="h-5 w-5 text-gray-400" />
-                                    </ComboboxButton>
-
-                                    <ComboboxOptions
-                                      v-if="filteredCustomers5.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      <ComboboxOption
-                                        v-for="customer in filteredCustomers5"
-                                        :key="customer.id"
-                                        v-slot="{ active, selected }"
-                                        :value="customer"
-                                        as="template">
-                                        <ul>
-                                          <li
-                                            :class="[
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                                              active
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'text-gray-900',
-                                            ]">
-                                            <span
-                                              :class="[
-                                                'block truncate',
-                                                selected && 'font-semibold',
-                                              ]">
-                                              {{ customer.last_legal_name }}
-                                            </span>
-
-                                            <span
-                                              v-if="selected"
-                                              :class="[
-                                                'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                active ? 'text-white' : 'text-indigo-600',
-                                              ]">
-                                              <CheckIcon
-                                                aria-hidden="true"
-                                                class="h-5 w-5" />
-                                            </span>
-                                          </li>
-                                        </ul>
-                                      </ComboboxOption>
-                                    </ComboboxOptions>
-                                  </div>
-                                </Combobox>
-                              </div>
+                              <TransactionCustomerSelect
+                                v-model="combined_Form.customer_id_5"
+                                :customers="filteredCustomers5"
+                                label="Customer 5" />
                             </td>
 
                             <td
