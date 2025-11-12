@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, ref, watch } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import InputError from '@/Components/InputError.vue';
@@ -47,6 +47,7 @@ import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
 import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
 import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
 import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
+import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
 import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
 import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
 import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
@@ -1102,6 +1103,53 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
     combined_Form.collection_address_id = null;
   };
 
+  // Watch for customer changes to clear delivery addresses
+  watch(
+    () => combined_Form.customer_id,
+    (newCustomer, oldCustomer) => {
+      // Only clear if customer actually changed (not initial load)
+      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
+        combined_Form.delivery_address_id = null;
+      }
+    }
+  );
+
+  watch(
+    () => combined_Form.customer_id_2,
+    (newCustomer, oldCustomer) => {
+      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
+        combined_Form.delivery_address_id_2 = null;
+      }
+    }
+  );
+
+  watch(
+    () => combined_Form.customer_id_3,
+    (newCustomer, oldCustomer) => {
+      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
+        combined_Form.delivery_address_id_3 = null;
+      }
+    }
+  );
+
+  watch(
+    () => combined_Form.customer_id_4,
+    (newCustomer, oldCustomer) => {
+      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
+        combined_Form.delivery_address_id_4 = null;
+      }
+    }
+  );
+
+  watch(
+    () => combined_Form.customer_id_5,
+    (newCustomer, oldCustomer) => {
+      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
+        combined_Form.delivery_address_id_5 = null;
+      }
+    }
+  );
+
   const cloneTransportTrans = () => {
     temp_form.post(route('transport_transaction.clone'), {
       preserveScroll: true,
@@ -1702,71 +1750,10 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                               @close="closeSplitLink" />
                           </div>
 
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dd class="flex items-start gap-x-2">
-                              <div>
-                                <p class="text-gray-500">Customer</p>
-                                <Combobox
-                                  v-model="combined_Form.customer_id"
-                                  as="div">
-                                  <div class="relative mt-2">
-                                    <ComboboxInput
-                                      :display-value="
-                                        (customer) => customer?.last_legal_name
-                                      "
-                                      class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="customerQuery = $event.target.value" />
-                                    <ComboboxButton
-                                      class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                      <ChevronUpDownIcon
-                                        aria-hidden="true"
-                                        class="h-5 w-5 text-gray-400" />
-                                    </ComboboxButton>
-
-                                    <ComboboxOptions
-                                      v-if="filteredCustomers.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      <ComboboxOption
-                                        v-for="customer in filteredCustomers"
-                                        :key="customer.id"
-                                        v-slot="{ active, selected }"
-                                        :value="customer"
-                                        as="template">
-                                        <ul>
-                                          <li
-                                            :class="[
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                                              active
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'text-gray-900',
-                                            ]">
-                                            <span
-                                              :class="[
-                                                'block truncate',
-                                                selected && 'font-semibold',
-                                              ]">
-                                              {{ customer.last_legal_name }}
-                                            </span>
-
-                                            <span
-                                              v-if="selected"
-                                              :class="[
-                                                'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                active ? 'text-white' : 'text-indigo-600',
-                                              ]">
-                                              <CheckIcon
-                                                aria-hidden="true"
-                                                class="h-5 w-5" />
-                                            </span>
-                                          </li>
-                                        </ul>
-                                      </ComboboxOption>
-                                    </ComboboxOptions>
-                                  </div>
-                                </Combobox>
-                              </div>
-                            </dd>
-                          </div>
+                          <TransactionCustomerSelect
+                            v-model="combined_Form.customer_id"
+                            :customers="filteredCustomers"
+                            label="Customer" />
 
                           <div class="flex justify-between gap-x-4 py-3">
                             <dt class="text-gray-500">Customer Order number</dt>
