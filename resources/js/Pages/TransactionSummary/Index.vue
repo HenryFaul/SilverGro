@@ -22,7 +22,6 @@ import {
 } from '@heroicons/vue/20/solid';
 import AreaInput from '@/Components/AreaInput.vue';
 import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
-import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
@@ -43,7 +42,7 @@ import { useTransactionDateFormatters } from '@/Composables/TransactionSummary/u
 import { useAddressFilters } from '@/Composables/TransactionSummary/useAddressFilters.js';
 import { useAddressClearing } from '@/Composables/TransactionSummary/useAddressClearing.js';
 import { useTransactionActions } from '@/Composables/TransactionSummary/useTransactionActions.js';
-import { formatNiceNumber, formatNiceVariance, } from '@/Composables/useNumberFormatters.js';
+import { formatNiceNumber, } from '@/Composables/useNumberFormatters.js';
 import Swal from 'sweetalert2';
 import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
 import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
@@ -70,7 +69,6 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
     window.swal = Swal.fire.bind(Swal);
   }
 
-  const NiceVariance = formatNiceVariance;
   const NiceNumber = formatNiceNumber;
 
   const props = defineProps({
@@ -166,7 +164,6 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
   computed(() =>
     usePage().props.roles_permissions.permissions.includes('edit_adjusted_gp')
   );
-  const selectedSplitCustomer = ref(2);
 
   // isLoading now comes from useTransactionFilters composable
   let isUpdating = ref(false);
@@ -276,10 +273,6 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
     formatInvoicePayByDay,
     formatInvoiceDate,
   } = useTransactionDateFormatters(filterForm, combined_Form);
-
-  const newTradeAdded = () => {
-    filterForm.new_trade_added = true;
-  };
 
   // Define updateSelectValues
   updateSelectValues = (statusForms) => {
