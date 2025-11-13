@@ -23,7 +23,6 @@
   import AreaInput from '@/Components/AreaInput.vue';
   import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
   import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
-  import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
   import VueDatePicker from '@vuepic/vue-datepicker';
   import '@vuepic/vue-datepicker/dist/main.css';
   import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
@@ -42,7 +41,6 @@
     formatNiceNumber,
     formatNiceVariance,
   } from '@/Composables/useNumberFormatters.js';
-  import { formatShortDate } from '@/Composables/useDateFormatters.js';
   import Swal from 'sweetalert2';
   import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
   import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
@@ -52,13 +50,13 @@
   import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
   import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
   import TransactionCustomerTab from '@/Components/TransactionSummary/TransactionCustomerTab.vue';
-  import TransactionTransporterSelect from '@/Components/TransactionSummary/TransactionTransporterSelect.vue';
   import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
   import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
   import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
   import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
   import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
   import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
+  import TransactionLogTab from '@/Components/TransactionSummary/TransactionLogTab.vue';
   import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
 
   // Expose Swal globally for legacy code
@@ -69,17 +67,6 @@
 
   const NiceVariance = formatNiceVariance;
   const NiceNumber = formatNiceNumber;
-
-  // Date format functions - using composables
-  const format = () => formatShortDate(filterForm.end_date);
-  const formatStart = () => formatShortDate(filterForm.start_date);
-
-  const formatEarly = () => formatShortDate(combined_Form.transport_date_earliest);
-
-  const formatLate = () => formatShortDate(combined_Form.transport_date_latest);
-  const formatInvoicePdDay = () => formatShortDate(combined_Form.invoice_paid_date);
-  const formatInvoicePayByDay = () => formatShortDate(combined_Form.invoice_pay_by_date);
-  const formatInvoiceDate = () => formatShortDate(combined_Form.invoice_date);
 
   const props = defineProps({
     transactions: Object,
@@ -249,9 +236,13 @@
     sendTransportOrder,
     receiveTransportOrder,
   } = useTransactionStatusForms(props, isUpdating);
+  // Combined form initialization moved to composable
+  const { combined_Form, updateSelectValuesInternal } = useTransactionCombinedForm(props);
+  // Wrapper for updateSelectValues to pass temp_form update
+  let updateSelectValues;
+
 
   // Declare updateSelectValues first (defined below)
-  let updateSelectValues;
 
   // Initialize transaction filters composable
   const {
@@ -271,782 +262,31 @@
     clear,
   } = useTransactionFilters(props, () => updateSelectValues());
 
+  // Date formatters moved to composable
+  const { format, formatStart, formatEarly, formatLate, formatInvoicePdDay, formatInvoicePayByDay, formatInvoiceDate } = 
+    useTransactionDateFormatters(filterForm, combined_Form);
+
+
   const newTradeAdded = () => {
     filterForm.new_trade_added = true;
   };
 
   // Define updateSelectValues
-  updateSelectValues = () => {
-    //transportApprovalForm (from composable)
-    transportApprovalForm.transport_trans_id = props.selected_transaction.id;
-    transportApprovalForm.transport_job_id = props.selected_transaction.transport_job.id;
-    transportApprovalForm.deal_ticket_id = props.selected_transaction.deal_ticket.id;
-
-    //temp_form
+  updateSelectValues = (statusForms) => {
     temp_form.transport_trans_id = props.selected_transaction.id;
-
-    //statusForm (from composable)
-    statusForm.transport_trans_id = props.selected_transaction.id;
-
-    //combined_Form
-    combined_Form.contract_type_id = props.contract_types.find(
-      (element) => element.id === props.selected_transaction.contract_type_id
-    );
-    combined_Form.product_id = props.all_products.find(
-      (element) => element.id === props.selected_transaction.product_id
-    );
-    combined_Form.supplier_id = props.all_suppliers.find(
-      (element) => element.id === props.selected_transaction.supplier_id
-    );
-    combined_Form.customer_id = props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id
-    );
-    combined_Form.customer_id_2 = props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id_2
-    );
-    combined_Form.customer_id_3 = props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id_3
-    );
-    combined_Form.customer_id_4 = props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id_4
-    );
-    combined_Form.customer_id_4 = props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id_4
-    );
-    combined_Form.customer_id_5 = props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id_5
-    );
-
-    combined_Form.transporter_id = props.all_transporters.find(
-      (element) => element.id === props.selected_transaction.transporter_id
-    );
-    combined_Form.contract_type_id = props.contract_types.find(
-      (element) => element.id === props.selected_transaction.contract_type_id
-    );
-    combined_Form.contract_no = props.selected_transaction.contract_no;
-    combined_Form.old_id = props.selected_transaction.old_id;
-    combined_Form.include_in_calculations =
-      props.selected_transaction.include_in_calculations;
-    combined_Form.transport_date_earliest =
-      props.selected_transaction.transport_date_earliest;
-    combined_Form.transport_date_latest =
-      props.selected_transaction.transport_date_latest;
-    combined_Form.suppliers_notes = props.selected_transaction.suppliers_notes;
-    combined_Form.delivery_notes = props.selected_transaction.delivery_notes;
-    combined_Form.product_notes = props.selected_transaction.product_notes;
-    combined_Form.customer_notes = props.selected_transaction.customer_notes;
-    combined_Form.traders_notes = props.selected_transaction.traders_notes;
-    combined_Form.transport_notes = props.selected_transaction.transport_notes;
-    combined_Form.pricing_notes = props.selected_transaction.pricing_notes;
-    combined_Form.process_notes = props.selected_transaction.process_notes;
-    combined_Form.document_notes = props.selected_transaction.document_notes;
-    combined_Form.transaction_notes = props.selected_transaction.transaction_notes;
-    combined_Form.traders_notes_supplier =
-      props.selected_transaction.traders_notes_supplier;
-    combined_Form.traders_notes_customer =
-      props.selected_transaction.traders_notes_customer;
-    combined_Form.traders_notes_transport =
-      props.selected_transaction.traders_notes_transport;
-    combined_Form.is_transaction_done = props.selected_transaction.is_transaction_done;
-    combined_Form.is_split_load = props.selected_transaction.is_split_load;
-
-    combined_Form.is_split_load_primary =
-      props.selected_transaction.is_split_load_primary;
-    combined_Form.is_split_load_member = props.selected_transaction.is_split_load_member;
-
-    //combined_Form
-    combined_Form.confirmed_by_id = props.all_staff.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.confirmed_by_id
-    );
-    combined_Form.confirmed_by_type_id = props.confirmation_types.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.confirmed_by_type_id
-    );
-    combined_Form.packaging_incoming_id = props.all_packaging.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.packaging_incoming_id
-    );
-    combined_Form.packaging_outgoing_id = props.all_packaging.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.packaging_outgoing_id
-    );
-    combined_Form.product_source_id = props.all_product_sources.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.product_source_id
-    );
-    combined_Form.billing_units_incoming_id = props.all_billing_units.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.billing_units_incoming_id
-    );
-    combined_Form.billing_units_outgoing_id = props.all_billing_units.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.billing_units_outgoing_id
-    );
-    combined_Form.collection_address_id = props.all_suppliers
-      .find((element) => element.id === props.selected_transaction.supplier_id)
-      .addressable.find(
-        (element) =>
-          element.id === props.selected_transaction.transport_load.collection_address_id
-      );
-    combined_Form.delivery_address_id = props.all_customers
-      .find((element) => element.id === props.selected_transaction.customer_id)
-      .addressable.find(
-        (element) =>
-          element.id === props.selected_transaction.transport_load.delivery_address_id
-      );
-    combined_Form.delivery_address_id_2 =
-      props.selected_transaction.transport_load.delivery_address_id_2 === null
-        ? null
-        : props.all_customers
-            .find((element) => element.id === props.selected_transaction.customer_id_2)
-            .addressable.find(
-              (element) =>
-                element.id ===
-                props.selected_transaction.transport_load.delivery_address_id_2
-            );
-    combined_Form.delivery_address_id_3 =
-      props.selected_transaction.transport_load.delivery_address_id_3 === null
-        ? null
-        : props.all_customers
-            .find((element) => element.id === props.selected_transaction.customer_id_3)
-            .addressable.find(
-              (element) =>
-                element.id ===
-                props.selected_transaction.transport_load.delivery_address_id_3
-            );
-    combined_Form.delivery_address_id_4 =
-      props.selected_transaction.transport_load.delivery_address_id_4 === null
-        ? null
-        : props.all_customers
-            .find((element) => element.id === props.selected_transaction.customer_id_4)
-            .addressable.find(
-              (element) =>
-                element.id ===
-                props.selected_transaction.transport_load.delivery_address_id_4
-            );
-    combined_Form.delivery_address_id_5 =
-      props.selected_transaction.transport_load.delivery_address_id_5 === null
-        ? null
-        : props.all_customers
-            .find((element) => element.id === props.selected_transaction.customer_id_5)
-            .addressable.find(
-              (element) =>
-                element.id ===
-                props.selected_transaction.transport_load.delivery_address_id_5
-            );
-
-    combined_Form.product_grade_perc =
-      props.selected_transaction.transport_load.product_grade_perc;
-    combined_Form.no_units_incoming =
-      props.selected_transaction.transport_load.no_units_incoming;
-    combined_Form.no_units_outgoing =
-      props.selected_transaction.transport_load.no_units_outgoing;
-
-    combined_Form.no_units_outgoing_2 =
-      props.selected_transaction.transport_load.no_units_outgoing_2;
-    combined_Form.no_units_outgoing_3 =
-      props.selected_transaction.transport_load.no_units_outgoing_3;
-    combined_Form.no_units_outgoing_4 =
-      props.selected_transaction.transport_load.no_units_outgoing_4;
-    combined_Form.no_units_outgoing_5 =
-      props.selected_transaction.transport_load.no_units_outgoing_5;
-
-    combined_Form.no_units_outgoing_total =
-      props.selected_transaction.transport_load.no_units_outgoing_total;
-
-    combined_Form.is_weighbridge_certificate_received =
-      props.selected_transaction.transport_load.is_weighbridge_certificate_received;
-    combined_Form.delivery_note = props.selected_transaction.transport_load.delivery_note;
-    combined_Form.calculated_route_distance =
-      props.selected_transaction.transport_load.calculated_route_distance;
-
-    //salesOrderForm (from composable)
-    salesOrderForm.transport_trans_id = props.sales_order.transport_trans_id;
-    salesOrderForm.confirmed_by_type_id = props.sales_order.confirmed_by_type_id;
-    salesOrderForm.is_active = props.sales_order.is_active;
-    salesOrderForm.is_so_conf_sent = props.sales_order.is_so_conf_sent;
-    salesOrderForm.is_so_conf_received = props.sales_order.is_so_conf_received;
-
-    //purchaseOrderForm (from composable)
-    purchaseOrderForm.transport_trans_id = props.purchase_order.transport_trans_id;
-    purchaseOrderForm.confirmed_by_type_id = props.purchase_order.confirmed_by_type_id;
-    purchaseOrderForm.is_active = props.purchase_order.is_active;
-    purchaseOrderForm.is_po_sent = props.purchase_order.is_po_sent;
-    purchaseOrderForm.is_po_received = props.purchase_order.is_po_received;
-
-    //transportOrderForm (from composable)
-    transportOrderForm.transport_trans_id = props.transport_order.transport_trans_id;
-    transportOrderForm.confirmed_by_type_id = props.transport_order.confirmed_by_type_id;
-    transportOrderForm.is_active = props.transport_order.is_active;
-    transportOrderForm.is_to_sent = props.transport_order.is_to_sent;
-    transportOrderForm.is_to_received = props.transport_order.is_to_received;
-
-    //combined_Form
-
-    combined_Form.customer_order_number =
-      props.selected_transaction.transport_job.customer_order_number;
-    combined_Form.supplier_loading_number =
-      props.selected_transaction.transport_job.supplier_loading_number;
-    combined_Form.customer_order_number_2 =
-      props.selected_transaction.transport_job.customer_order_number_2;
-    combined_Form.supplier_loading_number_2 =
-      props.selected_transaction.transport_job.supplier_loading_number_2;
-    combined_Form.customer_order_number_3 =
-      props.selected_transaction.transport_job.customer_order_number_3;
-    combined_Form.supplier_loading_number_3 =
-      props.selected_transaction.transport_job.supplier_loading_number_3;
-    combined_Form.customer_order_number_4 =
-      props.selected_transaction.transport_job.customer_order_number_4;
-    combined_Form.supplier_loading_number_4 =
-      props.selected_transaction.transport_job.supplier_loading_number_4;
-    combined_Form.customer_order_number_5 =
-      props.selected_transaction.transport_job.customer_order_number_5;
-    combined_Form.supplier_loading_number_5 =
-      props.selected_transaction.transport_job.supplier_loading_number_5;
-
-    combined_Form.is_multi_loads =
-      props.selected_transaction.transport_job.is_multi_loads;
-    combined_Form.is_approved = props.selected_transaction.transport_job.is_approved;
-    combined_Form.is_transport_costs_inc_price =
-      props.selected_transaction.transport_job.is_transport_costs_inc_price;
-    combined_Form.is_product_zero_rated =
-      props.selected_transaction.transport_job.is_product_zero_rated;
-    combined_Form.offloading_hours_from_id =
-      props.selected_transaction.transport_job.offloading_hours_from_id;
-    combined_Form.offloading_hours_to_id =
-      props.selected_transaction.transport_job.offloading_hours_to_id;
-    combined_Form.loading_hours_from_id =
-      props.selected_transaction.transport_job.loading_hours_from_id;
-    combined_Form.loading_hours_to_id =
-      props.selected_transaction.transport_job.loading_hours_to_id;
-    combined_Form.load_insurance_per_ton =
-      props.selected_transaction.transport_job.load_insurance_per_ton;
-    combined_Form.total_load_insurance =
-      props.selected_transaction.transport_job.total_load_insurance;
-    combined_Form.number_loads = props.selected_transaction.transport_job.number_loads;
-    combined_Form.loading_instructions =
-      props.selected_transaction.transport_job.loading_instructions;
-    combined_Form.offloading_instructions =
-      props.selected_transaction.transport_job.offloading_instructions;
-
-    combined_Form.loading_contact =
-      props.selected_transaction.transport_job.loading_contact;
-    combined_Form.loading_contact_no =
-      props.selected_transaction.transport_job.loading_contact_no;
-    combined_Form.offloading_contact =
-      props.selected_transaction.transport_job.offloading_contact;
-    combined_Form.offloading_contact_no =
-      props.selected_transaction.transport_job.offloading_contact_no;
-
-    //combined_Form
-
-    combined_Form.transport_rate_basis_id =
-      props.selected_transaction.transport_finance.transport_rate_basis_id;
-    combined_Form.cost_price_per_unit =
-      props.selected_transaction.transport_finance.cost_price_per_unit;
-    combined_Form.selling_price_per_unit =
-      props.selected_transaction.transport_finance.selling_price_per_unit;
-    combined_Form.transport_rate =
-      props.selected_transaction.transport_finance.transport_rate;
-    combined_Form.transport_cost_2 =
-      props.selected_transaction.transport_finance.transport_cost_2;
-    combined_Form.transport_cost_3 =
-      props.selected_transaction.transport_finance.transport_cost_3;
-    combined_Form.transport_cost_4 =
-      props.selected_transaction.transport_finance.transport_cost_4;
-    combined_Form.transport_cost_5 =
-      props.selected_transaction.transport_finance.transport_cost_5;
-
-    combined_Form.selling_price_2 =
-      props.selected_transaction.transport_finance.selling_price_2;
-    combined_Form.selling_price_3 =
-      props.selected_transaction.transport_finance.selling_price_3;
-    combined_Form.selling_price_4 =
-      props.selected_transaction.transport_finance.selling_price_4;
-    combined_Form.selling_price_5 =
-      props.selected_transaction.transport_finance.selling_price_5;
-
-    combined_Form.additional_cost_1 =
-      props.selected_transaction.transport_finance.additional_cost_1;
-    combined_Form.additional_cost_2 =
-      props.selected_transaction.transport_finance.additional_cost_2;
-    combined_Form.additional_cost_3 =
-      props.selected_transaction.transport_finance.additional_cost_3;
-    combined_Form.additional_cost_desc_1 =
-      props.selected_transaction.transport_finance.additional_cost_desc_1;
-    combined_Form.additional_cost_desc_2 =
-      props.selected_transaction.transport_finance.additional_cost_desc_2;
-    combined_Form.additional_cost_desc_3 =
-      props.selected_transaction.transport_finance.additional_cost_desc_3;
-    combined_Form.adjusted_gp = props.selected_transaction.transport_finance.adjusted_gp;
-    combined_Form.adjusted_gp_notes =
-      props.selected_transaction.transport_finance.adjusted_gp_notes;
-
-    //combined_Form
-    combined_Form.transport_trans_id = props.selected_transaction.id;
-    combined_Form.old_id = props.selected_transaction.transport_invoice.old_id;
-    combined_Form.is_active = props.selected_transaction.transport_invoice.is_active;
-    combined_Form.is_printed = props.selected_transaction.transport_invoice.is_printed;
-    combined_Form.invoice_id =
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_id;
-    combined_Form.is_invoiced =
-      props.selected_transaction.transport_invoice.transport_invoice_details.is_invoiced;
-    combined_Form.is_invoice_paid =
-      props.selected_transaction.transport_invoice.transport_invoice_details.is_invoice_paid;
-    combined_Form.invoice_no =
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_no;
-    combined_Form.invoice_paid_date =
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_paid_date;
-    combined_Form.invoice_pay_by_date =
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_pay_by_date;
-    combined_Form.invoice_date =
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_date;
-    combined_Form.invoice_amount =
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount;
-    combined_Form.invoice_amount_paid =
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_amount_paid;
-    combined_Form.status_id =
-      props.selected_transaction.transport_invoice.transport_invoice_details.status_id;
-    combined_Form.notes =
-      props.selected_transaction.transport_invoice.transport_invoice_details.notes;
-
-    //Driver vehicle
-    combined_Form.regular_driver_id = props.all_drivers.find(
-      (element) =>
-        element.id ===
-        props.selected_transaction.transport_job.transport_driver_vehicle[0]
-          .regular_driver_id
-    );
-    combined_Form.regular_vehicle_id = props.all_vehicles.find(
-      (element) =>
-        element.id ===
-        props.selected_transaction.transport_job.transport_driver_vehicle[0]
-          .regular_vehicle_id
-    );
-    combined_Form.weighbridge_upload_weight =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_upload_weight;
-    combined_Form.weighbridge_offload_weight =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].weighbridge_offload_weight;
-    combined_Form.is_weighbridge_variance =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].is_weighbridge_variance;
-    combined_Form.is_cancelled =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].is_cancelled;
-    combined_Form.date_cancelled =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].date_cancelled;
-    combined_Form.is_loaded =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].is_loaded;
-    combined_Form.date_loaded =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].date_loaded;
-    combined_Form.is_onroad =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].is_onroad;
-    combined_Form.date_onroad =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].date_onroad;
-    combined_Form.is_delivered =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].is_delivered;
-    combined_Form.date_delivered =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].date_delivered;
-    combined_Form.is_transport_scheduled =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].is_transport_scheduled;
-    combined_Form.date_scheduled =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].date_scheduled;
-    combined_Form.is_paid =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].is_paid;
-    combined_Form.date_paid =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].date_paid;
-    combined_Form.is_payment_overdue =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].is_payment_overdue;
-    combined_Form.driver_vehicle_loading_number =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].driver_vehicle_loading_number;
-    combined_Form.trailer_reg_1 =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].trailer_reg_1;
-    combined_Form.trailer_reg_2 =
-      props.selected_transaction.transport_job.transport_driver_vehicle[0].trailer_reg_2;
-
-    combined_Form.clearErrors();
+    updateSelectValuesInternal(statusForms);
   };
 
-  let no_units_to_allocate = computed(
-    () =>
-      combined_Form.no_units_outgoing -
-      combined_Form.no_units_outgoing_2 -
-      combined_Form.no_units_outgoing_3 -
-      combined_Form.no_units_outgoing_4 -
-      combined_Form.no_units_outgoing_5
-  );
-
-  let selling_price_to_allocate = computed(
-    () =>
-      props.selected_transaction.transport_finance.selling_price -
-      combined_Form.selling_price_2 -
-      combined_Form.selling_price_3 -
-      combined_Form.selling_price_4 -
-      combined_Form.selling_price_5
-  );
-  let transport_cost_to_allocate = computed(
-    () =>
+  // Computed values moved to composable
+  const { no_units_to_allocate, selling_price_to_allocate, transport_cost_to_allocate } = 
+    useTransactionComputedValues(combined_Form, props);
       props.selected_transaction.transport_finance.transport_cost -
       combined_Form.transport_cost_2 -
       combined_Form.transport_cost_3 -
       combined_Form.transport_cost_4 -
       combined_Form.transport_cost_5
-  );
 
   // Status and order forms now provided by useTransactionStatusForms composable
-
-  let combined_Form = useForm({
-    //TransportTrans
-    product_id: props.all_products.find(
-      (element) => element.id === props.selected_transaction.product_id
-    ),
-    supplier_id: props.all_suppliers.find(
-      (element) => element.id === props.selected_transaction.supplier_id
-    ),
-    customer_id: props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id
-    ),
-    customer_id_2: props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id_2
-    ),
-    customer_id_3: props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id_3
-    ),
-    customer_id_4: props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id_4
-    ),
-    customer_id_5: props.all_customers.find(
-      (element) => element.id === props.selected_transaction.customer_id_5
-    ),
-    transporter_id: props.all_transporters.find(
-      (element) => element.id === props.selected_transaction.transporter_id
-    ),
-    contract_type_id: props.contract_types.find(
-      (element) => element.id === props.selected_transaction.contract_type_id
-    ),
-    contract_no: props.selected_transaction.contract_no,
-    old_id: props.selected_transaction.old_id,
-    include_in_calculations: props.selected_transaction.include_in_calculations,
-    transport_date_earliest: props.selected_transaction.transport_date_earliest,
-    transport_date_latest: props.selected_transaction.transport_date_latest,
-    suppliers_notes: props.selected_transaction.suppliers_notes,
-    delivery_notes: props.selected_transaction.delivery_notes,
-    product_notes: props.selected_transaction.product_notes,
-    customer_notes: props.selected_transaction.customer_notes,
-    traders_notes: props.selected_transaction.traders_notes,
-    transport_notes: props.selected_transaction.transport_notes,
-    pricing_notes: props.selected_transaction.pricing_notes,
-    process_notes: props.selected_transaction.process_notes,
-    document_notes: props.selected_transaction.document_notes,
-    transaction_notes: props.selected_transaction.transaction_notes,
-    traders_notes_supplier: props.selected_transaction.traders_notes_supplier,
-    traders_notes_customer: props.selected_transaction.traders_notes_customer,
-    traders_notes_transport: props.selected_transaction.traders_notes_transport,
-    is_transaction_done: props.selected_transaction.is_transaction_done,
-    is_split_load: props.selected_transaction.is_split_load,
-    is_split_load_primary: props.selected_transaction.is_split_load_primary,
-    is_split_load_member: props.selected_transaction.is_split_load_member,
-
-    //TransportLoad
-
-    confirmed_by_id: props.all_staff.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.confirmed_by_id
-    ),
-    confirmed_by_type_id: props.confirmation_types.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.confirmed_by_type_id
-    ),
-    packaging_incoming_id: props.all_packaging.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.packaging_incoming_id
-    ),
-    packaging_outgoing_id: props.all_packaging.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.packaging_outgoing_id
-    ),
-    product_source_id: props.all_product_sources.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.product_source_id
-    ),
-    billing_units_incoming_id: props.all_billing_units.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.billing_units_incoming_id
-    ),
-    billing_units_outgoing_id: props.all_billing_units.find(
-      (element) =>
-        element.id === props.selected_transaction.transport_load.billing_units_outgoing_id
-    ),
-    collection_address_id:
-      props.selected_transaction.transport_load.collection_address_id,
-    delivery_address_id: props.all_customers
-      .find((element) => element.id === props.selected_transaction.customer_id)
-      .addressable.find(
-        (element) =>
-          element.id === props.selected_transaction.transport_load.delivery_address_id
-      ),
-    delivery_address_id_2: props.all_customers
-      .find((element) => element.id === props.selected_transaction.customer_id_2)
-      .addressable.find(
-        (element) =>
-          element.id === props.selected_transaction.transport_load.delivery_address_id_2
-      ),
-    delivery_address_id_3:
-      props.selected_transaction.transport_load.delivery_address_id_3 === null
-        ? null
-        : props.all_customers
-            .find((element) => element.id === props.selected_transaction.customer_id_3)
-            .addressable.find(
-              (element) =>
-                element.id ===
-                props.selected_transaction.transport_load.delivery_address_id_3
-            ),
-    delivery_address_id_4:
-      props.selected_transaction.transport_load.delivery_address_id_4 === null
-        ? null
-        : props.all_customers
-            .find((element) => element.id === props.selected_transaction.customer_id_4)
-            .addressable.find(
-              (element) =>
-                element.id ===
-                props.selected_transaction.transport_load.delivery_address_id_4
-            ),
-    delivery_address_id_5:
-      props.selected_transaction.transport_load.delivery_address_id_5 === null
-        ? null
-        : props.all_customers
-            .find((element) => element.id === props.selected_transaction.customer_id_5)
-            .addressable.find(
-              (element) =>
-                element.id ===
-                props.selected_transaction.transport_load.delivery_address_id_5
-            ),
-    product_grade_perc: props.selected_transaction.transport_load.product_grade_perc,
-    no_units_incoming: props.selected_transaction.transport_load.no_units_incoming,
-    no_units_outgoing: props.selected_transaction.transport_load.no_units_outgoing,
-    no_units_outgoing_2: props.selected_transaction.transport_load.no_units_outgoing_2,
-    no_units_outgoing_3: props.selected_transaction.transport_load.no_units_outgoing_3,
-    no_units_outgoing_4: props.selected_transaction.transport_load.no_units_outgoing_4,
-    no_units_outgoing_5: props.selected_transaction.transport_load.no_units_outgoing_5,
-    is_weighbridge_certificate_received:
-      props.selected_transaction.transport_load.is_weighbridge_certificate_received,
-    delivery_note: props.selected_transaction.transport_load.delivery_note,
-    calculated_route_distance:
-      props.selected_transaction.transport_load.calculated_route_distance,
-
-    //TransportJob
-
-    customer_order_number: props.selected_transaction.transport_job.customer_order_number,
-    supplier_loading_number:
-      props.selected_transaction.transport_job.supplier_loading_number,
-    customer_order_number_2:
-      props.selected_transaction.transport_job.customer_order_number_2,
-    supplier_loading_number_2:
-      props.selected_transaction.transport_job.supplier_loading_number_2,
-    customer_order_number_3:
-      props.selected_transaction.transport_job.customer_order_number_3,
-    supplier_loading_number_3:
-      props.selected_transaction.transport_job.supplier_loading_number_3,
-    customer_order_number_4:
-      props.selected_transaction.transport_job.customer_order_number_4,
-    supplier_loading_number_4:
-      props.selected_transaction.transport_job.supplier_loading_number_4,
-    customer_order_number_5:
-      props.selected_transaction.transport_job.customer_order_number_5,
-    supplier_loading_number_5:
-      props.selected_transaction.transport_job.supplier_loading_number_5,
-    is_multi_loads: props.selected_transaction.transport_job.is_multi_loads,
-    is_approved: props.selected_transaction.transport_job.is_approved,
-    is_transport_costs_inc_price:
-      props.selected_transaction.transport_job.is_transport_costs_inc_price,
-    is_product_zero_rated: props.selected_transaction.transport_job.is_product_zero_rated,
-    offloading_hours_from_id:
-      props.selected_transaction.transport_job.offloading_hours_from_id,
-    offloading_hours_to_id:
-      props.selected_transaction.transport_job.offloading_hours_to_id,
-    loading_hours_from_id: props.selected_transaction.transport_job.loading_hours_from_id,
-    loading_hours_to_id: props.selected_transaction.transport_job.loading_hours_to_id,
-    load_insurance_per_ton:
-      props.selected_transaction.transport_job.load_insurance_per_ton,
-    total_load_insurance: props.selected_transaction.transport_job.total_load_insurance,
-    number_loads: props.selected_transaction.transport_job.number_loads,
-    loading_instructions: props.selected_transaction.transport_job.loading_instructions,
-    offloading_instructions:
-      props.selected_transaction.transport_job.offloading_instructions,
-    loading_contact: props.selected_transaction.transport_job.loading_contact,
-    loading_contact_no: props.selected_transaction.transport_job.loading_contact_no,
-    offloading_contact: props.selected_transaction.transport_job.offloading_contact,
-    offloading_contact_no: props.selected_transaction.transport_job.offloading_contact_no,
-
-    //Transport Finance
-
-    transport_rate_basis_id:
-      props.selected_transaction.transport_finance.transport_rate_basis_id,
-    cost_price_per_unit: props.selected_transaction.transport_finance.cost_price_per_unit,
-    selling_price_per_unit:
-      props.selected_transaction.transport_finance.selling_price_per_unit,
-    transport_rate: props.selected_transaction.transport_finance.transport_rate,
-    transport_cost_2: props.selected_transaction.transport_finance.transport_cost_2,
-    transport_cost_3: props.selected_transaction.transport_finance.transport_cost_3,
-    transport_cost_4: props.selected_transaction.transport_finance.transport_cost_4,
-    transport_cost_5: props.selected_transaction.transport_finance.transport_cost_5,
-    selling_price_2: props.selected_transaction.transport_finance.selling_price_2,
-    selling_price_3: props.selected_transaction.transport_finance.selling_price_3,
-    selling_price_4: props.selected_transaction.transport_finance.selling_price_4,
-    selling_price_5: props.selected_transaction.transport_finance.selling_price_5,
-    additional_cost_1: props.selected_transaction.transport_finance.additional_cost_1,
-    additional_cost_2: props.selected_transaction.transport_finance.additional_cost_2,
-    additional_cost_3: props.selected_transaction.transport_finance.additional_cost_3,
-    additional_cost_desc_1:
-      props.selected_transaction.transport_finance.additional_cost_desc_1,
-    additional_cost_desc_2:
-      props.selected_transaction.transport_finance.additional_cost_desc_2,
-    additional_cost_desc_3:
-      props.selected_transaction.transport_finance.additional_cost_desc_3,
-    adjusted_gp: props.selected_transaction.transport_finance.adjusted_gp,
-    adjusted_gp_notes: props.selected_transaction.transport_finance.adjusted_gp_notes,
-
-    //Transport Invoice
-
-    transport_trans_id: props.selected_transaction.id,
-    invoice_old_id: props.selected_transaction.transport_invoice.old_id,
-    is_active: props.selected_transaction.transport_invoice.is_active,
-    is_printed: props.selected_transaction.transport_invoice.is_printed,
-    invoice_id:
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_id,
-    is_invoiced:
-      props.selected_transaction.transport_invoice.transport_invoice_details.is_invoiced,
-    is_invoice_paid:
-      props.selected_transaction.transport_invoice.transport_invoice_details
-        .is_invoice_paid,
-    invoice_no:
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_no,
-    invoice_paid_date:
-      props.selected_transaction.transport_invoice.transport_invoice_details
-        .invoice_paid_date,
-    invoice_pay_by_date:
-      props.selected_transaction.transport_invoice.transport_invoice_details
-        .invoice_pay_by_date,
-    invoice_date:
-      props.selected_transaction.transport_invoice.transport_invoice_details.invoice_date,
-    invoice_amount:
-      props.selected_transaction.transport_invoice.transport_invoice_details
-        .invoice_amount,
-    invoice_amount_paid:
-      props.selected_transaction.transport_invoice.transport_invoice_details
-        .invoice_amount_paid,
-    status_id:
-      props.selected_transaction.transport_invoice.transport_invoice_details.status_id,
-    notes: props.selected_transaction.transport_invoice.transport_invoice_details.notes,
-
-    //driver_vehicle
-
-    regular_driver_id: props.all_drivers.find(
-      (element) =>
-        element.id ===
-        props.selected_transaction.transport_job.transport_driver_vehicle[0]
-          .regular_driver_id
-    ),
-    regular_vehicle_id: props.all_vehicles.find(
-      (element) =>
-        element.id ===
-        props.selected_transaction.transport_job.transport_driver_vehicle[0]
-          .regular_vehicle_id
-    ),
-
-    weighbridge_upload_weight:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? 0
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .weighbridge_upload_weight,
-    weighbridge_offload_weight:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? 0
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .weighbridge_offload_weight,
-    is_weighbridge_variance:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? false
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .is_weighbridge_variance,
-    is_cancelled:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? false
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .is_cancelled,
-    date_cancelled:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? null
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .date_cancelled,
-    is_loaded:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? false
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_loaded,
-    date_loaded:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? null
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .date_loaded,
-    is_onroad:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? false
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_onroad,
-    date_onroad:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? null
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .date_onroad,
-    is_delivered:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? false
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .is_delivered,
-    date_delivered:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? null
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .date_delivered,
-    is_transport_scheduled:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? false
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .is_transport_scheduled,
-    date_scheduled:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? null
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .date_scheduled,
-    is_paid:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? false
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0].is_paid,
-    date_paid:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? null
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0].date_paid,
-    is_payment_overdue:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? false
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .is_payment_overdue,
-    driver_vehicle_loading_number:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? null
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .driver_vehicle_loading_number,
-    trailer_reg_1:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? null
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .trailer_reg_1,
-    trailer_reg_2:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0] == null
-        ? null
-        : props.selected_transaction.transport_job.transport_driver_vehicle[0]
-            .trailer_reg_2,
-
-    update_related_models: 0,
-  });
 
   // Computed values (filters, sums, validation) from useTransactionComputed composable
   const {
@@ -1657,17 +897,19 @@
                   <div v-if="selectedTabId === 2">
                     <TransactionCustomerTab
                       :combined-form="combined_Form"
-                      :selected-transaction="selected_transaction"
+                      :filtered-billing-units-outgoing="filteredBillingUnitsOutgoing"
                       :filtered-customers="filteredCustomers"
                       :filtered-delivery-address="filteredDeliveryAddress"
-                      :filtered-billing-units-outgoing="filteredBillingUnitsOutgoing"
-                      :filtered-package-outgoing="filteredPackageOutgoing"
                       :filtered-linked-contracts-sc="filteredLinkedContractsSc"
+                      :filtered-package-outgoing="filteredPackageOutgoing"
                       :primary-linked-trans-split="primary_linked_trans_split"
-                      :view-split-link-modal="viewSplitLinkModal"
+                      :selected-transaction="selected_transaction"
                       :view-contract-link-modal-sc="viewContractLinkModalSc"
+                      :view-split-link-modal="viewSplitLinkModal"
                       @update:delivery-address-query="deliveryAddressQuery = $event"
-                      @update:billing-units-outgoing-query="billingUnitsOutgoingQuery = $event"
+                      @update:billing-units-outgoing-query="
+                        billingUnitsOutgoingQuery = $event
+                      "
                       @update:package-outgoing-query="packageOutgoingQuery = $event"
                       @view-split-link="viewSplitLink"
                       @close-split-link="closeSplitLink"
@@ -3376,128 +2618,20 @@
                           <div class="flex justify-between gap-x-4 py-3">
                             <dt class="text-gray-500">Supply Packaging</dt>
                             <dd class="text-gray-700">
-                              <Combobox
+                              <TransactionPackagingSelect
                                 v-model="combined_Form.packaging_incoming_id"
-                                as="div">
-                                <div class="relative mt-2">
-                                  <ComboboxInput
-                                    :display-value="(packaging) => packaging?.name"
-                                    class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="
-                                      packageIncomingQuery = $event.target.value
-                                    " />
-                                  <ComboboxButton
-                                    class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                    <ChevronUpDownIcon
-                                      aria-hidden="true"
-                                      class="h-5 w-5 text-gray-400" />
-                                  </ComboboxButton>
-
-                                  <ComboboxOptions
-                                    v-if="filteredPackageIncoming.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    <ComboboxOption
-                                      v-for="packaging in filteredPackageIncoming"
-                                      :key="packaging.id"
-                                      v-slot="{ active, selected }"
-                                      :value="packaging"
-                                      as="template">
-                                      <ul>
-                                        <li
-                                          :class="[
-                                            'relative cursor-default select-none py-2 pl-3 pr-9',
-                                            active
-                                              ? 'bg-indigo-600 text-white'
-                                              : 'text-gray-900',
-                                          ]">
-                                          <span
-                                            :class="[
-                                              'block truncate',
-                                              selected && 'font-semibold',
-                                            ]">
-                                            {{ packaging.name }}
-                                          </span>
-
-                                          <span
-                                            v-if="selected"
-                                            :class="[
-                                              'absolute inset-y-0 right-0 flex items-center pr-4',
-                                              active ? 'text-white' : 'text-indigo-600',
-                                            ]">
-                                            <CheckIcon
-                                              aria-hidden="true"
-                                              class="h-5 w-5" />
-                                          </span>
-                                        </li>
-                                      </ul>
-                                    </ComboboxOption>
-                                  </ComboboxOptions>
-                                </div>
-                              </Combobox>
+                                :packaging="filteredPackageIncoming"
+                                label="" />
                             </dd>
                           </div>
 
                           <div class="flex justify-between gap-x-4 py-3">
                             <dt class="text-gray-500">Billing Units</dt>
                             <dd class="text-gray-700">
-                              <Combobox
+                              <TransactionBillingUnitsSelect
                                 v-model="combined_Form.billing_units_incoming_id"
-                                as="div">
-                                <div class="relative mt-2">
-                                  <ComboboxInput
-                                    :display-value="(units) => units?.name"
-                                    class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="
-                                      billingUnitsIncomingQuery = $event.target.value
-                                    " />
-                                  <ComboboxButton
-                                    class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                    <ChevronUpDownIcon
-                                      aria-hidden="true"
-                                      class="h-5 w-5 text-gray-400" />
-                                  </ComboboxButton>
-
-                                  <ComboboxOptions
-                                    v-if="filteredBillingUnitsIncoming.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    <ComboboxOption
-                                      v-for="units in filteredBillingUnitsIncoming"
-                                      :key="units.id"
-                                      v-slot="{ active, selected }"
-                                      :value="units"
-                                      as="template">
-                                      <ul>
-                                        <li
-                                          :class="[
-                                            'relative cursor-default select-none py-2 pl-3 pr-9',
-                                            active
-                                              ? 'bg-indigo-600 text-white'
-                                              : 'text-gray-900',
-                                          ]">
-                                          <span
-                                            :class="[
-                                              'block truncate',
-                                              selected && 'font-semibold',
-                                            ]">
-                                            {{ units.name }}
-                                          </span>
-
-                                          <span
-                                            v-if="selected"
-                                            :class="[
-                                              'absolute inset-y-0 right-0 flex items-center pr-4',
-                                              active ? 'text-white' : 'text-indigo-600',
-                                            ]">
-                                            <CheckIcon
-                                              aria-hidden="true"
-                                              class="h-5 w-5" />
-                                          </span>
-                                        </li>
-                                      </ul>
-                                    </ComboboxOption>
-                                  </ComboboxOptions>
-                                </div>
-                              </Combobox>
+                                :billing-units="filteredBillingUnitsIncoming"
+                                label="" />
                             </dd>
                           </div>
 
@@ -3688,127 +2822,19 @@
                           <div class="flex justify-between gap-x-4 py-3">
                             <dt class="text-gray-500">Selling Packaging</dt>
                             <dd class="flex items-start gap-x-2">
-                              <Combobox
+                              <TransactionPackagingSelect
                                 v-model="combined_Form.packaging_outgoing_id"
-                                as="div">
-                                <div class="relative mt-2">
-                                  <ComboboxInput
-                                    :display-value="(packaging) => packaging?.name"
-                                    class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="
-                                      packageOutgoingQuery = $event.target.value
-                                    " />
-                                  <ComboboxButton
-                                    class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                    <ChevronUpDownIcon
-                                      aria-hidden="true"
-                                      class="h-5 w-5 text-gray-400" />
-                                  </ComboboxButton>
-
-                                  <ComboboxOptions
-                                    v-if="filteredPackageOutgoing.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    <ComboboxOption
-                                      v-for="packaging in filteredPackageOutgoing"
-                                      :key="packaging.id"
-                                      v-slot="{ active, selected }"
-                                      :value="packaging"
-                                      as="template">
-                                      <ul>
-                                        <li
-                                          :class="[
-                                            'relative cursor-default select-none py-2 pl-3 pr-9',
-                                            active
-                                              ? 'bg-indigo-600 text-white'
-                                              : 'text-gray-900',
-                                          ]">
-                                          <span
-                                            :class="[
-                                              'block truncate',
-                                              selected && 'font-semibold',
-                                            ]">
-                                            {{ packaging.name }}
-                                          </span>
-
-                                          <span
-                                            v-if="selected"
-                                            :class="[
-                                              'absolute inset-y-0 right-0 flex items-center pr-4',
-                                              active ? 'text-white' : 'text-indigo-600',
-                                            ]">
-                                            <CheckIcon
-                                              aria-hidden="true"
-                                              class="h-5 w-5" />
-                                          </span>
-                                        </li>
-                                      </ul>
-                                    </ComboboxOption>
-                                  </ComboboxOptions>
-                                </div>
-                              </Combobox>
+                                :packaging="filteredPackageOutgoing"
+                                label="" />
                             </dd>
                           </div>
                           <div class="flex justify-between gap-x-4 py-3">
                             <dt class="text-gray-500">Billing units</dt>
                             <dd class="flex items-start gap-x-2">
-                              <Combobox
+                              <TransactionBillingUnitsSelect
                                 v-model="combined_Form.billing_units_outgoing_id"
-                                as="div">
-                                <div class="relative mt-2">
-                                  <ComboboxInput
-                                    :display-value="(units) => units?.name"
-                                    class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="
-                                      billingUnitsOutgoingQuery = $event.target.value
-                                    " />
-                                  <ComboboxButton
-                                    class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                    <ChevronUpDownIcon
-                                      aria-hidden="true"
-                                      class="h-5 w-5 text-gray-400" />
-                                  </ComboboxButton>
-
-                                  <ComboboxOptions
-                                    v-if="filteredBillingUnitsOutgoing.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    <ComboboxOption
-                                      v-for="units in filteredBillingUnitsOutgoing"
-                                      :key="units.id"
-                                      v-slot="{ active, selected }"
-                                      :value="units"
-                                      as="template">
-                                      <ul>
-                                        <li
-                                          :class="[
-                                            'relative cursor-default select-none py-2 pl-3 pr-9',
-                                            active
-                                              ? 'bg-indigo-600 text-white'
-                                              : 'text-gray-900',
-                                          ]">
-                                          <span
-                                            :class="[
-                                              'block truncate',
-                                              selected && 'font-semibold',
-                                            ]">
-                                            {{ units.name }}
-                                          </span>
-
-                                          <span
-                                            v-if="selected"
-                                            :class="[
-                                              'absolute inset-y-0 right-0 flex items-center pr-4',
-                                              active ? 'text-white' : 'text-indigo-600',
-                                            ]">
-                                            <CheckIcon
-                                              aria-hidden="true"
-                                              class="h-5 w-5" />
-                                          </span>
-                                        </li>
-                                      </ul>
-                                    </ComboboxOption>
-                                  </ComboboxOptions>
-                                </div>
-                              </Combobox>
+                                :billing-units="filteredBillingUnitsOutgoing"
+                                label="" />
                             </dd>
                           </div>
 
@@ -6204,80 +5230,7 @@
                   </div>
 
                   <div v-if="selectedTabId === 9">
-                    <div>
-                      <div class="font-bold text-indigo-500">Model Activity</div>
-                      <table class="min-w-full divide-y divide-gray-300">
-                        <thead>
-                          <tr>
-                            <th
-                              class="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                              scope="col">
-                              Id
-                            </th>
-                            <th
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                              scope="col">
-                              Date
-                            </th>
-                            <th
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                              scope="col">
-                              Event
-                            </th>
-                            <th
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                              scope="col">
-                              Subject ID
-                            </th>
-                            <th
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                              scope="col">
-                              Causer Type
-                            </th>
-                            <th
-                              class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
-                              scope="col">
-                              Causer ID
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
-                          <tr
-                            v-for="(activity, index) in model_activity"
-                            :key="activity.id"
-                            class="hover:bg-gray-100 focus-within:bg-gray-100">
-                            <td
-                              class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                              {{ activity.id }}
-                            </td>
-
-                            <td
-                              class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                              {{ activity.created_at }}
-                            </td>
-
-                            <td
-                              class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                              {{ activity.event }}
-                            </td>
-                            <td
-                              class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                              {{ activity.subject_id }}
-                            </td>
-
-                            <td
-                              class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                              {{ activity.causer_type }}
-                            </td>
-
-                            <td
-                              class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
-                              {{ activity.causer_id }}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                    <TransactionLogTab :model-activity="model_activity" />
                   </div>
 
                   <div v-if="selectedTabId === 12">
