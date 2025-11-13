@@ -1,5 +1,5 @@
 <script setup>
-  import { computed, onBeforeMount, ref, watch } from 'vue';
+  import { computed, onBeforeMount, ref } from 'vue';
   import { Link, useForm, usePage } from '@inertiajs/vue3';
   import AppLayout from '@/Layouts/AppLayout.vue';
   import InputError from '@/Components/InputError.vue';
@@ -37,6 +37,12 @@
   import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
   import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
   import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
+  import { useTransactionCombinedForm } from '@/Composables/TransactionSummary/useTransactionCombinedForm.js';
+  import { useTransactionComputedValues } from '@/Composables/TransactionSummary/useTransactionComputedValues.js';
+  import { useTransactionDateFormatters } from '@/Composables/TransactionSummary/useTransactionDateFormatters.js';
+  import { useAddressFilters } from '@/Composables/TransactionSummary/useAddressFilters.js';
+  import { useAddressClearing } from '@/Composables/TransactionSummary/useAddressClearing.js';
+  import { useTransactionActions } from '@/Composables/TransactionSummary/useTransactionActions.js';
   import {
     formatNiceNumber,
     formatNiceVariance,
@@ -56,6 +62,8 @@
   import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
   import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
   import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
+  import TransactionPackagingSelect from '@/Components/TransactionSummary/TransactionPackagingSelect.vue';
+  import TransactionBillingUnitsSelect from '@/Components/TransactionSummary/TransactionBillingUnitsSelect.vue';
   import TransactionLogTab from '@/Components/TransactionSummary/TransactionLogTab.vue';
   import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
 
@@ -241,7 +249,6 @@
   // Wrapper for updateSelectValues to pass temp_form update
   let updateSelectValues;
 
-
   // Declare updateSelectValues first (defined below)
 
   // Initialize transaction filters composable
@@ -263,9 +270,15 @@
   } = useTransactionFilters(props, () => updateSelectValues());
 
   // Date formatters moved to composable
-  const { format, formatStart, formatEarly, formatLate, formatInvoicePdDay, formatInvoicePayByDay, formatInvoiceDate } = 
-    useTransactionDateFormatters(filterForm, combined_Form);
-
+  const {
+    format,
+    formatStart,
+    formatEarly,
+    formatLate,
+    formatInvoicePdDay,
+    formatInvoicePayByDay,
+    formatInvoiceDate,
+  } = useTransactionDateFormatters(filterForm, combined_Form);
 
   const newTradeAdded = () => {
     filterForm.new_trade_added = true;
@@ -278,13 +291,13 @@
   };
 
   // Computed values moved to composable
-  const { no_units_to_allocate, selling_price_to_allocate, transport_cost_to_allocate } = 
+  const { no_units_to_allocate, selling_price_to_allocate, transport_cost_to_allocate } =
     useTransactionComputedValues(combined_Form, props);
-      props.selected_transaction.transport_finance.transport_cost -
-      combined_Form.transport_cost_2 -
-      combined_Form.transport_cost_3 -
-      combined_Form.transport_cost_4 -
-      combined_Form.transport_cost_5
+  props.selected_transaction.transport_finance.transport_cost -
+    combined_Form.transport_cost_2 -
+    combined_Form.transport_cost_3 -
+    combined_Form.transport_cost_4 -
+    combined_Form.transport_cost_5;
 
   // Status and order forms now provided by useTransactionStatusForms composable
 
@@ -348,65 +361,8 @@
     combined_Form.collection_address_id = null;
   };
 
-  // Watch for customer changes to clear delivery addresses
-  watch(
-    () => combined_Form.customer_id,
-    (newCustomer, oldCustomer) => {
-      // Only clear if customer actually changed (not initial load)
-      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
-        combined_Form.delivery_address_id = null;
-      }
-    }
-  );
-
-  watch(
-    () => combined_Form.customer_id_2,
-    (newCustomer, oldCustomer) => {
-      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
-        combined_Form.delivery_address_id_2 = null;
-      }
-    }
-  );
-
-  watch(
-    () => combined_Form.customer_id_3,
-    (newCustomer, oldCustomer) => {
-      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
-        combined_Form.delivery_address_id_3 = null;
-      }
-    }
-  );
-
-  watch(
-    () => combined_Form.customer_id_4,
-    (newCustomer, oldCustomer) => {
-      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
-        combined_Form.delivery_address_id_4 = null;
-      }
-    }
-  );
-
-  watch(
-    () => combined_Form.customer_id_5,
-    (newCustomer, oldCustomer) => {
-      if (oldCustomer && newCustomer?.id !== oldCustomer?.id) {
-        combined_Form.delivery_address_id_5 = null;
-      }
-    }
-  );
-
-  const cloneTransportTrans = () => {
-    temp_form.post(route('transport_transaction.clone'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        window.swal(usePage().props.jetstream.flash?.banner || '');
-      },
-      onError: (error) => {
-        isUpdating.value = false;
-        window.swal(usePage().props.jetstream.flash?.banner || '');
-      },
-    });
-  };
+  // Address clearing watchers for customers (prevents invalid addresses when customer changes)
+  useAddressClearing(combined_Form);
 
   // Order activation, send, and receive handlers now provided by useTransactionStatusForms composable
 
@@ -414,148 +370,39 @@
     transport_trans_id: props.selected_transaction.id,
   });
 
+  // CRUD actions from useTransactionActions composable
+  const {
+    cloneTransportTrans,
+    deleteDriverVehicle,
+    createApproval,
+    createActivation,
+    createFinalDealTicket,
+    downloadDealTicket,
+  } = useTransactionActions(temp_form, transportApprovalForm, filter, isUpdating, props);
+
   // Helper functions from useTransactionHelpers composable
   const { vehicleSlideProps, getComponentProps, doCreatedTrade, deleteAssignedComm } =
     useTransactionHelpers(filterForm, filter, temp_form);
-
-  const deleteDriverVehicle = (id) => {
-    if (confirm('Sure you want to delete?')) {
-      temp_form.delete(route('transport_driver_vehicle.destroy', id), {
-        preserveScroll: true,
-        onSuccess: () => {
-          window.swal(usePage().props.jetstream.flash?.banner || '');
-        },
-        onError: (e) => {
-          close();
-          console.log(e);
-        },
-      });
-
-      close();
-    }
-  };
-
-  const createApproval = () => {
-    transportApprovalForm.post(route('trans_approval.approve'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        filter();
-        window.swal(usePage().props.jetstream.flash?.banner || '');
-      },
-      onError: (e) => {
-        console.log(e);
-      },
-    });
-  };
-
-  const createActivation = () => {
-    transportApprovalForm.post(route('trans_approval.activate'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        filter();
-        window.swal(usePage().props.jetstream.flash?.banner || '');
-      },
-      onError: (e) => {
-        console.log(e);
-      },
-    });
-  };
-
-  const createFinalDealTicket = () => {
-    temp_form.post(route('pdf_report.deal_ticket_final'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        window.swal(usePage().props.jetstream.flash?.banner || '');
-      },
-      onError: (e) => {
-        console.log(e);
-      },
-    });
-  };
-
-  //pdf_report.deal_ticket_final
-  const downloadDealTicket = () => {
-    axios
-      .get(route('pdf_report.deal_ticket_final.download', props.deal_ticket.report_path))
-      .then((res) => {});
-  };
 
   // NOTE: All filter queries (customer, product, transport, etc.) are now provided by composables
   // See: useCustomerTab, useProductTab, useTransportTab, useSupplierTab
   // This removed ~250 lines of duplicated filter logic
 
   // Address filters for specific form fields (these filter addressable relationships)
-  let collectionAddressQuery = ref('');
-
-  const filteredCollectionAddress = computed(() =>
-    collectionAddressQuery.value === ''
-      ? combined_Form.supplier_id.addressable
-      : combined_Form.supplier_id.addressable.filter((address) => {
-          return address.line_1
-            .toLowerCase()
-            .includes(collectionAddressQuery.value.toLowerCase());
-        })
-  );
-
-  let deliveryAddressQuery = ref('');
-
-  const filteredDeliveryAddress = computed(() =>
-    deliveryAddressQuery.value === ''
-      ? combined_Form.customer_id.addressable
-      : combined_Form.customer_id.addressable.filter((address) => {
-          return address.line_1
-            .toLowerCase()
-            .includes(deliveryAddressQuery.value.toLowerCase());
-        })
-  );
-
-  let deliveryAddressQuery2 = ref('');
-
-  const filteredDeliveryAddress2 = computed(() =>
-    deliveryAddressQuery2.value === ''
-      ? combined_Form.customer_id_2.addressable
-      : combined_Form.customer_id_2.addressable.filter((address) => {
-          return address.line_1
-            .toLowerCase()
-            .includes(deliveryAddressQuery2.value.toLowerCase());
-        })
-  );
-
-  let deliveryAddressQuery3 = ref('');
-
-  const filteredDeliveryAddress3 = computed(() =>
-    deliveryAddressQuery3.value === ''
-      ? combined_Form.customer_id_3.addressable
-      : combined_Form.customer_id_3.addressable.filter((address) => {
-          return address.line_1
-            .toLowerCase()
-            .includes(deliveryAddressQuery3.value.toLowerCase());
-        })
-  );
-
-  let deliveryAddressQuery4 = ref('');
-
-  const filteredDeliveryAddress4 = computed(() =>
-    deliveryAddressQuery4.value === ''
-      ? combined_Form.customer_id_4.addressable
-      : combined_Form.customer_id_4.addressable.filter((address) => {
-          return address.line_1
-            .toLowerCase()
-            .includes(deliveryAddressQuery4.value.toLowerCase());
-        })
-  );
-
-  let deliveryAddressQuery5 = ref('');
-
-  const filteredDeliveryAddress5 = computed(() =>
-    deliveryAddressQuery5.value === ''
-      ? combined_Form.customer_id_5.addressable
-      : combined_Form.customer_id_5.addressable.filter((address) => {
-          return address.line_1
-            .toLowerCase()
-            .includes(deliveryAddressQuery5.value.toLowerCase());
-        })
-  );
+  const {
+    collectionAddressQuery,
+    filteredCollectionAddress,
+    deliveryAddressQuery,
+    deliveryAddressQuery2,
+    deliveryAddressQuery3,
+    deliveryAddressQuery4,
+    deliveryAddressQuery5,
+    filteredDeliveryAddress,
+    filteredDeliveryAddress2,
+    filteredDeliveryAddress3,
+    filteredDeliveryAddress4,
+    filteredDeliveryAddress5,
+  } = useAddressFilters(combined_Form);
 
   // Modal state removed - now provided by useTransactionModals composable
   // filteredLinkedContracts and sumLinkedContracts now provided by useTransactionComputed composable
