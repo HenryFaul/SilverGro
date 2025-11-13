@@ -42,7 +42,7 @@ import { useTransactionDateFormatters } from '@/Composables/TransactionSummary/u
 import { useAddressFilters } from '@/Composables/TransactionSummary/useAddressFilters.js';
 import { useAddressClearing } from '@/Composables/TransactionSummary/useAddressClearing.js';
 import { useTransactionActions } from '@/Composables/TransactionSummary/useTransactionActions.js';
-import { formatNiceNumber, } from '@/Composables/useNumberFormatters.js';
+import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
 import Swal from 'sweetalert2';
 import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
 import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
@@ -3480,7 +3480,7 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                                     Link MQ to SC
                                   </SecondaryButton>
 
-                                  <ContractLinkModalSc
+                                  <ContractLinkModal
                                     :link_type_id="4"
                                     :mq_trans_id="selected_transaction.id"
                                     :show="viewContractLinkModalSc"
