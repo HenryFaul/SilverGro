@@ -1,74 +1,70 @@
 <script setup>
-  import { computed, onBeforeMount, ref } from 'vue';
-  import { Link, useForm, usePage } from '@inertiajs/vue3';
-  import AppLayout from '@/Layouts/AppLayout.vue';
-  import InputError from '@/Components/InputError.vue';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import {
-    Combobox,
-    ComboboxButton,
-    ComboboxInput,
-    ComboboxOption,
-    ComboboxOptions,
-    Switch,
-    SwitchGroup,
-  } from '@headlessui/vue';
-  import {
-    CheckIcon,
-    ChevronUpDownIcon,
-    ExclamationTriangleIcon,
-    XCircleIcon,
-    XMarkIcon,
-  } from '@heroicons/vue/20/solid';
-  import AreaInput from '@/Components/AreaInput.vue';
-  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
-  import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
-  import VueDatePicker from '@vuepic/vue-datepicker';
-  import '@vuepic/vue-datepicker/dist/main.css';
-  import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
-  import { useTransactionTabs } from '@/Composables/useTransactionTabs.js';
-  import { useSupplierTab } from '@/Composables/TransactionSummary/useSupplierTab.js';
-  import { useCustomerTab } from '@/Composables/TransactionSummary/useCustomerTab.js';
-  import { useProductTab } from '@/Composables/TransactionSummary/useProductTab.js';
-  import { useTransportTab } from '@/Composables/TransactionSummary/useTransportTab.js';
-  import { useTransactionModals } from '@/Composables/TransactionSummary/useTransactionModals.js';
-  import { useTransactionToggles } from '@/Composables/TransactionSummary/useTransactionToggles.js';
-  import { useTransactionForms } from '@/Composables/TransactionSummary/useTransactionForms.js';
-  import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
-  import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
-  import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
-  import { useTransactionCombinedForm } from '@/Composables/TransactionSummary/useTransactionCombinedForm.js';
-  import { useTransactionComputedValues } from '@/Composables/TransactionSummary/useTransactionComputedValues.js';
-  import { useTransactionDateFormatters } from '@/Composables/TransactionSummary/useTransactionDateFormatters.js';
-  import { useAddressFilters } from '@/Composables/TransactionSummary/useAddressFilters.js';
-  import { useAddressClearing } from '@/Composables/TransactionSummary/useAddressClearing.js';
-  import { useTransactionActions } from '@/Composables/TransactionSummary/useTransactionActions.js';
-  import {
-    formatNiceNumber,
-    formatNiceVariance,
-  } from '@/Composables/useNumberFormatters.js';
-  import Swal from 'sweetalert2';
-  import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
-  import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
-  import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
-  import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
-  import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
-  import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
-  import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
-  import TransactionCustomerTab from '@/Components/TransactionSummary/TransactionCustomerTab.vue';
-  import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
-  import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
-  import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
-  import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
-  import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
-  import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
-  import TransactionPackagingSelect from '@/Components/TransactionSummary/TransactionPackagingSelect.vue';
-  import TransactionBillingUnitsSelect from '@/Components/TransactionSummary/TransactionBillingUnitsSelect.vue';
-  import TransactionLogTab from '@/Components/TransactionSummary/TransactionLogTab.vue';
-  import TransactionInvoiceTab from '@/Components/TransactionSummary/TransactionInvoiceTab.vue';
-  import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
+import { computed, onBeforeMount, ref } from 'vue';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import InputError from '@/Components/InputError.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+  Switch,
+  SwitchGroup,
+} from '@headlessui/vue';
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  ExclamationTriangleIcon,
+  XCircleIcon,
+  XMarkIcon,
+} from '@heroicons/vue/20/solid';
+import AreaInput from '@/Components/AreaInput.vue';
+import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
+import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
+import { useTransactionTabs } from '@/Composables/useTransactionTabs.js';
+import { useSupplierTab } from '@/Composables/TransactionSummary/useSupplierTab.js';
+import { useCustomerTab } from '@/Composables/TransactionSummary/useCustomerTab.js';
+import { useProductTab } from '@/Composables/TransactionSummary/useProductTab.js';
+import { useTransportTab } from '@/Composables/TransactionSummary/useTransportTab.js';
+import { useTransactionModals } from '@/Composables/TransactionSummary/useTransactionModals.js';
+import { useTransactionToggles } from '@/Composables/TransactionSummary/useTransactionToggles.js';
+import { useTransactionForms } from '@/Composables/TransactionSummary/useTransactionForms.js';
+import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
+import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
+import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
+import { useTransactionCombinedForm } from '@/Composables/TransactionSummary/useTransactionCombinedForm.js';
+import { useTransactionComputedValues } from '@/Composables/TransactionSummary/useTransactionComputedValues.js';
+import { useTransactionDateFormatters } from '@/Composables/TransactionSummary/useTransactionDateFormatters.js';
+import { useAddressFilters } from '@/Composables/TransactionSummary/useAddressFilters.js';
+import { useAddressClearing } from '@/Composables/TransactionSummary/useAddressClearing.js';
+import { useTransactionActions } from '@/Composables/TransactionSummary/useTransactionActions.js';
+import { formatNiceNumber, formatNiceVariance, } from '@/Composables/useNumberFormatters.js';
+import Swal from 'sweetalert2';
+import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
+import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
+import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
+import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
+import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
+import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
+import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
+import TransactionCustomerTab from '@/Components/TransactionSummary/TransactionCustomerTab.vue';
+import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
+import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
+import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
+import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
+import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
+import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
+import TransactionLogTab from '@/Components/TransactionSummary/TransactionLogTab.vue';
+import TransactionInvoiceTab from '@/Components/TransactionSummary/TransactionInvoiceTab.vue';
+import TransactionPricingTab from '@/Components/TransactionSummary/TransactionPricingTab.vue';
+import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
 
-  // Expose Swal globally for legacy code
+// Expose Swal globally for legacy code
   if (typeof window !== 'undefined') {
     window.Swal = Swal;
     window.swal = Swal.fire.bind(Swal);
@@ -2428,648 +2424,16 @@
                     </ul>
                   </div>
 
+                  <!-- Tab 4: Pricing -->
                   <div v-if="selectedTabId === 4">
-                    <ul
-                      class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8"
-                      role="list">
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
-                        <div
-                          class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                          <div class="text-sm font-medium leading-6 text-gray-900">
-                            Buying price
-                          </div>
-                          <div class="text-sm font-light text-gray-900">
-                            (From Supplier)
-                          </div>
-                        </div>
-
-                        <dl
-                          class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Supplier</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{ selected_transaction.supplier.last_legal_name }}
-                              </div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Product</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{ selected_transaction.product.name }}
-                              </div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Supply Packaging</dt>
-                            <dd class="text-gray-700">
-                              <TransactionPackagingSelect
-                                v-model="combined_Form.packaging_incoming_id"
-                                :packaging="filteredPackageIncoming"
-                                label="" />
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Billing Units</dt>
-                            <dd class="text-gray-700">
-                              <TransactionBillingUnitsSelect
-                                v-model="combined_Form.billing_units_incoming_id"
-                                :billing-units="filteredBillingUnitsIncoming"
-                                label="" />
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">No Units</dt>
-                            <dd class="text-gray-700">
-                              {{ selected_transaction.transport_load.no_units_incoming }}
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Supply Weight (tons)</dt>
-                            <dd class="text-gray-700">
-                              {{
-                                selected_transaction.transport_finance.weight_ton_incoming
-                              }}
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Cost Price / Unit</dt>
-                            <dd class="text-gray-700">
-                              <input
-                                v-model="combined_Form.cost_price_per_unit"
-                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                type="number" />
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Total Supplier Cost</dt>
-                            <dd class="text-gray-700">
-                              {{
-                                NiceNumber(
-                                  selected_transaction.transport_finance.cost_price
-                                )
-                              }}
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Cost Price / Ton</dt>
-                            <dd class="text-gray-700">
-                              {{
-                                NiceNumber(
-                                  selected_transaction.transport_finance
-                                    .cost_price_per_ton
-                                )
-                              }}
-                            </dd>
-                          </div>
-                        </dl>
-                      </li>
-
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
-                        <div
-                          class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                          <div class="text-sm font-medium leading-6 text-gray-900">
-                            Transport costs
-                          </div>
-                        </div>
-
-                        <dl
-                          class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Transport rate basis</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                <select
-                                  v-model="combined_Form.transport_rate_basis_id"
-                                  class="mt-2 block w-48 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                  <option
-                                    v-for="n in props.all_transport_rates"
-                                    :key="n.id"
-                                    :value="n.id">
-                                    {{ n.name }}
-                                  </option>
-                                </select>
-                              </div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Transport rate</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                <input
-                                  v-model="combined_Form.transport_rate"
-                                  class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                  type="number" />
-                              </div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Transport rate / Ton</dt>
-                            <dd class="text-gray-700">
-                              {{
-                                NiceNumber(
-                                  selected_transaction.transport_finance
-                                    .transport_rate_per_ton
-                                )
-                              }}
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Transport costs</dt>
-                            <dd class="text-gray-700">
-                              {{
-                                NiceNumber(
-                                  selected_transaction.transport_finance.transport_cost
-                                )
-                              }}
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Load Insurance per ton</dt>
-                            <dd class="text-gray-700">
-                              {{
-                                NiceNumber(
-                                  selected_transaction.transport_finance
-                                    .load_insurance_per_ton
-                                )
-                              }}
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Transport cost in price</dt>
-                            <dd class="text-gray-700">
-                              <SwitchGroup
-                                as="div"
-                                class="flex m-2 items-center">
-                                <Switch
-                                  v-model="combined_Form.is_transport_costs_inc_price"
-                                  :class="[
-                                    combined_Form.is_transport_costs_inc_price
-                                      ? 'bg-indigo-600'
-                                      : 'bg-gray-200',
-                                    'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
-                                  ]">
-                                  <span
-                                    :class="[
-                                      combined_Form.is_transport_costs_inc_price
-                                        ? 'translate-x-5'
-                                        : 'translate-x-0',
-                                      'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                                    ]"
-                                    aria-hidden="true" />
-                                </Switch>
-                              </SwitchGroup>
-                            </dd>
-                          </div>
-                        </dl>
-                      </li>
-
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
-                        <div
-                          class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                          <div class="text-sm font-medium leading-6 text-gray-900">
-                            Selling Price
-                          </div>
-                          <div class="text-sm font-light text-gray-900">
-                            (To Customer)
-                          </div>
-                        </div>
-                        <dl
-                          class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Customer</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{ selected_transaction.customer.last_legal_name }}
-                              </div>
-                            </dd>
-                          </div>
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Product</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{ selected_transaction.product.name }}
-                              </div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Selling Packaging</dt>
-                            <dd class="flex items-start gap-x-2">
-                              <TransactionPackagingSelect
-                                v-model="combined_Form.packaging_outgoing_id"
-                                :packaging="filteredPackageOutgoing"
-                                label="" />
-                            </dd>
-                          </div>
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Billing units</dt>
-                            <dd class="flex items-start gap-x-2">
-                              <TransactionBillingUnitsSelect
-                                v-model="combined_Form.billing_units_outgoing_id"
-                                :billing-units="filteredBillingUnitsOutgoing"
-                                label="" />
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">No Units</dt>
-                            <dd class="text-gray-700">
-                              {{ selected_transaction.transport_load.no_units_outgoing }}
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Selling Weight (tons)</dt>
-                            <dd class="text-gray-700">
-                              {{
-                                selected_transaction.transport_finance.weight_ton_outgoing
-                              }}
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Selling Price / Unit</dt>
-                            <dd class="text-gray-700">
-                              <input
-                                v-model="combined_Form.selling_price_per_unit"
-                                class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                type="number" />
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Total Selling Price</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{
-                                  NiceNumber(
-                                    selected_transaction.transport_finance.selling_price
-                                  )
-                                }}
-                              </div>
-                            </dd>
-                          </div>
-
-                          <div class="flex justify-between gap-x-4 py-3">
-                            <dt class="text-gray-500">Selling Price / Ton</dt>
-                            <dd class="text-gray-700">
-                              <div>
-                                {{
-                                  NiceNumber(
-                                    selected_transaction.transport_finance
-                                      .selling_price_per_ton
-                                  )
-                                }}
-                              </div>
-                            </dd>
-                          </div>
-                        </dl>
-                      </li>
-
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
-                        <div
-                          class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                          <div class="text-sm font-medium leading-6 text-gray-900">
-                            Margin Calculation
-                          </div>
-                        </div>
-
-                        <div>
-                          <dl
-                            class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                            <h3
-                              class="text-base font-semibold mt-2 leading-7 text-indigo-400">
-                              Additional costs:
-                            </h3>
-
-                            <div class="flex justify-between gap-x-4 py-3">
-                              <dt class="text-gray-500">
-                                <input
-                                  v-model="combined_Form.additional_cost_desc_1"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                  placeholder="Description..."
-                                  type="text" />
-                              </dt>
-                              <dd class="text-gray-700">
-                                <div>
-                                  <input
-                                    v-model="combined_Form.additional_cost_1"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    type="number" />
-                                </div>
-                              </dd>
-                            </div>
-                            <div class="flex justify-between gap-x-4 py-3">
-                              <dt class="text-gray-500">
-                                <input
-                                  v-model="combined_Form.additional_cost_desc_2"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                  placeholder="Description..."
-                                  type="text" />
-                              </dt>
-                              <dd class="text-gray-700">
-                                <div>
-                                  <input
-                                    v-model="combined_Form.additional_cost_2"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    type="number" />
-                                </div>
-                              </dd>
-                            </div>
-                            <div class="flex justify-between gap-x-4 py-3">
-                              <dt class="text-gray-500">
-                                <input
-                                  v-model="combined_Form.additional_cost_desc_3"
-                                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                  placeholder="Description..."
-                                  type="text" />
-                              </dt>
-                              <dd class="text-gray-700">
-                                <div>
-                                  <input
-                                    v-model="combined_Form.additional_cost_3"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    type="number" />
-                                </div>
-                              </dd>
-                            </div>
-
-                            <div>
-                              <h3
-                                class="text-base font-semibold mt-2 leading-7 text-indigo-400">
-                                Adjusted GP:
-                              </h3>
-                              <div class="flex justify-between gap-x-4 py-3">
-                                <dt class="text-gray-500">
-                                  <input
-                                    v-model="combined_Form.adjusted_gp_notes"
-                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    placeholder="Description..."
-                                    type="text" />
-                                </dt>
-                                <dd class="text-gray-700">
-                                  <div>
-                                    <input
-                                      v-model="combined_Form.adjusted_gp"
-                                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      type="number" />
-                                  </div>
-                                </dd>
-                              </div>
-                            </div>
-                          </dl>
-
-                          <div class="m-2 p-2">
-                            <table class="min-w-full divide-y divide-gray-300">
-                              <thead>
-                                <tr class="divide-x divide-gray-200">
-                                  <th
-                                    class="py-2 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                                    scope="col">
-                                    Item
-                                  </th>
-                                  <th
-                                    class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    scope="col">
-                                    Plan
-                                  </th>
-                                  <th
-                                    class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    scope="col">
-                                    Actual
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody class="divide-y divide-gray-200 bg-white">
-                                <tr class="divide-x divide-gray-200">
-                                  <td
-                                    class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                                    Tons In
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      selected_transaction.transport_finance
-                                        .weight_ton_incoming
-                                    }}
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      selected_transaction.transport_finance
-                                        .weight_ton_incoming_actual
-                                    }}
-                                  </td>
-                                </tr>
-                                <tr class="divide-x divide-gray-200">
-                                  <td
-                                    class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                                    Tons Out
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      selected_transaction.transport_finance
-                                        .weight_ton_outgoing
-                                    }}
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      selected_transaction.transport_finance
-                                        .weight_ton_outgoing_actual
-                                    }}
-                                  </td>
-                                </tr>
-                                <tr class="divide-x divide-gray-200">
-                                  <td
-                                    class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                                    Selling Price
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .selling_price
-                                      )
-                                    }}
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .selling_price_actual
-                                      )
-                                    }}
-                                  </td>
-                                </tr>
-                                <tr class="divide-x divide-gray-200">
-                                  <td
-                                    class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                                    Cost Price
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance.cost_price
-                                      )
-                                    }}
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .cost_price_actual
-                                      )
-                                    }}
-                                  </td>
-                                </tr>
-
-                                <tr class="divide-x divide-gray-200">
-                                  <td
-                                    class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                                    Transport Cost
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .transport_cost
-                                      )
-                                    }}
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .transport_cost_actual
-                                      )
-                                    }}
-                                  </td>
-                                </tr>
-
-                                <tr class="divide-x divide-gray-200">
-                                  <td
-                                    class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                                    Total Cost Price
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .total_cost_price
-                                      )
-                                    }}
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .total_cost_price_actual
-                                      )
-                                    }}
-                                  </td>
-                                </tr>
-
-                                <tr class="divide-x divide-gray-200">
-                                  <td
-                                    class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                                    GP
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .gross_profit
-                                      )
-                                    }}
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .gross_profit_actual
-                                      )
-                                    }}
-                                  </td>
-                                </tr>
-
-                                <tr class="divide-x divide-gray-200">
-                                  <td
-                                    class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                                    GP / Ton
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .gross_profit_per_ton
-                                      )
-                                    }}
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      NiceNumber(
-                                        selected_transaction.transport_finance
-                                          .gross_profit_per_ton_actual
-                                      )
-                                    }}
-                                  </td>
-                                </tr>
-
-                                <tr class="divide-x divide-gray-200">
-                                  <td
-                                    class="whitespace-nowrap py-1 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                                    GP %
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      selected_transaction.transport_finance
-                                        .gross_profit_percent
-                                    }}
-                                  </td>
-                                  <td
-                                    class="whitespace-nowrap text-right text-sm text-gray-500">
-                                    {{
-                                      selected_transaction.transport_finance
-                                        .gross_profit_percent_actual
-                                    }}
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
+                    <TransactionPricingTab
+                      :all-transport-rates="all_transport_rates"
+                      :combined-form="combined_Form"
+                      :filtered-billing-units-incoming="filteredBillingUnitsIncoming"
+                      :filtered-billing-units-outgoing="filteredBillingUnitsOutgoing"
+                      :filtered-package-incoming="filteredPackageIncoming"
+                      :filtered-package-outgoing="filteredPackageOutgoing"
+                      :selected-transaction="selected_transaction" />
                   </div>
 
                   <!-- Tab 5: Invoice -->

@@ -395,12 +395,15 @@
 </template>
 
 <script setup>
-import { Switch, SwitchGroup } from '@headlessui/vue';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import AreaInput from '@/Components/AreaInput.vue';
-import { formatNiceNumber, formatNiceVariance, } from '@/Composables/useNumberFormatters.js';
+  import { Switch, SwitchGroup } from '@headlessui/vue';
+  import VueDatePicker from '@vuepic/vue-datepicker';
+  import AreaInput from '@/Components/AreaInput.vue';
+  import {
+    formatNiceNumber,
+    formatNiceVariance,
+  } from '@/Composables/useNumberFormatters.js';
 
-const props = defineProps({
+  const props = defineProps({
     combinedForm: {
       type: Object,
       required: true,
