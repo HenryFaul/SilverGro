@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContractType;
 use App\Models\TransLink;
 use App\Models\TransportTransaction;
 use Carbon\Carbon;
@@ -12,6 +13,7 @@ class HomeOverviewController extends Controller
     public function index(Request $request)
     {
 
+        $contract_types = ContractType::all();
         //pc = 2
         //sc = 3
         //mq = 4
@@ -30,7 +32,7 @@ class HomeOverviewController extends Controller
             'old_id'
         ]);
 
-        $filters['contract_type_id'] = 4;
+        //$filters['contract_type_id'] = 4;
 
         $paginate = $request['show'] ?? 25;
 
@@ -126,10 +128,13 @@ class HomeOverviewController extends Controller
                 $gp_perc = ( round($gp) / round($selling_price)) * 100;
             }
 
+
+
             return inertia(
                 'HomeOverview/Index',
                 [
                     'filters' => $filters,
+                    'contract_types' => $contract_types,
                     'transactions' => $transactions,
                     'selected_transaction'=>$transportTransaction,
                     'start_date'=>$start_date,

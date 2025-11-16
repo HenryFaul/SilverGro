@@ -29,6 +29,7 @@ use App\Models\TransportOrder;
 use App\Models\TransportStatus;
 use App\Models\TransportTransaction;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
@@ -43,7 +44,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
     /**
      * @param array $row
      *
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @return Model|null
      */
 
 
@@ -60,13 +61,13 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     $conv_old_id = is_numeric($row['id']) ? $row['id'] : 0;
                     $conv_old_deal_ticket = trim($row['dealticket']) === '' || trim($row['dealticket']) === 'NULL' ? null : trim($row['dealticket']);
 
-                    $date_created = Carbon::createFromTimestamp($row['ts_datecreated'])->toDateTimeString();
+                    $date_created = (isset($row['ts_datecreated']) && is_numeric($row['ts_datecreated'])) ? Carbon::createFromTimestamp($row['ts_datecreated'])->toDateTimeString() : now()->toDateTimeString();
                     $conv_contract_type_id = $row['contracttype'] === 'PC' ? 2 : ($row['contracttype'] === 'SC' ? 3 : ($row['contracttype'] === 'MQ' ? 4 : 1));
                     $conv_contract_no = $row['contractno'] != 'NULL' && $row['contractno'] != '' ? $row['contractno'] : null;
 
                     //supplierid
                     $supplierid = trim($row['supplierid']);
-                    if ($supplierid === "" || $supplierid === 0 || $supplierid === "0") {
+                    if ($supplierid === "" || $supplierid === 0 || $supplierid === "0" || strtoupper($supplierid) === "NULL" || !is_numeric($supplierid)) {
                         $supplierid = 1;
                     }
                     $found_supplier = Supplier::where('id', $supplierid)->first();
@@ -74,7 +75,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                     //customerid
                     $customerid = trim($row['customerid']);
-                    if ($customerid === "" || $customerid === 0 || $customerid === "0") {
+                    if ($customerid === "" || $customerid === 0 || $customerid === "0" || strtoupper($customerid) === "NULL" || !is_numeric($customerid)) {
                         $customerid = 1;
                     }
                     $found_customer = Customer::where('id', $customerid)->first();
@@ -82,7 +83,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                     //transporterid
                     $transporterid = trim($row['transporterid']);
-                    if ($transporterid === "" || $transporterid === 0 || $transporterid === "0") {
+                    if ($transporterid === "" || $transporterid === 0 || $transporterid === "0" || strtoupper($transporterid) === "NULL" || !is_numeric($transporterid)) {
                         $transporterid = 1;
                     }
                     $found_transporter = Transporter::where('id', $transporterid)->first();
@@ -90,7 +91,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                     //productid
                     $productid = trim($row['productid']);
-                    if ($productid === "" || $productid === 0 || $productid === "0") {
+                    if ($productid === "" || $productid === 0 || $productid === "0" || strtoupper($productid) === "NULL" || !is_numeric($productid)) {
                         $productid = 1;
                     }
                     $found_product = Product::where('old_id', $productid)->first();
@@ -129,7 +130,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                     //deal_ticket
                     $old_id_or_deal_ticket = $conv_contract_type_id === 4? $conv_old_deal_ticket : $conv_old_id;
-                    $old_id_or_deal_ticket = is_numeric($old_id_or_deal_ticket)? $old_id_or_deal_ticket:0;
+                    $old_id_or_deal_ticket = is_numeric($old_id_or_deal_ticket)? (int) round((float) $old_id_or_deal_ticket) : 0;
 
                     $exists = TransportTransaction::where('old_id', '=', $old_id_or_deal_ticket)->exists();
 
@@ -213,7 +214,11 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         }
 
                         //Purchase order
-                        $linkedpc = (trim($row['linkedpc']) === '' || trim($row['linkedpc']) === 'NULL' ? null : is_numeric(trim($row['linkedpc']))) ? trim($row['linkedpc']) : null;
+                        $linkedpc_raw = trim($row['linkedpc']);
+                        $linkedpc = null;
+                        if ($linkedpc_raw !== '' && strtoupper($linkedpc_raw) !== 'NULL' && is_numeric($linkedpc_raw)) {
+                            $linkedpc = (int) round((float) $linkedpc_raw);
+                        }
                         $confirmed_by_type_id = (((trim($row['purchaseorderconfirmedby']) === '' ? 1 : trim($row['purchaseorderconfirmedby']) === 'Fax') ? 2 : trim($row['purchaseorderconfirmedby']) === 'Telephone') ? 3 : trim($row['purchaseorderconfirmedby']) === 'Email') ? 4 : 1;
 
                         //unallocated,  Fax, Telephone, Email
@@ -260,7 +265,13 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                         //public $fillable = ['transport_trans_id','type','comment','is_active','is_printed'];
 
-                        $invoiceno = (trim($row['invoiceno']) === '' || trim($row['invoiceno']) === 'NULL' ? null : is_numeric(trim($row['invoiceno']))) ? trim($row['invoiceno']) : null;
+                        $invoiceno_raw = trim($row['invoiceno']);
+                        $invoiceno = null;
+
+                        if ($invoiceno_raw !== '' && strtoupper($invoiceno_raw) !== 'NULL' && is_numeric($invoiceno_raw)) {
+                            // Convert to integer (handle decimals like 35.05 by rounding/flooring)
+                            $invoiceno = (int) round((float) $invoiceno_raw);
+                        }
 
                         $transport_invoice = TransportInvoice::create([
                             'old_id' => $invoiceno,
@@ -580,9 +591,13 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         //dealticket
                         //'transport_trans_id','old_id','trade_rule_id','trade_value','type','comment','is_active','is_printed','stamp_printed'
 
-                        $deal_ticket = is_numeric(trim($row['dealticket'])) ? trim($row['dealticket']) : null;
+                        $deal_ticket_raw = trim($row['dealticket']);
+                        $deal_ticket = null;
+                        if (is_numeric($deal_ticket_raw)) {
+                            $deal_ticket = (int) round((float) $deal_ticket_raw);
+                        }
                         $dealticketprinted = !(trim($row['dealticketprinted']) == 0);
-                        $ts_dealticketprinted = trim($row['ts_dealticketprinted']) === '' || trim($row['ts_dealticketprinted']) === 'NULL' ? null : Carbon::createFromTimestamp($row['ts_dealticketprinted'])->toDateTimeString();
+                        $ts_dealticketprinted = (isset($row['ts_dealticketprinted']) && is_numeric(trim($row['ts_dealticketprinted'])) && trim($row['ts_dealticketprinted']) !== '' && trim($row['ts_dealticketprinted']) !== 'NULL') ? Carbon::createFromTimestamp($row['ts_dealticketprinted'])->toDateTimeString() : null;
 
                         // $trade_rule = TradeRule::where('max_trade_value','>=',$cost_price)->where('min_trade_value','<=',$cost_price)->with('PolyRuleRoles')->first();
 

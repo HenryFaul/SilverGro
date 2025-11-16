@@ -1,16 +1,14 @@
 <script setup>
-  import AppLayout from '@/Layouts/AppLayout.vue';
-  import { computed, inject, onBeforeMount, ref, watch } from 'vue';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import { router, useForm, usePage, Link } from '@inertiajs/vue3';
-  import { debounce, throttle } from 'lodash';
-  import PaginationModified from '@/Components/UI/PaginationModified.vue';
-  import Icon from '@/Components/Icon.vue';
-  import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
-  import VueDatePicker from '@vuepic/vue-datepicker';
-  import '@vuepic/vue-datepicker/dist/main.css';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { computed, inject, onBeforeMount, ref, watch } from 'vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { debounce } from 'lodash';
+import PaginationModified from '@/Components/UI/PaginationModified.vue';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
-  const swal = inject('$swal');
+const swal = inject('$swal');
 
   let dayIncluded = (_date) => {
     let _day = NiceDay(_date);
@@ -157,6 +155,7 @@
     gp: Number,
     gp_perc: Number,
     no_trades: Number,
+    contract_types: Object,
   });
 
   onBeforeMount(async () => {});
@@ -196,6 +195,7 @@
     selected_trans_id: props.selected_transaction?.id ?? null,
     new_trade_added: false,
     old_id: null,
+    contract_type_id: props.filters.contract_type_id ?? null,
   });
 
   let filter = debounce(() => {
@@ -396,10 +396,7 @@
 <template>
   <AppLayout :title="getTitle">
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        <div v-if="selected_transaction != null">Home Overview: {{ getTitle }}</div>
-        <div v-else>Home Overview</div>
-      </h2>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Home Overview</h2>
     </template>
 
     <div class="p-1 h-screen">
@@ -711,26 +708,26 @@
 
                             <th
                               v-if="showDetails"
-                              scope="col"
-                              :class="header_styler">
+                              :class="header_styler"
+                              scope="col">
                               Units Incoming
                             </th>
                             <th
                               v-if="showDetails"
-                              scope="col"
-                              :class="header_styler">
+                              :class="header_styler"
+                              scope="col">
                               Cost Price
                             </th>
                             <th
                               v-if="showDetails"
-                              scope="col"
-                              :class="header_styler">
+                              :class="header_styler"
+                              scope="col">
                               Selling Price
                             </th>
                             <th
                               v-if="showDetails"
-                              scope="col"
-                              :class="header_styler">
+                              :class="header_styler"
+                              scope="col">
                               Gross Profit
                             </th>
                           </tr>
@@ -747,13 +744,13 @@
                             ]">
                             <td :class="row_styler">
                               <Link
+                                :data="{ selected_trans_id: transaction.id }"
                                 href="/transaction_summary"
                                 method="get"
-                                target="_blank"
-                                :data="{ selected_trans_id: transaction.id }">
+                                target="_blank">
                                 <span
-                                  class="font-bold"
-                                  v-if="transaction.a_mq">
+                                  v-if="transaction.a_mq"
+                                  class="font-bold">
                                   (MQ:{{ transaction.a_mq }})
                                 </span>
                                 <span>(ID:{{ transaction.id }})</span>
@@ -850,64 +847,64 @@
                       <thead>
                         <tr>
                           <th
-                            scope="col"
-                            class="py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                            class="py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                            scope="col">
                             No Trades
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Planned Tons In
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Planned Tons Out
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Weight Uploaded
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Weight Offloaded
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Cost Price
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Trans Cost
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Other Cost
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Selling Price
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             GP
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-1 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             GP %
                           </th>
 
                           <th
-                            scope="col"
-                            class="relative py-1 pl-3 pr-4 sm:pr-0">
+                            class="relative py-1 pl-3 pr-4 sm:pr-0"
+                            scope="col">
                             <span class="sr-only">Edit</span>
                           </th>
                         </tr>

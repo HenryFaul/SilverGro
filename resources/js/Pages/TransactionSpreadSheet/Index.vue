@@ -2,38 +2,17 @@
   import AppLayout from '@/Layouts/AppLayoutSpreadSheet.vue';
   import { computed, ref, watch } from 'vue';
   import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import { router, useForm, usePage, Link } from '@inertiajs/vue3';
-  import { debounce, throttle } from 'lodash';
+  import { useForm } from '@inertiajs/vue3';
+  import { debounce } from 'lodash';
   import PaginationModified from '@/Components/UI/PaginationModified.vue';
   import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
-
-  import Icon from '@/Components/Icon.vue';
-  import {
-    EllipsisHorizontalIcon,
-    CheckIcon,
-    ChevronUpDownIcon,
-    PaperClipIcon,
-    XCircleIcon,
-    InformationCircleIcon,
-    ExclamationTriangleIcon,
-    XMarkIcon,
-    TruckIcon,
-  } from '@heroicons/vue/20/solid';
+  import { CheckIcon, ChevronUpDownIcon, XMarkIcon } from '@heroicons/vue/20/solid';
   import {
     Combobox,
     ComboboxButton,
     ComboboxInput,
-    ComboboxLabel,
     ComboboxOption,
     ComboboxOptions,
-  } from '@headlessui/vue';
-
-  import {
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-    TransitionChild,
-    TransitionRoot,
   } from '@headlessui/vue';
 
   import VueDatePicker from '@vuepic/vue-datepicker';
@@ -625,126 +604,126 @@
                 <thead>
                   <tr>
                     <th
-                      scope="col"
-                      class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
+                      class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                      scope="col">
                       ID
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Type
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Customer Order No
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Date earliest
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Driver Vehicle
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Supplier
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Customer
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Transporter
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Product
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Units in
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Units out
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Cost/T
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Price/T
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Transport/T
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       GP/T
                     </th>
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       GP%
                     </th>
 
                     <th
                       v-if="showDetails"
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       D/T
                     </th>
                     <th
                       v-if="showDetails"
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       P/O
                     </th>
                     <th
                       v-if="showDetails"
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       S/O
                     </th>
                     <th
                       v-if="showDetails"
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       T/O
                     </th>
                     <th
                       v-if="showDetails"
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       WB
                     </th>
                     <th
                       v-if="showDetails"
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       INV
                     </th>
 
                     <th
-                      scope="col"
-                      :class="header_styler">
+                      :class="header_styler"
+                      scope="col">
                       Notes
                     </th>
                   </tr>
@@ -813,24 +792,24 @@
                         v-if="props.all_suppliers != null"
                         class="mt-2">
                         <Combobox
-                          @click="updateSelectedTrans(transaction.id)"
+                          v-model="transaction.supplier_id"
                           as="div"
-                          v-model="transaction.supplier_id">
+                          @click="updateSelectedTrans(transaction.id)">
                           <div class="relative mt-2">
                             <ComboboxInput
-                              class="w-72 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                              @change="supplierQuery = $event.target.value"
                               :display-value="
                                 (supplier) =>
                                   props.all_suppliers.find(
                                     (element) => element.id === supplier
                                   ).last_legal_name
-                              " />
+                              "
+                              class="w-72 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              @change="supplierQuery = $event.target.value" />
                             <ComboboxButton
                               class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                               <ChevronUpDownIcon
-                                class="h-5 w-5 text-gray-400"
-                                aria-hidden="true" />
+                                aria-hidden="true"
+                                class="h-5 w-5 text-gray-400" />
                             </ComboboxButton>
 
                             <ComboboxOptions
@@ -839,9 +818,9 @@
                               <ComboboxOption
                                 v-for="supplier in filteredSuppliers"
                                 :key="supplier.id"
+                                v-slot="{ active, selected }"
                                 :value="supplier.id"
-                                as="template"
-                                v-slot="{ active, selected }">
+                                as="template">
                                 <li
                                   :class="[
                                     'relative cursor-default select-none py-2 pl-3 pr-9',
@@ -862,8 +841,8 @@
                                       active ? 'text-white' : 'text-indigo-600',
                                     ]">
                                     <CheckIcon
-                                      class="h-5 w-5"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5" />
                                   </span>
                                 </li>
                               </ComboboxOption>
@@ -873,8 +852,8 @@
                         <div v-if="transForm.selected_trans != null">
                           <button
                             v-if="transaction.id === transForm.selected_trans.id"
-                            @click.prevent="updatePlayers"
-                            class="mt-2 ml-3 font-light underline text-indigo-400">
+                            class="mt-2 ml-3 font-light underline text-indigo-400"
+                            @click.prevent="updatePlayers">
                             update player
                           </button>
                         </div>
@@ -886,24 +865,24 @@
                         v-if="props.all_customers != null"
                         class="mt-2">
                         <Combobox
-                          @click="updateSelectedTrans(transaction.id)"
+                          v-model="transaction.customer_id"
                           as="div"
-                          v-model="transaction.customer_id">
+                          @click="updateSelectedTrans(transaction.id)">
                           <div class="relative mt-2">
                             <ComboboxInput
-                              class="w-72 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                              @change="customerQuery = $event.target.value"
                               :display-value="
                                 (customer) =>
                                   props.all_customers.find(
                                     (element) => element.id === customer
                                   ).last_legal_name
-                              " />
+                              "
+                              class="w-72 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              @change="customerQuery = $event.target.value" />
                             <ComboboxButton
                               class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                               <ChevronUpDownIcon
-                                class="h-5 w-5 text-gray-400"
-                                aria-hidden="true" />
+                                aria-hidden="true"
+                                class="h-5 w-5 text-gray-400" />
                             </ComboboxButton>
 
                             <ComboboxOptions
@@ -912,9 +891,9 @@
                               <ComboboxOption
                                 v-for="customer in filteredCustomers"
                                 :key="customer.id"
+                                v-slot="{ active, selected }"
                                 :value="customer.id"
-                                as="template"
-                                v-slot="{ active, selected }">
+                                as="template">
                                 <li
                                   :class="[
                                     'relative cursor-default select-none py-2 pl-3 pr-9',
@@ -935,8 +914,8 @@
                                       active ? 'text-white' : 'text-indigo-600',
                                     ]">
                                     <CheckIcon
-                                      class="h-5 w-5"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5" />
                                   </span>
                                 </li>
                               </ComboboxOption>
@@ -946,8 +925,8 @@
                         <div v-if="transForm.selected_trans != null">
                           <button
                             v-if="transaction.id === transForm.selected_trans.id"
-                            @click.prevent="updatePlayers"
-                            class="mt-2 ml-3 font-light underline text-indigo-400">
+                            class="mt-2 ml-3 font-light underline text-indigo-400"
+                            @click.prevent="updatePlayers">
                             update player
                           </button>
                         </div>
@@ -959,24 +938,24 @@
                         v-if="props.all_transporters != null"
                         class="mt-2">
                         <Combobox
-                          @click="updateSelectedTrans(transaction.id)"
+                          v-model="transaction.transporter_id"
                           as="div"
-                          v-model="transaction.transporter_id">
+                          @click="updateSelectedTrans(transaction.id)">
                           <div class="relative mt-2">
                             <ComboboxInput
-                              class="w-72 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                              @change="transporterQuery = $event.target.value"
                               :display-value="
                                 (transporter) =>
                                   props.all_transporters.find(
                                     (element) => element.id === transporter
                                   ).last_legal_name
-                              " />
+                              "
+                              class="w-72 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              @change="transporterQuery = $event.target.value" />
                             <ComboboxButton
                               class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                               <ChevronUpDownIcon
-                                class="h-5 w-5 text-gray-400"
-                                aria-hidden="true" />
+                                aria-hidden="true"
+                                class="h-5 w-5 text-gray-400" />
                             </ComboboxButton>
 
                             <ComboboxOptions
@@ -985,9 +964,9 @@
                               <ComboboxOption
                                 v-for="transporter in filteredTransporters"
                                 :key="transporter.id"
+                                v-slot="{ active, selected }"
                                 :value="transporter.id"
-                                as="template"
-                                v-slot="{ active, selected }">
+                                as="template">
                                 <li
                                   :class="[
                                     'relative cursor-default select-none py-2 pl-3 pr-9',
@@ -1008,8 +987,8 @@
                                       active ? 'text-white' : 'text-indigo-600',
                                     ]">
                                     <CheckIcon
-                                      class="h-5 w-5"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5" />
                                   </span>
                                 </li>
                               </ComboboxOption>
@@ -1019,8 +998,8 @@
                         <div v-if="transForm.selected_trans != null">
                           <button
                             v-if="transaction.id === transForm.selected_trans.id"
-                            @click.prevent="updatePlayers"
-                            class="mt-2 ml-3 font-light underline text-indigo-400">
+                            class="mt-2 ml-3 font-light underline text-indigo-400"
+                            @click.prevent="updatePlayers">
                             update player
                           </button>
                         </div>
@@ -1032,24 +1011,24 @@
                         v-if="props.all_products != null"
                         class="mt-2">
                         <Combobox
-                          @click="updateSelectedTrans(transaction.id)"
+                          v-model="transaction.product_id"
                           as="div"
-                          v-model="transaction.product_id">
+                          @click="updateSelectedTrans(transaction.id)">
                           <div class="relative mt-2">
                             <ComboboxInput
-                              class="w-72 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                              @change="productQuery = $event.target.value"
                               :display-value="
                                 (product) =>
                                   props.all_products.find(
                                     (element) => element.id === product
                                   ).name
-                              " />
+                              "
+                              class="w-72 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              @change="productQuery = $event.target.value" />
                             <ComboboxButton
                               class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                               <ChevronUpDownIcon
-                                class="h-5 w-5 text-gray-400"
-                                aria-hidden="true" />
+                                aria-hidden="true"
+                                class="h-5 w-5 text-gray-400" />
                             </ComboboxButton>
 
                             <ComboboxOptions
@@ -1058,9 +1037,9 @@
                               <ComboboxOption
                                 v-for="product in filteredProducts"
                                 :key="product.id"
+                                v-slot="{ active, selected }"
                                 :value="product.id"
-                                as="template"
-                                v-slot="{ active, selected }">
+                                as="template">
                                 <li
                                   :class="[
                                     'relative cursor-default select-none py-2 pl-3 pr-9',
@@ -1081,8 +1060,8 @@
                                       active ? 'text-white' : 'text-indigo-600',
                                     ]">
                                     <CheckIcon
-                                      class="h-5 w-5"
-                                      aria-hidden="true" />
+                                      aria-hidden="true"
+                                      class="h-5 w-5" />
                                   </span>
                                 </li>
                               </ComboboxOption>
@@ -1093,8 +1072,8 @@
                         <div v-if="transForm.selected_trans != null">
                           <button
                             v-if="transaction.id === transForm.selected_trans.id"
-                            @click.prevent="updatePlayers"
-                            class="mt-2 ml-3 font-light underline text-indigo-400">
+                            class="mt-2 ml-3 font-light underline text-indigo-400"
+                            @click.prevent="updatePlayers">
                             update player
                           </button>
                         </div>
@@ -1103,10 +1082,10 @@
                     </td>
                     <td :class="row_styler">
                       <input
-                        @change="updateSelectedTrans(transaction.id)"
                         v-model="transaction.transport_load.no_units_incoming"
+                        class="block w-16 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         type="number"
-                        class="block w-16 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        @change="updateSelectedTrans(transaction.id)" />
 
                       <div v-if="unitForm.selected_trans != null">
                         <button
@@ -1114,8 +1093,8 @@
                             transaction.transport_load.id ===
                             unitForm.selected_trans.transport_load.id
                           "
-                          @click.prevent="updateUnits"
-                          class="mt-2 font-light underline text-indigo-400">
+                          class="mt-2 font-light underline text-indigo-400"
+                          @click.prevent="updateUnits">
                           update units
                         </button>
                       </div>
@@ -1123,8 +1102,8 @@
                     <td :class="row_styler">
                       <input
                         v-model="transaction.transport_load.no_units_outgoing"
-                        type="number"
-                        class="block w-16 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        class="block w-16 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        type="number" />
 
                       <div v-if="unitForm.selected_trans != null">
                         <button
@@ -1132,8 +1111,8 @@
                             transaction.transport_load.id ===
                             unitForm.selected_trans.transport_load.id
                           "
-                          @click.prevent="updateUnits"
-                          class="mt-2 font-light underline text-indigo-400">
+                          class="mt-2 font-light underline text-indigo-400"
+                          @click.prevent="updateUnits">
                           update units
                         </button>
                       </div>

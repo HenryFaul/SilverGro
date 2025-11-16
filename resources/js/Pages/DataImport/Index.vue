@@ -23,7 +23,6 @@
   router.on('finish', (event) => {
     clearTimeout(timeout);
     if (!NProgress.isStarted()) {
-      return;
     } else if (event.detail.visit.completed) {
       NProgress.done();
     } else if (event.detail.visit.interrupted) {
@@ -39,8 +38,7 @@
   });
 
   const form = useForm({
-    _method: 'POST',
-    file: null,
+    // Don't store file in form object - it doesn't work well with Inertia
   });
 
   const permissions = computed(() => usePage().props.permissions);
@@ -48,17 +46,44 @@
   const FilePreview = ref(null);
   const FileName = ref(null);
   const FileInput = ref(null);
+  const isUploading = ref(false);
 
   const UploadFile = () => {
-    if (FileInput.value) {
-      form.file = FileInput.value.files[0];
-    }
-    if (form.file != null) {
-      form.post(route('import.process'), {
-        errorBag: 'UploadFile',
-        preserveScroll: true,
-        onSuccess: () => clearFileInput(),
-      });
+    console.log('UploadFile called');
+
+    if (FileInput.value && FileInput.value.files.length > 0) {
+      const file = FileInput.value.files[0];
+      console.log('File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+
+      isUploading.value = true;
+
+      // Use Inertia's router with forceFormData to upload the file
+      // Backend now handles Inertia's serialization issues
+      router.post(
+        route('import.process'),
+        {
+          file: file,
+        },
+        {
+          forceFormData: true,
+          preserveScroll: true,
+          onSuccess: (page) => {
+            console.log('Upload successful');
+            isUploading.value = false;
+            clearFileInput();
+          },
+          onError: (errors) => {
+            console.error('Upload errors:', errors);
+            isUploading.value = false;
+          },
+          onFinish: () => {
+            isUploading.value = false;
+          },
+        }
+      );
+    } else {
+      console.error('No file selected');
+      alert('Please select a file first');
     }
   };
 
@@ -82,9 +107,10 @@
   };
 
   const clearFileInput = () => {
-    if (FileInput.value?.value) {
-      FileInput.value.value = null;
-      FileName.value.value = null;
+    if (FileInput.value) {
+      FileInput.value.value = '';
+      FilePreview.value = null;
+      FileName.value = null;
     }
   };
 </script>
@@ -101,6 +127,7 @@
           <div class="m-2 p-2">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
               Import Your Data
+              <span class="text-xs text-gray-500">(v4.0 - Backend Fix)</span>
             </h2>
 
             <div>
@@ -109,16 +136,9 @@
                   <div class="col-span-2">
                     <input
                       ref="FileInput"
-                      type="file"
                       class="hidden"
+                      type="file"
                       @change="updateFilePreview" />
-
-                    <progress
-                      v-if="form.progress"
-                      :value="form.progress.percentage"
-                      max="100">
-                      {{ form.progress.percentage }}%
-                    </progress>
 
                     <div
                       v-show="FilePreview"
@@ -135,10 +155,10 @@
                   </div>
 
                   <PrimaryButton
-                    :loading="form.processing"
+                    :loading="isUploading"
                     class="mt-2 mr-2"
-                    type="button"
                     load
+                    type="button"
                     @click.prevent="UploadFile">
                     Import File
                   </PrimaryButton>
