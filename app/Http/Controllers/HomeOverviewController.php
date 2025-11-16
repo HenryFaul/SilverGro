@@ -45,6 +45,8 @@ class HomeOverviewController extends Controller
 
         $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Customer_2')->with('Customer_3')->with('Customer_4')->with('Supplier')->with('Transporter')->with('Product')->with('TransportFinance')
             ->with('TransportLoad')->with('DealTicket')->with('PurchaseOrder')->with('SalesOrder')->with('TransportOrder')->with('TransportInvoice')
+            ->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))
+            ->with('TransportDriverVehicle', fn($query) => $query->with('Vehicle'))
             ->index($filters)
             ->orderBy('transport_date_earliest', 'desc')
             ->paginate($paginate)

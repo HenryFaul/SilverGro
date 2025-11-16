@@ -7,6 +7,8 @@ import { debounce } from 'lodash';
 import PaginationModified from '@/Components/UI/PaginationModified.vue';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import Icon from '@/Components/Icon.vue';
+import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
 
 const swal = inject('$swal');
 
@@ -391,6 +393,18 @@ const swal = inject('$swal');
   const row_styler = computed(
     () => 'whitespace-nowrap border-b px-3 py-1 text-sm text-gray-500 lg:table-cell'
   );
+
+  const warningLister = (Warnings) => {
+    var the_list = '';
+
+    Warnings.forEach(function (arrayItem) {
+      var entity = arrayItem.status_entity.entity;
+      var type = arrayItem.status_type.type;
+
+      the_list += '  ' + entity + '_' + type + '.';
+    });
+    return the_list;
+  };
 </script>
 
 <template>
@@ -399,426 +413,367 @@ const swal = inject('$swal');
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">Home Overview</h2>
     </template>
 
-    <div class="p-1 h-screen">
-      <div class="bg-white h-3/4 overflow-x-auto m-2 p-2 shadow-xl sm:rounded-lg">
-        <div>
-          <div class="px-4 sm:px-6 lg:px-8">
-            <div class="mt-3 flow-root">
-              <div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
-                <div class="inline-block min-w-full py-2 align-middle">
-                  <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-6">
-                    <div class="flex col-span-6">
-                      <div>
-                        <div class="ml-1 text-indigo-400 text-sm font-bold">
-                          Start Date
-                        </div>
-                        <div class="w-36">
-                          <VueDatePicker
-                            v-model="filterForm.start_date"
-                            :format="formatStart"
-                            :teleport="true"></VueDatePicker>
-                        </div>
-                      </div>
-                      <div class="ml-1">
-                        <div class="ml-3 text-indigo-400 text-sm font-bold">End Date</div>
-                        <div class="w-36">
-                          <VueDatePicker
-                            v-model="filterForm.end_date"
-                            :format="format"
-                            :teleport="true"></VueDatePicker>
-                        </div>
-                      </div>
+    <div class="p-1 h-screen flex flex-col">
+      <div
+        class="bg-white m-2 shadow-xl sm:rounded-lg flex flex-col overflow-hidden"
+        style="height: calc(75vh)">
+        <div
+          class="flex-shrink-0 bg-white px-4 sm:px-6 lg:px-8 py-1.5 border-b border-gray-200">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <div class="w-36">
+              <VueDatePicker
+                v-model="filterForm.start_date"
+                :format="formatStart"
+                :teleport="true"></VueDatePicker>
+            </div>
+            <div class="w-36">
+              <VueDatePicker
+                v-model="filterForm.end_date"
+                :format="format"
+                :teleport="true"></VueDatePicker>
+            </div>
+            <select
+              v-model="filterForm.contract_type_id"
+              class="input-filter-l w-36 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option :value="null">All contracts</option>
+              <option
+                v-for="n in contract_types"
+                :key="n.id"
+                :value="n.id">
+                {{ n.name }}
+              </option>
+            </select>
+            <select
+              v-model="filterForm.show"
+              class="input-filter-l w-20 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="25">25</option>
+              <option :value="50">50</option>
+              <option :value="100">100</option>
+              <option :value="200">200</option>
+              <option :value="500">500</option>
+            </select>
+            <input
+              v-model.number="filterForm.old_id"
+              aria-label="Search"
+              class="block w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="old no..."
+              type="search" />
+            <input
+              v-model.number="filterForm.id"
+              aria-label="Search"
+              class="block w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="ID no..."
+              type="search" />
+            <input
+              v-model.number="filterForm.a_mq"
+              aria-label="Search"
+              class="block w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="MQ no..."
+              type="search" />
+            <input
+              v-model.number="filterForm.supplier_name"
+              aria-label="Search"
+              class="block w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="supplier..."
+              type="search" />
+            <input
+              v-model.number="filterForm.customer_name"
+              aria-label="Search"
+              class="block w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="customer..."
+              type="search" />
+            <input
+              v-model.number="filterForm.transporter_name"
+              aria-label="Search"
+              class="block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="transporter..."
+              type="search" />
+            <input
+              v-model.number="filterForm.product_name"
+              aria-label="Search"
+              class="block w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="product..."
+              type="search" />
 
-                      <div class="mt-5 ml-1">
-                        <select
-                          v-model="filterForm.contract_type_id"
-                          class="input-filter-l w-36 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                          <option :value="null">All contracts</option>
+            <secondary-button @click="filter">Search</secondary-button>
+            <secondary-button @click="clear">Clear</secondary-button>
+            <secondary-button @click="toggleDetails">Toggle</secondary-button>
 
-                          <option
-                            v-for="n in contract_types"
-                            :key="n.id"
-                            :value="n.id">
-                            {{ n.name }}
-                          </option>
-                        </select>
-                      </div>
-                      <div class="mt-5 ml-1">
-                        <select
-                          v-model="filterForm.show"
-                          class="input-filter-l w-20 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                          <option :value="5">5</option>
-                          <option :value="10">10</option>
-                          <option :value="25">25</option>
-                          <option :value="50">50</option>
-                          <option :value="100">100</option>
-                          <option :value="200">200</option>
-                          <option :value="500">500</option>
-                        </select>
-                      </div>
-                      <div class="mt-5 ml-1">
-                        <input
-                          v-model.number="filterForm.old_id"
-                          aria-label="Search"
-                          class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="old no..."
-                          type="search" />
-                      </div>
-                      <div class="mt-5 ml-1">
-                        <input
-                          v-model.number="filterForm.id"
-                          aria-label="Search"
-                          class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="ID no..."
-                          type="search" />
-                      </div>
-                      <div class="mt-5 ml-1">
-                        <input
-                          v-model.number="filterForm.a_mq"
-                          aria-label="Search"
-                          class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="MQ no..."
-                          type="search" />
-                      </div>
-                      <div class="mt-5 ml-1">
-                        <input
-                          v-model.number="filterForm.supplier_name"
-                          aria-label="Search"
-                          class="block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="supplier..."
-                          type="search" />
-                      </div>
-                      <div class="mt-5 ml-1">
-                        <input
-                          v-model.number="filterForm.customer_name"
-                          aria-label="Search"
-                          class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="customer..."
-                          type="search" />
-                      </div>
-                      <div class="mt-5 ml-1">
-                        <input
-                          v-model.number="filterForm.transporter_name"
-                          aria-label="Search"
-                          class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="transporter..."
-                          type="search" />
-                      </div>
-                      <div class="mt-5 ml-1">
-                        <input
-                          v-model.number="filterForm.product_name"
-                          aria-label="Search"
-                          class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="product..."
-                          type="search" />
-                      </div>
+            <div class="flex items-center gap-1">
+              <input
+                id="mon"
+                v-model="mon"
+                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                type="checkbox" />
+              <label
+                class="text-xs text-gray-700"
+                for="mon">
+                Mon
+              </label>
+            </div>
+            <div class="flex items-center gap-1">
+              <input
+                id="tue"
+                v-model="tue"
+                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                type="checkbox" />
+              <label
+                class="text-xs text-gray-700"
+                for="tue">
+                Tue
+              </label>
+            </div>
+            <div class="flex items-center gap-1">
+              <input
+                id="wed"
+                v-model="wed"
+                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                type="checkbox" />
+              <label
+                class="text-xs text-gray-700"
+                for="wed">
+                Wed
+              </label>
+            </div>
+            <div class="flex items-center gap-1">
+              <input
+                id="thu"
+                v-model="thu"
+                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                type="checkbox" />
+              <label
+                class="text-xs text-gray-700"
+                for="thu">
+                Thu
+              </label>
+            </div>
+            <div class="flex items-center gap-1">
+              <input
+                id="fri"
+                v-model="fri"
+                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                type="checkbox" />
+              <label
+                class="text-xs text-gray-700"
+                for="fri">
+                Fri
+              </label>
+            </div>
+            <div class="flex items-center gap-1">
+              <input
+                id="sat"
+                v-model="sat"
+                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                type="checkbox" />
+              <label
+                class="text-xs text-gray-700"
+                for="sat">
+                Sat
+              </label>
+            </div>
+            <div class="flex items-center gap-1">
+              <input
+                id="sun"
+                v-model="sun"
+                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                type="checkbox" />
+              <label
+                class="text-xs text-gray-700"
+                for="sun">
+                Sun
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8">
+          <div class="inline-block min-w-full py-2 align-middle">
+            <table class="min-w-full border-separate border-spacing-0">
+              <thead>
+                <tr>
+                  <th
+                    class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                    scope="col">
+                    ID
+                  </th>
+                  <th
+                    :class="header_styler"
+                    scope="col">
+                    STATUS
+                  </th>
+                  <th
+                    :class="header_styler"
+                    scope="col">
+                    TYPE
+                  </th>
+                  <th
+                    :class="header_styler"
+                    scope="col">
+                    DATE
+                  </th>
+                  <th
+                    :class="header_styler"
+                    scope="col">
+                    SUPPLIER
+                  </th>
+                  <th
+                    :class="header_styler"
+                    scope="col">
+                    CUSTOMER
+                  </th>
+                  <th
+                    :class="header_styler"
+                    scope="col">
+                    TRANSPORTER
+                  </th>
+                  <th
+                    :class="header_styler"
+                    scope="col">
+                    REG#
+                  </th>
+                  <th
+                    :class="header_styler"
+                    scope="col">
+                    PRODUCT
+                  </th>
+
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    Units
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    Cost Price
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    Selling Price
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    Gross Profit
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(transaction, index) in filteredTrans"
+                  :key="transaction.id"
+                  :class="[
+                    transaction.id === props.selected_transaction.id
+                      ? 'bg-indigo-300'
+                      : '',
+                    'hover:bg-gray-100 text-sm focus-within:bg-gray-100',
+                  ]">
+                  <td :class="row_styler">
+                    <Link
+                      :data="{ selected_trans_id: transaction.id }"
+                      href="/transaction_summary"
+                      method="get"
+                      target="_blank">
+                      <span
+                        v-if="transaction.a_mq"
+                        class="font-bold">
+                        (MQ:{{ transaction.a_mq }})
+                      </span>
+                      <span>(ID:{{ transaction.id }})</span>
+                      <span></span>
+                      <span>(Old:{{ transaction.old_id }})</span>
+                    </Link>
+                  </td>
+                  <td :class="row_styler">
+                    <div
+                      v-if="
+                        transaction.transport_status &&
+                        transaction.transport_status.length > 0
+                      ">
+                      <base-tooltip
+                        :content="warningLister(transaction.transport_status)">
+                        <icon
+                          class="w-4 h-4 animate-pulse fill-red-500"
+                          name="triangle" />
+                      </base-tooltip>
                     </div>
-                    <div class="col-span-4 flex">
-                      <div>
-                        <secondary-button
-                          class=""
-                          @click="filter">
-                          Search
-                        </secondary-button>
-                        <secondary-button
-                          class="ml-1"
-                          @click="clear">
-                          Clear
-                        </secondary-button>
-                        <secondary-button
-                          class="ml-1"
-                          @click="toggleDetails">
-                          Toggle
-                        </secondary-button>
-                      </div>
+                  </td>
+                  <td :class="row_styler">
+                    {{ transaction.contract_type.name }}
+                  </td>
 
-                      <div class="flex ml-6">
-                        <div class="relative flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="mon"
-                              v-model="mon"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="mon"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="mon">
-                              Mon
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="tue"
-                              v-model="tue"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="tue"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="tue">
-                              Tue
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="wed"
-                              v-model="wed"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="wed"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="wed">
-                              Wed
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="thu"
-                              v-model="thu"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="thu"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="thu">
-                              Thu
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="fri"
-                              v-model="fri"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="fri"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="fri">
-                              Fri
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="sat"
-                              v-model="sat"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="sat"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="sat">
-                              Sat
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="sun"
-                              v-model="sun"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="sun"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="sun">
-                              Sun
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-span-4 mb-3"></div>
-                  </div>
+                  <td :class="row_styler">
+                    {{ NiceTDate(transaction.transport_date_earliest) }}
+                  </td>
 
-                  <div></div>
-                  <div class="">
-                    <div class="overflow-y-auto h-screen">
-                      <table class="min-w-full border-separate border-spacing-0">
-                        <thead>
-                          <tr>
-                            <th
-                              class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
-                              scope="col">
-                              ID
-                            </th>
-                            <th
-                              :class="header_styler"
-                              scope="col">
-                              TYPE
-                            </th>
-                            <th
-                              :class="header_styler"
-                              scope="col">
-                              DATE
-                            </th>
-                            <th
-                              :class="header_styler"
-                              scope="col">
-                              SUPPLIER
-                            </th>
-                            <th
-                              :class="header_styler"
-                              scope="col">
-                              CUSTOMER
-                            </th>
-                            <th
-                              :class="header_styler"
-                              scope="col">
-                              TRANSPORTER
-                            </th>
-                            <th
-                              :class="header_styler"
-                              scope="col">
-                              PRODUCT
-                            </th>
+                  <td :class="row_styler">
+                    {{ transaction.supplier.last_legal_name }}
+                  </td>
+                  <td :class="row_styler">
+                    {{ transaction.customer.last_legal_name }}
+                  </td>
+                  <td :class="row_styler">
+                    {{ transaction.transporter.last_legal_name }}
+                  </td>
 
-                            <th
-                              v-if="showDetails"
-                              :class="header_styler"
-                              scope="col">
-                              Units Incoming
-                            </th>
-                            <th
-                              v-if="showDetails"
-                              :class="header_styler"
-                              scope="col">
-                              Cost Price
-                            </th>
-                            <th
-                              v-if="showDetails"
-                              :class="header_styler"
-                              scope="col">
-                              Selling Price
-                            </th>
-                            <th
-                              v-if="showDetails"
-                              :class="header_styler"
-                              scope="col">
-                              Gross Profit
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr
-                            v-for="(transaction, index) in filteredTrans"
-                            :key="transaction.id"
-                            :class="[
-                              transaction.id === props.selected_transaction.id
-                                ? 'bg-indigo-300'
-                                : '',
-                              'hover:bg-gray-100 text-sm focus-within:bg-gray-100',
-                            ]">
-                            <td :class="row_styler">
-                              <Link
-                                :data="{ selected_trans_id: transaction.id }"
-                                href="/transaction_summary"
-                                method="get"
-                                target="_blank">
-                                <span
-                                  v-if="transaction.a_mq"
-                                  class="font-bold">
-                                  (MQ:{{ transaction.a_mq }})
-                                </span>
-                                <span>(ID:{{ transaction.id }})</span>
-                                <span></span>
-                                <span>(Old:{{ transaction.old_id }})</span>
-                              </Link>
-                            </td>
-                            <td :class="row_styler">
-                              {{ transaction.contract_type.name }}
-                            </td>
-
-                            <td :class="row_styler">
-                              {{ NiceTDate(transaction.transport_date_earliest) }}
-                            </td>
-
-                            <td :class="row_styler">
-                              {{ transaction.supplier.last_legal_name }}
-                            </td>
-                            <td :class="row_styler">
-                              {{ transaction.customer.last_legal_name }}
-                            </td>
-                            <td :class="row_styler">
-                              {{ transaction.transporter.last_legal_name }}
-                            </td>
-
-                            <td :class="row_styler">
-                              {{ transaction.product.name }}
-                            </td>
-
-                            <td
-                              v-if="showDetails"
-                              :class="row_styler">
-                              {{ transaction.transport_load.no_units_incoming }}
-                            </td>
-
-                            <td
-                              v-if="showDetails"
-                              :class="row_styler">
-                              {{ NiceNumber(transaction.transport_finance.cost_price) }}
-                            </td>
-
-                            <td
-                              v-if="showDetails"
-                              :class="row_styler">
-                              {{
-                                NiceNumber(transaction.transport_finance.selling_price)
-                              }}
-                            </td>
-
-                            <td
-                              v-if="showDetails"
-                              :class="row_styler">
-                              {{ NiceNumber(transaction.transport_finance.gross_profit) }}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <div v-if="transactions">
+                  <td :class="row_styler">
+                    <div
+                      v-if="
+                        transaction.transport_driver_vehicle &&
+                        transaction.transport_driver_vehicle.length > 0
+                      ">
                       <div
-                        v-if="transactions.data.length"
-                        class="w-full flex justify-center mt-5 mb-4">
-                        <PaginationModified :links="transactions.links" />
+                        v-for="driver_vehicle of transaction.transport_driver_vehicle"
+                        :key="driver_vehicle.id">
+                        {{ driver_vehicle.vehicle.reg_no }}
                       </div>
                     </div>
-                  </div>
-                </div>
+                    <div v-else>N/A</div>
+                  </td>
+
+                  <td :class="row_styler">
+                    {{ transaction.product.name }}
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    {{ transaction.transport_load.no_units_incoming }}
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    {{ NiceNumber(transaction.transport_finance.cost_price) }}
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    {{ NiceNumber(transaction.transport_finance.selling_price) }}
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    {{ NiceNumber(transaction.transport_finance.gross_profit) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div v-if="transactions">
+              <div
+                v-if="transactions.data.length"
+                class="w-full flex justify-center mt-5 mb-4">
+                <PaginationModified :links="transactions.links" />
               </div>
             </div>
           </div>
@@ -844,7 +799,7 @@ const swal = inject('$swal');
                 <div class="mb-2">
                   <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <table class="min-w-full divide-y divide-gray-300">
-                      <thead>
+                      <thead class="bg-gray-300">
                         <tr>
                           <th
                             class="py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
