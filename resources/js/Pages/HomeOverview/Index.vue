@@ -9,6 +9,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import Icon from '@/Components/Icon.vue';
 import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
+import { CheckIcon, XMarkIcon } from '@heroicons/vue/20/solid';
 
 const swal = inject('$swal');
 
@@ -80,6 +81,15 @@ const swal = inject('$swal');
       return 0;
     } else {
       let val = (_number / 1).toFixed(2).replace('.', '.');
+      return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+  };
+
+  let NiceNumberInt = (_number) => {
+    if (_number === null) {
+      return 0;
+    } else {
+      let val = Math.round(_number);
       return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     }
   };
@@ -614,6 +624,12 @@ const swal = inject('$swal');
                     DATE
                   </th>
                   <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    C_ORDER
+                  </th>
+                  <th
                     :class="header_styler"
                     scope="col">
                     SUPPLIER
@@ -643,25 +659,80 @@ const swal = inject('$swal');
                     v-if="showDetails"
                     :class="header_styler"
                     scope="col">
+                    D/T
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    P/O
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    S/O
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    T/O
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    WB
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    INV
+                  </th>
+
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
                     Units
                   </th>
                   <th
                     v-if="showDetails"
                     :class="header_styler"
                     scope="col">
-                    Cost Price
+                    Cost/Ton
                   </th>
                   <th
                     v-if="showDetails"
                     :class="header_styler"
                     scope="col">
-                    Selling Price
+                    TC/Ton
                   </th>
                   <th
                     v-if="showDetails"
                     :class="header_styler"
                     scope="col">
-                    Gross Profit
+                    Price/Ton
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    GP/Ton
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    GP%
+                  </th>
+                  <th
+                    v-if="showDetails"
+                    :class="header_styler"
+                    scope="col">
+                    Process Notes
                   </th>
                 </tr>
               </thead>
@@ -713,6 +784,15 @@ const swal = inject('$swal');
                     {{ NiceTDate(transaction.transport_date_earliest) }}
                   </td>
 
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    <div v-if="transaction.transport_job?.customer_order_number">
+                      {{ transaction.transport_job.customer_order_number }}
+                    </div>
+                    <div v-else>N/A</div>
+                  </td>
+
                   <td :class="row_styler">
                     {{ transaction.supplier.last_legal_name }}
                   </td>
@@ -745,25 +825,122 @@ const swal = inject('$swal');
                   <td
                     v-if="showDetails"
                     :class="row_styler">
+                    <check-icon
+                      v-if="transaction.deal_ticket?.is_active"
+                      class="w-5 h-5 fill-green-300" />
+                    <x-mark-icon
+                      v-else
+                      class="w-5 h-5 fill-red-400" />
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    <check-icon
+                      v-if="transaction.purchase_order?.is_active"
+                      class="w-5 h-5 fill-green-300" />
+                    <x-mark-icon
+                      v-else
+                      class="w-5 h-5 fill-red-400" />
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    <check-icon
+                      v-if="transaction.sales_order?.is_active"
+                      class="w-5 h-5 fill-green-300" />
+                    <x-mark-icon
+                      v-else
+                      class="w-5 h-5 fill-red-400" />
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    <check-icon
+                      v-if="transaction.transport_order?.is_active"
+                      class="w-5 h-5 fill-green-300" />
+                    <x-mark-icon
+                      v-else
+                      class="w-5 h-5 fill-red-400" />
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    <check-icon
+                      v-if="
+                        transaction.transport_load?.is_weighbridge_certificate_received
+                      "
+                      class="w-5 h-5 fill-green-300" />
+                    <x-mark-icon
+                      v-else
+                      class="w-5 h-5 fill-red-400" />
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    <check-icon
+                      v-if="transaction.transport_invoice?.is_active"
+                      class="w-5 h-5 fill-green-300" />
+                    <x-mark-icon
+                      v-else
+                      class="w-5 h-5 fill-red-400" />
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
                     {{ transaction.transport_load.no_units_incoming }}
                   </td>
 
                   <td
                     v-if="showDetails"
                     :class="row_styler">
-                    {{ NiceNumber(transaction.transport_finance.cost_price) }}
+                    {{ NiceNumberInt(transaction.transport_finance.cost_price_per_ton) }}
                   </td>
 
                   <td
                     v-if="showDetails"
                     :class="row_styler">
-                    {{ NiceNumber(transaction.transport_finance.selling_price) }}
+                    {{
+                      NiceNumberInt(transaction.transport_finance.transport_rate_per_ton)
+                    }}
                   </td>
 
                   <td
                     v-if="showDetails"
                     :class="row_styler">
-                    {{ NiceNumber(transaction.transport_finance.gross_profit) }}
+                    {{
+                      NiceNumberInt(transaction.transport_finance.selling_price_per_ton)
+                    }}
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    {{
+                      NiceNumberInt(transaction.transport_finance.gross_profit_per_ton)
+                    }}
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    {{ transaction.transport_finance.gross_profit_percent?.toFixed(2) }}%
+                  </td>
+
+                  <td
+                    v-if="showDetails"
+                    :class="row_styler">
+                    <div v-if="transaction.process_notes">
+                      <base-tooltip :content="transaction.process_notes">
+                        {{ TrunkCateText(transaction.process_notes) }}
+                      </base-tooltip>
+                    </div>
+                    <div v-else>None...</div>
                   </td>
                 </tr>
               </tbody>
@@ -799,7 +976,7 @@ const swal = inject('$swal');
                 <div class="mb-2">
                   <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <table class="min-w-full divide-y divide-gray-300">
-                      <thead class="bg-gray-300">
+                      <thead class="bg-indigo-300">
                         <tr>
                           <th
                             class="py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
