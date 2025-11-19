@@ -813,18 +813,24 @@ const props = defineProps({
                               <td class="px-2 py-1 whitespace-nowrap">
                                 {{ NiceNumber(trans.transport_finance.gross_profit) }}
                               </td>
-                              <td class="px-2 py-1">
+                              <td class="px-2 py-1 align-top">
                                 <div v-if="trans.traders_notes">
                                   <base-tooltip :content="trans.traders_notes">
-                                    {{ TrunkCateText(trans.traders_notes) }}
+                                    <div
+                                      class="max-w-[32ch] text-xs leading-snug line-clamp-2 break-words">
+                                      {{ trans.traders_notes }}
+                                    </div>
                                   </base-tooltip>
                                 </div>
                                 <div v-else>None...</div>
                               </td>
-                              <td class="px-2 py-1">
+                              <td class="px-2 py-1 align-top">
                                 <div v-if="trans.process_notes">
                                   <base-tooltip :content="trans.process_notes">
-                                    {{ TrunkCateText(trans.process_notes) }}
+                                    <div
+                                      class="max-w-[32ch] text-xs leading-snug line-clamp-2 break-words">
+                                      {{ trans.process_notes }}
+                                    </div>
                                   </base-tooltip>
                                 </div>
                                 <div v-else>None...</div>
