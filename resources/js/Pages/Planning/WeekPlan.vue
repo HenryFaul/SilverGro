@@ -76,7 +76,8 @@ const props = defineProps({
     }
   );
 
-  const col_class = 'text-xs text-white whitespace-nowrap';
+  // col_class only controls nowrap, no font size or color so headers can match summary table
+  const col_class = 'whitespace-nowrap';
 
   let NiceDate = (_date) => {
     return new Date(_date).toDateString();
@@ -511,137 +512,138 @@ const props = defineProps({
                       <div
                         class="bg-white rounded-md shadow max-h-[65vh] overflow-y-auto">
                         <table class="min-w-max table-auto">
-                          <thead class="bg-indigo-400 sticky top-0 z-10">
+                          <!-- header: light grey background, same font size as summary table header -->
+                          <thead class="bg-gray-100 sticky top-0 z-10">
                             <tr>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Status
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Date
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Contract
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Product
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Tons
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Loaded
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Supplier
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Customer
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Del?
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Transporter
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Tr/Reg.
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Cost/Ton
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Price/Ton
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 TC/Ton
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 GP
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Traders Notes
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Process Notes
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Cost
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 T/Cost
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 Selling
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 GP%
                               </th>
                               <th
                                 :class="col_class"
-                                class="px-2 py-1"
+                                class="px-2 py-2 text-sm font-semibold text-black"
                                 scope="col">
                                 GP/Ton
                               </th>
@@ -738,10 +740,8 @@ const props = defineProps({
                                       item, index
                                     ) of trans.transport_driver_vehicle">
                                     <div v-if="item.is_loaded">
-                                      Truck {{ index + 1 }}:
                                       {{ NiceTDate(item.date_loaded) }}
                                     </div>
-
                                     <div v-else>
                                       <icon
                                         class="mr-2 w-3 h-3"
