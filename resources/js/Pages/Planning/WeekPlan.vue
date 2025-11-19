@@ -134,6 +134,12 @@ const props = defineProps({
     return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   };
 
+  // helper to round numeric values to 2 decimal places without currency formatting
+  let NiceNumberPlain = (_number) => {
+    let val = isNaN(_number) ? 0.0 : (_number / 1).toFixed(2).replace('.', '.');
+    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  };
+
   let shortDate = () => {
     return Form.date.toISOString().substr(0, 10);
   };
@@ -617,24 +623,7 @@ const props = defineProps({
                                 scope="col">
                                 Process Notes
                               </th>
-                              <th
-                                :class="col_class"
-                                class="px-2 py-2 text-sm font-semibold text-black"
-                                scope="col">
-                                Cost
-                              </th>
-                              <th
-                                :class="col_class"
-                                class="px-2 py-2 text-sm font-semibold text-black"
-                                scope="col">
-                                T/Cost
-                              </th>
-                              <th
-                                :class="col_class"
-                                class="px-2 py-2 text-sm font-semibold text-black"
-                                scope="col">
-                                Selling
-                              </th>
+                              <!-- Removed Cost, T/Cost, Selling headers -->
                               <th
                                 :class="col_class"
                                 class="px-2 py-2 text-sm font-semibold text-black"
@@ -840,39 +829,13 @@ const props = defineProps({
                                 </div>
                                 <div v-else>None...</div>
                               </td>
+                              <!-- Removed Cost, T/Cost, Selling body cells -->
                               <td class="px-2 py-1 whitespace-nowrap">
-                                <div
-                                  :class="
-                                    trans.supplier.terms_of_payment_id === 1
-                                      ? 'p-1 bg-red-600 rounded'
-                                      : ''
-                                  ">
-                                  {{ NiceNumber(trans.transport_finance.cost_price) }}
-                                </div>
-                              </td>
-                              <td class="px-2 py-1 whitespace-nowrap">
-                                {{ NiceNumber(trans.transport_finance.transport_cost) }}
-                              </td>
-
-                              <td class="px-2 py-1 whitespace-nowrap">
-                                <div
-                                  v-if="
-                                    trans.transport_finance.weight_ton_incoming_actual > 0
-                                  ">
-                                  {{
-                                    NiceNumber(
-                                      trans.transport_finance.selling_price_actual
-                                    )
-                                  }}
-                                </div>
-
-                                <div v-else>
-                                  {{ NiceNumber(trans.transport_finance.selling_price) }}
-                                </div>
-                              </td>
-
-                              <td class="px-2 py-1 whitespace-nowrap">
-                                {{ trans.transport_finance.gross_profit_percent }}
+                                {{
+                                  NiceNumberPlain(
+                                    trans.transport_finance.gross_profit_percent
+                                  )
+                                }}
                                 %
                               </td>
 
