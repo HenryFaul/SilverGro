@@ -510,111 +510,133 @@ const props = defineProps({
                             <tr class="">
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Status
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Date
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Contract
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Product
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Tons
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Loaded
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Supplier
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Customer
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Del?
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Transporter
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Tr/Reg.
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Cost/Ton
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Price/Ton
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 TC/Ton
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 GP
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Traders Notes
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Process Notes
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Cost
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 T/Cost
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 Selling
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 GP%
                               </th>
                               <th
                                 :class="col_class"
+                                class="px-2 py-1"
                                 scope="col">
                                 GP/Ton
                               </th>
@@ -625,7 +647,7 @@ const props = defineProps({
                               v-for="(trans, index) in filteredTrans"
                               :key="trans.id"
                               :class="DayStyle(trans.transport_date_earliest)">
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 <div v-if="trans.supplier.terms_of_payment_id == 1">
                                   <base-tooltip content="Supplier C.O.D account.">
                                     <icon
@@ -662,10 +684,10 @@ const props = defineProps({
                                   </base-tooltip>
                                 </div>
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 {{ NiceTDate(trans.transport_date_earliest) }}
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 <div class="font-bold">
                                   <Link
                                     :data="{ selected_trans_id: trans.id }"
@@ -682,10 +704,10 @@ const props = defineProps({
                                   (OLD:{{ trans.old_id }})
                                 </div>
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 {{ trans.product.name }}
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 <div
                                   v-if="
                                     trans.transport_finance.weight_ton_incoming_actual !=
@@ -704,7 +726,7 @@ const props = defineProps({
                                                                 {{ trans.transport_finance.weight_ton_incoming }}
                                                             </div>-->
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 <div v-if="trans.transport_driver_vehicle">
                                   <div
                                     v-for="(
@@ -723,13 +745,13 @@ const props = defineProps({
                                   </div>
                                 </div>
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 {{ trans.supplier.last_legal_name }}
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 {{ trans.customer.last_legal_name }}
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 <div v-if="trans.transport_driver_vehicle">
                                   <div
                                     v-for="(
@@ -763,10 +785,10 @@ const props = defineProps({
                                   </div>
                                 </div>
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 {{ trans.transporter.last_legal_name }}
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 <div v-if="trans.transport_driver_vehicle">
                                   <div
                                     v-for="driver_vehicle of trans.transport_driver_vehicle">
@@ -775,29 +797,29 @@ const props = defineProps({
                                 </div>
                                 <div v-else>No vehicle</div>
                               </td>
-                              <td class="py-4 px-6 whitespace-nowrap">
+                              <td class="px-2 py-1 whitespace-nowrap">
                                 {{
                                   NiceNumber(trans.transport_finance.cost_price_per_ton)
                                 }}
                               </td>
-                              <td class="py-4 px-6 whitespace-nowrap">
+                              <td class="px-2 py-1 whitespace-nowrap">
                                 {{
                                   NiceNumber(
                                     trans.transport_finance.selling_price_per_ton
                                   )
                                 }}
                               </td>
-                              <td class="py-4 px-6 whitespace-nowrap">
+                              <td class="px-2 py-1 whitespace-nowrap">
                                 {{
                                   NiceNumber(
                                     trans.transport_finance.transport_rate_per_ton
                                   )
                                 }}
                               </td>
-                              <td class="py-4 px-6 whitespace-nowrap">
+                              <td class="px-2 py-1 whitespace-nowrap">
                                 {{ NiceNumber(trans.transport_finance.gross_profit) }}
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 <div v-if="trans.traders_notes">
                                   <base-tooltip :content="trans.traders_notes">
                                     {{ TrunkCateText(trans.traders_notes) }}
@@ -805,7 +827,7 @@ const props = defineProps({
                                 </div>
                                 <div v-else>None...</div>
                               </td>
-                              <td class="py-4 px-6">
+                              <td class="px-2 py-1">
                                 <div v-if="trans.process_notes">
                                   <base-tooltip :content="trans.process_notes">
                                     {{ TrunkCateText(trans.process_notes) }}
@@ -813,32 +835,21 @@ const props = defineProps({
                                 </div>
                                 <div v-else>None...</div>
                               </td>
-                              <td class="py-4 px-6 whitespace-nowrap">
+                              <td class="px-2 py-1 whitespace-nowrap">
                                 <div
                                   :class="
                                     trans.supplier.terms_of_payment_id === 1
-                                      ? 'p-2 bg-red-600 rounded'
+                                      ? 'p-1 bg-red-600 rounded'
                                       : ''
                                   ">
                                   {{ NiceNumber(trans.transport_finance.cost_price) }}
                                 </div>
                               </td>
-                              <td class="py-4 px-6 whitespace-nowrap">
-                                <!--                                                            {{NiceNumber(trans.transport_finance.transport_rate_per_ton * trans.transport_finance.weight_ton_incoming) }}-->
-
+                              <td class="px-2 py-1 whitespace-nowrap">
                                 {{ NiceNumber(trans.transport_finance.transport_cost) }}
                               </td>
 
-                              <td class="py-4 px-6 whitespace-nowrap">
-                                <!--                                                            selling price-->
-
-                                <!--                                                            <div v-if="totalWeighBridgeUpload(trans.transport_driver_vehicle)>0">
-                                                                {{ NiceNumber(totalWeighBridgeUpload(trans.transport_driver_vehicle*trans.transport_finance.selling_price_per_ton))}}
-                                                            </div>
-                                                            <div v-else>
-                                                                {{NiceNumber(trans.transport_finance.selling_price_per_ton*trans.transport_finance.weight_ton_incoming)}}
-                                                            </div>-->
-
+                              <td class="px-2 py-1 whitespace-nowrap">
                                 <div
                                   v-if="
                                     trans.transport_finance.weight_ton_incoming_actual > 0
@@ -855,12 +866,12 @@ const props = defineProps({
                                 </div>
                               </td>
 
-                              <td class="py-4 px-6 whitespace-nowrap">
+                              <td class="px-2 py-1 whitespace-nowrap">
                                 {{ trans.transport_finance.gross_profit_percent }}
                                 %
                               </td>
 
-                              <td class="py-4 px-6 whitespace-nowrap">
+                              <td class="px-2 py-1 whitespace-nowrap">
                                 {{
                                   NiceNumber(trans.transport_finance.gross_profit_per_ton)
                                 }}
