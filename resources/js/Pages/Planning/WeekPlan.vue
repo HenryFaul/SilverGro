@@ -1,18 +1,16 @@
 <script setup>
-  import AppLayout from '@/Layouts/AppLayout.vue';
-  import PaginationModified from '@/Components/UI/PaginationModified.vue';
-  import Icon from '@/Components/Icon.vue';
-  import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid';
-  import { useForm } from '@inertiajs/vue3';
-  import { computed, onMounted, onBeforeMount, watch, ref } from 'vue';
-  import { debounce } from 'lodash';
-  import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
-  import VueDatePicker from '@vuepic/vue-datepicker';
-  import '@vuepic/vue-datepicker/dist/main.css';
-  import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
-  import { Link } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import PaginationModified from '@/Components/UI/PaginationModified.vue';
+import Icon from '@/Components/Icon.vue';
+import { Link, useForm } from '@inertiajs/vue3';
+import { computed, onMounted, ref, watch } from 'vue';
+import { debounce } from 'lodash';
+import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
 
-  const props = defineProps({
+const props = defineProps({
     transport_trans: Object,
     filters: Object,
     end_of_week: Object,
@@ -283,175 +281,179 @@
     <div class="py-1">
       <div class="max-w-10xl mx-auto sm:px-3 lg:px-4">
         <div class="bg-gray-50 overflow-hidden shadow-xl sm:rounded-lg min-h-600">
-          <div class="flex flex-row m-2 p-2">
-            <div class="basis-1/2">
-              <div class="flex min-h-fit">
-                <button
-                  @click="lessDay()"
-                  type="button"
-                  class="block mr-1 rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                  -
-                </button>
+          <div class="flex flex-row m-2 p-2 items-start">
+            <div class="flex-1">
+              <div class="flex flex-col">
+                <!-- Filters row: calendar +/- and weekday filters all in one row -->
+                <div class="flex items-center min-h-fit">
+                  <button
+                    class="block mr-1 rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    type="button"
+                    @click="lessDay()">
+                    -
+                  </button>
 
-                <div class="">
-                  <VueDatePicker
-                    style="width: 250px"
-                    v-model="Form.date"
-                    :format="format"
-                    :teleport="true"></VueDatePicker>
+                  <div>
+                    <VueDatePicker
+                      v-model="Form.date"
+                      :format="format"
+                      :teleport="true"
+                      style="width: 250px"></VueDatePicker>
+                  </div>
+
+                  <button
+                    class="block ml-1 rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    type="button"
+                    @click="addDay()">
+                    +
+                  </button>
+
+                  <!-- weekday filters to the right of the calendar -->
+                  <div class="flex ml-4 space-x-2">
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input
+                          id="mon"
+                          v-model="mon"
+                          aria-describedby="candidates-description"
+                          class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                          name="mon"
+                          type="checkbox" />
+                      </div>
+                      <div class="ml-1 text-sm leading-6">
+                        <label
+                          class="font-medium text-gray-900"
+                          for="mon">
+                          Mon
+                        </label>
+                      </div>
+                    </div>
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input
+                          id="tue"
+                          v-model="tue"
+                          aria-describedby="candidates-description"
+                          class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                          name="tue"
+                          type="checkbox" />
+                      </div>
+                      <div class="ml-1 text-sm leading-6">
+                        <label
+                          class="font-medium text-gray-900"
+                          for="tue">
+                          Tue
+                        </label>
+                      </div>
+                    </div>
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input
+                          id="wed"
+                          v-model="wed"
+                          aria-describedby="candidates-description"
+                          class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                          name="wed"
+                          type="checkbox" />
+                      </div>
+                      <div class="ml-1 text-sm leading-6">
+                        <label
+                          class="font-medium text-gray-900"
+                          for="wed">
+                          Wed
+                        </label>
+                      </div>
+                    </div>
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input
+                          id="thu"
+                          v-model="thu"
+                          aria-describedby="candidates-description"
+                          class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                          name="thu"
+                          type="checkbox" />
+                      </div>
+                      <div class="ml-1 text-sm leading-6">
+                        <label
+                          class="font-medium text-gray-900"
+                          for="thu">
+                          Thu
+                        </label>
+                      </div>
+                    </div>
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input
+                          id="fri"
+                          v-model="fri"
+                          aria-describedby="candidates-description"
+                          class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                          name="fri"
+                          type="checkbox" />
+                      </div>
+                      <div class="ml-1 text-sm leading-6">
+                        <label
+                          class="font-medium text-gray-900"
+                          for="fri">
+                          Fri
+                        </label>
+                      </div>
+                    </div>
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input
+                          id="sat"
+                          v-model="sat"
+                          aria-describedby="candidates-description"
+                          class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                          name="sat"
+                          type="checkbox" />
+                      </div>
+                      <div class="ml-1 text-sm leading-6">
+                        <label
+                          class="font-medium text-gray-900"
+                          for="sat">
+                          Sat
+                        </label>
+                      </div>
+                    </div>
+                    <div class="relative flex items-start">
+                      <div class="flex h-6 items-center">
+                        <input
+                          id="sun"
+                          v-model="sun"
+                          aria-describedby="candidates-description"
+                          class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                          name="sun"
+                          type="checkbox" />
+                      </div>
+                      <div class="ml-1 text-sm leading-6">
+                        <label
+                          class="font-medium text-gray-900"
+                          for="sun">
+                          Sun
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <button
-                  @click="addDay()"
-                  type="button"
-                  class="block ml-1 rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                  +
-                </button>
-              </div>
-
-              <div class="text-xs mt-1 ml-2">
-                ({{ NiceTDate(start_of_week) }} to {{ NiceTDate(end_of_week) }})
-              </div>
-
-              <div class="row mt-3">
-                <div class="flex">
-                  <div class="relative flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        v-model="mon"
-                        id="mon"
-                        aria-describedby="candidates-description"
-                        name="mon"
-                        type="checkbox"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        for="mon"
-                        class="font-medium text-gray-900">
-                        Mon
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        v-model="tue"
-                        id="tue"
-                        aria-describedby="candidates-description"
-                        name="tue"
-                        type="checkbox"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        for="tue"
-                        class="font-medium text-gray-900">
-                        Tue
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="wed"
-                        v-model="wed"
-                        aria-describedby="candidates-description"
-                        name="wed"
-                        type="checkbox"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        for="wed"
-                        class="font-medium text-gray-900">
-                        Wed
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="thu"
-                        v-model="thu"
-                        aria-describedby="candidates-description"
-                        name="thu"
-                        type="checkbox"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        for="thu"
-                        class="font-medium text-gray-900">
-                        Thu
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="fri"
-                        v-model="fri"
-                        aria-describedby="candidates-description"
-                        name="fri"
-                        type="checkbox"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        for="fri"
-                        class="font-medium text-gray-900">
-                        Fri
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="sat"
-                        v-model="sat"
-                        aria-describedby="candidates-description"
-                        name="sat"
-                        type="checkbox"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        for="sat"
-                        class="font-medium text-gray-900">
-                        Sat
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="sun"
-                        v-model="sun"
-                        aria-describedby="candidates-description"
-                        name="sun"
-                        type="checkbox"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        for="sun"
-                        class="font-medium text-gray-900">
-                        Sun
-                      </label>
-                    </div>
-                  </div>
+                <!-- Range row: directly under the calendar/filters row -->
+                <div class="text-xs mt-1 ml-1 whitespace-nowrap">
+                  ({{ NiceTDate(start_of_week) }} to {{ NiceTDate(end_of_week) }})
                 </div>
               </div>
             </div>
 
-            <div class="basis-1/4">
+            <!-- Right-aligned filters and actions -->
+            <div class="flex items-start ml-auto space-x-4">
               <div class="mt-2">
-                <div class="flex">
-                  <div class="m-2">Per page:</div>
+                <div class="flex items-center">
+                  <div class="mr-2 text-sm">Per page:</div>
                   <select
                     v-model="Form.show"
-                    class="input-filter-l block w-6/12 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    class="input-filter-l block w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <option :value="1">1</option>
                     <option :value="5">5</option>
                     <option :value="10">10</option>
@@ -461,22 +463,14 @@
                   </select>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <trade-slide-over
-                :show="viewTradeSlideOver"
-                @close="closeTradeSlideOver" />
-            </div>
-
-            <div class="basis-1/2 mt-2">
-              <div class="">
+              <div class="mt-2">
                 <select
                   v-model="Form.contract_type_id"
-                  class="input-filter-l w-2/6 rounded-md rounded-md shadow-sm border border-gray-300 text-gray-500">
+                  class="input-filter-l rounded-md shadow-sm border border-gray-300 text-gray-500">
                   <option
-                    selected
-                    :value="null">
+                    :value="null"
+                    selected>
                     All contracts
                   </option>
 
@@ -488,14 +482,16 @@
                   </option>
                 </select>
               </div>
-            </div>
 
-            <div class="basis-1/4">
-              <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+              <div class="mt-2">
+                <trade-slide-over
+                  :show="viewTradeSlideOver"
+                  @close="closeTradeSlideOver" />
+
                 <button
-                  @click="showTradeSlideOver"
+                  class="ml-2 rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   type="button"
-                  class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                  @click="showTradeSlideOver">
                   Add trans
                 </button>
               </div>
@@ -513,113 +509,113 @@
                           <thead class="bg-indigo-400">
                             <tr class="">
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Status
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Date
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Contract
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Product
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Tons
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Loaded
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Supplier
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Customer
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Del?
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Transporter
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Tr/Reg.
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Cost/Ton
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Price/Ton
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 TC/Ton
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 GP
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Traders Notes
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Process Notes
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Cost
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 T/Cost
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 Selling
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 GP%
                               </th>
                               <th
-                                scope="col"
-                                :class="col_class">
+                                :class="col_class"
+                                scope="col">
                                 GP/Ton
                               </th>
                             </tr>
@@ -633,8 +629,8 @@
                                 <div v-if="trans.supplier.terms_of_payment_id == 1">
                                   <base-tooltip content="Supplier C.O.D account.">
                                     <icon
-                                      name="bell-solid"
-                                      class="mr-3 w-6 h-6 fill-red-500" />
+                                      class="mr-3 w-6 h-6 fill-red-500"
+                                      name="bell-solid" />
                                   </base-tooltip>
                                 </div>
 
@@ -644,8 +640,8 @@
                                   ">
                                   <base-tooltip content="Payment overdue.">
                                     <icon
-                                      name="dollar"
-                                      class="mr-3 w-3 h-3 fill-red-500" />
+                                      class="mr-3 w-3 h-3 fill-red-500"
+                                      name="dollar" />
                                   </base-tooltip>
                                 </div>
 
@@ -653,16 +649,16 @@
                                   <base-tooltip
                                     :content="warningLister(trans.transport_status)">
                                     <icon
-                                      name="triangle"
-                                      class="mr-3 w-3 h-3 animate-pulse fill-red-500" />
+                                      class="mr-3 w-3 h-3 animate-pulse fill-red-500"
+                                      name="triangle" />
                                   </base-tooltip>
                                 </div>
 
                                 <div v-if="!trans.include_in_calculations">
                                   <base-tooltip content="Exclude from calculations.">
                                     <icon
-                                      name="info"
-                                      class="mr-3 w-3 h-3 fill-gray-500" />
+                                      class="mr-3 w-3 h-3 fill-gray-500"
+                                      name="info" />
                                   </base-tooltip>
                                 </div>
                               </td>
@@ -672,10 +668,10 @@
                               <td class="py-4 px-6">
                                 <div class="font-bold">
                                   <Link
+                                    :data="{ selected_trans_id: trans.id }"
                                     href="/transaction_summary"
                                     method="get"
-                                    target="_blank"
-                                    :data="{ selected_trans_id: trans.id }">
+                                    target="_blank">
                                     <span v-if="trans.a_mq">MQ{{ trans.a_mq }}</span>
                                     <span v-else>ID:{{ trans.id }}</span>
                                   </Link>
@@ -721,8 +717,8 @@
 
                                     <div v-else>
                                       <icon
-                                        name="cross-solid"
-                                        class="mr-2 w-3 h-3" />
+                                        class="mr-2 w-3 h-3"
+                                        name="cross-solid" />
                                     </div>
                                   </div>
                                 </div>
@@ -744,8 +740,8 @@
                                         <base-tooltip
                                           :content="toolTipGen('Delivered', index)">
                                           <icon
-                                            name="truck"
-                                            class="mr-3 w-6 h-6 fill-green-300 animate-pulse" />
+                                            class="mr-3 w-6 h-6 fill-green-300 animate-pulse"
+                                            name="truck" />
                                         </base-tooltip>
                                       </div>
 
@@ -753,16 +749,16 @@
                                         <base-tooltip
                                           :content="toolTipGen('Loaded', index)">
                                           <icon
-                                            name="truck"
-                                            class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse" />
+                                            class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse"
+                                            name="truck" />
                                         </base-tooltip>
                                       </div>
                                     </div>
 
                                     <div v-else>
                                       <icon
-                                        name="cross-solid"
-                                        class="mr-2 w-3 h-3" />
+                                        class="mr-2 w-3 h-3"
+                                        name="cross-solid" />
                                     </div>
                                   </div>
                                 </div>
@@ -878,54 +874,54 @@
                         <thead>
                           <tr>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               No Loads
                             </th>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Planned Tons
                             </th>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Weight Uploaded
                             </th>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Weight Offloaded
                             </th>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Cost Price
                             </th>
 
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Transport Cost
                             </th>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Other Costs
                             </th>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Selling Price
                             </th>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Gross Profit
                             </th>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               GP %
                             </th>
                           </tr>

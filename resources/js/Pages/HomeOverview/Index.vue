@@ -428,15 +428,15 @@ const swal = inject('$swal');
         class="bg-white m-2 shadow-xl sm:rounded-lg flex flex-col overflow-hidden"
         style="height: calc(75vh)">
         <div
-          class="flex-shrink-0 bg-white px-4 sm:px-6 lg:px-8 py-1.5 border-b border-gray-200">
-          <div class="flex flex-wrap items-center gap-1.5">
-            <div class="w-36">
+          class="flex-shrink-0 bg-white px-2 sm:px-4 lg:px-6 py-2 border-b border-gray-200">
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="w-32 sm:w-36">
               <VueDatePicker
                 v-model="filterForm.start_date"
                 :format="formatStart"
                 :teleport="true"></VueDatePicker>
             </div>
-            <div class="w-36">
+            <div class="w-32 sm:w-36">
               <VueDatePicker
                 v-model="filterForm.end_date"
                 :format="format"
@@ -444,7 +444,7 @@ const swal = inject('$swal');
             </div>
             <select
               v-model="filterForm.contract_type_id"
-              class="input-filter-l w-36 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              class="input-filter-l w-32 sm:w-36 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm">
               <option :value="null">All contracts</option>
               <option
                 v-for="n in contract_types"
@@ -455,7 +455,7 @@ const swal = inject('$swal');
             </select>
             <select
               v-model="filterForm.show"
-              class="input-filter-l w-20 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              class="input-filter-l w-16 sm:w-20 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm">
               <option :value="5">5</option>
               <option :value="10">10</option>
               <option :value="25">25</option>
@@ -467,43 +467,43 @@ const swal = inject('$swal');
             <input
               v-model.number="filterForm.old_id"
               aria-label="Search"
-              class="block w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
               placeholder="old no..."
               type="search" />
             <input
               v-model.number="filterForm.id"
               aria-label="Search"
-              class="block w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
               placeholder="ID no..."
               type="search" />
             <input
               v-model.number="filterForm.a_mq"
               aria-label="Search"
-              class="block w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
               placeholder="MQ no..."
               type="search" />
             <input
               v-model.number="filterForm.supplier_name"
               aria-label="Search"
-              class="block w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              class="block w-24 sm:w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
               placeholder="supplier..."
               type="search" />
             <input
               v-model.number="filterForm.customer_name"
               aria-label="Search"
-              class="block w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              class="block w-24 sm:w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
               placeholder="customer..."
               type="search" />
             <input
               v-model.number="filterForm.transporter_name"
               aria-label="Search"
-              class="block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              class="block w-28 sm:w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
               placeholder="transporter..."
               type="search" />
             <input
               v-model.number="filterForm.product_name"
               aria-label="Search"
-              class="block w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              class="block w-24 sm:w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
               placeholder="product..."
               type="search" />
 
@@ -511,11 +511,11 @@ const swal = inject('$swal');
             <secondary-button @click="clear">Clear</secondary-button>
             <secondary-button @click="toggleDetails">Toggle</secondary-button>
 
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-0.5 sm:gap-1">
               <input
                 id="mon"
                 v-model="mon"
-                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
                 type="checkbox" />
               <label
                 class="text-xs text-gray-700"
@@ -523,11 +523,11 @@ const swal = inject('$swal');
                 Mon
               </label>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-0.5 sm:gap-1">
               <input
                 id="tue"
                 v-model="tue"
-                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
                 type="checkbox" />
               <label
                 class="text-xs text-gray-700"
@@ -535,11 +535,11 @@ const swal = inject('$swal');
                 Tue
               </label>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-0.5 sm:gap-1">
               <input
                 id="wed"
                 v-model="wed"
-                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
                 type="checkbox" />
               <label
                 class="text-xs text-gray-700"
@@ -547,11 +547,11 @@ const swal = inject('$swal');
                 Wed
               </label>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-0.5 sm:gap-1">
               <input
                 id="thu"
                 v-model="thu"
-                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
                 type="checkbox" />
               <label
                 class="text-xs text-gray-700"
@@ -559,11 +559,11 @@ const swal = inject('$swal');
                 Thu
               </label>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-0.5 sm:gap-1">
               <input
                 id="fri"
                 v-model="fri"
-                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
                 type="checkbox" />
               <label
                 class="text-xs text-gray-700"
@@ -571,11 +571,11 @@ const swal = inject('$swal');
                 Fri
               </label>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-0.5 sm:gap-1">
               <input
                 id="sat"
                 v-model="sat"
-                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
                 type="checkbox" />
               <label
                 class="text-xs text-gray-700"
@@ -583,11 +583,11 @@ const swal = inject('$swal');
                 Sat
               </label>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-0.5 sm:gap-1">
               <input
                 id="sun"
                 v-model="sun"
-                class="h-3.5 w-3.5 rounded border-gray-300 text-indigo-600"
+                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
                 type="checkbox" />
               <label
                 class="text-xs text-gray-700"
