@@ -134,6 +134,12 @@ const props = defineProps({
     return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   };
 
+  // helper to format currency with zero decimal places
+  let NiceNumber0 = (_number) => {
+    let val = isNaN(_number) ? 0.0 : Math.round(_number);
+    return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  };
+
   // helper to round numeric values to 2 decimal places without currency formatting
   let NiceNumberPlain = (_number) => {
     let val = isNaN(_number) ? 0.0 : (_number / 1).toFixed(2).replace('.', '.');
@@ -793,25 +799,25 @@ const props = defineProps({
                               </td>
                               <td class="px-2 py-1 whitespace-nowrap">
                                 {{
-                                  NiceNumber(trans.transport_finance.cost_price_per_ton)
+                                  NiceNumber0(trans.transport_finance.cost_price_per_ton)
                                 }}
                               </td>
                               <td class="px-2 py-1 whitespace-nowrap">
                                 {{
-                                  NiceNumber(
+                                  NiceNumber0(
                                     trans.transport_finance.selling_price_per_ton
                                   )
                                 }}
                               </td>
                               <td class="px-2 py-1 whitespace-nowrap">
                                 {{
-                                  NiceNumber(
+                                  NiceNumber0(
                                     trans.transport_finance.transport_rate_per_ton
                                   )
                                 }}
                               </td>
                               <td class="px-2 py-1 whitespace-nowrap">
-                                {{ NiceNumber(trans.transport_finance.gross_profit) }}
+                                {{ NiceNumber0(trans.transport_finance.gross_profit) }}
                               </td>
                               <td class="px-2 py-1 align-top">
                                 <div v-if="trans.traders_notes">
@@ -930,26 +936,26 @@ const props = defineProps({
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
                               {{ weight_offloaded }}
                             </td>
+                            <!-- apply zero-decimal rounding to monetary summary fields -->
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(cost_price) }}
+                              {{ NiceNumber0(cost_price) }}
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(trans_cost) }}
+                              {{ NiceNumber0(trans_cost) }}
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(other_costs) }}
+                              {{ NiceNumber0(other_costs) }}
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(selling_price) }}
+                              {{ NiceNumber0(selling_price) }}
                             </td>
-
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(gp) }}
+                              {{ NiceNumber0(gp) }}
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
