@@ -281,7 +281,8 @@ const props = defineProps({
     <div class="py-1">
       <div class="max-w-10xl mx-auto sm:px-3 lg:px-4">
         <div class="bg-gray-50 overflow-hidden shadow-xl sm:rounded-lg min-h-600">
-          <div class="flex flex-row m-2 p-2 items-start">
+          <!-- reduce vertical spacing on the filter row -->
+          <div class="flex flex-row px-2 pt-2 pb-0 items-start">
             <div class="flex-1">
               <div class="flex flex-col">
                 <!-- Filters row: calendar +/- and weekday filters all in one row -->
@@ -498,11 +499,12 @@ const props = defineProps({
             </div>
           </div>
 
-          <div class="p-2 m-2">
+          <!-- pull the table up closer to the filters -->
+          <div class="px-2 pb-2 mt-1">
             <div class="px-4 sm:px-6 lg:px-8">
-              <div class="mt-2 flow-root">
-                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                  <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+              <div class="mt-1 flow-root">
+                <div class="-mx-4 -my-1 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div class="inline-block min-w-full py-1 align-middle sm:px-6 lg:px-8">
                     <div v-if="filteredTrans.length > 0">
                       <div class="bg-white rounded-md shadow overflow-x-auto">
                         <table class="min-w-full table-auto">
@@ -991,7 +993,7 @@ const props = defineProps({
               </div>
             </div>
 
-            <div class="mt-5 flex items-center justify-center">
+            <div class="mt-3 flex items-center justify-center">
               <PaginationModified :links="transport_trans.links" />
             </div>
           </div>
