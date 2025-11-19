@@ -281,7 +281,7 @@ const props = defineProps({
     <div class="py-1">
       <div class="max-w-10xl mx-auto sm:px-3 lg:px-4">
         <div class="bg-gray-50 overflow-hidden shadow-xl sm:rounded-lg min-h-600">
-          <!-- reduce vertical spacing on the filter row -->
+          <!-- filters (non-sticky) -->
           <div class="flex flex-row px-2 pt-2 pb-0 items-start">
             <div class="flex-1">
               <div class="flex flex-col">
@@ -499,17 +499,20 @@ const props = defineProps({
             </div>
           </div>
 
-          <!-- pull the table up closer to the filters -->
+          <!-- table section with its own scroll container and sticky header -->
           <div class="px-2 pb-2 mt-1">
             <div class="px-4 sm:px-6 lg:px-8">
               <div class="mt-1 flow-root">
-                <div class="-mx-4 -my-1 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                  <div class="inline-block min-w-full py-1 align-middle sm:px-6 lg:px-8">
+                <!-- outer wrapper: horizontal scroll only -->
+                <div class="-mx-4 -my-1 sm:-mx-6 lg:-mx-8 overflow-x-auto">
+                  <div class="inline-block min-w-full align-middle sm:px-6 lg:px-8">
                     <div v-if="filteredTrans.length > 0">
-                      <div class="bg-white rounded-md shadow overflow-x-auto">
-                        <table class="min-w-full table-auto">
-                          <thead class="bg-indigo-400">
-                            <tr class="">
+                      <!-- inner wrapper: vertical scroll + sticky header context -->
+                      <div
+                        class="bg-white rounded-md shadow max-h-[65vh] overflow-y-auto">
+                        <table class="min-w-max table-auto">
+                          <thead class="bg-indigo-400 sticky top-0 z-10">
+                            <tr>
                               <th
                                 :class="col_class"
                                 class="px-2 py-1"
@@ -721,12 +724,12 @@ const props = defineProps({
                                   {{ trans.transport_finance.weight_ton_incoming }}
                                 </div>
                                 <!--                                                            <div v-if="totalWeighBridgeUpload(trans.transport_driver_vehicle)>0">
-                                                                {{ totalWeighBridgeUpload(trans.transport_driver_vehicle)}}
-                                                            </div>
+                                                                                  {{ totalWeighBridgeUpload(trans.transport_driver_vehicle)}}
+                                                                              </div>
 
-                                                            <div v-else>
-                                                                {{ trans.transport_finance.weight_ton_incoming }}
-                                                            </div>-->
+                                                                              <div v-else>
+                                                                                  {{ trans.transport_finance.weight_ton_incoming }}
+                                                                              </div>-->
                               </td>
                               <td class="px-2 py-1">
                                 <div v-if="trans.transport_driver_vehicle">
@@ -883,6 +886,7 @@ const props = defineProps({
                         </table>
                       </div>
 
+                      <!-- summary table remains below the scrollable card -->
                       <table class="ml-3 w-2/3 mt-5 divide-y divide-gray-300">
                         <thead>
                           <tr>
@@ -991,10 +995,10 @@ const props = defineProps({
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="mt-3 flex items-center justify-center">
-              <PaginationModified :links="transport_trans.links" />
+              <div class="mt-3 flex items-center justify-center">
+                <PaginationModified :links="transport_trans.links" />
+              </div>
             </div>
           </div>
         </div>
