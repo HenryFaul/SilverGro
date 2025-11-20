@@ -311,31 +311,31 @@ const props = defineProps({
                 <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <div v-if="transport_trans.data.length > 0">
-                      <table class="min-w-full">
+                      <table class="min-w-full table-fixed">
                         <thead>
                           <tr>
                             <th
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0 w-[10%]"
                               scope="col">
                               DT
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%]"
                               scope="col">
                               SUPPLY
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%]"
                               scope="col">
                               CUSTOMER
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%]"
                               scope="col">
                               TRANSPORT
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%]"
                               scope="col">
                               NOTES
                             </th>
@@ -462,11 +462,11 @@ const props = defineProps({
                                       </span>
                                     </div>
                                     <div
-                                      v-if="trans.supplier_notes"
+                                      v-if="trans.suppliers_notes"
                                       class="mt-1">
                                       <span class="font-bold">Notes:</span>
                                       <span>
-                                        {{ trans.supplier_notes }}
+                                        {{ trans.suppliers_notes }}
                                       </span>
                                     </div>
                                     <div
@@ -745,11 +745,11 @@ const props = defineProps({
                                       </div>
                                     </div>
                                     <div
-                                      v-if="trans.customer_notes"
+                                      v-if="trans.transport_notes"
                                       class="mt-1">
                                       <span class="font-bold">Notes:</span>
                                       <span>
-                                        {{ trans.customer_notes }}
+                                        {{ trans.transport_notes }}
                                       </span>
                                     </div>
                                     <div
