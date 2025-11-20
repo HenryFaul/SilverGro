@@ -153,6 +153,18 @@ const props = defineProps({
     return false;
   };
 
+  const hasWeighbridgeVariance = (driver_vehicles) => {
+    if (!driver_vehicles || driver_vehicles.length === 0) {
+      return false;
+    }
+    for (let i = 0; i < driver_vehicles.length; i++) {
+      if (driver_vehicles[i].is_weighbridge_variance) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   const contractName = (trans) => {
     if (trans != null) {
       return trans.contract_type.name + ':' + trans.id;
@@ -664,7 +676,7 @@ const props = defineProps({
                                           class="block w-10 h-10 ml-auto bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                                           <div
                                             v-if="isQualityAlert(trans.transport_status)">
-                                            <base-tooltip content="Quality Alerty">
+                                            <base-tooltip content="Quality Alert">
                                               <icon
                                                 class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse"
                                                 name="building" />
@@ -764,7 +776,21 @@ const props = defineProps({
                                     <div class="">
                                       <div class="flex-row">
                                         <button
-                                          class="block w-10 h-10 ml-auto bg-blue-400 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"></button>
+                                          class="block w-10 h-10 ml-auto bg-blue-400 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                                          <div
+                                            v-if="
+                                              hasWeighbridgeVariance(
+                                                trans.transport_driver_vehicle
+                                              )
+                                            ">
+                                            <base-tooltip
+                                              content="Weighbridge variance detected.">
+                                              <icon
+                                                class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse"
+                                                name="triangle" />
+                                            </base-tooltip>
+                                          </div>
+                                        </button>
                                       </div>
 
                                       <div class="flex-row">
