@@ -125,20 +125,8 @@ const props = defineProps({
     return total;
   };
 
-  const isPaymentOverdue = (driver_vehicles) => {
-    if (Array.isArray(driver_vehicles)) {
-      return false;
-    }
-
-    for (let i = 0; i < driver_vehicles.length; i++) {
-      let paymentStatus = arrayItem[i].is_payment_overdue;
-
-      if (paymentStatus === 1) {
-        return true;
-      }
-    }
-
-    return false;
+  const isPaymentOverdue = (invoice_details) => {
+    return invoice_details.overdue > 0;
   };
 
   const toolTipGen = (Message, Truck) => {
@@ -499,14 +487,14 @@ const props = defineProps({
                                               v-for="(
                                                 item, index
                                               ) of trans.transport_driver_vehicle">
-                                              <div v-if="item.is_delivered">
-                                                <div v-if="item.is_delivered">
+                                              <div v-if="item.is_loaded">
+                                                <div v-if="item.is_loaded">
                                                   <base-tooltip
                                                     :content="
-                                                      toolTipGen('Delivered', index)
+                                                      toolTipGen('Loaded', index)
                                                     ">
                                                     <icon
-                                                      class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse"
+                                                      class="mr-3 w-6 h-6 fill-green-300 animate-pulse"
                                                       name="truck" />
                                                   </base-tooltip>
                                                 </div>
@@ -648,14 +636,14 @@ const props = defineProps({
                                               v-for="(
                                                 item, index
                                               ) of trans.transport_driver_vehicle">
-                                              <div v-if="item.is_loaded">
-                                                <div v-if="item.is_loaded">
+                                              <div v-if="item.is_delivered">
+                                                <div v-if="item.is_delivered">
                                                   <base-tooltip
                                                     :content="
-                                                      toolTipGen('Loaded', index)
+                                                      toolTipGen('Delivered', index)
                                                     ">
                                                     <icon
-                                                      class="mr-3 w-6 h-6 fill-green-300 animate-pulse"
+                                                      class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse"
                                                       name="truck" />
                                                   </base-tooltip>
                                                 </div>
@@ -691,7 +679,7 @@ const props = defineProps({
                                           <div
                                             v-if="
                                               isPaymentOverdue(
-                                                trans.transport_driver_vehicle
+                                                trans.transport_invoice_details
                                               )
                                             ">
                                             <base-tooltip content="Payment overdue.">
