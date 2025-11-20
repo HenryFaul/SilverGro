@@ -165,6 +165,59 @@ const props = defineProps({
     return false;
   };
 
+  const warningLister = (trans) => {
+    var the_list = '';
+
+    // Add transport status alerts
+    if (trans.transport_status && trans.transport_status.length > 0) {
+      trans.transport_status.forEach(function (arrayItem) {
+        var entity = arrayItem.status_entity.entity;
+        var type = arrayItem.status_type.type;
+        the_list += '  ' + entity + '_' + type + '.';
+      });
+    }
+
+    // Add payment overdue alert
+    if (
+      trans.transport_invoice_details &&
+      isPaymentOverdue(trans.transport_invoice_details)
+    ) {
+      the_list += '  payment_overdue.';
+    }
+
+    // Add weighbridge variance alert
+    if (
+      trans.transport_driver_vehicle &&
+      hasWeighbridgeVariance(trans.transport_driver_vehicle)
+    ) {
+      the_list += '  weighbridge_variance.';
+    }
+
+    return the_list;
+  };
+
+  const hasAnyAlerts = (trans) => {
+    // Check if there are any transport status alerts
+    if (trans.transport_status && trans.transport_status.length > 0) {
+      return true;
+    }
+    // Check if payment is overdue
+    if (
+      trans.transport_invoice_details &&
+      isPaymentOverdue(trans.transport_invoice_details)
+    ) {
+      return true;
+    }
+    // Check if there's a weighbridge variance
+    if (
+      trans.transport_driver_vehicle &&
+      hasWeighbridgeVariance(trans.transport_driver_vehicle)
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   const contractName = (trans) => {
     if (trans != null) {
       return trans.contract_type.name + ':' + trans.id;
@@ -795,7 +848,15 @@ const props = defineProps({
 
                                       <div class="flex-row">
                                         <button
-                                          class="block w-10 h-10 ml-auto bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"></button>
+                                          class="block w-10 h-10 ml-auto bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                                          <div v-if="hasAnyAlerts(trans)">
+                                            <base-tooltip :content="warningLister(trans)">
+                                              <icon
+                                                class="mr-3 w-6 h-6 fill-red-500 animate-pulse"
+                                                name="triangle" />
+                                            </base-tooltip>
+                                          </div>
+                                        </button>
                                       </div>
 
                                       <div class="flex-row">

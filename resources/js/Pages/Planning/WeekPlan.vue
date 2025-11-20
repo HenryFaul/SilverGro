@@ -1,16 +1,16 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import PaginationModified from '@/Components/UI/PaginationModified.vue';
-import Icon from '@/Components/Icon.vue';
-import { Link, useForm } from '@inertiajs/vue3';
-import { computed, onMounted, ref, watch } from 'vue';
-import { debounce } from 'lodash';
-import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
+  import AppLayout from '@/Layouts/AppLayout.vue';
+  import PaginationModified from '@/Components/UI/PaginationModified.vue';
+  import Icon from '@/Components/Icon.vue';
+  import { Link, useForm } from '@inertiajs/vue3';
+  import { computed, onMounted, ref, watch } from 'vue';
+  import { debounce } from 'lodash';
+  import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
+  import VueDatePicker from '@vuepic/vue-datepicker';
+  import '@vuepic/vue-datepicker/dist/main.css';
+  import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
 
-const props = defineProps({
+  const props = defineProps({
     transport_trans: Object,
     filters: Object,
     end_of_week: Object,
@@ -167,16 +167,73 @@ const props = defineProps({
     return `${day}/${month}/${year}`;
   };
 
-  const warningLister = (Warnings) => {
+  const isPaymentOverdue = (invoice_details) => {
+    return invoice_details.overdue > 0;
+  };
+
+  const hasWeighbridgeVariance = (driver_vehicles) => {
+    if (!driver_vehicles || driver_vehicles.length === 0) {
+      return false;
+    }
+    for (let i = 0; i < driver_vehicles.length; i++) {
+      if (driver_vehicles[i].is_weighbridge_variance) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const warningLister = (trans) => {
     var the_list = '';
 
-    Warnings.forEach(function (arrayItem) {
-      var entity = arrayItem.status_entity.entity;
-      var type = arrayItem.status_type.type;
+    // Add transport status alerts
+    if (trans.transport_status && trans.transport_status.length > 0) {
+      trans.transport_status.forEach(function (arrayItem) {
+        var entity = arrayItem.status_entity.entity;
+        var type = arrayItem.status_type.type;
+        the_list += '  ' + entity + '_' + type + '.';
+      });
+    }
 
-      the_list += '  ' + entity + '_' + type + '.';
-    });
+    // Add payment overdue alert
+    if (
+      trans.transport_invoice_details &&
+      isPaymentOverdue(trans.transport_invoice_details)
+    ) {
+      the_list += '  payment_overdue.';
+    }
+
+    // Add weighbridge variance alert
+    if (
+      trans.transport_driver_vehicle &&
+      hasWeighbridgeVariance(trans.transport_driver_vehicle)
+    ) {
+      the_list += '  weighbridge_variance.';
+    }
+
     return the_list;
+  };
+
+  const hasAnyAlerts = (trans) => {
+    // Check if there are any transport status alerts
+    if (trans.transport_status && trans.transport_status.length > 0) {
+      return true;
+    }
+    // Check if payment is overdue
+    if (
+      trans.transport_invoice_details &&
+      isPaymentOverdue(trans.transport_invoice_details)
+    ) {
+      return true;
+    }
+    // Check if there's a weighbridge variance
+    if (
+      trans.transport_driver_vehicle &&
+      hasWeighbridgeVariance(trans.transport_driver_vehicle)
+    ) {
+      return true;
+    }
+    return false;
   };
 
   const toolTipGen = (Message, Truck) => {
@@ -669,9 +726,8 @@ const props = defineProps({
                                   </base-tooltip>
                                 </div>
 
-                                <div v-if="trans.transport_status.length > 0">
-                                  <base-tooltip
-                                    :content="warningLister(trans.transport_status)">
+                                <div v-if="hasAnyAlerts(trans)">
+                                  <base-tooltip :content="warningLister(trans)">
                                     <icon
                                       class="mr-3 w-3 h-3 animate-pulse fill-red-500"
                                       name="triangle" />
