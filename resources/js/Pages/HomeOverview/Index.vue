@@ -398,7 +398,7 @@ const swal = inject('$swal');
 
   const header_styler = computed(
     () =>
-      'sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-2 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell'
+      'sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-200 px-3 py-2 text-left text-sm font-semibold text-gray-900 sm:table-cell'
   );
   const row_styler = computed(
     () => 'whitespace-nowrap border-b px-3 py-1 text-sm text-gray-500 lg:table-cell'
@@ -661,7 +661,7 @@ const swal = inject('$swal');
               <thead>
                 <tr>
                   <th
-                    class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-200 py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 lg:pl-8"
                     scope="col">
                     ID
                   </th>
@@ -799,7 +799,7 @@ const swal = inject('$swal');
                   :key="transaction.id"
                   :class="[
                     transaction.id === props.selected_transaction.id
-                      ? 'bg-indigo-300'
+                      ? 'bg-gray-200'
                       : '',
                     'hover:bg-gray-100 text-sm focus-within:bg-gray-100',
                   ]">
@@ -1056,7 +1056,7 @@ const swal = inject('$swal');
                 <div class="mb-2">
                   <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <table class="min-w-full divide-y divide-gray-300">
-                      <thead class="bg-indigo-300">
+                      <thead class="bg-gray-200">
                         <tr>
                           <th
                             class="py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"

@@ -1,10 +1,9 @@
 <script setup>
-  import { computed } from 'vue';
-  import TransactionTableHeader from './TransactionTableHeader.vue';
-  import TransactionTableRow from './TransactionTableRow.vue';
-  import PaginationModified from '@/Components/UI/PaginationModified.vue';
+import TransactionTableHeader from './TransactionTableHeader.vue';
+import TransactionTableRow from './TransactionTableRow.vue';
+import PaginationModified from '@/Components/UI/PaginationModified.vue';
 
-  const props = defineProps({
+const props = defineProps({
     transactions: {
       type: Object,
       required: true,
@@ -67,17 +66,17 @@
         <table class="min-w-full border-separate border-spacing-0">
           <transaction-table-header
             :show-details="showDetails"
-            :sort-field="sortField"
             :sort-direction="sortDirection"
+            :sort-field="sortField"
             @sort="handleSort" />
 
           <tbody>
             <transaction-table-row
               v-for="transaction in filteredTransactions"
               :key="transaction.id"
-              :transaction="transaction"
               :is-selected="isTransactionSelected(transaction)"
               :show-details="showDetails"
+              :transaction="transaction"
               @select="handleSelectTransaction" />
           </tbody>
         </table>
@@ -87,7 +86,7 @@
       <div
         v-if="transactions.data && transactions.data.length"
         class="w-full flex justify-center mt-5 mb-4">
-        <pagination-modified :data="transactions" />
+        <pagination-modified :links="transactions.links" />
       </div>
 
       <!-- Empty State -->
