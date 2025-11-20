@@ -95,6 +95,11 @@ const props = defineProps({
     return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   };
 
+  let NiceNumberNoDecimal = (_number) => {
+    let val = (_number / 1).toFixed(0);
+    return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  };
+
   const totalWeighBridgeUpload = async (driver_vehicles) => {
     var total = 0.0;
 
@@ -977,23 +982,23 @@ const props = defineProps({
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(cost_price) }}
+                              {{ NiceNumberNoDecimal(cost_price) }}
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(trans_cost) }}
+                              {{ NiceNumberNoDecimal(trans_cost) }}
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(other_costs) }}
+                              {{ NiceNumberNoDecimal(other_costs) }}
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(selling_price) }}
+                              {{ NiceNumberNoDecimal(selling_price) }}
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">
-                              {{ NiceNumber(gp) }}
+                              {{ NiceNumberNoDecimal(gp) }}
                             </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-light text-gray-900 sm:pl-0">

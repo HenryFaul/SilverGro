@@ -404,16 +404,73 @@ const swal = inject('$swal');
     () => 'whitespace-nowrap border-b px-3 py-1 text-sm text-gray-500 lg:table-cell'
   );
 
-  const warningLister = (Warnings) => {
+  const isPaymentOverdue = (invoice_details) => {
+    return invoice_details && invoice_details.overdue > 0;
+  };
+
+  const hasWeighbridgeVariance = (driver_vehicles) => {
+    if (!driver_vehicles || driver_vehicles.length === 0) {
+      return false;
+    }
+    for (let i = 0; i < driver_vehicles.length; i++) {
+      if (driver_vehicles[i].is_weighbridge_variance) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const warningLister = (trans) => {
     var the_list = '';
 
-    Warnings.forEach(function (arrayItem) {
-      var entity = arrayItem.status_entity.entity;
-      var type = arrayItem.status_type.type;
+    // Add transport status alerts
+    if (trans.transport_status && trans.transport_status.length > 0) {
+      trans.transport_status.forEach(function (arrayItem) {
+        var entity = arrayItem.status_entity.entity;
+        var type = arrayItem.status_type.type;
+        the_list += '  ' + entity + '_' + type + '.';
+      });
+    }
 
-      the_list += '  ' + entity + '_' + type + '.';
-    });
+    // Add payment overdue alert
+    if (
+      trans.transport_invoice_details &&
+      isPaymentOverdue(trans.transport_invoice_details)
+    ) {
+      the_list += '  payment_overdue.';
+    }
+
+    // Add weighbridge variance alert
+    if (
+      trans.transport_driver_vehicle &&
+      hasWeighbridgeVariance(trans.transport_driver_vehicle)
+    ) {
+      the_list += '  weighbridge_variance.';
+    }
+
     return the_list;
+  };
+
+  const hasAnyAlerts = (trans) => {
+    // Check if there are any transport status alerts
+    if (trans.transport_status && trans.transport_status.length > 0) {
+      return true;
+    }
+    // Check if payment is overdue
+    if (
+      trans.transport_invoice_details &&
+      isPaymentOverdue(trans.transport_invoice_details)
+    ) {
+      return true;
+    }
+    // Check if there's a weighbridge variance
+    if (
+      trans.transport_driver_vehicle &&
+      hasWeighbridgeVariance(trans.transport_driver_vehicle)
+    ) {
+      return true;
+    }
+    return false;
   };
 </script>
 
@@ -763,16 +820,39 @@ const swal = inject('$swal');
                     </Link>
                   </td>
                   <td :class="row_styler">
+                    <div v-if="transaction.supplier.terms_of_payment_id == 1">
+                      <base-tooltip content="Supplier C.O.D account.">
+                        <icon
+                          class="mr-3 w-6 h-6 fill-red-500"
+                          name="bell-solid" />
+                      </base-tooltip>
+                    </div>
+
                     <div
                       v-if="
-                        transaction.transport_status &&
-                        transaction.transport_status.length > 0
+                        transaction.transport_invoice_details &&
+                        isPaymentOverdue(transaction.transport_invoice_details)
                       ">
-                      <base-tooltip
-                        :content="warningLister(transaction.transport_status)">
+                      <base-tooltip content="Payment overdue.">
                         <icon
-                          class="w-4 h-4 animate-pulse fill-red-500"
+                          class="mr-3 w-3 h-3 fill-red-500"
+                          name="dollar" />
+                      </base-tooltip>
+                    </div>
+
+                    <div v-if="hasAnyAlerts(transaction)">
+                      <base-tooltip :content="warningLister(transaction)">
+                        <icon
+                          class="mr-3 w-3 h-3 animate-pulse fill-red-500"
                           name="triangle" />
+                      </base-tooltip>
+                    </div>
+
+                    <div v-if="!transaction.include_in_calculations">
+                      <base-tooltip content="Exclude from calculations.">
+                        <icon
+                          class="mr-3 w-3 h-3 fill-gray-500"
+                          name="info" />
                       </base-tooltip>
                     </div>
                   </td>
