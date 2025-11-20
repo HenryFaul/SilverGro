@@ -772,14 +772,17 @@ const props = defineProps({
                                       <div class="font-bold basis-1/4">
                                         <div v-if="trans.transport_driver_vehicle">
                                           <div
-                                            v-for="driver_vehicle of trans.transport_driver_vehicle">
+                                            v-for="driver_vehicle of trans.transport_driver_vehicle"
+                                            class="whitespace-nowrap">
                                             <span>Reg #:</span>
                                             <span>
                                               {{ driver_vehicle.vehicle.reg_no }}
                                             </span>
                                           </div>
                                         </div>
-                                        <div v-else>
+                                        <div
+                                          v-else
+                                          class="whitespace-nowrap">
                                           <span>Reg #:</span>
                                           <span>N/A</span>
                                         </div>
@@ -788,22 +791,25 @@ const props = defineProps({
 
                                     <div class="mt-1">
                                       <div class="flex">
-                                        <div class="basis-1/2">
+                                        <div class="basis-1/2 whitespace-nowrap">
                                           <span class="font-bold">Rate/Ton:</span>
                                           <span>
                                             {{
-                                              trans.transport_finance
-                                                .transport_rate_per_ton
+                                              NiceNumber(
+                                                trans.transport_finance
+                                                  .transport_rate_per_ton
+                                              )
                                             }}
                                           </span>
                                         </div>
 
-                                        <div class="basis-1/2">
+                                        <div class="basis-1/2 whitespace-nowrap">
                                           <span class="font-bold">Load Rate:</span>
                                           <span>
                                             {{
-                                              trans.transport_finance
-                                                .transport_rate_per_ton
+                                              NiceNumber(
+                                                trans.transport_finance.transport_rate
+                                              )
                                             }}
                                           </span>
                                         </div>
