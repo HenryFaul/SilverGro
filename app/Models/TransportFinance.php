@@ -62,7 +62,7 @@ class TransportFinance extends Model
         return $this->belongsTo(TransportLoad::class, 'transport_load_id');
     }
 
-    public function calculateFields()
+    public function calculateFields(): void
     {
 
         //cost_price_actual,cost_price_per_ton_actual,selling_price_per_ton_actual,transport_cost_actual, weight_ton_incoming_actual,weight_ton_outgoing_actual,total_cost_price_actual,gross_profit_actual
@@ -73,7 +73,7 @@ class TransportFinance extends Model
         //get the associated customer
         $customer = $transport_Load->TransportJob->Customer;
         //get customer Invoice basis
-        $customer_invoice_basis = $customer->CustomerInvoiceBasis;
+        $customer_invoice_basis = $customer->InvoiceBasis;
 
 
         $assigned_user_comm = $transport_Finance->AssignedUserComm;
@@ -129,14 +129,28 @@ class TransportFinance extends Model
         //weight_ton_outgoing = no_units_outgoing * (billing_units_outgoing_id -> kgs) /1000
         $weight_ton_outgoing = $no_units_outgoing_total * ($billing_units_outgoing_id->kgs) / 1000;
 
-        $cost_price_per_ton = $cost_price / ($weight_ton_incoming == 0 ? 1 : $weight_ton_incoming);
-        $cost_price_per_ton_actual = $cost_price_actual / ($actual_tons_in == 0 ? 1 : $actual_tons_in);
+        // Determine which weight to use based on customer invoice basis
+        $use_offload_weight = $customer_invoice_basis && $customer_invoice_basis->value === 'Offload Weight';
+        $weight_for_calculation = $use_offload_weight ? $weight_ton_outgoing : $weight_ton_incoming;
+        $actual_weight_for_calculation = $use_offload_weight ? $actual_tons_out : $actual_tons_in;
 
-        //selling_price_per_ton = selling_price / weight_ton_incoming
+        //Cost Price
+        $cost_price_per_ton = $cost_price / ($weight_for_calculation == 0 ? 1 : $weight_for_calculation);
+        $cost_price_per_ton_actual = $cost_price_actual / ($actual_weight_for_calculation == 0 ? 1 : $actual_weight_for_calculation);
+
+        //Selling Price
+        $selling_price_per_ton = $selling_price / ($weight_for_calculation == 0 ? 1 : $weight_for_calculation);
+        $selling_price_per_ton_actual = $selling_price_actual / ($actual_weight_for_calculation == 0 ? 1 : $actual_weight_for_calculation);
 
 
-        $selling_price_per_ton = $selling_price / ($weight_ton_outgoing == 0 ? 1 : $weight_ton_outgoing);
-        $selling_price_per_ton_actual = $selling_price_actual / ($actual_tons_out == 0 ? 1 : $actual_tons_out);
+        //Cost Price OLD LOGIC
+        //$cost_price_per_ton = $cost_price / ($weight_ton_incoming == 0 ? 1 : $weight_ton_incoming);
+        //$cost_price_per_ton_actual = $cost_price_actual / ($actual_tons_in == 0 ? 1 : $actual_tons_in);
+
+        //Selling Price OLD LOGIC
+        //$selling_price_per_ton = $selling_price / ($weight_ton_outgoing == 0 ? 1 : $weight_ton_outgoing);
+        //$selling_price_per_ton_actual = $selling_price_actual / ($actual_tons_out == 0 ? 1 : $actual_tons_out);
+
 
         $load_insurance_per_ton = $selling_price_per_ton * 1.1;
 

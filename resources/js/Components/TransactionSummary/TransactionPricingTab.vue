@@ -196,6 +196,12 @@
             </dd>
           </div>
           <div class="flex justify-between gap-x-4 py-3">
+            <dt class="text-gray-500">Invoice Basis</dt>
+            <dd class="text-gray-700">
+              <div>{{ selectedTransaction.customer.invoice_basis?.value || 'N/A' }}</div>
+            </dd>
+          </div>
+          <div class="flex justify-between gap-x-4 py-3">
             <dt class="text-gray-500">Product</dt>
             <dd class="text-gray-700">
               <div>{{ selectedTransaction.product.name }}</div>
@@ -552,12 +558,12 @@
 </template>
 
 <script setup>
-  import { Switch, SwitchGroup } from '@headlessui/vue';
-  import TransactionPackagingSelect from './TransactionPackagingSelect.vue';
-  import TransactionBillingUnitsSelect from './TransactionBillingUnitsSelect.vue';
-  import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
+import { Switch, SwitchGroup } from '@headlessui/vue';
+import TransactionPackagingSelect from './TransactionPackagingSelect.vue';
+import TransactionBillingUnitsSelect from './TransactionBillingUnitsSelect.vue';
+import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
 
-  const props = defineProps({
+const props = defineProps({
     combinedForm: {
       type: Object,
       required: true,
