@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TransportLoad;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class TransportLoadController extends Controller
@@ -48,10 +49,42 @@ class TransportLoadController extends Controller
         //
     }
 
+    public function updateUnits(Request $request, TransportLoad $transportLoad): RedirectResponse
+    {
+
+        $request->validate([
+            'selected_trans_id'=>['required', 'integer'],
+            'no_units_incoming'=>['required', 'integer'],
+            'no_units_outgoing'=>['required', 'integer']
+
+        ]);
+
+        $is_updated = $transportLoad->update(
+            [
+                'no_units_incoming' => $request->no_units_incoming,
+                'no_units_outgoing' => $request->no_units_outgoing,
+            ]
+        );
+
+        $transport_finance = ($transportLoad->TransportFinance);
+        $transport_finance->CalculateFields();
+
+        if($is_updated){
+            $request->session()->flash('flash.bannerStyle', 'success');
+            $request->session()->flash('flash.banner', 'Transport Load updated');
+        }
+        else {
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Transport Load NOT updated');
+        }
+
+        return redirect()->back();
+    }
+
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TransportLoad $transportLoad): \Illuminate\Http\RedirectResponse
+    public function update(Request $request, TransportLoad $transportLoad): RedirectResponse
     {
 
        /* 'contract_type_id.id' => ['required', 'integer', 'exists:contract_types,id'],
@@ -92,8 +125,8 @@ class TransportLoadController extends Controller
             'is_weighbridge_certificate_received'=>['nullable', 'boolean'],
             'delivery_note'=>['nullable'],
             'calculated_route_distance'=>['nullable', 'numeric'],
-            'collection_address_id.id'=>['required', 'integer'],
-            'delivery_address_id.id'=>['required', 'integer'],
+            'collection_address_id.id'=>['nullable', 'integer'],
+            'delivery_address_id.id'=>['nullable', 'integer'],
             'delivery_address_id_2.id'=>['nullable', 'integer'],
             'delivery_address_id_3.id'=>['nullable', 'integer'],
             'delivery_address_id_4.id'=>['nullable', 'integer']
@@ -114,6 +147,26 @@ class TransportLoadController extends Controller
 
         $no_units_outgoing_total=$request->no_units_outgoing+$request->no_units_outgoing_2+$request->no_units_outgoing_3+$request->no_units_outgoing_4;
 
+        // Handle collection_address_id - default to generic address (ID 1) if not provided or invalid
+        $collection_address_id = 1; // Default to generic address
+        if ($request->collection_address_id !== null) {
+            if (is_array($request->collection_address_id) && isset($request->collection_address_id['id'])) {
+                $collection_address_id = $request->collection_address_id['id'];
+            } elseif (is_numeric($request->collection_address_id)) {
+                $collection_address_id = $request->collection_address_id;
+            }
+        }
+
+        // Handle delivery_address_id - default to generic address (ID 1) if not provided or invalid
+        $delivery_address_id = 1; // Default to generic address
+        if ($request->delivery_address_id !== null) {
+            if (is_array($request->delivery_address_id) && isset($request->delivery_address_id['id'])) {
+                $delivery_address_id = $request->delivery_address_id['id'];
+            } elseif (is_numeric($request->delivery_address_id)) {
+                $delivery_address_id = $request->delivery_address_id;
+            }
+        }
+
         $is_updated = $transportLoad->update(
             [
                 'confirmed_by_id' => $request->confirmed_by_id['id'],
@@ -133,8 +186,8 @@ class TransportLoadController extends Controller
                 'is_weighbridge_certificate_received' => $request->is_weighbridge_certificate_received,
                 'delivery_note' => $request->delivery_note,
                 'calculated_route_distance' => $request->calculated_route_distance,
-                'collection_address_id' => $request->collection_address_id['id'],
-                'delivery_address_id' => $request->delivery_address_id['id'],
+                'collection_address_id' => $collection_address_id,
+                'delivery_address_id' => $delivery_address_id,
                 'delivery_address_id_2' =>$request->delivery_address_id_2 === null? null: $request->delivery_address_id_2['id'],
                 'delivery_address_id_3' =>$request->delivery_address_id_3 === null? null:  $request->delivery_address_id_3['id'],
                 'delivery_address_id_4' => $request->delivery_address_id_4 === null? null: $request->delivery_address_id_4['id'],
@@ -160,8 +213,8 @@ class TransportLoadController extends Controller
             'is_weighbridge_certificate_received'=>['nullable', 'boolean'],
             'delivery_note'=>['nullable'],
             'calculated_route_distance'=>['nullable', 'numeric'],
-            'collection_address_id.id'=>['required', 'integer'],
-            'delivery_address_id.id'=>['required', 'integer'],
+            'collection_address_id.id'=>['nullable', 'integer'],
+            'delivery_address_id.id'=>['nullable', 'integer'],
             'delivery_address_id_2.id'=>['nullable', 'integer'],
             'delivery_address_id_3.id'=>['nullable', 'integer'],
             'delivery_address_id_4.id'=>['nullable', 'integer']
@@ -182,6 +235,26 @@ class TransportLoadController extends Controller
 
         $no_units_outgoing_total=$request->no_units_outgoing+$request->no_units_outgoing_2+$request->no_units_outgoing_3+$request->no_units_outgoing_4;
 
+        // Handle collection_address_id - default to generic address (ID 1) if not provided or invalid
+        $collection_address_id_2 = 1; // Default to generic address
+        if ($request->collection_address_id !== null) {
+            if (is_array($request->collection_address_id) && isset($request->collection_address_id['id'])) {
+                $collection_address_id_2 = $request->collection_address_id['id'];
+            } elseif (is_numeric($request->collection_address_id)) {
+                $collection_address_id_2 = $request->collection_address_id;
+            }
+        }
+
+        // Handle delivery_address_id - default to generic address (ID 1) if not provided or invalid
+        $delivery_address_id_2 = 1; // Default to generic address
+        if ($request->delivery_address_id !== null) {
+            if (is_array($request->delivery_address_id) && isset($request->delivery_address_id['id'])) {
+                $delivery_address_id_2 = $request->delivery_address_id['id'];
+            } elseif (is_numeric($request->delivery_address_id)) {
+                $delivery_address_id_2 = $request->delivery_address_id;
+            }
+        }
+
         $is_updated = $transportLoad->update(
             [
                 'confirmed_by_id' => $request->confirmed_by_id['id'],
@@ -201,8 +274,8 @@ class TransportLoadController extends Controller
                 'is_weighbridge_certificate_received' => $request->is_weighbridge_certificate_received,
                 'delivery_note' => $request->delivery_note,
                 'calculated_route_distance' => $request->calculated_route_distance,
-                'collection_address_id' => $request->collection_address_id['id'],
-                'delivery_address_id' => $request->delivery_address_id['id'],
+                'collection_address_id' => $collection_address_id_2,
+                'delivery_address_id' => $delivery_address_id_2,
                 'delivery_address_id_2' =>$request->delivery_address_id_2 === null? null: $request->delivery_address_id_2['id'],
                 'delivery_address_id_3' =>$request->delivery_address_id_3 === null? null:  $request->delivery_address_id_3['id'],
                 'delivery_address_id_4' => $request->delivery_address_id_4 === null? null: $request->delivery_address_id_4['id'],
@@ -229,40 +302,6 @@ class TransportLoadController extends Controller
 
         return redirect()->back();
     }
-
-    public function updateUnits(Request $request, TransportLoad $transportLoad): \Illuminate\Http\RedirectResponse
-    {
-
-        $request->validate([
-            'selected_trans_id'=>['required', 'integer'],
-            'no_units_incoming'=>['required', 'integer'],
-            'no_units_outgoing'=>['required', 'integer']
-
-        ]);
-
-        $is_updated = $transportLoad->update(
-            [
-                'no_units_incoming' => $request->no_units_incoming,
-                'no_units_outgoing' => $request->no_units_outgoing,
-            ]
-        );
-
-        $transport_finance = ($transportLoad->TransportFinance);
-        $transport_finance->CalculateFields();
-
-        if($is_updated){
-            $request->session()->flash('flash.bannerStyle', 'success');
-            $request->session()->flash('flash.banner', 'Transport Load updated');
-        }
-        else {
-            $request->session()->flash('flash.bannerStyle', 'danger');
-            $request->session()->flash('flash.banner', 'Transport Load NOT updated');
-        }
-
-        return redirect()->back();
-    }
-
-
 
     /**
      * Remove the specified resource from storage.

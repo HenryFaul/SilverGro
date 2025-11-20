@@ -1,38 +1,16 @@
 <script setup>
-  import InputError from '@/Components/InputError.vue';
-  import TextInput from '@/Components/TextInput.vue';
-  import AreaInput from '@/Components/AreaInput.vue';
-  import { computed, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
-  import { useForm, usePage } from '@inertiajs/vue3';
+  import { computed, onBeforeMount, onUnmounted, ref } from 'vue';
+  import { useForm } from '@inertiajs/vue3';
   import SecondaryButton from '@/Components/SecondaryButton.vue';
   import DialogModal from '@/Components/DialogModal.vue';
-  import { CheckIcon, ChevronUpDownIcon, PaperClipIcon } from '@heroicons/vue/20/solid';
-  import {
-    Switch,
-    SwitchGroup,
-    SwitchLabel,
-    Listbox,
-    ListboxButton,
-    ListboxLabel,
-    ListboxOption,
-    ListboxOptions,
-  } from '@headlessui/vue';
+  import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
   import {
     Combobox,
     ComboboxButton,
     ComboboxInput,
-    ComboboxLabel,
     ComboboxOption,
     ComboboxOptions,
-  } from '@headlessui/vue';
-
-  import {
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-    TransitionChild,
-    TransitionRoot,
-  } from '@headlessui/vue';
+  } from '@headlessui/vue'; //let addressApi = ref();
 
   //let addressApi = ref();
   const emit = defineEmits(['close']);
@@ -126,14 +104,14 @@
 <template>
   <div>
     <dialog-modal
-      :show="show"
       :closeable="closeable"
+      :show="show"
       @close="close">
       <template #content>
         <div>
           <div
-            class=""
-            v-if="contractLinkModalProps != null && contractLinkModalPropsSc != null">
+            v-if="contractLinkModalProps != null && contractLinkModalPropsSc != null"
+            class="">
             <form class="w-full">
               <!--                            'transport_trans_id','transport_job_id','regular_driver_id','regular_vehicle_id','weighbridge_upload_weight','weighbridge_offload_weight',
                             'is_weighbridge_variance','is_cancelled','date_cancelled','is_loaded','date_loaded','is_onroad','date_onroad',
@@ -169,18 +147,18 @@
                     </div>
 
                     <Combobox
-                      as="div"
-                      v-model="form.to_link_id">
+                      v-model="form.to_link_id"
+                      as="div">
                       <div class="relative mt-2">
                         <ComboboxInput
+                          :display-value="(type) => type?.id"
                           class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          @change="pcQuery = $event.target.value"
-                          :display-value="(type) => type?.id" />
+                          @change="pcQuery = $event.target.value" />
                         <ComboboxButton
                           class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                           <ChevronUpDownIcon
-                            class="h-5 w-5 text-gray-400"
-                            aria-hidden="true" />
+                            aria-hidden="true"
+                            class="h-5 w-5 text-gray-400" />
                         </ComboboxButton>
 
                         <ComboboxOptions
@@ -189,9 +167,9 @@
                           <ComboboxOption
                             v-for="contract in filteredPc"
                             :key="contract.id"
+                            v-slot="{ active, selected }"
                             :value="contract"
-                            as="template"
-                            v-slot="{ active, selected }">
+                            as="template">
                             <li
                               :class="[
                                 'relative cursor-default select-none py-2 pl-3 pr-9 text-xs',
@@ -211,8 +189,8 @@
                                   active ? 'text-white' : 'text-indigo-600',
                                 ]">
                                 <CheckIcon
-                                  class="h-5 w-5"
-                                  aria-hidden="true" />
+                                  aria-hidden="true"
+                                  class="h-5 w-5" />
                               </span>
                             </li>
                           </ComboboxOption>
@@ -235,6 +213,7 @@
                         <div class="mt-6 border-t border-gray-100">
                           <dl class="divide-y divide-gray-100">
                             <div
+                              v-if="link_type_id === 4"
                               class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                               <dt class="text-sm font-medium leading-6 text-gray-900">
                                 Customer Name
@@ -246,6 +225,7 @@
                             </div>
 
                             <div
+                              v-if="link_type_id === 3"
                               class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                               <dt class="text-sm font-medium leading-6 text-gray-900">
                                 Supplier Name
@@ -314,18 +294,18 @@
                     </div>
 
                     <Combobox
-                      as="div"
-                      v-model="form.to_link_id_sc">
+                      v-model="form.to_link_id_sc"
+                      as="div">
                       <div class="relative mt-2">
                         <ComboboxInput
+                          :display-value="(type) => type?.id"
                           class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          @change="scQuery = $event.target.value"
-                          :display-value="(type) => type?.id" />
+                          @change="scQuery = $event.target.value" />
                         <ComboboxButton
                           class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                           <ChevronUpDownIcon
-                            class="h-5 w-5 text-gray-400"
-                            aria-hidden="true" />
+                            aria-hidden="true"
+                            class="h-5 w-5 text-gray-400" />
                         </ComboboxButton>
 
                         <ComboboxOptions
@@ -334,9 +314,9 @@
                           <ComboboxOption
                             v-for="contract in filteredSc"
                             :key="contract.id"
+                            v-slot="{ active, selected }"
                             :value="contract"
-                            as="template"
-                            v-slot="{ active, selected }">
+                            as="template">
                             <li
                               :class="[
                                 'relative text-xs cursor-default select-none py-2 pl-3 pr-9',
@@ -356,8 +336,8 @@
                                   active ? 'text-white' : 'text-indigo-600',
                                 ]">
                                 <CheckIcon
-                                  class="h-5 w-5"
-                                  aria-hidden="true" />
+                                  aria-hidden="true"
+                                  class="h-5 w-5" />
                               </span>
                             </li>
                           </ComboboxOption>
@@ -391,6 +371,7 @@
                             </div>
 
                             <div
+                              v-if="link_type_id === 3"
                               class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                               <dt class="text-sm font-medium leading-6 text-gray-900">
                                 Supplier Name
@@ -459,8 +440,8 @@
       <template #footer>
         <div>
           <SecondaryButton
-            @click="createTransLink"
-            class="bg-red-400">
+            class="bg-red-400"
+            @click="createTransLink">
             Create
           </SecondaryButton>
         </div>

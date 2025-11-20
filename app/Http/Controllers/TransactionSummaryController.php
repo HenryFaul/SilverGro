@@ -415,8 +415,8 @@ class TransactionSummaryController extends Controller
             'is_weighbridge_certificate_received' => ['nullable', 'boolean'],
             'delivery_note' => ['nullable'],
             'calculated_route_distance' => ['nullable', 'numeric'],
-            'collection_address_id.id' => ['required', 'integer'],
-            'delivery_address_id.id' => ['required', 'integer'],
+            'collection_address_id.id' => ['nullable', 'integer'],
+            'delivery_address_id.id' => ['nullable', 'integer'],
             'delivery_address_id_2.id' => ['nullable', 'integer'],
             'delivery_address_id_3.id' => ['nullable', 'integer'],
             'delivery_address_id_4.id' => ['nullable', 'integer']
@@ -438,6 +438,26 @@ class TransactionSummaryController extends Controller
 
         $transportLoad = $transportTransaction->TransportLoad;
 
+        // Handle collection_address_id - default to generic address (ID 1) if not provided or invalid
+        $collection_address_id = 1; // Default to generic address
+        if ($request->collection_address_id !== null) {
+            if (is_array($request->collection_address_id) && isset($request->collection_address_id['id'])) {
+                $collection_address_id = $request->collection_address_id['id'];
+            } elseif (is_numeric($request->collection_address_id)) {
+                $collection_address_id = $request->collection_address_id;
+            }
+        }
+
+        // Handle delivery_address_id - default to generic address (ID 1) if not provided or invalid
+        $delivery_address_id = 1; // Default to generic address
+        if ($request->delivery_address_id !== null) {
+            if (is_array($request->delivery_address_id) && isset($request->delivery_address_id['id'])) {
+                $delivery_address_id = $request->delivery_address_id['id'];
+            } elseif (is_numeric($request->delivery_address_id)) {
+                $delivery_address_id = $request->delivery_address_id;
+            }
+        }
+
         $is_updated = $transportLoad->update(
             [
                 'confirmed_by_id' => $request->confirmed_by_id['id'],
@@ -457,8 +477,8 @@ class TransactionSummaryController extends Controller
                 'is_weighbridge_certificate_received' => $request->is_weighbridge_certificate_received,
                 'delivery_note' => $request->delivery_note,
                 'calculated_route_distance' => $request->calculated_route_distance,
-                'collection_address_id' => $request->collection_address_id['id'],
-                'delivery_address_id' => $request->delivery_address_id['id'],
+                'collection_address_id' => $collection_address_id,
+                'delivery_address_id' => $delivery_address_id,
                 'delivery_address_id_2' => $request->delivery_address_id_2 === null ? null : $request->delivery_address_id_2['id'],
                 'delivery_address_id_3' => $request->delivery_address_id_3 === null ? null : $request->delivery_address_id_3['id'],
                 'delivery_address_id_4' => $request->delivery_address_id_4 === null ? null : $request->delivery_address_id_4['id'],
