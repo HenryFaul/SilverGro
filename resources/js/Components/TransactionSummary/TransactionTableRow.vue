@@ -18,7 +18,7 @@
 
   // Helper function to check if payment is overdue
   const isPaymentOverdue = (invoice_details) => {
-    return invoice_details && invoice_details.overdue > 0;
+    return invoice_details && invoice_details.overdue > 10;
   };
 
   // Helper function to check if there's a weighbridge variance

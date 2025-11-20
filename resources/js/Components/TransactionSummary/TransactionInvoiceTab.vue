@@ -179,6 +179,8 @@
               <div class="w-48">
                 <VueDatePicker
                   v-model="combinedForm.invoice_date"
+                  :clearable="true"
+                  :enable-time-picker="false"
                   :format="formatInvoiceDate"
                   :teleport="true"></VueDatePicker>
                 <div class="ml-3 text-sm text-indigo-400">Invoice date</div>
@@ -187,18 +189,22 @@
           </div>
 
           <div class="flex justify-between gap-x-4 py-1">
-            <dt class="text-gray-500">Invoice pay by date</dt>
+            <dt class="text-gray-500">
+              Invoice pay by date
+              <span
+                v-if="paymentTerms"
+                class="text-xs text-indigo-400">
+                ({{ paymentTerms.value }})
+              </span>
+            </dt>
             <dd class="flex items-start gap-x-2">
               <div class="w-48">
-                <VueDatePicker
-                  v-model="combinedForm.invoice_pay_by_date"
-                  :format="formatInvoicePayByDay"
-                  :teleport="true"></VueDatePicker>
-                <div class="ml-3 text-sm text-indigo-400">
-                  Invoice pay by date
-                  <span v-if="paymentTerms">
-                    ({{ paymentTerms.value }} / {{ paymentTerms.days }} days)
-                  </span>
+                <div
+                  class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 bg-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6">
+                  {{ formatInvoicePayByDay(combinedForm.invoice_pay_by_date) || '-' }}
+                </div>
+                <div class="ml-3 text-xs text-gray-400 italic">
+                  Calculated automatically
                 </div>
               </div>
             </dd>
@@ -210,6 +216,8 @@
               <div class="w-48">
                 <VueDatePicker
                   v-model="combinedForm.invoice_paid_date"
+                  :clearable="true"
+                  :enable-time-picker="false"
                   :format="formatInvoicePdDay"
                   :teleport="true"></VueDatePicker>
                 <div class="ml-3 text-sm text-indigo-400">Invoice paid date</div>
@@ -255,10 +263,31 @@
             </dd>
           </div>
 
-          <div class="flex justify-between gap-x-4 py-1">
-            <dt class="text-gray-500">Outstanding</dt>
+          <div
+            :class="[
+              'flex justify-between gap-x-4 py-1',
+              selectedTransaction.transport_invoice.transport_invoice_details
+                .outstanding > 10
+                ? 'bg-red-100 border border-red-300 rounded px-2 -mx-2'
+                : '',
+            ]">
+            <dt
+              :class="[
+                selectedTransaction.transport_invoice.transport_invoice_details
+                  .outstanding > 10
+                  ? 'text-red-700 font-semibold'
+                  : 'text-gray-500',
+              ]">
+              Outstanding
+            </dt>
             <dd class="flex items-start gap-x-2">
-              <div>
+              <div
+                :class="[
+                  selectedTransaction.transport_invoice.transport_invoice_details
+                    .outstanding > 10
+                    ? 'text-red-700 font-semibold'
+                    : '',
+                ]">
                 {{
                   formatNiceNumber(
                     selectedTransaction.transport_invoice.transport_invoice_details

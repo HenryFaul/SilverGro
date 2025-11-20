@@ -275,9 +275,19 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
   } = useTransactionDateFormatters(filterForm, combined_Form);
 
   // Define updateSelectValues
-  updateSelectValues = (statusForms) => {
+  updateSelectValues = (passedStatusForms) => {
     temp_form.transport_trans_id = props.selected_transaction.id;
-    updateSelectValuesInternal(statusForms);
+
+    // Always pass the status forms to ensure they're updated
+    const formsToUpdate = passedStatusForms || {
+      transportApprovalForm,
+      statusForm,
+      salesOrderForm,
+      purchaseOrderForm,
+      transportOrderForm,
+    };
+
+    updateSelectValuesInternal(formsToUpdate);
   };
 
   // Computed values moved to composable
@@ -321,14 +331,25 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
         onSuccess: () => {
           Swal.fire(usePage().props.jetstream.flash?.banner || '');
 
+          // Force refresh to get updated data from backend (e.g., calculated invoice_pay_by_date)
+          filter();
+
           //endTime = performance.now()
           //console.log(`Call to transportTrans took ${(endTime - startTime)/1000} seconds`);
           startTime = 0;
           endTime = 0;
         },
-        onError: (error) => {
-          alert('Something went wrong on the Transaction');
-          console.log(error);
+        onError: (errors) => {
+          // Show detailed validation errors
+          const errorMessages = Object.entries(errors)
+            .map(([field, messages]) => {
+              const fieldName = field.replace(/_/g, ' ').replace(/\./g, ' ');
+              return `${fieldName}: ${Array.isArray(messages) ? messages.join(', ') : messages}`;
+            })
+            .join('\n');
+
+          alert('Validation Errors:\n\n' + errorMessages);
+          console.error('Validation errors:', errors);
         },
         onFinish: () => {
           // Always reset loading state when request completes (success or error)

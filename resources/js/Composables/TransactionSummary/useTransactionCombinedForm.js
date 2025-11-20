@@ -315,6 +315,12 @@ export function useTransactionCombinedForm(props) {
   });
 
   /**
+   * Track the current transaction ID and supplier ID to detect when we need to reset collection_address
+   */
+  let currentTransactionId = props.selected_transaction.id;
+  let currentSupplierId = props.selected_transaction.supplier_id;
+
+  /**
    * Update form with fresh data from selected transaction
    * Called when transaction changes
    */
@@ -326,6 +332,14 @@ export function useTransactionCombinedForm(props) {
       purchaseOrderForm,
       transportOrderForm,
     } = statusForms;
+
+    // Detect if we're switching to a different transaction or supplier
+    const isNewTransaction = currentTransactionId !== props.selected_transaction.id;
+    const hasSupplierChanged =
+      currentSupplierId !== props.selected_transaction.supplier_id;
+
+    currentTransactionId = props.selected_transaction.id;
+    currentSupplierId = props.selected_transaction.supplier_id;
 
     // Update other forms if provided
     if (transportApprovalForm) {
@@ -459,12 +473,16 @@ export function useTransactionCombinedForm(props) {
     );
 
     // Update addresses
-    combined_Form.collection_address_id = props.all_suppliers
-      .find((element) => element.id === props.selected_transaction.supplier_id)
-      ?.addressable?.find(
-        (element) =>
-          element.id === props.selected_transaction.transport_load.collection_address_id
-      );
+    // Only reset collection_address_id when switching to a different transaction OR when supplier changes
+    // When editing the same transaction with the same supplier, keep the user's selection
+    if (isNewTransaction || hasSupplierChanged) {
+      combined_Form.collection_address_id = props.all_suppliers
+        .find((element) => element.id === props.selected_transaction.supplier_id)
+        ?.addressable?.find(
+          (element) =>
+            element.id === props.selected_transaction.transport_load.collection_address_id
+        );
+    }
 
     combined_Form.delivery_address_id = findDeliveryAddress(
       props.selected_transaction.customer_id,
@@ -487,8 +505,201 @@ export function useTransactionCombinedForm(props) {
       props.selected_transaction.transport_load.delivery_address_id_5
     );
 
-    // Update more fields from transport_load, transport_job, transport_finance, transport_invoice, driver_vehicle
-    // (all assignments from updateSelectValues function)
+    // Update all remaining transport_load fields
+    Object.assign(combined_Form, {
+      product_grade_perc: props.selected_transaction.transport_load.product_grade_perc,
+      no_units_incoming: props.selected_transaction.transport_load.no_units_incoming,
+      no_units_outgoing: props.selected_transaction.transport_load.no_units_outgoing,
+      no_units_outgoing_2: props.selected_transaction.transport_load.no_units_outgoing_2,
+      no_units_outgoing_3: props.selected_transaction.transport_load.no_units_outgoing_3,
+      no_units_outgoing_4: props.selected_transaction.transport_load.no_units_outgoing_4,
+      no_units_outgoing_5: props.selected_transaction.transport_load.no_units_outgoing_5,
+      is_weighbridge_certificate_received:
+        props.selected_transaction.transport_load.is_weighbridge_certificate_received,
+      delivery_note: props.selected_transaction.transport_load.delivery_note,
+      calculated_route_distance:
+        props.selected_transaction.transport_load.calculated_route_distance,
+    });
+
+    // Update all transport_job fields
+    Object.assign(combined_Form, {
+      customer_order_number:
+        props.selected_transaction.transport_job.customer_order_number,
+      supplier_loading_number:
+        props.selected_transaction.transport_job.supplier_loading_number,
+      customer_order_number_2:
+        props.selected_transaction.transport_job.customer_order_number_2,
+      supplier_loading_number_2:
+        props.selected_transaction.transport_job.supplier_loading_number_2,
+      customer_order_number_3:
+        props.selected_transaction.transport_job.customer_order_number_3,
+      supplier_loading_number_3:
+        props.selected_transaction.transport_job.supplier_loading_number_3,
+      customer_order_number_4:
+        props.selected_transaction.transport_job.customer_order_number_4,
+      supplier_loading_number_4:
+        props.selected_transaction.transport_job.supplier_loading_number_4,
+      customer_order_number_5:
+        props.selected_transaction.transport_job.customer_order_number_5,
+      supplier_loading_number_5:
+        props.selected_transaction.transport_job.supplier_loading_number_5,
+      is_multi_loads: props.selected_transaction.transport_job.is_multi_loads,
+      is_approved: props.selected_transaction.transport_job.is_approved,
+      is_transport_costs_inc_price:
+        props.selected_transaction.transport_job.is_transport_costs_inc_price,
+      is_product_zero_rated:
+        props.selected_transaction.transport_job.is_product_zero_rated,
+      offloading_hours_from_id:
+        props.selected_transaction.transport_job.offloading_hours_from_id,
+      offloading_hours_to_id:
+        props.selected_transaction.transport_job.offloading_hours_to_id,
+      loading_hours_from_id:
+        props.selected_transaction.transport_job.loading_hours_from_id,
+      loading_hours_to_id: props.selected_transaction.transport_job.loading_hours_to_id,
+      load_insurance_per_ton:
+        props.selected_transaction.transport_job.load_insurance_per_ton,
+      total_load_insurance: props.selected_transaction.transport_job.total_load_insurance,
+      number_loads: props.selected_transaction.transport_job.number_loads,
+      loading_instructions: props.selected_transaction.transport_job.loading_instructions,
+      offloading_instructions:
+        props.selected_transaction.transport_job.offloading_instructions,
+      loading_contact: props.selected_transaction.transport_job.loading_contact,
+      loading_contact_no: props.selected_transaction.transport_job.loading_contact_no,
+      offloading_contact: props.selected_transaction.transport_job.offloading_contact,
+      offloading_contact_no:
+        props.selected_transaction.transport_job.offloading_contact_no,
+    });
+
+    // Update all transport_finance fields
+    Object.assign(combined_Form, {
+      transport_rate_basis_id:
+        props.selected_transaction.transport_finance.transport_rate_basis_id,
+      cost_price_per_unit:
+        props.selected_transaction.transport_finance.cost_price_per_unit,
+      selling_price_per_unit:
+        props.selected_transaction.transport_finance.selling_price_per_unit,
+      transport_rate: props.selected_transaction.transport_finance.transport_rate,
+      transport_cost_2: props.selected_transaction.transport_finance.transport_cost_2,
+      transport_cost_3: props.selected_transaction.transport_finance.transport_cost_3,
+      transport_cost_4: props.selected_transaction.transport_finance.transport_cost_4,
+      transport_cost_5: props.selected_transaction.transport_finance.transport_cost_5,
+      selling_price_2: props.selected_transaction.transport_finance.selling_price_2,
+      selling_price_3: props.selected_transaction.transport_finance.selling_price_3,
+      selling_price_4: props.selected_transaction.transport_finance.selling_price_4,
+      selling_price_5: props.selected_transaction.transport_finance.selling_price_5,
+      additional_cost_1: props.selected_transaction.transport_finance.additional_cost_1,
+      additional_cost_2: props.selected_transaction.transport_finance.additional_cost_2,
+      additional_cost_3: props.selected_transaction.transport_finance.additional_cost_3,
+      additional_cost_desc_1:
+        props.selected_transaction.transport_finance.additional_cost_desc_1,
+      additional_cost_desc_2:
+        props.selected_transaction.transport_finance.additional_cost_desc_2,
+      additional_cost_desc_3:
+        props.selected_transaction.transport_finance.additional_cost_desc_3,
+      adjusted_gp: props.selected_transaction.transport_finance.adjusted_gp,
+      adjusted_gp_notes: props.selected_transaction.transport_finance.adjusted_gp_notes,
+    });
+
+    // Update all transport_invoice fields
+    Object.assign(combined_Form, {
+      transport_trans_id: props.selected_transaction.id,
+      is_active: props.selected_transaction.transport_invoice.is_active,
+      is_printed: props.selected_transaction.transport_invoice.is_printed,
+      invoice_id:
+        props.selected_transaction.transport_invoice.transport_invoice_details.invoice_id,
+      is_invoiced:
+        props.selected_transaction.transport_invoice.transport_invoice_details
+          .is_invoiced,
+      is_invoice_paid:
+        props.selected_transaction.transport_invoice.transport_invoice_details
+          .is_invoice_paid,
+      invoice_no:
+        props.selected_transaction.transport_invoice.transport_invoice_details.invoice_no,
+      invoice_paid_date:
+        props.selected_transaction.transport_invoice.transport_invoice_details
+          .invoice_paid_date,
+      invoice_pay_by_date:
+        props.selected_transaction.transport_invoice.transport_invoice_details
+          .invoice_pay_by_date,
+      invoice_date:
+        props.selected_transaction.transport_invoice.transport_invoice_details
+          .invoice_date,
+      invoice_amount:
+        props.selected_transaction.transport_invoice.transport_invoice_details
+          .invoice_amount,
+      invoice_amount_paid:
+        props.selected_transaction.transport_invoice.transport_invoice_details
+          .invoice_amount_paid,
+      status_id:
+        props.selected_transaction.transport_invoice.transport_invoice_details.status_id,
+      notes: props.selected_transaction.transport_invoice.transport_invoice_details.notes,
+    });
+
+    // Update all driver_vehicle fields
+    combined_Form.regular_driver_id = findById(
+      props.all_drivers,
+      props.selected_transaction.transport_job.transport_driver_vehicle[0]
+        ?.regular_driver_id
+    );
+    combined_Form.regular_vehicle_id = findById(
+      props.all_vehicles,
+      props.selected_transaction.transport_job.transport_driver_vehicle[0]
+        ?.regular_vehicle_id
+    );
+
+    Object.assign(combined_Form, {
+      weighbridge_upload_weight:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.weighbridge_upload_weight,
+      weighbridge_offload_weight:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.weighbridge_offload_weight,
+      is_weighbridge_variance:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.is_weighbridge_variance,
+      is_cancelled:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.is_cancelled,
+      date_cancelled:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.date_cancelled,
+      is_loaded:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.is_loaded,
+      date_loaded:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_loaded,
+      is_onroad:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.is_onroad,
+      date_onroad:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_onroad,
+      is_delivered:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.is_delivered,
+      date_delivered:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.date_delivered,
+      is_transport_scheduled:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.is_transport_scheduled,
+      date_scheduled:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.date_scheduled,
+      is_paid:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.is_paid,
+      date_paid:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_paid,
+      is_payment_overdue:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.is_payment_overdue,
+      driver_vehicle_loading_number:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.driver_vehicle_loading_number,
+      trailer_reg_1:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.trailer_reg_1,
+      trailer_reg_2:
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]
+          ?.trailer_reg_2,
+    });
 
     combined_Form.clearErrors();
   };

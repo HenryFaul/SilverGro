@@ -643,7 +643,7 @@ class TransactionSummaryController extends Controller
                 'invoice_id' => ['required', 'integer', 'exists:transport_invoices,id'],
                 'invoice_no' => ['nullable', 'string'],
                 'invoice_paid_date' => ['nullable', 'date'],
-                'invoice_pay_by_date' => ['nullable', 'date'],
+                // invoice_pay_by_date is calculated on backend, not accepted from request
                 'invoice_date' => ['nullable', 'date'],
                 'invoice_amount' => ['required', 'numeric'],
                 'invoice_amount_paid' => ['required', 'numeric'],
@@ -658,15 +658,17 @@ class TransactionSummaryController extends Controller
                 'is_printed' => $request->is_printed,
             ]);
 
-        $found_customer = Customer::where('id', $customer_id)->first();
-
-        if ($found_customer->exists()) {
-            $terms_of_payment = $found_customer->TermsOfPayment->days;
-            $terms_of_payment_days = is_numeric($terms_of_payment) ? $terms_of_payment : 0;
-            $invoice_date = Carbon::parse($request->invoice_date)->tz('Africa/Johannesburg');
-            $invoice_pay_by_date = $invoice_date->addDays($terms_of_payment_days);
+        // Calculate invoice_pay_by_date based on invoice_date and payment terms
+        $invoice_pay_by_date = null;
+        if ($request->invoice_date) {
+            $found_customer = Customer::where('id', $customer_id)->first();
+            if ($found_customer->exists()) {
+                $terms_of_payment = $found_customer->TermsOfPayment->days;
+                $terms_of_payment_days = is_numeric($terms_of_payment) ? $terms_of_payment : 0;
+                $invoice_date = Carbon::parse($request->invoice_date)->tz('Africa/Johannesburg');
+                $invoice_pay_by_date = $invoice_date->copy()->addDays($terms_of_payment_days);
+            }
         }
-
 
         $invoice_balance = 0;
         $invoice_overdue = 0;
@@ -675,18 +677,27 @@ class TransactionSummaryController extends Controller
 
             $invoice_balance = ($request->invoice_amount - $request->invoice_amount_paid);
 
-            $customer = Customer::where('id', $request->customer_id['id'])->first();
+            // Only calculate overdue if invoice_date exists
+            if ($request->invoice_date) {
+                $customer = Customer::where('id', $request->customer_id['id'])->first();
 
-            $day_to_add = $customer->TermsOfPayment->days;
-            $invoice_date = Carbon::create($transportInvoiceDetails->invoice_date);
-            $adjusted_date = $invoice_date->addDays($day_to_add);
+                $day_to_add = $customer->TermsOfPayment->days;
+                $invoice_date = Carbon::create($request->invoice_date);
+                $adjusted_date = $invoice_date->addDays($day_to_add);
 
-            if ($adjusted_date < $cur_date) {
-                $invoice_overdue = $invoice_balance;
+                if ($adjusted_date < $cur_date) {
+                    $invoice_overdue = $invoice_balance;
+                }
             }
-
-
         }
+
+        // Prepare date values - only parse if not null
+        $parsed_invoice_date = $request->invoice_date
+            ? Carbon::parse($request->invoice_date)->tz('Africa/Johannesburg')
+            : null;
+        $parsed_invoice_paid_date = $request->invoice_paid_date
+            ? Carbon::parse($request->invoice_paid_date)->tz('Africa/Johannesburg')
+            : null;
 
         $transportInvoiceDetails->update(
             [
@@ -694,9 +705,9 @@ class TransactionSummaryController extends Controller
                 'is_printed' => $request->is_printed,
                 'is_invoice_paid' => $request->is_invoice_paid,
                 'invoice_no' => $request->invoice_no,
-                'invoice_paid_date' => Carbon::parse($request->invoice_paid_date)->tz('Africa/Johannesburg'),
-                'invoice_pay_by_date' => $invoice_pay_by_date ?? Carbon::parse($request->invoice_date)->tz('Africa/Johannesburg'),
-                'invoice_date' => Carbon::parse($request->invoice_date)->tz('Africa/Johannesburg'),
+                'invoice_paid_date' => $parsed_invoice_paid_date,
+                'invoice_pay_by_date' => $invoice_pay_by_date,
+                'invoice_date' => $parsed_invoice_date,
                 'invoice_amount' => $request->invoice_amount,
                 'invoice_amount_paid' => $request->invoice_amount_paid,
                 'status_id' => $request->status_id,
