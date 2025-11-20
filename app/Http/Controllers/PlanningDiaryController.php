@@ -33,7 +33,7 @@ class PlanningDiaryController extends Controller
 
         $transport_trans = TransportTransaction::with('Customer')->with('Supplier')->with('Transporter')->with('ContractType')->with('Product')->with('DealTicket')->with('TransportInvoice')
             ->with('TransportFinance')->with('TransportLoad')->with('TransportInvoiceDetails')->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))
-            ->with('TransportJob', fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo')->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle')))
+            ->with('TransportJob', fn($query) => $query->with('LoadingHoursFrom')->with('LoadingHoursTo')->with('OffloadingHoursFrom')->with('OffloadingHoursTo')->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle')))
             ->with('TransportLoad')->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle'))
             ->filter($filters)
             ->orderBy('transport_date_earliest', 'asc')
