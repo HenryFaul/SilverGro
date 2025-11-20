@@ -287,7 +287,7 @@ const props = defineProps({
 
     <div class="py-1">
       <div class="">
-        <div class="bg-gray-50 overflow-hidden shadow-xl sm:rounded-lg">
+        <div class="bg-gray-50 shadow-xl sm:rounded-lg">
           <div class="flex flex-row m-2 p-2">
             <div class="basis-1/2">
               <div class="flex">
@@ -373,34 +373,36 @@ const props = defineProps({
           <div class="p-2 m-2">
             <div class="px-1 sm:px-3 lg:px-2">
               <div class="flow-root">
-                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
                   <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div v-if="transport_trans.data.length > 0">
+                    <div
+                      v-if="transport_trans.data.length > 0"
+                      class="max-h-[calc(100vh-250px)] overflow-y-auto overflow-x-auto">
                       <table class="min-w-full table-fixed">
-                        <thead>
+                        <thead class="sticky top-0 z-10 bg-white shadow-sm">
                           <tr>
                             <th
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0 w-[10%]"
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0 w-[10%] bg-white"
                               scope="col">
                               DT
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%]"
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%] bg-white"
                               scope="col">
                               SUPPLY
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%]"
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%] bg-white"
                               scope="col">
                               CUSTOMER
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%]"
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%] bg-white"
                               scope="col">
                               TRANSPORT
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%]"
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-[22.5%] bg-white"
                               scope="col">
                               NOTES
                             </th>
