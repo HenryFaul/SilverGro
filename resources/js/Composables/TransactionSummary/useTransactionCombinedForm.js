@@ -327,6 +327,7 @@ export function useTransactionCombinedForm(props) {
   const updateSelectValues = (statusForms = {}) => {
     const {
       transportApprovalForm,
+      pcScApprovalForm,
       statusForm,
       salesOrderForm,
       purchaseOrderForm,
@@ -347,6 +348,10 @@ export function useTransactionCombinedForm(props) {
       transportApprovalForm.transport_job_id =
         props.selected_transaction.transport_job.id;
       transportApprovalForm.deal_ticket_id = props.selected_transaction.deal_ticket.id;
+    }
+
+    if (pcScApprovalForm) {
+      pcScApprovalForm.transport_trans_id = props.selected_transaction.id;
     }
 
     if (statusForm) {

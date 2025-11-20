@@ -8,6 +8,7 @@ import axios from 'axios';
 export function useTransactionActions(
   tempForm,
   transportApprovalForm,
+  pcScApprovalForm,
   filter,
   isUpdating,
   props
@@ -78,6 +79,22 @@ export function useTransactionActions(
   };
 
   /**
+   * Create a PC or SC approval
+   */
+  const createPcScApproval = () => {
+    pcScApprovalForm.post(route('pc_sc_approval.approve'), {
+      preserveScroll: true,
+      onSuccess: () => {
+        filter();
+        window.swal(usePage().props.jetstream.flash?.banner || '');
+      },
+      onError: (e) => {
+        console.log(e);
+      },
+    });
+  };
+
+  /**
    * Create a final deal ticket PDF
    */
   const createFinalDealTicket = () => {
@@ -115,6 +132,7 @@ export function useTransactionActions(
     deleteDriverVehicle,
     createApproval,
     createActivation,
+    createPcScApproval,
     createFinalDealTicket,
     downloadDealTicket,
   };

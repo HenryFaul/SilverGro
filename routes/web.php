@@ -36,6 +36,7 @@ use App\Http\Controllers\TransactionSpreadSheetController;
 use App\Http\Controllers\TransactionSummaryController;
 use App\Http\Controllers\TransLinkController;
 use App\Http\Controllers\TransportApprovalController;
+use App\Http\Controllers\PcScApprovalController;
 use App\Http\Controllers\TransportDriverVehicleController;
 use App\Http\Controllers\TransporterController;
 use App\Http\Controllers\TransportFinanceController;
@@ -219,6 +220,8 @@ Route::middleware([
     Route::post('trans_approval/approve', [TransportApprovalController::class, 'approve'])->middleware('auth')->name('trans_approval.approve');
     Route::post('trans_approval/activate', [TransportApprovalController::class, 'activate'])->middleware('auth')->name('trans_approval.activate');
 
+    //PC/SC Approval
+    Route::post('pc_sc_approval/approve', [PcScApprovalController::class, 'approve'])->middleware('auth')->name('pc_sc_approval.approve');
 
     //Deal Ticket
 

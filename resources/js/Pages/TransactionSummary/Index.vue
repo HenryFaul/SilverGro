@@ -225,6 +225,7 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
     createStatus,
     deleteStatus,
     transportApprovalForm,
+    pcScApprovalForm,
     salesOrderForm,
     activateSalesOrder,
     sendSalesOrder,
@@ -281,6 +282,7 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
     // Always pass the status forms to ensure they're updated
     const formsToUpdate = passedStatusForms || {
       transportApprovalForm,
+      pcScApprovalForm,
       statusForm,
       salesOrderForm,
       purchaseOrderForm,
@@ -387,9 +389,17 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
     deleteDriverVehicle,
     createApproval,
     createActivation,
+    createPcScApproval,
     createFinalDealTicket,
     downloadDealTicket,
-  } = useTransactionActions(temp_form, transportApprovalForm, filter, isUpdating, props);
+  } = useTransactionActions(
+    temp_form,
+    transportApprovalForm,
+    pcScApprovalForm,
+    filter,
+    isUpdating,
+    props
+  );
 
   // Helper functions from useTransactionHelpers composable
   const { vehicleSlideProps, getComponentProps, doCreatedTrade, deleteAssignedComm } =
@@ -2467,7 +2477,7 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                       class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8"
                       role="list">
                       <li
-                        v-if="selected_transaction.contract_type_id != 1"
+                        v-if="selected_transaction.contract_type_id === 4"
                         class="overflow-hidden rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
@@ -2736,6 +2746,75 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                               target="_blank">
                               View (working doc)
                             </a>
+                          </div>
+                        </dl>
+                      </li>
+
+                      <!-- PC/SC Approvals Section -->
+                      <li
+                        v-if="
+                          selected_transaction.contract_type_id === 2 ||
+                          selected_transaction.contract_type_id === 3
+                        "
+                        class="overflow-hidden rounded-xl border border-gray-200">
+                        <div
+                          class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+                          <div class="text-sm font-medium leading-6 text-gray-900">
+                            {{
+                              selected_transaction.contract_type_id === 2 ? 'PC' : 'SC'
+                            }}
+                            Approvals
+                          </div>
+                        </div>
+
+                        <dl
+                          class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
+                          <div class="mb-2">
+                            <div class="text-indigo-400">
+                              ID: {{ selected_transaction.id }}
+                            </div>
+                            <div
+                              v-if="selected_transaction.old_id"
+                              class="mb-2 text-gray-400">
+                              (OLD: {{ selected_transaction.old_id }})
+                            </div>
+
+                            <div
+                              v-if="
+                                selected_transaction.contract_type_id === 2 &&
+                                selected_transaction.a_pc
+                              "
+                              class="font-bold text-indigo-400 mt-3">
+                              PC#: {{ selected_transaction.a_pc }}
+                            </div>
+
+                            <div
+                              v-if="
+                                selected_transaction.contract_type_id === 3 &&
+                                selected_transaction.a_sc
+                              "
+                              class="font-bold text-indigo-400 mt-3">
+                              SC#: {{ selected_transaction.a_sc }}
+                            </div>
+
+                            <div
+                              v-if="
+                                (selected_transaction.contract_type_id === 2 &&
+                                  !selected_transaction.a_pc) ||
+                                (selected_transaction.contract_type_id === 3 &&
+                                  !selected_transaction.a_sc)
+                              "
+                              class="text-red-400 mt-3">
+                              Not Yet Approved
+                            </div>
+                          </div>
+
+                          <div class="mt-2">
+                            <SecondaryButton
+                              class="m-1"
+                              @click="createPcScApproval">
+                              Approve
+                            </SecondaryButton>
                           </div>
                         </dl>
                       </li>

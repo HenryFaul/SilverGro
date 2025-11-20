@@ -8,6 +8,7 @@ use App\Models\TransportApproval;
 use App\Models\TransportTransaction;
 use App\Models\User;
 use App\Notifications\DealTicketApproved;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -19,7 +20,7 @@ class TransportApprovalController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function approve(Request $request): \Illuminate\Http\RedirectResponse
+    public function approve(Request $request): RedirectResponse
     {
 
         $request->validate([
@@ -31,6 +32,14 @@ class TransportApprovalController extends Controller
         $roles = $user?->getRoleNames();
 
         $transport_trans = TransportTransaction::find($request->transport_trans_id);
+
+        // Guard: Only allow MQ contracts (contract_type_id = 4)
+        if ($transport_trans->contract_type_id != 4) {
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'This approval method is only for MQ contracts');
+            return redirect()->back();
+        }
+
         $transport_finance = $transport_trans->TransportFinance;
         $deal_ticket = $transport_trans->DealTicket;
 
@@ -181,12 +190,20 @@ class TransportApprovalController extends Controller
 
     }
 
-    public function activate(Request $request): \Illuminate\Http\RedirectResponse
+    public function activate(Request $request): RedirectResponse
     {
         $user = Auth::user();
         $permissions = $user->getPermissionsViaRoles()->pluck('name');
         $can_approve = $permissions->contains('approve_deal_ticket');
         $transport_trans = TransportTransaction::find($request->transport_trans_id);
+
+        // Guard: Only allow MQ contracts (contract_type_id = 4)
+        if ($transport_trans->contract_type_id != 4) {
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'This activation method is only for MQ contracts');
+            return redirect()->back();
+        }
+
         $deal_ticket = $transport_trans->DealTicket;
         $deal_ticket->calculateRules();
         $is_approved = $deal_ticket->is_approved;

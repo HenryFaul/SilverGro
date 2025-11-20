@@ -536,26 +536,26 @@
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
-import {
-  Combobox,
-  ComboboxButton,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
-  Switch,
-  SwitchGroup,
-} from '@headlessui/vue';
-import { CheckIcon, ChevronUpDownIcon, XCircleIcon } from '@heroicons/vue/20/solid';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
-import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
-import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
-import AreaInput from '@/Components/AreaInput.vue';
-import InputError from '@/Components/InputError.vue';
-import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
+  import { Link } from '@inertiajs/vue3';
+  import {
+    Combobox,
+    ComboboxButton,
+    ComboboxInput,
+    ComboboxOption,
+    ComboboxOptions,
+    Switch,
+    SwitchGroup,
+  } from '@headlessui/vue';
+  import { CheckIcon, ChevronUpDownIcon, XCircleIcon } from '@heroicons/vue/20/solid';
+  import SecondaryButton from '@/Components/SecondaryButton.vue';
+  import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
+  import SplitLinkModal from '@/Components/UI/SplitLinkModal.vue';
+  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
+  import AreaInput from '@/Components/AreaInput.vue';
+  import InputError from '@/Components/InputError.vue';
+  import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
 
-// Use formatNiceNumber directly
+  // Use formatNiceNumber directly
   const NiceNumber = formatNiceNumber;
 
   defineProps({

@@ -44,6 +44,11 @@ export function useTransactionStatusForms(props, isUpdating) {
     deal_ticket_id: props.selected_transaction.deal_ticket.id,
   });
 
+  // PC/SC Approval form
+  const pcScApprovalForm = useForm({
+    transport_trans_id: props.selected_transaction.id,
+  });
+
   // Sales Order form
   const salesOrderForm = useForm({
     transport_trans_id: props.sales_order.transport_trans_id,
@@ -220,6 +225,9 @@ export function useTransactionStatusForms(props, isUpdating) {
 
     // Transport approval form
     transportApprovalForm,
+
+    // PC/SC Approval form
+    pcScApprovalForm,
 
     // Sales order form and handlers
     salesOrderForm,
