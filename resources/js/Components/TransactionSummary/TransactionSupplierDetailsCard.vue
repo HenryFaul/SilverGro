@@ -1,17 +1,11 @@
 <script setup>
-  import { defineProps, defineEmits } from 'vue';
-  import {
-    Combobox,
-    ComboboxButton,
-    ComboboxInput,
-    ComboboxOption,
-    ComboboxOptions,
-  } from '@headlessui/vue';
-  import { ChevronUpDownIcon, CheckIcon } from '@heroicons/vue/20/solid';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
+import { defineEmits, defineProps } from 'vue';
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, } from '@headlessui/vue';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
 
-  const props = defineProps({
+const props = defineProps({
     combinedForm: { type: Object, required: true },
     filteredSuppliers: { type: Array, required: true },
     supplierQuery: { type: String, default: '' },
@@ -37,18 +31,18 @@
         <dd class="flex items-start gap-x-2">
           <div>
             <Combobox
-              as="div"
-              v-model="combinedForm.supplier_id">
+              v-model="combinedForm.supplier_id"
+              as="div">
               <div class="relative mt-2">
                 <ComboboxInput
+                  :display-value="(supplier) => supplier?.last_legal_name"
                   class="w-70 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  @change="(e) => emit('update:supplierQuery', e.target.value)"
-                  :display-value="(supplier) => supplier?.last_legal_name" />
+                  @change="(e) => emit('update:supplierQuery', e.target.value)" />
                 <ComboboxButton
                   class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                   <ChevronUpDownIcon
-                    class="h-5 w-5 text-gray-400"
-                    aria-hidden="true" />
+                    aria-hidden="true"
+                    class="h-5 w-5 text-gray-400" />
                 </ComboboxButton>
 
                 <ComboboxOptions
@@ -57,9 +51,9 @@
                   <ComboboxOption
                     v-for="supplier in filteredSuppliers"
                     :key="supplier.id"
+                    v-slot="{ active, selected }"
                     :value="supplier"
-                    as="template"
-                    v-slot="{ active, selected }">
+                    as="template">
                     <ul>
                       <li
                         :class="[
@@ -76,8 +70,8 @@
                             active ? 'text-white' : 'text-indigo-600',
                           ]">
                           <CheckIcon
-                            class="h-5 w-5"
-                            aria-hidden="true" />
+                            aria-hidden="true"
+                            class="h-5 w-5" />
                         </span>
                       </li>
                     </ul>
@@ -94,8 +88,8 @@
         <dd class="flex items-start gap-x-2">
           <input
             v-model="combinedForm.supplier_loading_number"
-            type="text"
-            class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            class="block w-48 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            type="text" />
         </dd>
       </div>
 
@@ -106,12 +100,6 @@
         <dd class="flex items-start gap-x-2">
           <div v-if="filteredLinkedContractsPc && filteredLinkedContractsPc[0]">
             <div>PC:{{ filteredLinkedContractsPc[0].transport_trans_id }}</div>
-            <div>
-              {{
-                filteredLinkedContractsPc[0].transport_transaction_pc.customer
-                  .last_legal_name
-              }}
-            </div>
             <div>
               {{
                 filteredLinkedContractsPc[0].transport_transaction_pc.supplier
@@ -143,10 +131,10 @@
               </SecondaryButton>
 
               <ContractLinkModal
-                :show="viewContractLinkModal"
-                @close="emit('closeContractLink')"
+                :link_type_id="3"
                 :mq_trans_id="selectedTransaction.id"
-                :link_type_id="3" />
+                :show="viewContractLinkModal"
+                @close="emit('closeContractLink')" />
             </div>
           </div>
         </dd>
