@@ -712,12 +712,19 @@
                           </td>
                           <td
                             class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                            <a
+                            <Link
+                              :data="{
+                                selected_trans_id: contract.transport_transaction.id,
+                              }"
                               class="text-indigo-600 hover:text-indigo-900"
-                              href="#">
+                              href="/transaction_summary"
+                              method="get"
+                              target="_blank">
                               Edit
-                              <span class="sr-only">, x</span>
-                            </a>
+                              <span class="sr-only">
+                                , {{ contract.transport_transaction.id }}
+                              </span>
+                            </Link>
                           </td>
                         </tr>
                       </tbody>
@@ -841,12 +848,19 @@
                             </td>
                             <td
                               class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                              <a
+                              <Link
+                                :data="{
+                                  selected_trans_id: props.selected_transaction.id,
+                                }"
                                 class="text-indigo-600 hover:text-indigo-900"
-                                href="#">
+                                href="/transaction_summary"
+                                method="get"
+                                target="_blank">
                                 Edit
-                                <span class="sr-only">, x</span>
-                              </a>
+                                <span class="sr-only">
+                                  , {{ props.selected_transaction.id }}
+                                </span>
+                              </Link>
                             </td>
                           </tr>
                         </tbody>
