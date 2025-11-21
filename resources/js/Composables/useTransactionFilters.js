@@ -3,7 +3,7 @@
  * Extracted from Index.vue - Phase 2 of refactoring
  */
 
-import { ref, computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
 import { isDayIncluded } from './useDateFormatters';
@@ -42,6 +42,8 @@ export function useTransactionFilters(props, updateSelectValuesCallback) {
     new_trade_added: false,
     old_id: null,
     a_mq: null,
+    a_pc: null,
+    a_sc: null,
   });
 
   // Debounced filter function
@@ -69,6 +71,14 @@ export function useTransactionFilters(props, updateSelectValuesCallback) {
   // Watch all filter fields
   watch(
     () => filterForm.a_mq,
+    () => filter()
+  );
+  watch(
+    () => filterForm.a_pc,
+    () => filter()
+  );
+  watch(
+    () => filterForm.a_sc,
     () => filter()
   );
   watch(
@@ -160,6 +170,8 @@ export function useTransactionFilters(props, updateSelectValuesCallback) {
     filterForm.id = null;
     filterForm.old_id = null;
     filterForm.a_mq = null;
+    filterForm.a_pc = null;
+    filterForm.a_sc = null;
 
     mon.value = true;
     tue.value = true;

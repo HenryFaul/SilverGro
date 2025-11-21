@@ -1,17 +1,17 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { computed, inject, onBeforeMount, ref, watch } from 'vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
-import { debounce } from 'lodash';
-import PaginationModified from '@/Components/UI/PaginationModified.vue';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-import Icon from '@/Components/Icon.vue';
-import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
-import { CheckIcon, XMarkIcon } from '@heroicons/vue/20/solid';
+  import AppLayout from '@/Layouts/AppLayout.vue';
+  import { computed, inject, onBeforeMount, ref, watch } from 'vue';
+  import SecondaryButton from '@/Components/SecondaryButton.vue';
+  import { Link, useForm, usePage } from '@inertiajs/vue3';
+  import { debounce } from 'lodash';
+  import PaginationModified from '@/Components/UI/PaginationModified.vue';
+  import VueDatePicker from '@vuepic/vue-datepicker';
+  import '@vuepic/vue-datepicker/dist/main.css';
+  import Icon from '@/Components/Icon.vue';
+  import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
+  import { CheckIcon, XMarkIcon } from '@heroicons/vue/20/solid';
 
-const swal = inject('$swal');
+  const swal = inject('$swal');
 
   let dayIncluded = (_date) => {
     let _day = NiceDay(_date);
@@ -207,6 +207,9 @@ const swal = inject('$swal');
     selected_trans_id: props.selected_transaction?.id ?? null,
     new_trade_added: false,
     old_id: null,
+    a_mq: props.filters?.a_mq ?? null,
+    a_pc: props.filters?.a_pc ?? null,
+    a_sc: props.filters?.a_sc ?? null,
     contract_type_id: props.filters.contract_type_id ?? null,
   });
 
@@ -229,6 +232,20 @@ const swal = inject('$swal');
 
   watch(
     () => filterForm.a_mq,
+    (exampleField, prevExampleField) => {
+      filter();
+    }
+  );
+
+  watch(
+    () => filterForm.a_pc,
+    (exampleField, prevExampleField) => {
+      filter();
+    }
+  );
+
+  watch(
+    () => filterForm.a_sc,
     (exampleField, prevExampleField) => {
       filter();
     }
@@ -352,6 +369,8 @@ const swal = inject('$swal');
     filterForm.id = null;
     filterForm.old_id = null;
     filterForm.a_mq = null;
+    filterForm.a_pc = null;
+    filterForm.a_sc = null;
 
     mon.value = true;
     tue.value = true;
@@ -538,6 +557,18 @@ const swal = inject('$swal');
               aria-label="Search"
               class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
               placeholder="MQ no..."
+              type="search" />
+            <input
+              v-model.number="filterForm.a_pc"
+              aria-label="Search"
+              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
+              placeholder="PC no..."
+              type="search" />
+            <input
+              v-model.number="filterForm.a_sc"
+              aria-label="Search"
+              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
+              placeholder="SC no..."
               type="search" />
             <input
               v-model.number="filterForm.supplier_name"
@@ -798,9 +829,7 @@ const swal = inject('$swal');
                   v-for="(transaction, index) in filteredTrans"
                   :key="transaction.id"
                   :class="[
-                    transaction.id === props.selected_transaction.id
-                      ? 'bg-gray-200'
-                      : '',
+                    transaction.id === props.selected_transaction.id ? 'bg-gray-200' : '',
                     'hover:bg-gray-100 text-sm focus-within:bg-gray-100',
                   ]">
                   <td :class="row_styler">
@@ -813,6 +842,16 @@ const swal = inject('$swal');
                         v-if="transaction.a_mq"
                         class="font-bold">
                         (MQ:{{ transaction.a_mq }})
+                      </span>
+                      <span
+                        v-if="transaction.a_pc"
+                        class="font-bold">
+                        (PC:{{ transaction.a_pc }})
+                      </span>
+                      <span
+                        v-if="transaction.a_sc"
+                        class="font-bold">
+                        (SC:{{ transaction.a_sc }})
                       </span>
                       <span>(ID:{{ transaction.id }})</span>
                       <span></span>

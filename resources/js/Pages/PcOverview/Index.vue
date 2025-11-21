@@ -2,76 +2,13 @@
   import AppLayout from '@/Layouts/AppLayout.vue';
   import { computed, inject, onBeforeMount, ref, watch } from 'vue';
   import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import { router, useForm, usePage, Link } from '@inertiajs/vue3';
-  import { debounce, throttle } from 'lodash';
+  import { Link, useForm, usePage } from '@inertiajs/vue3';
+  import { debounce } from 'lodash';
   import PaginationModified from '@/Components/UI/PaginationModified.vue';
-  import Icon from '@/Components/Icon.vue';
-  import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
   import VueDatePicker from '@vuepic/vue-datepicker';
   import '@vuepic/vue-datepicker/dist/main.css';
-  import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
-  import {
-    EllipsisHorizontalIcon,
-    CheckIcon,
-    ChevronUpDownIcon,
-    PaperClipIcon,
-    XCircleIcon,
-    InformationCircleIcon,
-    ExclamationTriangleIcon,
-    XMarkIcon,
-    TruckIcon,
-  } from '@heroicons/vue/20/solid';
-  import InputError from '@/Components/InputError.vue';
-  import AreaInput from '@/Components/AreaInput.vue';
-  import SectionBorder from '@/Components/SectionBorder.vue';
-  import DriverVehicleModal from '@/Components/UI/DriverVehicleModal.vue';
-  import DriverVehicleModalAdd from '@/Components/UI/DriverVehicleModal.vue';
-  import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
 
   const swal = inject('$swal');
-
-  import {
-    Switch,
-    SwitchGroup,
-    SwitchLabel,
-    Listbox,
-    ListboxButton,
-    ListboxLabel,
-    ListboxOption,
-    ListboxOptions,
-    Combobox,
-    ComboboxButton,
-    ComboboxInput,
-    ComboboxLabel,
-    ComboboxOption,
-    ComboboxOptions,
-  } from '@headlessui/vue';
-
-  let dayIncluded = (_date) => {
-    let _day = NiceDay(_date);
-    switch (_day) {
-      case 1:
-        return mon.value;
-      case 2:
-        return tue.value;
-      case 3:
-        return wed.value;
-      case 4:
-        return thu.value;
-      case 5:
-        return fri.value;
-      case 6:
-        return sat.value;
-      case 7:
-        return sun.value;
-      default:
-        return false;
-    }
-  };
-
-  let NiceDay = (_date) => {
-    return new Date(_date).getDay();
-  };
 
   let NiceTDate = (date) => {
     const _date = new Date(date);
@@ -220,6 +157,7 @@
     selected_trans_id: props.selected_transaction.id ?? null,
     new_trade_added: false,
     old_id: null,
+    a_pc: props.filters.a_pc ?? null,
   });
 
   let filter = debounce(() => {
@@ -316,27 +254,14 @@
     }
   );
 
-  let mon = ref(true);
-  let tue = ref(true);
-  let wed = ref(true);
-  let thu = ref(true);
-  let fri = ref(true);
-  let sat = ref(true);
-  let sun = ref(true);
-
-  let filteredTrans = computed(() =>
-    mon.value &&
-    tue.value &&
-    wed.value &&
-    thu.value &&
-    fri.value &&
-    sat.value &&
-    sun.value
-      ? props.transactions.data
-      : props.transactions.data.filter((trans) => {
-          return dayIncluded(trans.transport_date_earliest);
-        })
+  watch(
+    () => filterForm.a_pc,
+    (exampleField, prevExampleField) => {
+      filter();
+    }
   );
+
+  let filteredTrans = computed(() => props.transactions.data);
 
   let updateSelectedTrans = async (_id) => {
     filterForm.selected_trans_id = _id;
@@ -354,14 +279,7 @@
     filterForm.id = null;
     filterForm.old_id = null;
     filterForm.a_mq = null;
-
-    mon.value = true;
-    tue.value = true;
-    wed.value = true;
-    thu.value = true;
-    fri.value = true;
-    sat.value = true;
-    sun.value = true;
+    filterForm.a_pc = null;
 
     filter();
   };
@@ -423,236 +341,95 @@
             <div class="mt-3 flow-root">
               <div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-2 align-middle">
-                  <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                    <div class="flex col-span-6">
-                      <div>
-                        <div class="ml-3 text-indigo-400 text-sm font-bold">
-                          Start Date
-                        </div>
-                        <div class="w-48">
-                          <VueDatePicker
-                            v-model="filterForm.start_date"
-                            :format="formatStart"
-                            :teleport="true"></VueDatePicker>
-                        </div>
+                  <div class="ml-4 mb-3">
+                    <!-- Single compact filter row -->
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <div class="w-28 text-xs">
+                        <VueDatePicker
+                          v-model="filterForm.start_date"
+                          :format="formatStart"
+                          :input-class-name="'text-xs h-9'"
+                          :teleport="true"
+                          placeholder="Start"></VueDatePicker>
                       </div>
-                      <div class="ml-2">
-                        <div class="ml-3 text-indigo-400 text-sm font-bold">End Date</div>
-                        <div class="w-48">
-                          <VueDatePicker
-                            v-model="filterForm.end_date"
-                            :format="format"
-                            :teleport="true"></VueDatePicker>
-                        </div>
+                      <div class="w-28 text-xs">
+                        <VueDatePicker
+                          v-model="filterForm.end_date"
+                          :format="format"
+                          :input-class-name="'text-xs h-9'"
+                          :teleport="true"
+                          placeholder="End"></VueDatePicker>
                       </div>
 
-                      <div class="mt-5 ml-2">
-                        <select
-                          v-model="filterForm.show"
-                          class="input-filter-l w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                          <option :value="5">5</option>
-                          <option :value="10">10</option>
-                          <option :value="25">25</option>
-                          <option :value="100">100</option>
-                          <option :value="200">200</option>
-                          <option :value="500">500</option>
-                        </select>
-                      </div>
+                      <select
+                        v-model="filterForm.show"
+                        class="h-9 w-16 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs">
+                        <option :value="5">5</option>
+                        <option :value="10">10</option>
+                        <option :value="25">25</option>
+                        <option :value="100">100</option>
+                        <option :value="200">200</option>
+                        <option :value="500">500</option>
+                      </select>
 
-                      <div class="mt-5 ml-2">
-                        <input
-                          v-model.number="filterForm.old_id"
-                          aria-label="Search"
-                          class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="old contract no..."
-                          type="search" />
-                      </div>
-                    </div>
-                    <div class="col-span-4 flex">
+                      <input
+                        v-model.number="filterForm.a_pc"
+                        class="w-20 h-9 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs"
+                        placeholder="PC#..."
+                        type="search" />
+
                       <input
                         v-model.number="filterForm.supplier_name"
-                        aria-label="Search"
-                        class="block w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="supplier name..."
+                        class="w-28 h-9 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs"
+                        placeholder="supplier..."
                         type="search" />
 
                       <input
                         v-model.number="filterForm.customer_name"
-                        aria-label="Search"
-                        class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="customer name..."
+                        class="w-28 h-9 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs"
+                        placeholder="customer..."
                         type="search" />
 
                       <input
                         v-model.number="filterForm.transporter_name"
-                        aria-label="Search"
-                        class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="transporter name..."
+                        class="w-28 h-9 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs"
+                        placeholder="transporter..."
                         type="search" />
 
                       <input
                         v-model.number="filterForm.product_name"
-                        aria-label="Search"
-                        class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="product name..."
+                        class="w-24 h-9 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs"
+                        placeholder="product..."
                         type="search" />
 
                       <input
                         v-model.number="filterForm.id"
-                        aria-label="Search"
-                        class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="contract no..."
+                        class="w-24 h-9 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs"
+                        placeholder="contract#..."
                         type="search" />
-                    </div>
-                    <div class="col-span-4 flex">
-                      <div>
-                        <secondary-button
-                          class=""
-                          @click="filter">
-                          Search
-                        </secondary-button>
-                        <secondary-button
-                          class="ml-1"
-                          @click="clear">
-                          Clear
-                        </secondary-button>
-                        <secondary-button
-                          class="ml-1"
-                          @click="toggleDetails">
-                          Toggle
-                        </secondary-button>
-                      </div>
 
-                      <div class="flex ml-6">
-                        <div class="relative flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="mon"
-                              v-model="mon"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="mon"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="mon">
-                              Mon
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="tue"
-                              v-model="tue"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="tue"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="tue">
-                              Tue
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="wed"
-                              v-model="wed"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="wed"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="wed">
-                              Wed
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="thu"
-                              v-model="thu"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="thu"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="thu">
-                              Thu
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="fri"
-                              v-model="fri"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="fri"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="fri">
-                              Fri
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="sat"
-                              v-model="sat"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="sat"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="sat">
-                              Sat
-                            </label>
-                          </div>
-                        </div>
-                        <div class="relative ml-2 flex items-start">
-                          <div class="flex h-6 items-center">
-                            <input
-                              id="sun"
-                              v-model="sun"
-                              aria-describedby="candidates-description"
-                              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                              name="sun"
-                              type="checkbox" />
-                          </div>
-                          <div class="ml-3 text-sm leading-6">
-                            <label
-                              class="font-medium text-gray-900"
-                              for="sun">
-                              Sun
-                            </label>
-                          </div>
-                        </div>
-                      </div>
+                      <input
+                        v-model.number="filterForm.old_id"
+                        class="w-24 h-9 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs"
+                        placeholder="old#..."
+                        type="search" />
+
+                      <secondary-button
+                        class="h-9 px-3 text-xs"
+                        @click="filter">
+                        Search
+                      </secondary-button>
+                      <secondary-button
+                        class="h-9 px-3 text-xs"
+                        @click="clear">
+                        Clear
+                      </secondary-button>
+                      <secondary-button
+                        class="h-9 px-3 text-xs"
+                        @click="toggleDetails">
+                        Toggle
+                      </secondary-button>
                     </div>
-                    <div class="col-span-4 mb-3"></div>
                   </div>
 
                   <div></div>
@@ -699,33 +476,32 @@
 
                             <th
                               v-if="showDetails"
-                              scope="col"
-                              :class="header_styler">
+                              :class="header_styler"
+                              scope="col">
                               Units Incoming
                             </th>
                             <th
                               v-if="showDetails"
-                              scope="col"
-                              :class="header_styler">
+                              :class="header_styler"
+                              scope="col">
                               Cost Price
                             </th>
                             <th
                               v-if="showDetails"
-                              scope="col"
-                              :class="header_styler">
+                              :class="header_styler"
+                              scope="col">
                               Selling Price
                             </th>
                             <th
                               v-if="showDetails"
-                              scope="col"
-                              :class="header_styler">
+                              :class="header_styler"
+                              scope="col">
                               Gross Profit
                             </th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr
-                            @click="updateSelectedTrans(transaction.id)"
                             v-for="(transaction, index) in filteredTrans"
                             :key="transaction.id"
                             :class="[
@@ -733,14 +509,20 @@
                                 ? 'bg-indigo-300'
                                 : '',
                               'hover:bg-gray-100 text-sm focus-within:bg-gray-100',
-                            ]">
+                            ]"
+                            @click="updateSelectedTrans(transaction.id)">
                             <td :class="row_styler">
                               <div class="font-bold">{{ transaction.id }}</div>
                               <div>{{ transaction.old_id }}</div>
                               <div
-                                class="text-indigo-500"
-                                v-if="transaction.a_mq">
-                                {{ transaction.a_mq }}
+                                v-if="transaction.a_mq"
+                                class="text-indigo-500">
+                                MQ:{{ transaction.a_mq }}
+                              </div>
+                              <div
+                                v-if="transaction.a_pc"
+                                class="text-indigo-500 font-bold">
+                                PC:{{ transaction.a_pc }}
                               </div>
                             </td>
                             <td :class="row_styler">
@@ -827,49 +609,49 @@
                       <thead>
                         <tr>
                           <th
-                            scope="col"
-                            class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                            class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                            scope="col">
                             Contract
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Supplier
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Customer
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Transporter
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Product
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Weight
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Cost
                           </th>
                           <th
-                            scope="col"
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            scope="col">
                             Selling Price
                           </th>
 
                           <th
-                            scope="col"
-                            class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                            class="relative py-3.5 pl-3 pr-4 sm:pr-0"
+                            scope="col">
                             <span class="sr-only">Edit</span>
                           </th>
                         </tr>
@@ -881,12 +663,12 @@
                           <td
                             class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                             <Link
-                              href="/transaction_summary"
-                              method="get"
-                              target="_blank"
                               :data="{
                                 selected_trans_id: contract.transport_transaction.id,
-                              }">
+                              }"
+                              href="/transaction_summary"
+                              method="get"
+                              target="_blank">
                               MQ:{{ contract.transport_transaction.a_mq }} ID:{{
                                 contract.transport_transaction.id
                               }}
@@ -931,8 +713,8 @@
                           <td
                             class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                             <a
-                              href="#"
-                              class="text-indigo-600 hover:text-indigo-900">
+                              class="text-indigo-600 hover:text-indigo-900"
+                              href="#">
                               Edit
                               <span class="sr-only">, x</span>
                             </a>
@@ -944,8 +726,8 @@
                     <div>
                       <div class="relative mt-3">
                         <div
-                          class="absolute inset-0 flex items-center"
-                          aria-hidden="true">
+                          aria-hidden="true"
+                          class="absolute inset-0 flex items-center">
                           <div class="w-full border-t border-gray-300" />
                         </div>
                         <div class="relative flex justify-center">
@@ -959,44 +741,44 @@
                         <thead>
                           <tr>
                             <th
-                              scope="col"
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               Units
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Cost Price
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Transport Costs
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Other Costs
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Selling Price
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               GP
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Tons Outstanding
                             </th>
 
                             <th
-                              scope="col"
-                              class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                              class="relative py-3.5 pl-3 pr-4 sm:pr-0"
+                              scope="col">
                               <span class="sr-only">Edit</span>
                             </th>
                           </tr>
@@ -1060,8 +842,8 @@
                             <td
                               class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                               <a
-                                href="#"
-                                class="text-indigo-600 hover:text-indigo-900">
+                                class="text-indigo-600 hover:text-indigo-900"
+                                href="#">
                                 Edit
                                 <span class="sr-only">, x</span>
                               </a>

@@ -1,69 +1,69 @@
 <script setup>
-import { computed, onBeforeMount, ref } from 'vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import {
-  Combobox,
-  ComboboxButton,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
-  Switch,
-  SwitchGroup,
-} from '@headlessui/vue';
-import {
-  CheckIcon,
-  ChevronUpDownIcon,
-  ExclamationTriangleIcon,
-  XCircleIcon,
-  XMarkIcon,
-} from '@heroicons/vue/20/solid';
-import AreaInput from '@/Components/AreaInput.vue';
-import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
-import { useTransactionTabs } from '@/Composables/useTransactionTabs.js';
-import { useSupplierTab } from '@/Composables/TransactionSummary/useSupplierTab.js';
-import { useCustomerTab } from '@/Composables/TransactionSummary/useCustomerTab.js';
-import { useProductTab } from '@/Composables/TransactionSummary/useProductTab.js';
-import { useTransportTab } from '@/Composables/TransactionSummary/useTransportTab.js';
-import { useTransactionModals } from '@/Composables/TransactionSummary/useTransactionModals.js';
-import { useTransactionToggles } from '@/Composables/TransactionSummary/useTransactionToggles.js';
-import { useTransactionForms } from '@/Composables/TransactionSummary/useTransactionForms.js';
-import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
-import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
-import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
-import { useTransactionCombinedForm } from '@/Composables/TransactionSummary/useTransactionCombinedForm.js';
-import { useTransactionComputedValues } from '@/Composables/TransactionSummary/useTransactionComputedValues.js';
-import { useTransactionDateFormatters } from '@/Composables/TransactionSummary/useTransactionDateFormatters.js';
-import { useAddressFilters } from '@/Composables/TransactionSummary/useAddressFilters.js';
-import { useAddressClearing } from '@/Composables/TransactionSummary/useAddressClearing.js';
-import { useTransactionActions } from '@/Composables/TransactionSummary/useTransactionActions.js';
-import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
-import Swal from 'sweetalert2';
-import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
-import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
-import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
-import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
-import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
-import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
-import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
-import TransactionCustomerTab from '@/Components/TransactionSummary/TransactionCustomerTab.vue';
-import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
-import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
-import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
-import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
-import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
-import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
-import TransactionLogTab from '@/Components/TransactionSummary/TransactionLogTab.vue';
-import TransactionInvoiceTab from '@/Components/TransactionSummary/TransactionInvoiceTab.vue';
-import TransactionPricingTab from '@/Components/TransactionSummary/TransactionPricingTab.vue';
-import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
+  import { computed, onBeforeMount, ref } from 'vue';
+  import { Link, useForm, usePage } from '@inertiajs/vue3';
+  import AppLayout from '@/Layouts/AppLayout.vue';
+  import InputError from '@/Components/InputError.vue';
+  import SecondaryButton from '@/Components/SecondaryButton.vue';
+  import {
+    Combobox,
+    ComboboxButton,
+    ComboboxInput,
+    ComboboxOption,
+    ComboboxOptions,
+    Switch,
+    SwitchGroup,
+  } from '@headlessui/vue';
+  import {
+    CheckIcon,
+    ChevronUpDownIcon,
+    ExclamationTriangleIcon,
+    XCircleIcon,
+    XMarkIcon,
+  } from '@heroicons/vue/20/solid';
+  import AreaInput from '@/Components/AreaInput.vue';
+  import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
+  import VueDatePicker from '@vuepic/vue-datepicker';
+  import '@vuepic/vue-datepicker/dist/main.css';
+  import { useTransactionFilters } from '@/Composables/useTransactionFilters.js';
+  import { useTransactionTabs } from '@/Composables/useTransactionTabs.js';
+  import { useSupplierTab } from '@/Composables/TransactionSummary/useSupplierTab.js';
+  import { useCustomerTab } from '@/Composables/TransactionSummary/useCustomerTab.js';
+  import { useProductTab } from '@/Composables/TransactionSummary/useProductTab.js';
+  import { useTransportTab } from '@/Composables/TransactionSummary/useTransportTab.js';
+  import { useTransactionModals } from '@/Composables/TransactionSummary/useTransactionModals.js';
+  import { useTransactionToggles } from '@/Composables/TransactionSummary/useTransactionToggles.js';
+  import { useTransactionForms } from '@/Composables/TransactionSummary/useTransactionForms.js';
+  import { useTransactionComputed } from '@/Composables/TransactionSummary/useTransactionComputed.js';
+  import { useTransactionStatusForms } from '@/Composables/TransactionSummary/useTransactionStatusForms.js';
+  import { useTransactionHelpers } from '@/Composables/TransactionSummary/useTransactionHelpers.js';
+  import { useTransactionCombinedForm } from '@/Composables/TransactionSummary/useTransactionCombinedForm.js';
+  import { useTransactionComputedValues } from '@/Composables/TransactionSummary/useTransactionComputedValues.js';
+  import { useTransactionDateFormatters } from '@/Composables/TransactionSummary/useTransactionDateFormatters.js';
+  import { useAddressFilters } from '@/Composables/TransactionSummary/useAddressFilters.js';
+  import { useAddressClearing } from '@/Composables/TransactionSummary/useAddressClearing.js';
+  import { useTransactionActions } from '@/Composables/TransactionSummary/useTransactionActions.js';
+  import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
+  import Swal from 'sweetalert2';
+  import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
+  import TransactionTable from '@/Components/TransactionSummary/TransactionTable.vue';
+  import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
+  import TransactionTabNav from '@/Components/TransactionSummary/TransactionTabNav.vue';
+  import TransactionSupplierAccountCard from '@/Components/TransactionSummary/TransactionSupplierAccountCard.vue';
+  import TransactionSupplierCard from '@/Components/TransactionSummary/TransactionSupplierCard.vue';
+  import TransactionCustomerSelect from '@/Components/TransactionSummary/TransactionCustomerSelect.vue';
+  import TransactionCustomerTab from '@/Components/TransactionSummary/TransactionCustomerTab.vue';
+  import TransactionProductCard from '@/Components/TransactionSummary/TransactionProductCard.vue';
+  import TransactionSupplierNotesCard from '@/Components/TransactionSummary/TransactionSupplierNotesCard.vue';
+  import TransactionProductIncomingCard from '@/Components/TransactionSummary/TransactionProductIncomingCard.vue';
+  import TransactionProductOutgoingCard from '@/Components/TransactionSummary/TransactionProductOutgoingCard.vue';
+  import TransactionProductCalculationsCard from '@/Components/TransactionSummary/TransactionProductCalculationsCard.vue';
+  import TransactionProductNotesCard from '@/Components/TransactionSummary/TransactionProductNotesCard.vue';
+  import TransactionLogTab from '@/Components/TransactionSummary/TransactionLogTab.vue';
+  import TransactionInvoiceTab from '@/Components/TransactionSummary/TransactionInvoiceTab.vue';
+  import TransactionPricingTab from '@/Components/TransactionSummary/TransactionPricingTab.vue';
+  import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose Swal globally for legacy code
 
-// Expose Swal globally for legacy code
+  // Expose Swal globally for legacy code
   if (typeof window !== 'undefined') {
     window.Swal = Swal;
     window.swal = Swal.fire.bind(Swal);
@@ -527,6 +527,16 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                         class="py-2 inline-flex text-xl font-bold text-black">
                         MQ{{ selected_transaction.a_mq }}
                       </div>
+                      <div
+                        v-if="selected_transaction.a_pc"
+                        class="py-2 inline-flex text-xl font-bold text-black">
+                        PC{{ selected_transaction.a_pc }}
+                      </div>
+                      <div
+                        v-if="selected_transaction.a_sc"
+                        class="py-2 inline-flex text-xl font-bold text-black">
+                        SC{{ selected_transaction.a_sc }}
+                      </div>
                       <div class="py-3 ml-2 inline-flex text-sm font-light text-gray-900">
                         (ID:{{ selected_transaction.id }})
                       </div>
@@ -961,6 +971,18 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                                   Approved MQ:
                                   {{ selected_transaction.a_mq }}_b
                                 </div>
+                                <div
+                                  v-if="selected_transaction.a_pc"
+                                  class="font-bold text-indigo-400">
+                                  Approved PC:
+                                  {{ selected_transaction.a_pc }}_b
+                                </div>
+                                <div
+                                  v-if="selected_transaction.a_sc"
+                                  class="font-bold text-indigo-400">
+                                  Approved SC:
+                                  {{ selected_transaction.a_sc }}_b
+                                </div>
                               </div>
 
                               <div
@@ -1130,6 +1152,18 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                                   class="font-bold text-indigo-400">
                                   Approved MQ:
                                   {{ selected_transaction.a_mq }}_c
+                                </div>
+                                <div
+                                  v-if="selected_transaction.a_pc"
+                                  class="font-bold text-indigo-400">
+                                  Approved PC:
+                                  {{ selected_transaction.a_pc }}_c
+                                </div>
+                                <div
+                                  v-if="selected_transaction.a_sc"
+                                  class="font-bold text-indigo-400">
+                                  Approved SC:
+                                  {{ selected_transaction.a_sc }}_c
                                 </div>
                               </div>
 
@@ -1301,6 +1335,18 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                                   Approved MQ:
                                   {{ selected_transaction.a_mq }}_d
                                 </div>
+                                <div
+                                  v-if="selected_transaction.a_pc"
+                                  class="font-bold text-indigo-400">
+                                  Approved PC:
+                                  {{ selected_transaction.a_pc }}_d
+                                </div>
+                                <div
+                                  v-if="selected_transaction.a_sc"
+                                  class="font-bold text-indigo-400">
+                                  Approved SC:
+                                  {{ selected_transaction.a_sc }}_d
+                                </div>
                               </div>
 
                               <div
@@ -1470,6 +1516,18 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                                   class="font-bold text-indigo-400">
                                   Approved MQ:
                                   {{ selected_transaction.a_mq }}_e
+                                </div>
+                                <div
+                                  v-if="selected_transaction.a_pc"
+                                  class="font-bold text-indigo-400">
+                                  Approved PC:
+                                  {{ selected_transaction.a_pc }}_e
+                                </div>
+                                <div
+                                  v-if="selected_transaction.a_sc"
+                                  class="font-bold text-indigo-400">
+                                  Approved SC:
+                                  {{ selected_transaction.a_sc }}_e
                                 </div>
                               </div>
 
@@ -3888,6 +3946,12 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                           <div class="text-sm font-medium leading-6 text-gray-900">
                             Purchase Order
                           </div>
+                          <div class="text-sm font-medium leading-6 text-gray-900">
+                            <span>Approved PC:</span>
+                            <span v-if="selected_transaction.a_pc">
+                              {{ selected_transaction.a_pc }}
+                            </span>
+                          </div>
                         </div>
 
                         <dl
@@ -4001,6 +4065,12 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
                             Sales Order
+                          </div>
+                          <div class="text-sm font-medium leading-6 text-gray-900">
+                            <span>Approved SC:</span>
+                            <span v-if="selected_transaction.a_sc">
+                              {{ selected_transaction.a_sc }}
+                            </span>
                           </div>
                         </div>
                         <dl
@@ -4377,7 +4447,15 @@ import AssignedCommModal from '@/Components/UI/AssignedCommModal.vue'; // Expose
                                 MQ
                                 {{ n.transport_transaction.a_mq }}
                               </div>
-                              <div v-else>No MQ</div>
+                              <div v-else-if="n.transport_transaction.a_pc">
+                                PC
+                                {{ n.transport_transaction.a_pc }}
+                              </div>
+                              <div v-else-if="n.transport_transaction.a_sc">
+                                SC
+                                {{ n.transport_transaction.a_sc }}
+                              </div>
+                              <div v-else>Not Approved</div>
                             </td>
 
                             <td

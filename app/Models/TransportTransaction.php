@@ -221,6 +221,12 @@ class TransportTransaction extends Model
         )->when(
             $filters['a_mq'] ?? false,
             fn ($query, $value) => $query->where('a_mq','like', '%'.$value.'%')
+        )->when(
+            $filters['a_pc'] ?? false,
+            fn ($query, $value) => $query->where('a_pc','like', '%'.$value.'%')
+        )->when(
+            $filters['a_sc'] ?? false,
+            fn ($query, $value) => $query->where('a_sc','like', '%'.$value.'%')
         );
 
 

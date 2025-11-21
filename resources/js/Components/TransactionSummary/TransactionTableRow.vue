@@ -1,12 +1,12 @@
 <script setup>
-  import { computed } from 'vue';
-  import { CheckIcon, XMarkIcon } from '@heroicons/vue/20/solid';
-  import Icon from '@/Components/Icon.vue';
-  import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
-  import { formatNiceDate } from '@/composables/useDateFormatters';
-  import { truncateText } from '@/composables/useTextFormatters';
+import { computed } from 'vue';
+import { CheckIcon, XMarkIcon } from '@heroicons/vue/20/solid';
+import Icon from '@/Components/Icon.vue';
+import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
+import { formatNiceDate } from '@/composables/useDateFormatters';
+import { truncateText } from '@/composables/useTextFormatters';
 
-  // Helper function for formatting numbers as currency
+// Helper function for formatting numbers as currency
   const formatNiceNumberInt = (_number) => {
     if (_number === null) {
       return 0;
@@ -126,24 +126,48 @@
     <!-- ID Column -->
     <td :class="cellClass">
       <div
-        v-if="transaction.a_mq"
-        class="text-lg font-bold text-black">
-        MQ{{ transaction.a_mq }}
-      </div>
-
-      <div
         v-if="transaction.is_split_load"
         class="font-light text-sm italic text-indigo-400">
         <span class="flex items-center">
           <icon
             class="w-3 h-3"
             name="arrow-split" />
+          <span
+            v-if="transaction.a_mq"
+            class="font-bold">
+            (MQ:{{ transaction.a_mq }})
+          </span>
+          <span
+            v-if="transaction.a_pc"
+            class="font-bold">
+            (PC:{{ transaction.a_pc }})
+          </span>
+          <span
+            v-if="transaction.a_sc"
+            class="font-bold">
+            (SC:{{ transaction.a_sc }})
+          </span>
           (ID: {{ transaction.id }})
         </span>
       </div>
       <div
         v-else
         class="font-light text-sm italic">
+        <span
+          v-if="transaction.a_mq"
+          class="font-bold">
+          (MQ:{{ transaction.a_mq }})
+        </span>
+        <span
+          v-if="transaction.a_pc"
+          class="font-bold">
+          (PC:{{ transaction.a_pc }})
+        </span>
+        <span
+          v-if="transaction.a_sc"
+          class="font-bold">
+          (SC:{{ transaction.a_sc }})
+        </span>
         (ID:{{ transaction.id }})
       </div>
 

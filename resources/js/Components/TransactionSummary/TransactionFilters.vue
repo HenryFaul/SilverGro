@@ -1,10 +1,10 @@
 <script setup>
-  import { computed } from 'vue';
-  import VueDatePicker from '@vuepic/vue-datepicker';
-  import '@vuepic/vue-datepicker/dist/main.css';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { computed } from 'vue';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 
-  const props = defineProps({
+const props = defineProps({
     filterForm: {
       type: Object,
       required: true,
@@ -169,70 +169,90 @@
       <div class="mt-5 ml-1">
         <input
           v-model.number="filterForm.old_id"
-          type="search"
           aria-label="Search"
           class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          placeholder="old no..." />
+          placeholder="old no..."
+          type="search" />
       </div>
 
       <!-- ID Search -->
       <div class="mt-5 ml-1">
         <input
           v-model.number="filterForm.id"
-          type="search"
           aria-label="Search"
           class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          placeholder="ID no..." />
+          placeholder="ID no..."
+          type="search" />
       </div>
 
       <!-- MQ Search -->
       <div class="mt-5 ml-1">
         <input
           v-model.number="filterForm.a_mq"
-          type="search"
           aria-label="Search"
           class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          placeholder="MQ no..." />
+          placeholder="MQ no..."
+          type="search" />
+      </div>
+
+      <!-- PC Search -->
+      <div class="mt-5 ml-1">
+        <input
+          v-model.number="filterForm.a_pc"
+          aria-label="Search"
+          class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          placeholder="PC no..."
+          type="search" />
+      </div>
+
+      <!-- SC Search -->
+      <div class="mt-5 ml-1">
+        <input
+          v-model.number="filterForm.a_sc"
+          aria-label="Search"
+          class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          placeholder="SC no..."
+          type="search" />
       </div>
 
       <!-- Supplier Search -->
       <div class="mt-5 ml-1">
         <input
           v-model="filterForm.supplier_name"
-          type="search"
           aria-label="Search"
           class="block w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          placeholder="supplier..." />
+          placeholder="supplier..."
+          type="search" />
       </div>
 
       <!-- Customer Search -->
       <div class="mt-5 ml-1">
         <input
           v-model="filterForm.customer_name"
-          type="search"
           aria-label="Search"
           class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          placeholder="customer..." />
+          placeholder="customer..."
+          type="search" />
       </div>
 
       <!-- Transporter Search -->
       <div class="mt-5 ml-1">
         <input
           v-model="filterForm.transporter_name"
-          type="search"
           aria-label="Search"
           class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          placeholder="transporter..." />
+          placeholder="transporter..."
+          type="search" />
       </div>
 
       <!-- Product Search -->
       <div class="mt-5 ml-1">
         <input
           v-model="filterForm.product_name"
-          type="search"
           aria-label="Search"
           class="block ml-1 w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          placeholder="product..." />
+          placeholder="product..."
+          type="search" />
       </div>
     </div>
 
@@ -265,15 +285,15 @@
             <input
               id="mon"
               v-model="monValue"
-              type="checkbox"
-              name="mon"
+              aria-describedby="candidates-description"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-              aria-describedby="candidates-description" />
+              name="mon"
+              type="checkbox" />
           </div>
           <div class="ml-3 text-sm leading-6">
             <label
-              for="mon"
-              class="font-medium text-gray-900">
+              class="font-medium text-gray-900"
+              for="mon">
               Mon
             </label>
           </div>
@@ -284,15 +304,15 @@
             <input
               id="tue"
               v-model="tueValue"
-              type="checkbox"
-              name="tue"
+              aria-describedby="candidates-description"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-              aria-describedby="candidates-description" />
+              name="tue"
+              type="checkbox" />
           </div>
           <div class="ml-3 text-sm leading-6">
             <label
-              for="tue"
-              class="font-medium text-gray-900">
+              class="font-medium text-gray-900"
+              for="tue">
               Tue
             </label>
           </div>
@@ -303,15 +323,15 @@
             <input
               id="wed"
               v-model="wedValue"
-              type="checkbox"
-              name="wed"
+              aria-describedby="candidates-description"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-              aria-describedby="candidates-description" />
+              name="wed"
+              type="checkbox" />
           </div>
           <div class="ml-3 text-sm leading-6">
             <label
-              for="wed"
-              class="font-medium text-gray-900">
+              class="font-medium text-gray-900"
+              for="wed">
               Wed
             </label>
           </div>
@@ -322,15 +342,15 @@
             <input
               id="thu"
               v-model="thuValue"
-              type="checkbox"
-              name="thu"
+              aria-describedby="candidates-description"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-              aria-describedby="candidates-description" />
+              name="thu"
+              type="checkbox" />
           </div>
           <div class="ml-3 text-sm leading-6">
             <label
-              for="thu"
-              class="font-medium text-gray-900">
+              class="font-medium text-gray-900"
+              for="thu">
               Thu
             </label>
           </div>
@@ -341,15 +361,15 @@
             <input
               id="fri"
               v-model="friValue"
-              type="checkbox"
-              name="fri"
+              aria-describedby="candidates-description"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-              aria-describedby="candidates-description" />
+              name="fri"
+              type="checkbox" />
           </div>
           <div class="ml-3 text-sm leading-6">
             <label
-              for="fri"
-              class="font-medium text-gray-900">
+              class="font-medium text-gray-900"
+              for="fri">
               Fri
             </label>
           </div>
@@ -360,15 +380,15 @@
             <input
               id="sat"
               v-model="satValue"
-              type="checkbox"
-              name="sat"
+              aria-describedby="candidates-description"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-              aria-describedby="candidates-description" />
+              name="sat"
+              type="checkbox" />
           </div>
           <div class="ml-3 text-sm leading-6">
             <label
-              for="sat"
-              class="font-medium text-gray-900">
+              class="font-medium text-gray-900"
+              for="sat">
               Sat
             </label>
           </div>
@@ -379,15 +399,15 @@
             <input
               id="sun"
               v-model="sunValue"
-              type="checkbox"
-              name="sun"
+              aria-describedby="candidates-description"
               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-              aria-describedby="candidates-description" />
+              name="sun"
+              type="checkbox" />
           </div>
           <div class="ml-3 text-sm leading-6">
             <label
-              for="sun"
-              class="font-medium text-gray-900">
+              class="font-medium text-gray-900"
+              for="sun">
               Sun
             </label>
           </div>

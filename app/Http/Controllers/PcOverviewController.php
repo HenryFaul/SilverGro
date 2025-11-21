@@ -46,7 +46,8 @@ class PcOverviewController extends Controller
             'contract_type_id',
             'id',
             'selected_trans_id',
-            'old_id'
+            'old_id',
+            'a_pc'
         ]);
 
         $filters['contract_type_id'] = 2;

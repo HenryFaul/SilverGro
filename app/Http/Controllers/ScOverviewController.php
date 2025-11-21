@@ -28,7 +28,8 @@ class ScOverviewController extends Controller
             'contract_type_id',
             'id',
             'selected_trans_id',
-            'old_id'
+            'old_id',
+            'a_sc'
         ]);
 
         $filters['contract_type_id'] = 3;
