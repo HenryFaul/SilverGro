@@ -230,7 +230,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Date Earliest
                             </td>
-                            <td class="table_sections table_row_value">{{$transport_trans->transport_date_earliest->format('D d/M/Y')}}</td>
+                            <td class="table_sections table_row_value">{{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Date Latest</td>
                             <td class="table_sections table_row_value">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
                         </tr>
@@ -327,7 +327,7 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Load Insurance / Ton</td>
-                            <td  class="table_sections table_row_value">
+                            <td class="table_sections table_row_value">
                                 R {{number_format(round($transport_trans->TransportFinance->load_insurance_per_ton,2), 2, '.', ' ')}}
                             </td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Terms of payment</td>
@@ -480,7 +480,6 @@
                         </tr>
 
 
-
                         <tr class="table_sections">
 
                             <td class="table_sections table_row_heading" style="width: 25%;">Customer contact:
@@ -535,7 +534,8 @@
                                 <li>
                                     <strong>Load Insurance:</strong> The transporter confirms that the value of the
                                     load(s), calculated at the
-                                    selling value of the commodity, that is <strong>R {{number_format(round($transport_trans->TransportFinance->load_insurance_per_ton,2), 2, '.', ' ')}}</strong>
+                                    selling value of the commodity, that is
+                                    <strong>R {{number_format(round($transport_trans->TransportFinance->load_insurance_per_ton,2), 2, '.', ' ')}}</strong>
                                     per mt, is fully insured by the Transport Company / CC / Other for all possible
                                     risks.
                                 </li>
@@ -569,14 +569,17 @@
                             <ol class="indented-list">
                                 @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
                                     <li>
-                                        Customer to check for broken or wet bags and make comments with qualities on delivery documentation, and bring this to the transporters attention.
+                                        Customer to check for broken or wet bags and make comments with qualities on
+                                        delivery documentation, and bring this to the transporters attention.
                                     </li>
                                     <li>
-                                        If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain immediately.
+                                        If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain
+                                        immediately.
 
                                     </li>
                                     <li>
-                                        Driver and Customer to do a bag count and sign for goods on the transporters delivery documentation / Proof of Delivery (POD).
+                                        Driver and Customer to do a bag count and sign for goods on the transporters
+                                        delivery documentation / Proof of Delivery (POD).
                                     </li>
 
                                 @endif
@@ -589,7 +592,10 @@
 
                                 @if(str_contains(strtolower($transport_trans->TransportLoad->ProductSource->name), 'import'))
                                     <li>
-                                        In the event that goods described in this contract are to be delivered out of an African territory, such as Malawi, Zimbabwe, Zambia or Mozambique, no warranty is given in regard to delivery or delivery time.  It is hereby agreed that there can be no claim for late, or non delivery by the Seller.
+                                        In the event that goods described in this contract are to be delivered out of an
+                                        African territory, such as Malawi, Zimbabwe, Zambia or Mozambique, no warranty
+                                        is given in regard to delivery or delivery time. It is hereby agreed that there
+                                        can be no claim for late, or non delivery by the Seller.
 
                                     </li>
                                 @endif
@@ -600,7 +606,8 @@
                 </div>
 
                 <br>
-                <p class="section_heading">Prepared for sivergro Feed & Grain by {{$user_name}} at {{$now}} <span></span></p>
+                <p class="section_heading">Prepared for sivergro Feed & Grain by {{$user_name}} at {{$now}}
+                    <span></span></p>
                 <div>
                     <table class="" style="width:100%;">
                         <tbody>

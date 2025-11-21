@@ -12,25 +12,25 @@ use App\Models\TransportTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Dompdf\Options;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
 class DealTicketController extends Controller
 {
 
 
-    public function viewPDF(Request $request, $id): \Illuminate\Http\Response
+    public function viewPDF(Request $request, $id): Response
     {
 
         $final_deal_ticket = false;
-        $path = 'images/pdflogo.jpg';
-        $type = pathinfo($path, PATHINFO_EXTENSION);
-        $file_data = file_get_contents($path);
-        $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
+        // Use direct file path for DOMPDF - it handles file paths better than base64
+        $logo = public_path('images/pdflogo.jpg');
 
         $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier', fn($query) => $query->with('TermsOfPayment'))
             ->with('Customer', fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment')->with('addressablePhysical'))
@@ -223,14 +223,12 @@ class DealTicketController extends Controller
 
     }
 
-    public function generatePDF(Request $request): \Illuminate\Http\RedirectResponse
+    public function generatePDF(Request $request): RedirectResponse
     {
 
         $final_deal_ticket = true;
-        $path = 'images/pdflogo.jpg';
-        $type = pathinfo($path, PATHINFO_EXTENSION);
-        $file_data = file_get_contents($path);
-        $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
+        // Use direct file path for DOMPDF - it handles file paths better than base64
+        $logo = public_path('images/pdflogo.jpg');
 
         $transport_trans = TransportTransaction::where('id', $request->transport_trans_id)->with('ContractType')->with('Transporter')->with('Supplier', fn($query) => $query->with('TermsOfPayment'))->with('Customer', fn($query) => $query->with('InvoiceBasis')->with('addressablePhysical')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad', fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance', fn($query) => $query->with('TransportRateBasis'))->first();
@@ -253,7 +251,7 @@ class DealTicketController extends Controller
             $rules_with_approvals = $deal_ticket->getAppliedRules();
             $user_name = Auth::user()->name;
             $now = (Carbon::now()->tz('Africa/Johannesburg'))->toDayDateTimeString();
-            $app_version = env("APP_VERSION_REP", "1");;
+            $app_version = env("APP_VERSION_REP", "1");
 
 
             $data = [
@@ -467,7 +465,15 @@ class DealTicketController extends Controller
 
     }
 
-    public function downloadPDF($file_name): \Symfony\Component\HttpFoundation\StreamedResponse
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    public function downloadPDF($file_name): StreamedResponse
     {
         return Storage::download('/reports/mq/' . $file_name);
     }
@@ -476,14 +482,6 @@ class DealTicketController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
     {
         //
     }

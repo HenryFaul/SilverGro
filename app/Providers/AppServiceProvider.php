@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\TransportInvoice;
+use App\Observers\TransportInvoiceObserver;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
+        // Register observer to ensure invoice customer_id always matches transaction
+        TransportInvoice::observe(TransportInvoiceObserver::class);
     }
 }

@@ -42,6 +42,8 @@ use App\Models\TransportStatus;
 use App\Models\TransportTransaction;
 use App\Models\User;
 use Carbon\Carbon;
+use Error;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
@@ -57,77 +59,14 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Writer\Exception;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TransportTransactionController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        $user = auth()->user();
-
-        $view_only = $user->can('view-only');
-
-        /*if ($view_only) {
-            return to_route('no_permission');
-        }*/
-
-        $filters = $request->only([
-            'supplier_name',
-            'customer_name',
-            'transporter_name',
-            'product_name',
-            'show',
-            'start_date',
-            'end_date',
-            'contract_type_id',
-            'id'
-        ]);
-
-        $paginate = $request['show'] ?? 25;
-
-        $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
-            ->index($filters)
-            ->orderBy('transport_date_earliest', 'desc')
-            ->paginate($paginate)
-            ->withQueryString();
-
-        $start_date = (Carbon::now()->tz('Africa/Johannesburg')->startOfMonth())->toDateString();
-        $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
-        $contract_types = ContractType::all();
-        $custom_reports = CustomReport::with('CustomReportModels')->get();
-
-
-        //dd($end_date);
-
-        return inertia(
-            'Transaction/Index',
-            [
-                'filters' => $filters,
-                'transactions' => $transactions,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-                'contract_types' => $contract_types,
-                'download_url' => null,
-                'custom_reports' => $custom_reports
-
-            ]
-        );
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
 
         $request->validate([
@@ -255,6 +194,8 @@ class TransportTransactionController extends Controller
             'transport_trans_id' => $transport_trans->id,
             'is_active' => false,
             'is_printed' => false,
+            // IMPORTANT: Invoice customer_id must always match transaction customer_id
+            // This is the same as $transport_trans->customer_id
             'customer_id' => $found_customer->id
         ]);
 
@@ -322,9 +263,17 @@ class TransportTransactionController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
      * Clone a trade
      */
-    public function clone(Request $request): \Illuminate\Http\RedirectResponse
+    public function clone(Request $request): RedirectResponse
     {
         $request->validate([
             'transport_trans_id' => ['required', 'integer'],
@@ -442,7 +391,9 @@ class TransportTransactionController extends Controller
             'transport_trans_id' => $transport_trans->id,
             'is_active' => false,
             'is_printed' => false,
-            'customer_id' => $transport_invoice_to_clone->customer_id
+            // CRITICAL FIX: Use transaction customer_id, NOT cloned invoice customer_id
+            // This ensures invoice always matches its transaction
+            'customer_id' => $transport_trans->customer_id
         ]);
 
         $transport_invoice_details_to_clone = $transport_invoice_to_clone->TransportInvoiceDetails;
@@ -564,8 +515,6 @@ class TransportTransactionController extends Controller
 
     }
 
-
-
     /**
      * Display the specified resource.
      */
@@ -655,6 +604,53 @@ class TransportTransactionController extends Controller
     public function edit(TransportTransaction $transportTransaction)
     {
         //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(TransportTransaction $transportTransaction)
+    {
+        //
+    }
+
+    public function updatePlayers(Request $request, TransportTransaction $transportTransaction): RedirectResponse
+    {
+
+        $request->validate([
+            'supplier_id' => ['required', 'integer', 'exists:suppliers,id'],
+            'customer_id' => ['required', 'integer', 'exists:customers,id'],
+            'transporter_id' => ['required', 'integer', 'exists:transporters,id'],
+            'product_id' => ['required', 'integer', 'exists:products,id'],
+        ]);
+
+        $is_updated = $transportTransaction->update(
+            [
+                'supplier_id' => $request->supplier_id,
+                'customer_id' => $request->customer_id,
+                'transporter_id' => $request->transporter_id,
+                'product_id' => $request->product_id,
+            ]
+        );
+
+        //update invoice to reflect updated customer
+
+        $transport_invoice = $transportTransaction->TransportInvoice;
+        $transport_invoice->customer_id = $request->customer_id;
+        $transport_invoice->save();
+
+        $transport_finance = ($transportTransaction->TransportFinance);
+        $transport_finance->CalculateFields();
+
+        if ($is_updated) {
+            $request->session()->flash('flash.bannerStyle', 'success');
+            $request->session()->flash('flash.banner', 'Transport Transaction updated');
+        } else {
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Transport NOT updated');
+        }
+
+        return redirect()->back();
     }
 
     /**
@@ -756,10 +752,15 @@ class TransportTransactionController extends Controller
         );
 
         //update invoice to reflect updated customer
-
+        // CRITICAL: Invoice customer_id MUST always match transaction customer_id
+        // This prevents invoices appearing under wrong customers in debtor standing
         $transport_invoice = $transportTransaction->TransportInvoice;
-        $transport_invoice->customer_id = $request->customer_id['id'];
-        $transport_invoice->save();
+        if ($transport_invoice) {
+            // If split load, both transaction and invoice should be Unallocated (customer_id = 2)
+            // Otherwise use the selected customer_id
+            $transport_invoice->customer_id = $request->is_split_load ? 2 : $request->customer_id['id'];
+            $transport_invoice->save();
+        }
 
 
         if ($update_related_models == 1) {
@@ -775,53 +776,6 @@ class TransportTransactionController extends Controller
             }
         }
 
-
-        return redirect()->back();
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(TransportTransaction $transportTransaction)
-    {
-        //
-    }
-
-    public function updatePlayers(Request $request, TransportTransaction $transportTransaction): \Illuminate\Http\RedirectResponse
-    {
-
-        $request->validate([
-            'supplier_id' => ['required', 'integer', 'exists:suppliers,id'],
-            'customer_id' => ['required', 'integer', 'exists:customers,id'],
-            'transporter_id' => ['required', 'integer', 'exists:transporters,id'],
-            'product_id' => ['required', 'integer', 'exists:products,id'],
-        ]);
-
-        $is_updated = $transportTransaction->update(
-            [
-                'supplier_id' => $request->supplier_id,
-                'customer_id' => $request->customer_id,
-                'transporter_id' => $request->transporter_id,
-                'product_id' => $request->product_id,
-            ]
-        );
-
-        //update invoice to reflect updated customer
-
-        $transport_invoice = $transportTransaction->TransportInvoice;
-        $transport_invoice->customer_id = $request->customer_id;
-        $transport_invoice->save();
-
-        $transport_finance = ($transportTransaction->TransportFinance);
-        $transport_finance->CalculateFields();
-
-        if ($is_updated) {
-            $request->session()->flash('flash.bannerStyle', 'success');
-            $request->session()->flash('flash.banner', 'Transport Transaction updated');
-        } else {
-            $request->session()->flash('flash.bannerStyle', 'danger');
-            $request->session()->flash('flash.banner', 'Transport NOT updated');
-        }
 
         return redirect()->back();
     }
@@ -884,7 +838,7 @@ class TransportTransactionController extends Controller
                 }
 
 
-            } catch (\Error $e) {
+            } catch (Error $e) {
 
                 return "Error with your spreadsheet";
 
@@ -895,116 +849,60 @@ class TransportTransactionController extends Controller
 
     }
 
-    public function makeExcel($transactions): ?Spreadsheet
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
+        $user = auth()->user();
 
-        try {
+        $view_only = $user->can('view-only');
 
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet()->setTitle('report');
+        /*if ($view_only) {
+            return to_route('no_permission');
+        }*/
 
-            $styleArray = array(
-                'font' => array(
-                    'bold' => true
-                )
-            );
-            $styleArray1 = [
-                'borders' => [
-                    'allBorders' => [
-                        'borderStyle' => Border::BORDER_THIN
-                    ]
-                ],
-                'font' => array(
-                    'bold' => true
-                )
-            ];
+        $filters = $request->only([
+            'supplier_name',
+            'customer_name',
+            'transporter_name',
+            'product_name',
+            'show',
+            'start_date',
+            'end_date',
+            'contract_type_id',
+            'id'
+        ]);
 
-            $styleArray2 = array(
-                'font' => array(
-                    'bold' => true,
-                    'size' => '13'
-                ),
-                'alignment' => [
-                    'vertical' => Alignment::VERTICAL_CENTER,
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
-                ],
-            );
+        $paginate = $request['show'] ?? 25;
 
-            //ID	TYPE	DATE	SUPPLIER	CUSTOMER	TRANSPORTER
-            $sheet->setCellValue('A1', 'ID');
-            $sheet->setCellValue('B1', 'TYPE');
-            $sheet->setCellValue('C1', 'DATE_EARLIEST');
-            $sheet->setCellValue('D1', 'DATE_LATEST');
-            $sheet->setCellValue('E1', 'SUPPLIER');
-            $sheet->setCellValue('F1', 'CUSTOMER');
-            $sheet->setCellValue('G1', 'TRANSPORTER');
-            $sheet->setCellValue('H1', 'PRODUCT');
-            $sheet->setCellValue('I1', 'PLANNED_IN');
-            $sheet->setCellValue('J1', 'PLANNED_OUT');
-            $sheet->setCellValue('K1', 'GP');
+        $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
+            ->index($filters)
+            ->orderBy('transport_date_earliest', 'desc')
+            ->paginate($paginate)
+            ->withQueryString();
 
-            //Set style of headings
-
-            $sheet->getStyle('A1' . ':' . 'k1')->applyFromArray($styleArray1);
-
-            //loop over trans
-
-            $row_count = 2;
-
-            if ($transactions != null) {
-
-                $pos = 0;
-                for ($r = $row_count; $r < count($transactions) + $row_count; $r++) {
-
-                    $trans = $transactions[$pos];
-                    $sheet->setCellValue([1, $r], $trans->id);
-                    $sheet->setCellValue([2, $r], $trans->ContractType->name);
-                    $sheet->setCellValue([3, $r], $trans->transport_date_earliest);
-                    $sheet->setCellValue([4, $r], $trans->transport_date_latest);
-                    $sheet->setCellValue([5, $r], $trans->Supplier->last_legal_name);
-                    $sheet->setCellValue([6, $r], $trans->Customer->last_legal_name);
-                    $sheet->setCellValue([7, $r], $trans->Transporter->last_legal_name);
-                    $sheet->setCellValue([8, $r], $trans->Product->name);
-                    $sheet->setCellValue([9, $r], $trans->TransportLoad->no_units_incoming);
-                    $sheet->setCellValue([10, $r], $trans->TransportLoad->no_units_outgoing);
-                    $sheet->setCellValue([11, $r], $trans->TransportFinance->gross_profit);
-
-                    $sheet
-                        ->getStyle([11, $r])
-                        ->getNumberFormat()
-                        ->setFormatCode(NumberFormat::FORMAT_ACCOUNTING_USD);
-
-                    // $sheet->setCellValueByColumnAndRow(1,$r,$investor->acc_num);
-
-                    $pos++;
-                }
-                $row_count += count($transactions) + 1;
-
-            }
+        $start_date = (Carbon::now()->tz('Africa/Johannesburg')->startOfMonth())->toDateString();
+        $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
+        $contract_types = ContractType::all();
+        $custom_reports = CustomReport::with('CustomReportModels')->get();
 
 
-            foreach ($sheet->getColumnIterator() as $column) {
-                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
-            }
+        //dd($end_date);
 
-            $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
-            $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
-            $sheet->getPageSetup()->setFitToPage(true);
-            $sheet->getPageSetup()->setFitToWidth(1);
-            $sheet->getPageSetup()->setFitToHeight(0);
+        return inertia(
+            'Transaction/Index',
+            [
+                'filters' => $filters,
+                'transactions' => $transactions,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+                'contract_types' => $contract_types,
+                'download_url' => null,
+                'custom_reports' => $custom_reports
 
-
-            return $spreadsheet;
-
-
-        } catch (\Error $e) {
-
-            return null;
-        } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
-        }
-
-
-        return null;
+            ]
+        );
     }
 
     public function makeExcelDynamic($transactions, $custom_report_id): ?Spreadsheet
@@ -1798,7 +1696,7 @@ class TransportTransactionController extends Controller
             return $spreadsheet;
 
 
-        } catch (\Error $e) {
+        } catch (Error $e) {
 
             return null;
         } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
@@ -1808,8 +1706,119 @@ class TransportTransactionController extends Controller
         return null;
     }
 
+    public function makeExcel($transactions): ?Spreadsheet
+    {
 
-    public function download($file_name): \Symfony\Component\HttpFoundation\StreamedResponse
+        try {
+
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet()->setTitle('report');
+
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true
+                )
+            );
+            $styleArray1 = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN
+                    ]
+                ],
+                'font' => array(
+                    'bold' => true
+                )
+            ];
+
+            $styleArray2 = array(
+                'font' => array(
+                    'bold' => true,
+                    'size' => '13'
+                ),
+                'alignment' => [
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                ],
+            );
+
+            //ID	TYPE	DATE	SUPPLIER	CUSTOMER	TRANSPORTER
+            $sheet->setCellValue('A1', 'ID');
+            $sheet->setCellValue('B1', 'TYPE');
+            $sheet->setCellValue('C1', 'DATE_EARLIEST');
+            $sheet->setCellValue('D1', 'DATE_LATEST');
+            $sheet->setCellValue('E1', 'SUPPLIER');
+            $sheet->setCellValue('F1', 'CUSTOMER');
+            $sheet->setCellValue('G1', 'TRANSPORTER');
+            $sheet->setCellValue('H1', 'PRODUCT');
+            $sheet->setCellValue('I1', 'PLANNED_IN');
+            $sheet->setCellValue('J1', 'PLANNED_OUT');
+            $sheet->setCellValue('K1', 'GP');
+
+            //Set style of headings
+
+            $sheet->getStyle('A1' . ':' . 'k1')->applyFromArray($styleArray1);
+
+            //loop over trans
+
+            $row_count = 2;
+
+            if ($transactions != null) {
+
+                $pos = 0;
+                for ($r = $row_count; $r < count($transactions) + $row_count; $r++) {
+
+                    $trans = $transactions[$pos];
+                    $sheet->setCellValue([1, $r], $trans->id);
+                    $sheet->setCellValue([2, $r], $trans->ContractType->name);
+                    $sheet->setCellValue([3, $r], $trans->transport_date_earliest);
+                    $sheet->setCellValue([4, $r], $trans->transport_date_latest);
+                    $sheet->setCellValue([5, $r], $trans->Supplier->last_legal_name);
+                    $sheet->setCellValue([6, $r], $trans->Customer->last_legal_name);
+                    $sheet->setCellValue([7, $r], $trans->Transporter->last_legal_name);
+                    $sheet->setCellValue([8, $r], $trans->Product->name);
+                    $sheet->setCellValue([9, $r], $trans->TransportLoad->no_units_incoming);
+                    $sheet->setCellValue([10, $r], $trans->TransportLoad->no_units_outgoing);
+                    $sheet->setCellValue([11, $r], $trans->TransportFinance->gross_profit);
+
+                    $sheet
+                        ->getStyle([11, $r])
+                        ->getNumberFormat()
+                        ->setFormatCode(NumberFormat::FORMAT_ACCOUNTING_USD);
+
+                    // $sheet->setCellValueByColumnAndRow(1,$r,$investor->acc_num);
+
+                    $pos++;
+                }
+                $row_count += count($transactions) + 1;
+
+            }
+
+
+            foreach ($sheet->getColumnIterator() as $column) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            }
+
+            $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+            $sheet->getPageSetup()->setFitToPage(true);
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+
+
+            return $spreadsheet;
+
+
+        } catch (Error $e) {
+
+            return null;
+        } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+        }
+
+
+        return null;
+    }
+
+    public function download($file_name): StreamedResponse
     {
         return Storage::download('/reports/excel/' . $file_name);
     }

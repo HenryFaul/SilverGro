@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>Deal Ticket</title>
     <style>
@@ -111,7 +111,7 @@
     <table style="width:100%;">
         <tr>
             <td>
-                <img style="float: left;" src="{{ $logo }}" width="225" height="105"/>
+                <img style="float: left;" src="{{ $logo }}" width="225" height="105" />
             </td>
             <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;"><span>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
             </td>
@@ -205,17 +205,21 @@
                                     <span>No physical address loaded...</span>
                                 @else
                                     <span>{{$transport_trans->Customer->addressablePhysical[0]->line_1}}</span>
-                                    @if($transport_trans->Customer->addressablePhysical[0]->line_2),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->line_2}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->line_2)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->line_2}}</span>
                                     @endif
-                                    @if($transport_trans->Customer->addressablePhysical[0]->line_3),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->line_3}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->line_3)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->line_3}}</span>
                                     @endif
-                                    @if($transport_trans->Customer->addressablePhysical[0]->country),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->country}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->country)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->country}}</span>
                                     @endif
-                                    @if($transport_trans->Customer->addressablePhysical[0]->code),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->code}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->code)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->code}}</span>
                                     @endif
                                 @endif
 
@@ -226,17 +230,21 @@
                             <td class="table_sections table_row_value" colspan="3">
 
                                 <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->country),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->country)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->code),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->code)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
                                 @endif
 
                             </td>
@@ -432,7 +440,7 @@
                             </td>
                             <td class="table_sections table_row_value" style="width: 25%;"
                                 style="background-color: #62FD473F">
-                                {{ $transport_trans->transport_date_earliest->format('D d/M/Y')}} </td>
+                                {{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }} </td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Transport Date Latest<</td>
                             <td class="table_sections table_row_value" style="width: 25%;">
                                 {{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
@@ -487,20 +495,24 @@
                             <td class="table_sections table_row_heading" style="width: 25%;">Collection Address</td>
                             <td class="table_sections table_row_value" colspan="3">
                                 <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_2),
-                                {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
-                                </span>
+                                @if($transport_trans->TransportLoad->CollectionAddress->line_2)
+                                    ,
+                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
+                                    </span>
                                 @endif
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_3),
-                                <span>
+                                @if($transport_trans->TransportLoad->CollectionAddress->line_3)
+                                    ,
+                                    <span>
                                     {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
                                 </span>
                                 @endif
-                                @if($transport_trans->TransportLoad->CollectionAddress->country),
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
+                                @if($transport_trans->TransportLoad->CollectionAddress->country)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->CollectionAddress->code),
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
+                                @if($transport_trans->TransportLoad->CollectionAddress->code)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
                                 @endif
 
                             </td>
@@ -568,7 +580,8 @@
                             <td class="table_sections table_row_value" style="width: 25%;"
                                 style="background-color: #62FD473F"></td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Silvergro Linked PC #<</td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$linked_trans_pc->id ?? 'none'}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$linked_trans_pc->id ?? 'none'}}</td>
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Supplier Notes</td>
@@ -664,8 +677,6 @@
                                                     <span>{{$approval->User->name}} - </span>
                                                     <span>{{$approval->created_at}}</span>
 
-
-
                                                 @endforeach
 
                                             @endif
@@ -741,18 +752,18 @@
         <div style="float: right;">
 
             <script type="text/php">
-    if (isset($pdf)) {
-        $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
-        $size = 8;
-        $font = $fontMetrics->getFont("sans-serif");
-        $width = $fontMetrics->get_text_width($text, $font, $size);
+                if (isset($pdf)) {
+                    $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
+                    $size = 8;
+                    $font = $fontMetrics->getFont("sans-serif");
+                    $width = $fontMetrics->get_text_width($text, $font, $size);
 
-        // Set x position closer to the right side
-        $x = 500; // Adjust 30 to a suitable value if needed
-        $y = $pdf->get_height() - 45; // Position from the bottom
+                    // Set x position closer to the right side
+                    $x = 500; // Adjust 30 to a suitable value if needed
+                    $y = $pdf->get_height() - 45; // Position from the bottom
 
-        $pdf->page_text($x, $y, $text, $font, $size);
-    }
+                    $pdf->page_text($x, $y, $text, $font, $size);
+                }
 
             </script>
         </div>

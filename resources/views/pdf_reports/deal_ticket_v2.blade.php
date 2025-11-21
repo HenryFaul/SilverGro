@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>Deal Ticket</title>
     <style>
@@ -93,7 +93,7 @@
     <table style="width:100%;">
         <tr>
             <td>
-                <img style="float: left;" src="{{ $logo }}" width="188" height="88"/>
+                <img style="float: left;" src="{{ $logo }}" width="188" height="88" />
             </td>
             <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;"><span>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
             </td>
@@ -193,17 +193,21 @@
                                     <span>No physical address loaded...</span>
                                 @else
                                     <span>{{$transport_trans->Customer->addressablePhysical[0]->line_1}}</span>
-                                    @if($transport_trans->Customer->addressablePhysical[0]->line_2),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->line_2}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->line_2)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->line_2}}</span>
                                     @endif
-                                    @if($transport_trans->Customer->addressablePhysical[0]->line_3),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->line_3}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->line_3)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->line_3}}</span>
                                     @endif
-                                    @if($transport_trans->Customer->addressablePhysical[0]->country),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->country}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->country)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->country}}</span>
                                     @endif
-                                    @if($transport_trans->Customer->addressablePhysical[0]->code),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->code}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->code)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->code}}</span>
                                     @endif
                                 @endif
 
@@ -214,17 +218,21 @@
                             <td class="table_sections table_row_value" colspan="3">
 
                                 <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->country),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->country)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->code),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->code)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
                                 @endif
 
                             </td>
@@ -324,26 +332,30 @@
                                         colspan="3">{{$transport_trans->Customer_2->last_legal_name}}</td>
                                 </tr>
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading "style="width:25%;">Delivery Address</td>
+                                    <td class="table_sections table_row_heading " style="width:25%;">Delivery Address
+                                    </td>
                                     <td class="table_sections table_row_value" colspan="3">
                                     <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
                                             {{$transport_trans->TransportLoad->DeliveryAddress_2->line_1}}
                                         @endif
                                     </span>
-                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_2)),
-                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_2->line_2}}</span>
-                                            @endif
-                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_2)),
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
+                                            ,
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress_2->line_2}}</span>
+                                        @endif
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
+                                            ,
                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_2->line_3}}</span>
-                                            @endif
+                                        @endif
 
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_2))
-                                                {{$transport_trans->TransportLoad->DeliveryAddress_2->country}}
-                                            @endif
-                                        @if(isset($transport_trans->TransportLoad->code)),
+                                            {{$transport_trans->TransportLoad->DeliveryAddress_2->country}}
+                                        @endif
+                                        @if(isset($transport_trans->TransportLoad->code))
+                                            ,
                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_2->code}}</span>
-                                            @endif
+                                        @endif
                                     </td>
                                 </tr>
                                 <tr class="table_sections">
@@ -398,27 +410,29 @@
                                 </tr>
                                 <tr class="table_sections">
                                     <td class="table_sections table_row_heading">Delivery Address</td>
-                                    <td class="table_sections table_row_value"  colspan="3">
+                                    <td class="table_sections table_row_value" colspan="3">
                                     <span>
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_3))
                                             {{$transport_trans->TransportLoad->DeliveryAddress_3->line_1}}
                                         @endif
                                     </span>
 
-                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_3)),
-                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_3->line_2}}</span>
-                                            @endif
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_3))
+                                            ,
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress_3->line_2}}</span>
+                                        @endif
 
-                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_3)),
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_3))
+                                            ,
                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
-                                            @endif
+                                        @endif
 
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_3))
                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
-                                            @endif
+                                        @endif
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_3))
                                             <span> {{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
-                                            @endif
+                                        @endif
 
                                     </td>
                                 </tr>
@@ -426,7 +440,7 @@
                                     <td class="table_sections table_row_heading" style="width: 25%;">Selling Price
                                         Split
                                     </td>
-                                    <td class="table_sections table_row_value"  style="width: 25%;">
+                                    <td class="table_sections table_row_value" style="width: 25%;">
                                         R {{number_format(round($transport_trans->TransportFinance->selling_price_2,2), 2, '.', ' ')}}
                                     </td>
                                     <td class="table_sections table_row_heading">Transport Cost Split</td>
@@ -470,7 +484,8 @@
                             <table class="table_sections" style="width:100%;">
                                 <tbody>
                                 <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">Split Customer 4</td>
+                                    <td class="table_sections table_row_heading" style="width: 25%;">Split Customer 4
+                                    </td>
                                     <td class="table_sections table_row_value"
                                         colspan="3">{{$transport_trans->Customer_4->last_legal_name}}</td>
                                 </tr>
@@ -483,21 +498,21 @@
                                         @endif
                                     </span>
 
-                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
-                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_4->line_2}}</span>
-                                            @endif
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress_4->line_2}}</span>
+                                        @endif
 
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_4->line_3}}</span>
-                                            @endif
+                                        @endif
 
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
                                             <span>  {{$transport_trans->TransportLoad->DeliveryAddress_4->country}}</span>
-                                            @endif
+                                        @endif
 
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_4))
                                             <span> {{$transport_trans->TransportLoad->DeliveryAddress_4->code}}</span>
-                                            @endif
+                                        @endif
                                     </td>
                                 </tr>
                                 <tr class="table_sections">
@@ -561,18 +576,18 @@
                                             {{$transport_trans->TransportLoad->DeliveryAddress_5->line_1}}
                                         @endif
                                     </span>
-                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
-                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_5->line_2}}</span>
-                                            @endif
+                                        @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
+                                            <span>{{$transport_trans->TransportLoad->DeliveryAddress_5->line_2}}</span>
+                                        @endif
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_5->line_3}}</span>
-                                            @endif
+                                        @endif
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
                                             <span>{{$transport_trans->TransportLoad->DeliveryAddress_5->country}}</span>
-                                            @endif
+                                        @endif
                                         @if(isset($transport_trans->TransportLoad->DeliveryAddress_5))
                                             <span> {{$transport_trans->TransportLoad->DeliveryAddress_5->code}}</span>
-                                            @endif
+                                        @endif
                                     </td>
                                 </tr>
                                 <tr class="table_sections">
@@ -642,7 +657,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Transport Date Earliest
                             </td>
-                            <td class="table_sections table_row_value">{{ $transport_trans->transport_date_earliest->format('D d/M/Y')}}</td>
+                            <td class="table_sections table_row_value">{{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
                             <td class="table_sections table_row_heading">Rate Basis</td>
                             <td class="table_sections table_row_value">{{$transport_trans->TransportFinance->TransportRateBasis->name}}
                                 <
@@ -692,20 +707,24 @@
                             <td class="table_sections table_row_heading" style="width: 25%;">Collection Address</td>
                             <td class="table_sections table_row_value" colspan="3">
                                 <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_2),
-                                {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
-                                </span>
+                                @if($transport_trans->TransportLoad->CollectionAddress->line_2)
+                                    ,
+                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
+                                    </span>
                                 @endif
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_3),
-                                <span>
+                                @if($transport_trans->TransportLoad->CollectionAddress->line_3)
+                                    ,
+                                    <span>
                                     {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
                                 </span>
                                 @endif
-                                @if($transport_trans->TransportLoad->CollectionAddress->country),
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
+                                @if($transport_trans->TransportLoad->CollectionAddress->country)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->CollectionAddress->code),
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
+                                @if($transport_trans->TransportLoad->CollectionAddress->code)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
                                 @endif
 
                             </td>
@@ -820,8 +839,6 @@
 
                                                     <span>{{$approval->User->name}} - </span>
                                                     <span>{{$approval->created_at}}</span>
-
-
 
                                                 @endforeach
 

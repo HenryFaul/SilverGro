@@ -6,7 +6,9 @@ use App\Models\PurchaseOrder;
 use App\Models\TransportTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
@@ -14,14 +16,12 @@ class PurchaseOrderController extends Controller
 {
 
 
-    public function viewPDF(Request $request, $id): \Illuminate\Http\Response
+    public function viewPDF(Request $request, $id): Response
     {
 
         $final_sales_order = false;
-        $path = 'images/pdflogo.jpg';
-        $type = pathinfo($path, PATHINFO_EXTENSION);
-        $file_data = file_get_contents($path);
-        $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
+        // Use direct file path for DOMPDF - it handles file paths better than base64
+        $logo = public_path('images/pdflogo.jpg');
 
         $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
@@ -36,7 +36,7 @@ class PurchaseOrderController extends Controller
         $rules_with_approvals = $deal_ticket->getAppliedRules();
         $user_name = Auth::user()->name;
         $now = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
-        $app_version = env("APP_VERSION_REP", "1");;
+        $app_version = env("APP_VERSION_REP", "1");
 
 
         $data = [
@@ -59,16 +59,14 @@ class PurchaseOrderController extends Controller
 
     }
 
-    public function viewConfirmationPDF(Request $request, $id): \Illuminate\Http\Response
+    public function viewConfirmationPDF(Request $request, $id): Response
     {
 
         $final_sales_order = false;
-        $path = 'images/pdflogo.jpg';
-        $type = pathinfo($path, PATHINFO_EXTENSION);
-        $file_data = file_get_contents($path);
-        $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
-
-        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
+        $path = public_path('images/pdflogo.jpg');
+        $type = 'jpeg'; // Use 'jpeg' for proper MIME type instead of 'jpg'
+        // Use direct file path for DOMPDF - it handles file paths better than base64
+        $logo = public_path('images/pdflogo.jpg');
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
             ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
             ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
@@ -81,7 +79,7 @@ class PurchaseOrderController extends Controller
         $rules_with_approvals = $deal_ticket->getAppliedRules();
         $user_name = Auth::user()->name;
         $now = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
-        $app_version = env("APP_VERSION_REP", "1");;
+        $app_version = env("APP_VERSION_REP", "1");
 
 
         $data = [
@@ -104,7 +102,7 @@ class PurchaseOrderController extends Controller
 
     }
 
-    public function activate(Request $request): \Illuminate\Http\RedirectResponse
+    public function activate(Request $request): RedirectResponse
     {
 
         $user = Auth::user();
@@ -136,7 +134,15 @@ class PurchaseOrderController extends Controller
 
     }
 
-    public function send(Request $request): \Illuminate\Http\RedirectResponse
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        //
+    }
+
+    public function send(Request $request): RedirectResponse
     {
         $user = Auth::user();
         $permissions = $user->getPermissionsViaRoles()->pluck('name');
@@ -167,7 +173,7 @@ class PurchaseOrderController extends Controller
 
     }
 
-    public function receive(Request $request): \Illuminate\Http\RedirectResponse
+    public function receive(Request $request): RedirectResponse
     {
         $user = Auth::user();
         $permissions = $user->getPermissionsViaRoles()->pluck('name');
@@ -197,7 +203,6 @@ class PurchaseOrderController extends Controller
         return redirect()->back();
 
     }
-
 
     /**
      * Display a listing of the resource.
@@ -235,14 +240,6 @@ class PurchaseOrderController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(PurchaseOrder $purchaseOrder)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, PurchaseOrder $purchaseOrder)
     {
         //
     }

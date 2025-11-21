@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>Sales order confirmation split</title>
     <style>
@@ -93,7 +93,7 @@
     <table style="width:100%">
         <tr>
             <td>
-                <img style="float: left" src="{{ $logo }}" width="188" height="88"/>
+                <img style="float: left" src="{{ $logo }}" width="188" height="88" />
             </td>
             <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;"><span>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
             </td>
@@ -153,17 +153,21 @@
                                     <span>No physical address loaded...</span>
                                 @else
                                     <span>{{$transport_trans->Customer->addressablePhysical[0]->line_1}}</span>
-                                    @if($transport_trans->Customer->addressablePhysical[0]->line_2),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->line_2}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->line_2)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->line_2}}</span>
                                     @endif
-                                    @if($transport_trans->Customer->addressablePhysical[0]->line_3),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->line_3}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->line_3)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->line_3}}</span>
                                     @endif
-                                    @if($transport_trans->Customer->addressablePhysical[0]->country),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->country}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->country)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->country}}</span>
                                     @endif
-                                    @if($transport_trans->Customer->addressablePhysical[0]->code),
-                                    <span>{{$transport_trans->Customer->addressablePhysical[0]->code}}</span>
+                                    @if($transport_trans->Customer->addressablePhysical[0]->code)
+                                        ,
+                                        <span>{{$transport_trans->Customer->addressablePhysical[0]->code}}</span>
                                     @endif
                                 @endif
 
@@ -177,7 +181,8 @@
                                 @else
                                     @foreach($transport_trans->Customer->contactable as $contact)
                                         <div>
-                                            <span>{{$contact->first_name}}</span> <span>{{$contact->last_legal_name}}</span>
+                                            <span>{{$contact->first_name}}</span>
+                                            <span>{{$contact->last_legal_name}}</span>
 
                                             @if($contact->numberable=="[]")
                                                 <span>T: none loaded</span>
@@ -207,7 +212,8 @@
                     </table>
 
                     <p class="table_row_value">
-                        Herewith our confirmation of the SALES ORDER for the following product, including the specific terms and conditions of
+                        Herewith our confirmation of the SALES ORDER for the following product, including the specific
+                        terms and conditions of
                         this order. This document is a confirmation of our telephone order.
                     </p>
                 </div>
@@ -219,7 +225,8 @@
                         <tbody>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Product</td>
-                            <td class="table_sections table_row_value" style="width:25%;">{{$transport_trans->product->name}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width:25%;">{{$transport_trans->product->name}}</td>
                             <td class="table_sections table_row_heading">Grade</td>
                             <td class="table_sections table_row_value">{{$transport_trans->TransportLoad->product_grade_perc}}</td>
                         </tr>
@@ -257,15 +264,19 @@
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 25%;">Cost Price / Metric Ton</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Cost Price / Metric Ton
+                            </td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading">Cost Price / Unit</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 25%;">Total Cost </td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Total Cost</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading"></td>
                             <td class="table_sections table_row_value"></td>
                         </tr>
@@ -284,38 +295,49 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Transport Date Earliest
                             </td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$transport_trans->transport_date_earliest->format('D d/M/Y')}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Offloading time from</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->OffloadingHoursFrom->name}} HRS<</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->OffloadingHoursFrom->name}}
+                                HRS<
+                            </td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Transport Date Latest</td>
-                            <td class="table_sections table_row_value" style="width: 25%;">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Offloading time to</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->OffloadingHoursTo->name}} HRS</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->OffloadingHoursTo->name}}
+                                HRS
+                            </td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">No. Of Loads</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->TransportJob->number_loads}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{{$transport_trans->TransportJob->number_loads}}</td>
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading">Delivery Address</td>
                             <td class="table_sections table_row_value" colspan="3">
 
                                 <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->country),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->country)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->code),
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->code)
+                                    ,
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
                                 @endif
 
                             </td>
@@ -334,7 +356,8 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{!!nl2br($transport_trans->customer_notes)!!}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{!!nl2br($transport_trans->customer_notes)!!}</td>
 
                         </tr>
 
@@ -345,13 +368,20 @@
                     <br>
 
                     <div class="table_row_value">
-                        The buyer accepts the conditions as set out in this "SALES ORDER", unless changes are presented in writing within 24 hours after receiving this
-                        document, for acceptance by the seller. Please sign this document and email a scanned copy to documents@silvergro.co.za. If the buyer does
-                        not sign this document and return it as per the above, the transaction will still be considered as legal and binding. In the event of a quality
-                        dispute, in the event of immediate direct resolution efforts failing, an independent professional will be appointed by the seller at the expense of
-                        the default party. This transaction is subject to the terms, conditions and rules, including the arbitration clause and rules in contract form known
-                        as Sagos 1 (Current Version) with which the parties are fully familiar with and which will be applicable to the extent in which it will not be
-                        contradictory to what the parties agreed upon. FORCE MAJEURE : To be applied as per the SAGOS 1 (Version 09), section 11. We thank you for
+                        The buyer accepts the conditions as set out in this "SALES ORDER", unless changes are presented
+                        in writing within 24 hours after receiving this
+                        document, for acceptance by the seller. Please sign this document and email a scanned copy to
+                        documents@silvergro.co.za. If the buyer does
+                        not sign this document and return it as per the above, the transaction will still be considered
+                        as legal and binding. In the event of a quality
+                        dispute, in the event of immediate direct resolution efforts failing, an independent
+                        professional will be appointed by the seller at the expense of
+                        the default party. This transaction is subject to the terms, conditions and rules, including the
+                        arbitration clause and rules in contract form known
+                        as Sagos 1 (Current Version) with which the parties are fully familiar with and which will be
+                        applicable to the extent in which it will not be
+                        contradictory to what the parties agreed upon. FORCE MAJEURE : To be applied as per the SAGOS 1
+                        (Version 09), section 11. We thank you for
                         the opportunity to do business with you.
                     </div>
 
@@ -359,15 +389,18 @@
                     @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
                         <br>
                         <div class="table_row_value">
-                            Customer to check for broken or wet bags and make comments with qualities on delivery documentation, and bring this to the transporters attention.
+                            Customer to check for broken or wet bags and make comments with qualities on delivery
+                            documentation, and bring this to the transporters attention.
                         </div>
 
                         <div class="table_row_value">
-                            If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain immediately.
+                            If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain
+                            immediately.
                         </div>
 
                         <div class="table_row_value">
-                            Driver and Customer to do a bag count and sign for goods on the transporters delivery documentation / Proof of Delivery (POD).
+                            Driver and Customer to do a bag count and sign for goods on the transporters delivery
+                            documentation / Proof of Delivery (POD).
                         </div>
 
                     @endif
@@ -382,7 +415,10 @@
                     @if(str_contains(strtolower($transport_trans->TransportLoad->ProductSource->name), 'import'))
                         <br>
                         <div class="table_row_value">
-                            In the event that goods described in this contract are to be delivered out of an African territory, such as Malawi, Zimbabwe, Zambia or Mozambique, no warranty is given in regard to delivery or delivery time.  It is hereby agreed that there can be no claim for late, or non delivery by the Seller.
+                            In the event that goods described in this contract are to be delivered out of an African
+                            territory, such as Malawi, Zimbabwe, Zambia or Mozambique, no warranty is given in regard to
+                            delivery or delivery time. It is hereby agreed that there can be no claim for late, or non
+                            delivery by the Seller.
                         </div>
                     @endif
 
