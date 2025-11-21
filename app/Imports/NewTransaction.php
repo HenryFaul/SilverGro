@@ -117,7 +117,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
                     $conv_traders_notes_supplier = trim($row['tradersnotessupply']) === '' || trim($row['tradersnotessupply']) === 'NULL' ? null : trim($row['tradersnotessupply']);
                     $conv_traders_notes_customer = trim($row['tradersnotescustomer']) === '' || trim($row['tradersnotescustomer']) === 'NULL' ? null : trim($row['tradersnotescustomer']);
                     $conv_traders_notes_transport = trim($row['tradersnotestransport']) === '' || trim($row['tradersnotestransport']) === 'NULL' ? null : trim($row['tradersnotestransport']);
-                    $traders_notes = trim($row['tradersnotes']) != '' || trim($row['tradersnotes']) != null || trim($row['tradersnotes']) != 'NULL' ? null : trim($row['tradersnotes']);
+                    $traders_notes = trim($row['tradersnotes']) === '' || trim($row['tradersnotes']) === 'NULL' ? null : trim($row['tradersnotes']);
 
                     $transport_date_earliest = is_numeric(trim($row['ts_transportdateearliest'])) ? Carbon::createFromTimestamp($row['ts_transportdateearliest'])->toDateTimeString() : null;
                     $transport_date_latest = is_numeric(trim($row['ts_transportdatelatest'])) ? Carbon::createFromTimestamp($row['ts_transportdatelatest'])->toDateTimeString() : null;
@@ -251,7 +251,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                         $t_o_confirmed_by_type_id = (((trim($row['transportorderconfirmedby']) === '' ? 1 : trim($row['transportorderconfirmedby']) === 'Fax') ? 2 : trim($row['transportorderconfirmedby']) === 'Telephone') ? 3 : trim($row['transportorderconfirmedby']) === 'Email') ? 4 : 1;
                         $is_to_sent = !(trim($row['transportordersent']) == 0);
-                        $is_to_received = (trim($row['transportorderreceived']) == 0);
+                        $is_to_received = !(trim($row['transportorderreceived']) == 0);
 
                         $transport_order = TransportOrder::create([
                             'transport_trans_id' => $transport_trans->id,
@@ -351,18 +351,18 @@ class NewTransaction implements ToCollection, WithHeadingRow
                              ,'delivery_note','calculated_route_distance','collection_address_id','delivery_address_id'];*/
 
 
-                        $incoming_name = trim($row['packagingincoming']) != '' || trim($row['packagingincoming']) != null || trim($row['packagingincoming']) != 'NULL' ? trim($row['packagingincoming']) : "Unallocated";
+                        $incoming_name = trim($row['packagingincoming']) !== '' && trim($row['packagingincoming']) !== 'NULL' ? trim($row['packagingincoming']) : "Unallocated";
                         $incoming_package = Packaging::where('name', $incoming_name)->first();
                         $packaging_incoming_id = $incoming_package != null ? $incoming_package->id : 1;
 
-                        $outgoing_name = trim($row['packagingoutgoing']) != '' || trim($row['packagingoutgoing']) != null || trim($row['packagingoutgoing']) != 'NULL' ? trim($row['packagingoutgoing']) : "Unallocated";
+                        $outgoing_name = trim($row['packagingoutgoing']) !== '' && trim($row['packagingoutgoing']) !== 'NULL' ? trim($row['packagingoutgoing']) : "Unallocated";
                         $outgoing_package = Packaging::where('name', $outgoing_name)->first();
                         $packaging_outgoing_id = $outgoing_package != null ? $outgoing_package->id : 1;
 
-                        $product_source_name = trim($row['productsource']) != '' || trim($row['productsource']) != null || trim($row['productsource']) != 'NULL' ? trim($row['productsource']) : "Unallocated";
+                        $product_source_name = trim($row['productsource']) !== '' && trim($row['productsource']) !== 'NULL' ? trim($row['productsource']) : "Unallocated";
                         $product_source = ProductSource::where('name', $product_source_name)->first();
                         $product_source_id = $product_source != null ? $product_source->id : 1;
-                        $product_grade_perc = trim($row['productgradeperc']) != '' || trim($row['productgradeperc']) != null || trim($row['productgradeperc']) != 'NULL' ? trim($row['productgradeperc']) : null;
+                        $product_grade_perc = trim($row['productgradeperc']) !== '' && trim($row['productgradeperc']) !== 'NULL' ? trim($row['productgradeperc']) : null;
 
                         $no_units_incoming = is_numeric(trim($row['noofunitsincoming'])) ? trim($row['noofunitsincoming']) : 0;
 
@@ -387,7 +387,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                         $no_units_outgoing = is_numeric(trim($row['noofunitsoutgoing'])) ? trim($row['noofunitsoutgoing']) : 0;
                         $is_weighbridge_certificate_received = !(trim($row['weighbridgecertificatereceived']) == 0);
-                        $product_id = trim($row['productid']) != '' || trim($row['productid']) != null || trim($row['productid']) != 'NULL' ? trim($row['productid']) : 1;
+                        $product_id = trim($row['productid']) !== '' && trim($row['productid']) !== 'NULL' && is_numeric(trim($row['productid'])) ? trim($row['productid']) : 1;
 
                         $product_found = Product::where('old_id', $product_id)->first();
                         $product_found_id = $product_found != null ? $product_found->id : 1;
@@ -521,9 +521,9 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         $additional_cost_1 = is_numeric(trim($row['additionalcost1'])) ? trim($row['additionalcost1']) : 0;
                         $additional_cost_2 = is_numeric(trim($row['additionalcost2'])) ? trim($row['additionalcost2']) : 0;
                         $additional_cost_3 = is_numeric(trim($row['additionalcost3'])) ? trim($row['additionalcost3']) : 0;
-                        $additional_cost_desc_1 = trim($row['additionalcost1desc']) != '' || trim($row['additionalcost1desc']) != null || trim($row['additionalcost1desc']) != 'NULL' ? null : trim($row['additionalcost1desc']);
-                        $additional_cost_desc_2 = trim($row['additionalcost2desc']) != '' || trim($row['additionalcost2desc']) != null || trim($row['additionalcost2desc']) != 'NULL' ? null : trim($row['additionalcost2desc']);
-                        $additional_cost_desc_3 = trim($row['additionalcost3desc']) != '' || trim($row['additionalcost3desc']) != null || trim($row['additionalcost3desc']) != 'NULL' ? null : trim($row['additionalcost3desc']);
+                        $additional_cost_desc_1 = trim($row['additionalcost1desc']) === '' || trim($row['additionalcost1desc']) === 'NULL' ? null : trim($row['additionalcost1desc']);
+                        $additional_cost_desc_2 = trim($row['additionalcost2desc']) === '' || trim($row['additionalcost2desc']) === 'NULL' ? null : trim($row['additionalcost2desc']);
+                        $additional_cost_desc_3 = trim($row['additionalcost3desc']) === '' || trim($row['additionalcost3desc']) === 'NULL' ? null : trim($row['additionalcost3desc']);
                         $gross_profit = is_numeric(trim($row['grossprofit'])) ? trim($row['grossprofit']) : 0;
                         $gross_profit_percent = is_numeric(trim($row['grossprofitpercent'])) ? trim($row['grossprofitpercent']) : 0;
                         $gross_profit_per_ton = is_numeric(trim($row['grossprofitperton'])) ? trim($row['grossprofitperton']) : 0;
@@ -535,7 +535,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
 
                         $total_comm = is_numeric(trim($row['total_comm'])) ? trim($row['total_comm']) : 0;
                         $adjusted_gp = is_numeric(trim($row['adjustedgp'])) ? trim($row['adjustedgp']) : 0;
-                        $adjusted_gp_notes = trim($row['adjustedgpnotes']) != '' || trim($row['adjustedgpnotes']) != null || trim($row['adjustedgpnotes']) != 'NULL' ? null : trim($row['adjustedgpnotes']);
+                        $adjusted_gp_notes = trim($row['adjustedgpnotes']) === '' || trim($row['adjustedgpnotes']) === 'NULL' ? null : trim($row['adjustedgpnotes']);
 
                         $cost_price = is_numeric(trim($row['costprice'])) ? trim($row['costprice']) : 0;
                         $selling_price = is_numeric(trim($row['sellingprice'])) ? trim($row['sellingprice']) : 0;
@@ -699,7 +699,7 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         //transport Job
 
 
-                        $customer_order_number = trim($row['customer_order_number']) != '' || trim($row['customer_order_number']) != null || trim($row['customer_order_number']) != 'NULL' ? null : trim($row['customer_order_number']);
+                        $customer_order_number = trim($row['customer_order_number']) === '' || trim($row['customer_order_number']) === 'NULL' ? null : trim($row['customer_order_number']);
 
                         $is_multi_loads = !(trim($row['multipleloads']) == 0);
                         $is_approved = !(trim($row['approved']) == 0);
@@ -718,8 +718,8 @@ class NewTransaction implements ToCollection, WithHeadingRow
                         $is_product_zero_rated = trim($row['productzerorated']) == "Yes";
                         $total_load_insurance = is_numeric(trim($row['totalloadinsurance'])) ? trim($row['totalloadinsurance']) : 0;
                         $number_loads = is_numeric(trim($row['numberofloads'])) ? trim($row['numberofloads']) : 0;
-                        $loading_instructions = trim($row['loadinginstructions']) != '' || trim($row['loadinginstructions']) != null || trim($row['loadinginstructions']) != 'NULL' ? null : trim($row['loadinginstructions']);
-                        $offloading_instructions = trim($row['offloadinginstructions']) != '' || trim($row['offloadinginstructions']) != null || trim($row['offloadinginstructions']) != 'NULL' ? null : trim($row['offloadinginstructions']);
+                        $loading_instructions = trim($row['loadinginstructions']) === '' || trim($row['loadinginstructions']) === 'NULL' ? null : trim($row['loadinginstructions']);
+                        $offloading_instructions = trim($row['offloadinginstructions']) === '' || trim($row['offloadinginstructions']) === 'NULL' ? null : trim($row['offloadinginstructions']);
 
                         $transport_job = TransportJob::create([
                             'transport_trans_id' => $transport_trans->id,
