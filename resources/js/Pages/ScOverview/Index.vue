@@ -317,7 +317,31 @@ const swal = inject('$swal');
       pc_weight = props.selected_transaction.transport_finance.weight_ton_outgoing;
     }
 
-    return (pc_weight - mq_weight).toFixed(4);
+    return (pc_weight - mq_weight).toFixed(2);
+  };
+
+  let weightDelivered = () => {
+    let mq_weight = 0;
+
+    if (props.linked_trans_other != null) {
+      for (let linked of props.linked_trans_other) {
+        if (linked.transport_transaction.transport_finance.weight_ton_outgoing != null) {
+          mq_weight += linked.transport_transaction.transport_finance.weight_ton_outgoing;
+        }
+      }
+    }
+
+    return mq_weight.toFixed(2);
+  };
+
+  let weightTotal = () => {
+    let sc_weight = 0;
+
+    if (props.selected_transaction.transport_finance.weight_ton_outgoing != null) {
+      sc_weight = props.selected_transaction.transport_finance.weight_ton_outgoing;
+    }
+
+    return sc_weight.toFixed(2);
   };
 
   const getWeightForTransaction = (transaction) => {
@@ -545,18 +569,13 @@ const swal = inject('$swal');
                             ]"
                             @click="updateSelectedTrans(transaction.id)">
                             <td :class="row_styler">
-                              <div class="font-bold">{{ transaction.id }}</div>
-                              <div>{{ transaction.old_id }}</div>
-                              <div
-                                v-if="transaction.a_mq"
-                                class="text-indigo-500">
-                                MQ:{{ transaction.a_mq }}
-                              </div>
-                              <div
+                              <span
                                 v-if="transaction.a_sc"
                                 class="text-indigo-500 font-bold">
                                 SC:{{ transaction.a_sc }}
-                              </div>
+                              </span>
+                              <span v-if="transaction.a_sc"></span>
+                              <span class="font-bold">ID:{{ transaction.id }}</span>
                             </td>
                             <td :class="row_styler">
                               {{ transaction.contract_type.name }}
@@ -644,7 +663,7 @@ const swal = inject('$swal');
                           <th
                             class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                             scope="col">
-                            Contract
+                            Deal Ticket
                           </th>
                           <th
                             class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
@@ -785,7 +804,7 @@ const swal = inject('$swal');
                             <th
                               class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                               scope="col">
-                              Units
+                              Tons
                             </th>
                             <th
                               class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
@@ -815,6 +834,11 @@ const swal = inject('$swal');
                             <th
                               class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                               scope="col">
+                              Tons Del
+                            </th>
+                            <th
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Tons Outstanding
                             </th>
 
@@ -829,10 +853,7 @@ const swal = inject('$swal');
                           <tr>
                             <td
                               class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                              {{
-                                props.selected_transaction.transport_load
-                                  .no_units_incoming
-                              }}
+                              {{ weightTotal() }} tons
                             </td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               {{
@@ -877,6 +898,9 @@ const swal = inject('$swal');
                                     .gross_profit
                                 )
                               }}
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                              {{ weightDelivered() }} tons
                             </td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               {{ weightRemaining() }} tons
