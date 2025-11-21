@@ -296,6 +296,8 @@ Route::middleware([
 
     Route::get('/debtor/standing', [DebtorStandingController::class, 'index'])->middleware('auth')->name('debtor.index');
     Route::get('/debtor/calculating', [DebtorStandingController::class, 'calculateDebtors'])->middleware('auth')->name('debtor.calculating');
+    Route::post('/debtor/export-invoices', [DebtorStandingController::class, 'exportInvoices'])->middleware('auth')->name('debtor.export');
+    Route::get('/debtor/download/{file_name}', [DebtorStandingController::class, 'download'])->middleware('auth')->name('debtor.download');
 
     //Supplier
 

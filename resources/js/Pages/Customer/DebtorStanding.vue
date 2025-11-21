@@ -1,16 +1,14 @@
 <script setup>
-  import AppLayout from '@/Layouts/AppLayout.vue';
-  import { computed, inject, ref, watch } from 'vue';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import { router, useForm, usePage, Link } from '@inertiajs/vue3';
-  import { debounce, throttle } from 'lodash';
-  import PaginationModified from '@/Components/UI/PaginationModified.vue';
-  import Icon from '@/Components/Icon.vue';
-  import CustomerSlideOver from '@/Components/UI/CustomerSlideOver.vue';
-  import { CalculatorIcon, FlagIcon } from '@heroicons/vue/20/solid';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { computed, inject, ref, watch } from 'vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { Link, router, useForm, usePage } from '@inertiajs/vue3';
+import { debounce } from 'lodash';
+import PaginationModified from '@/Components/UI/PaginationModified.vue';
+import { CalculatorIcon, FlagIcon } from '@heroicons/vue/20/solid';
+import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
 
-  const swal = inject('$swal');
-  import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
+const swal = inject('$swal');
 
   const props = defineProps({
     debtors_standings: Object,
@@ -159,6 +157,34 @@ watch(
 
     return total;
   };
+
+  const exportToExcel = async () => {
+    if (!filterForm.selected_client_id) {
+      swal('Please select a customer first');
+      return;
+    }
+
+    isLoading.value = true;
+
+    try {
+      const response = await axios.post(route('debtor.export'), {
+        customer_id: filterForm.selected_client_id,
+      });
+
+      if (response.data.success) {
+        swal('Export generated successfully!');
+        // Open download in new tab
+        window.open(route('debtor.download', response.data.download_url), '_blank');
+      } else {
+        swal('Error generating export: ' + response.data.message);
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      swal('Error generating export');
+    } finally {
+      isLoading.value = false;
+    }
+  };
 </script>
 
 <template>
@@ -174,11 +200,11 @@ watch(
             <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
               <div class="flex col-span-6">
                 <input
-                  type="search"
                   v-model.number="filterForm.searchName"
                   aria-label="Search"
+                  class="block w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="Search name or reg..."
-                  class="block w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                  type="search" />
 
                 <!--
                                                                 <select v-model="filterForm.isActive"
@@ -195,8 +221,8 @@ watch(
                   v-model="filterForm.show"
                   class="input-filter-l block w-32 ml-2 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                   <option
-                    selected
-                    :value="5">
+                    :value="5"
+                    selected>
                     5
                   </option>
                   <option :value="10">10</option>
@@ -205,20 +231,20 @@ watch(
                 </select>
 
                 <secondary-button
-                  @click="getComponentProps"
-                  class="ml-1">
+                  class="ml-1"
+                  @click="getComponentProps">
                   update
                   <calculator-icon
                     :class="[isLoading ? 'animate-spin' : '', 'w-5 h-5']" />
                 </secondary-button>
                 <secondary-button
-                  @click="filter"
-                  class="ml-1">
+                  class="ml-1"
+                  @click="filter">
                   Search
                 </secondary-button>
                 <secondary-button
-                  @click="clear"
-                  class="ml-1">
+                  class="ml-1"
+                  @click="clear">
                   Clear
                 </secondary-button>
                 <div class="ml-2 mt-1">
@@ -285,10 +311,10 @@ watch(
                     </thead>
                     <tbody>
                       <tr
-                        @click="updateSelectedCustomer(debtor.customer_id)"
                         v-for="(debtor, index) in debtors_standings.data"
                         :key="debtor.id"
-                        :class="'hover:bg-gray-100 text-sm focus-within:bg-gray-100'">
+                        :class="'hover:bg-gray-100 text-sm focus-within:bg-gray-100'"
+                        @click="updateSelectedCustomer(debtor.customer_id)">
                         <td
                           class="border-b border-gray-200 whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8'">
                           {{ debtor.customer.last_legal_name }}
@@ -394,7 +420,13 @@ watch(
                     <h3 class="text-base font-semibold leading-6 text-gray-900">
                       Linked Invoices: {{ selected_client.last_legal_name }}
                     </h3>
-                    <div class="mt-3 flex md:absolute md:right-0 md:top-3 md:mt-0"></div>
+                    <div class="mt-3 flex md:absolute md:right-0 md:top-3 md:mt-0">
+                      <secondary-button
+                        class="ml-2"
+                        @click="exportToExcel">
+                        Export to Excel
+                      </secondary-button>
+                    </div>
                   </div>
                 </div>
                 <div class="m-1 p-1">
@@ -405,38 +437,63 @@ watch(
                         <thead>
                           <tr>
                             <th
-                              scope="col"
-                              class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                              class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              scope="col">
                               TRADE
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
+                              MQ
+                            </th>
+                            <th
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Invoice No
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
+                              Customer
+                            </th>
+                            <th
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
+                              Invoice Amount
+                            </th>
+                            <th
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
+                              Paid Amount
+                            </th>
+                            <th
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Invoice Date
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
-                              Pay by Date
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
+                              Due Date
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
+                              Paid Date
+                            </th>
+                            <th
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Outstanding
                             </th>
                             <th
-                              scope="col"
-                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900">
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
+                              scope="col">
                               Overdue
                             </th>
                             <th
-                              scope="col"
-                              class="relative py-2 pl-3 pr-4 sm:pr-0">
+                              class="relative py-2 pl-3 pr-4 sm:pr-0"
+                              scope="col">
                               <span class="sr-only">Edit</span>
                             </th>
                           </tr>
@@ -449,24 +506,59 @@ watch(
                               class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                               <div class="font-bold underline">
                                 <Link
-                                  href="/transaction_summary"
-                                  method="get"
-                                  target="_blank"
                                   :data="{
                                     selected_trans_id: invoice.transport_trans_id,
-                                  }">
+                                  }"
+                                  href="/transaction_summary"
+                                  method="get"
+                                  target="_blank">
                                   {{ invoice.transport_trans_id }}
                                 </Link>
                               </div>
                             </td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                              {{ invoice.transport_transaction?.a_mq || 'N/A' }}
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               {{ invoice.transport_invoice_details.invoice_no }}
                             </td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                              {{ invoice.transport_invoice_details.invoice_date }}
+                              {{
+                                invoice.transport_transaction?.customer
+                                  ?.last_legal_name || 'N/A'
+                              }}
                             </td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                              {{ invoice.transport_invoice_details.invoice_pay_by_date }}
+                              {{
+                                NiceNumber(
+                                  invoice.transport_invoice_details.invoice_amount || 0
+                                )
+                              }}
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                              {{
+                                NiceNumber(
+                                  invoice.transport_invoice_details.invoice_amount_paid ||
+                                    0
+                                )
+                              }}
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                              {{
+                                invoice.transport_invoice_details.invoice_date || 'N/A'
+                              }}
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                              {{
+                                invoice.transport_invoice_details.invoice_pay_by_date ||
+                                'N/A'
+                              }}
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                              {{
+                                invoice.transport_invoice_details.invoice_paid_date ||
+                                'Not Paid'
+                              }}
                             </td>
                             <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               {{
@@ -479,6 +571,11 @@ watch(
                           </tr>
 
                           <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
