@@ -56,6 +56,15 @@
     }
   };
 
+  let NiceNumberInt = (_number) => {
+    if (_number === null) {
+      return 0;
+    } else {
+      let val = Math.round(_number);
+      return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+  };
+
   const formatEarly = () => {
     const _date = new Date(transport_trans_Form.transport_date_earliest);
     const day = _date.getDate();
@@ -603,7 +612,7 @@
                 </div>
               </div>
               <div class="m-2 p-2">
-                <div class="mb-2">
+                <div class="mb-2 overflow-x-auto max-h-96 overflow-y-auto">
                   <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <table class="min-w-full divide-y divide-gray-300">
                       <thead>
@@ -801,14 +810,14 @@
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                               {{
-                                NiceNumber(
+                                NiceNumberInt(
                                   props.selected_transaction.transport_finance.cost_price
                                 )
                               }}
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                               {{
-                                NiceNumber(
+                                NiceNumberInt(
                                   props.selected_transaction.transport_finance
                                     .transport_cost
                                 )
@@ -820,7 +829,7 @@
                                   props.selected_transaction.transport_finance.other_costs
                                 ">
                                 {{
-                                  NiceNumber(
+                                  NiceNumberInt(
                                     props.selected_transaction.transport_finance
                                       .other_costs
                                   )
@@ -829,7 +838,7 @@
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                               {{
-                                NiceNumber(
+                                NiceNumberInt(
                                   props.selected_transaction.transport_finance
                                     .selling_price
                                 )
@@ -837,7 +846,7 @@
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                               {{
-                                NiceNumber(
+                                NiceNumberInt(
                                   props.selected_transaction.transport_finance
                                     .gross_profit
                                 )

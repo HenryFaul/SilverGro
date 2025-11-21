@@ -89,8 +89,12 @@ class ScOverviewController extends Controller
             • 3	mq_to_pc
             • 4	mq_to_sc
 */
-            $linked_trans_other = TransLink::where('transport_trans_id','=',$transportTransaction->id)->where('trans_link_type_id',4)->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                ->with('Product')->with('TransportFinance')->with('TransportLoad'))->get();
+            $linked_trans_other = TransLink::where('transport_trans_id','=',$transportTransaction->id)
+                ->where('trans_link_type_id',4)
+                ->whereHas('TransportTransaction', fn($query) => $query->where('include_in_calculations', true))
+                ->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                    ->with('Product')->with('TransportFinance')->with('TransportLoad'))
+                ->get();
 
             // dd($linked_trans_other);
 

@@ -57,6 +57,15 @@ const swal = inject('$swal');
     }
   };
 
+  let NiceNumberInt = (_number) => {
+    if (_number === null) {
+      return 0;
+    } else {
+      let val = Math.round(_number);
+      return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+  };
+
   const formatEarly = () => {
     const _date = new Date(transport_trans_Form.transport_date_earliest);
     const day = _date.getDate();
@@ -604,7 +613,7 @@ const swal = inject('$swal');
                 </div>
               </div>
               <div class="m-2 p-2">
-                <div class="mb-2">
+                <div class="mb-2 overflow-x-auto max-h-96 overflow-y-auto">
                   <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <table class="min-w-full divide-y divide-gray-300">
                       <thead>
@@ -802,14 +811,14 @@ const swal = inject('$swal');
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                               {{
-                                NiceNumber(
+                                NiceNumberInt(
                                   props.selected_transaction.transport_finance.cost_price
                                 )
                               }}
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                               {{
-                                NiceNumber(
+                                NiceNumberInt(
                                   props.selected_transaction.transport_finance
                                     .transport_cost
                                 )
@@ -821,7 +830,7 @@ const swal = inject('$swal');
                                   props.selected_transaction.transport_finance.other_costs
                                 ">
                                 {{
-                                  NiceNumber(
+                                  NiceNumberInt(
                                     props.selected_transaction.transport_finance
                                       .other_costs
                                   )
@@ -830,7 +839,7 @@ const swal = inject('$swal');
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                               {{
-                                NiceNumber(
+                                NiceNumberInt(
                                   props.selected_transaction.transport_finance
                                     .selling_price
                                 )
@@ -838,7 +847,7 @@ const swal = inject('$swal');
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                               {{
-                                NiceNumber(
+                                NiceNumberInt(
                                   props.selected_transaction.transport_finance
                                     .gross_profit
                                 )
