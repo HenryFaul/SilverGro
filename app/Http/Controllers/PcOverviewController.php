@@ -110,8 +110,10 @@ class PcOverviewController extends Controller
             $linked_trans_other = TransLink::where('transport_trans_id','=',$transportTransaction->id)
                 ->where('trans_link_type_id',3)
                 ->whereHas('TransportTransaction', fn($query) => $query->where('include_in_calculations', true))
-                ->with('TransportTransaction',fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
-                    ->with('Product')->with('TransportFinance')->with('TransportLoad'))
+                ->with('TransportTransaction',fn($query) => $query->with('Customer', fn($q) => $q->with('InvoiceBasis'))
+                    ->with('Supplier')->with('Transporter')
+                    ->with('Product')->with('TransportFinance')->with('TransportLoad', fn($q) => $q->with('BillingUnitsIncoming', 'BillingUnitsOutgoing'))
+                    ->with('TransportDriverVehicle'))
                 ->get();
 
            // dd($linked_trans_other);

@@ -320,6 +320,29 @@ const swal = inject('$swal');
     return (pc_weight - mq_weight).toFixed(4);
   };
 
+  const getWeightForTransaction = (transaction) => {
+    // Check if customer has invoice basis set to 'Offload Weight'
+    const useOffloadWeight =
+      transaction.customer?.invoice_basis?.value === 'Offload Weight';
+
+    // Get weighbridge values
+    let weighbridgeUpload = 0;
+    let weighbridgeOffload = 0;
+
+    if (
+      transaction.transport_driver_vehicle &&
+      transaction.transport_driver_vehicle.length > 0
+    ) {
+      transaction.transport_driver_vehicle.forEach((dv) => {
+        weighbridgeUpload += dv.weighbridge_upload_weight || 0;
+        weighbridgeOffload += dv.weighbridge_offload_weight || 0;
+      });
+    }
+
+    // Return weighbridge values based on invoice basis, or 0 if not captured
+    return useOffloadWeight ? weighbridgeOffload : weighbridgeUpload;
+  };
+
   const getTitle = computed(() => {
     return props.selected_transaction != null
       ? props.selected_transaction.contract_type.name + props.selected_transaction.id
@@ -604,57 +627,57 @@ const swal = inject('$swal');
         <div>
           <div class="px-4 sm:px-6 lg:px-8">
             <div>
-              <div class="relative border-b border-gray-200 pb-5 sm:pb-0">
+              <div class="relative border-b border-gray-200 pb-2 sm:pb-0">
                 <div class="md:flex md:items-center md:justify-between">
-                  <h3 class="text-base font-semibold leading-6 text-gray-900">
+                  <h3 class="text-base font-semibold leading-5 text-gray-900">
                     Linked Transactions
                   </h3>
-                  <div class="mt-3 flex md:absolute md:right-0 md:top-3 md:mt-0"></div>
+                  <div class="mt-1 flex md:absolute md:right-0 md:top-1 md:mt-0"></div>
                 </div>
               </div>
-              <div class="m-2 p-2">
+              <div class="m-1 p-1">
                 <div class="mb-2 overflow-x-auto max-h-96 overflow-y-auto">
                   <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <table class="min-w-full divide-y divide-gray-300">
                       <thead>
                         <tr>
                           <th
-                            class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                            class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                             scope="col">
                             Contract
                           </th>
                           <th
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                             scope="col">
                             Supplier
                           </th>
                           <th
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                             scope="col">
                             Customer
                           </th>
                           <th
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                             scope="col">
                             Transporter
                           </th>
                           <th
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                             scope="col">
                             Product
                           </th>
                           <th
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                             scope="col">
                             Weight
                           </th>
                           <th
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                             scope="col">
                             Cost
                           </th>
                           <th
-                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                             scope="col">
                             Selling Price
                           </th>
@@ -700,9 +723,11 @@ const swal = inject('$swal');
                           </td>
                           <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                             {{
-                              contract.transport_transaction.transport_load
-                                .no_units_incoming
+                              getWeightForTransaction(
+                                contract.transport_transaction
+                              ).toFixed(2)
                             }}
+                            tons
                           </td>
                           <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                             {{
@@ -741,60 +766,60 @@ const swal = inject('$swal');
                     </table>
 
                     <div>
-                      <div class="relative mt-3">
+                      <div class="relative mt-2">
                         <div
                           aria-hidden="true"
                           class="absolute inset-0 flex items-center">
                           <div class="w-full border-t border-gray-300" />
                         </div>
                         <div class="relative flex justify-center">
-                          <span class="bg-white px-2 text-sm text-gray-500">
+                          <span class="bg-white px-2 text-xs text-gray-500">
                             SC Details
                           </span>
                         </div>
                       </div>
 
-                      <table class="mt-3 min-w-full divide-y divide-gray-300">
+                      <table class="mt-1 min-w-full divide-y divide-gray-300">
                         <thead>
                           <tr>
                             <th
-                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                              class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                               scope="col">
                               Units
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                               scope="col">
                               Cost Price
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                               scope="col">
                               Transport Costs
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                               scope="col">
                               Other Costs
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                               scope="col">
                               Selling Price
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                               scope="col">
                               GP
                             </th>
                             <th
-                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                              class="px-3 py-2 text-left text-sm font-semibold text-gray-900"
                               scope="col">
                               Tons Outstanding
                             </th>
 
                             <th
-                              class="relative py-3.5 pl-3 pr-4 sm:pr-0"
+                              class="relative py-2 pl-3 pr-4 sm:pr-0"
                               scope="col">
                               <span class="sr-only">Edit</span>
                             </th>
@@ -803,20 +828,20 @@ const swal = inject('$swal');
                         <tbody class="divide-y divide-gray-200">
                           <tr>
                             <td
-                              class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                              class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                               {{
                                 props.selected_transaction.transport_load
                                   .no_units_incoming
                               }}
                             </td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               {{
                                 NiceNumberInt(
                                   props.selected_transaction.transport_finance.cost_price
                                 )
                               }}
                             </td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               {{
                                 NiceNumberInt(
                                   props.selected_transaction.transport_finance
@@ -824,7 +849,7 @@ const swal = inject('$swal');
                                 )
                               }}
                             </td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               <div
                                 v-if="
                                   props.selected_transaction.transport_finance.other_costs
@@ -837,7 +862,7 @@ const swal = inject('$swal');
                                 }}
                               </div>
                             </td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               {{
                                 NiceNumberInt(
                                   props.selected_transaction.transport_finance
@@ -845,7 +870,7 @@ const swal = inject('$swal');
                                 )
                               }}
                             </td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               {{
                                 NiceNumberInt(
                                   props.selected_transaction.transport_finance
@@ -853,7 +878,7 @@ const swal = inject('$swal');
                                 )
                               }}
                             </td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                               {{ weightRemaining() }} tons
                             </td>
                           </tr>
