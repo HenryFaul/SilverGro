@@ -606,7 +606,7 @@
                 </div>
 
                 <br>
-                <p class="section_heading">Prepared for sivergro Feed & Grain by {{$user_name}} at {{$now}}
+                <p class="section_heading">Prepared for Silvergro Feed & Grain by {{$user_name}} at {{$now}}
                     <span></span></p>
                 <div>
                     <table class="" style="width:100%;">
