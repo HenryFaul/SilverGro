@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PdfSetting;
 use App\Models\TransLinkSplit;
 use App\Models\TransportOrder;
 use App\Models\TransportTransaction;
@@ -21,8 +22,9 @@ class TransportOrderController extends Controller
     {
 
         $final_transport_order = false;
-        // Use direct file path for DOMPDF - it handles file paths better than base64
-        $logo = public_path('images/pdflogo.jpg');
+        // Get PDF settings
+        $pdfSettings = PdfSetting::getActive();
+        $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
 
         $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
@@ -173,6 +175,7 @@ class TransportOrderController extends Controller
 
         $data = [
             'logo' => $logo,
+            'pdfSettings' => $pdfSettings,
             'final_transport_order'=>$final_transport_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,

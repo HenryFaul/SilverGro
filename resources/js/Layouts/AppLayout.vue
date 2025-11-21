@@ -1,16 +1,16 @@
 <script setup>
-  import { computed, ref } from 'vue';
-  import { Head, Link, router, usePage } from '@inertiajs/vue3';
-  import ApplicationMark from '@/Components/ApplicationMark.vue';
-  import Banner from '@/Components/Banner.vue';
-  import Dropdown from '@/Components/Dropdown.vue';
-  import DropdownLink from '@/Components/DropdownLink.vue';
-  import NavLink from '@/Components/NavLink.vue';
-  import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import { computed, ref } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import ApplicationMark from '@/Components/ApplicationMark.vue';
+import Banner from '@/Components/Banner.vue';
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
+import NavLink from '@/Components/NavLink.vue';
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 
-  import { BellIcon } from '@heroicons/vue/20/solid';
+import { BellIcon } from '@heroicons/vue/20/solid';
 
-  defineProps({
+defineProps({
     title: String,
   });
 
@@ -150,8 +150,8 @@
               <!-- Navigation Links -->
               <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                 <NavLink
-                  :href="route('dashboard')"
-                  :active="route().current('dashboard')">
+                  :active="route().current('dashboard')"
+                  :href="route('dashboard')">
                   Home
                 </NavLink>
               </div>
@@ -167,21 +167,21 @@
                   <template #trigger>
                     <span class="inline-flex rounded-md">
                       <button
-                        type="button"
-                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150"
+                        type="button">
                         {{ $page.props.auth.user.current_team.name }}
 
                         <svg
                           class="ml-2 -mr-0.5 h-4 w-4"
-                          xmlns="http://www.w3.org/2000/svg"
                           fill="none"
-                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                           stroke-width="1.5"
-                          stroke="currentColor">
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg">
                           <path
+                            d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
                             stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                            stroke-linejoin="round" />
                         </svg>
                       </button>
                     </span>
@@ -223,15 +223,15 @@
                                 <svg
                                   v-if="team.id == $page.props.auth.user.current_team_id"
                                   class="mr-2 h-5 w-5 text-green-400"
-                                  xmlns="http://www.w3.org/2000/svg"
                                   fill="none"
-                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
                                   stroke-width="1.5"
-                                  stroke="currentColor">
+                                  viewBox="0 0 24 24"
+                                  xmlns="http://www.w3.org/2000/svg">
                                   <path
+                                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                     stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    stroke-linejoin="round" />
                                 </svg>
 
                                 <div>{{ team.name }}</div>
@@ -268,30 +268,30 @@
                       v-if="$page.props.jetstream.managesProfilePhotos"
                       class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
                       <img
-                        class="h-8 w-8 rounded-full object-cover"
+                        :alt="$page.props.auth.user.name"
                         :src="$page.props.auth.user.profile_photo_url"
-                        :alt="$page.props.auth.user.name" />
+                        class="h-8 w-8 rounded-full object-cover" />
                     </button>
 
                     <span
                       v-else
                       class="inline-flex rounded-md">
                       <button
-                        type="button"
-                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150"
+                        type="button">
                         {{ $page.props.auth.user.name }}
 
                         <svg
                           class="ml-2 -mr-0.5 h-4 w-4"
-                          xmlns="http://www.w3.org/2000/svg"
                           fill="none"
-                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                           stroke-width="1.5"
-                          stroke="currentColor">
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg">
                           <path
+                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                             stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            stroke-linejoin="round" />
                         </svg>
                       </button>
                     </span>
@@ -329,27 +329,27 @@
                 @click="showingNavigationDropdown = !showingNavigationDropdown">
                 <svg
                   class="h-6 w-6"
-                  stroke="currentColor"
                   fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24">
                   <path
                     :class="{
                       hidden: showingNavigationDropdown,
                       'inline-flex': !showingNavigationDropdown,
                     }"
+                    d="M4 6h16M4 12h16M4 18h16"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16" />
+                    stroke-width="2" />
                   <path
                     :class="{
                       hidden: !showingNavigationDropdown,
                       'inline-flex': showingNavigationDropdown,
                     }"
+                    d="M6 18L18 6M6 6l12 12"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12" />
+                    stroke-width="2" />
                 </svg>
               </button>
             </div>
@@ -365,8 +365,8 @@
           class="sm:hidden">
           <div class="pt-2 pb-3 space-y-1">
             <ResponsiveNavLink
-              :href="route('dashboard')"
-              :active="route().current('dashboard')">
+              :active="route().current('dashboard')"
+              :href="route('dashboard')">
               Dashboard
             </ResponsiveNavLink>
           </div>
@@ -378,9 +378,9 @@
                 v-if="$page.props.jetstream.managesProfilePhotos"
                 class="shrink-0 mr-3">
                 <img
-                  class="h-10 w-10 rounded-full object-cover"
+                  :alt="$page.props.auth.user.name"
                   :src="$page.props.auth.user.profile_photo_url"
-                  :alt="$page.props.auth.user.name" />
+                  class="h-10 w-10 rounded-full object-cover" />
               </div>
 
               <div>
@@ -395,15 +395,15 @@
 
             <div class="mt-3 space-y-1">
               <ResponsiveNavLink
-                :href="route('profile.show')"
-                :active="route().current('profile.show')">
+                :active="route().current('profile.show')"
+                :href="route('profile.show')">
                 Profile
               </ResponsiveNavLink>
 
               <ResponsiveNavLink
                 v-if="$page.props.jetstream.hasApiFeatures"
-                :href="route('api-tokens.index')"
-                :active="route().current('api-tokens.index')">
+                :active="route().current('api-tokens.index')"
+                :href="route('api-tokens.index')">
                 API Tokens
               </ResponsiveNavLink>
 
@@ -422,15 +422,15 @@
 
                 <!-- Team Settings -->
                 <ResponsiveNavLink
-                  :href="route('teams.show', $page.props.auth.user.current_team)"
-                  :active="route().current('teams.show')">
+                  :active="route().current('teams.show')"
+                  :href="route('teams.show', $page.props.auth.user.current_team)">
                   Team Settings
                 </ResponsiveNavLink>
 
                 <ResponsiveNavLink
                   v-if="$page.props.jetstream.canCreateTeams"
-                  :href="route('teams.create')"
-                  :active="route().current('teams.create')">
+                  :active="route().current('teams.create')"
+                  :href="route('teams.create')">
                   Create New Team
                 </ResponsiveNavLink>
 
@@ -448,15 +448,15 @@
                         <svg
                           v-if="team.id == $page.props.auth.user.current_team_id"
                           class="mr-2 h-5 w-5 text-green-400"
-                          xmlns="http://www.w3.org/2000/svg"
                           fill="none"
-                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                           stroke-width="1.5"
-                          stroke="currentColor">
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg">
                           <path
+                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                             stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            stroke-linejoin="round" />
                         </svg>
                         <div>{{ team.name }}</div>
                       </div>
@@ -496,20 +496,20 @@
                       <template #trigger>
                         <span class="inline-flex rounded-md">
                           <button
-                            type="button"
-                            :class="btnSetup">
+                            :class="btnSetup"
+                            type="button">
                             Customers
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
+                              class="w-6 h-6"
                               fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
                               stroke="currentColor"
-                              class="w-6 h-6">
+                              stroke-width="1.5"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg">
                               <path
+                                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                                 stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                stroke-linejoin="round" />
                             </svg>
                           </button>
                         </span>
@@ -552,21 +552,21 @@
                       <template #trigger>
                         <span class="inline-flex rounded-md">
                           <button
-                            type="button"
-                            :class="btnSetup">
+                            :class="btnSetup"
+                            type="button">
                             Transporters
 
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
+                              class="w-6 h-6"
                               fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
                               stroke="currentColor"
-                              class="w-6 h-6">
+                              stroke-width="1.5"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg">
                               <path
+                                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                                 stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                stroke-linejoin="round" />
                             </svg>
                           </button>
                         </span>
@@ -621,21 +621,21 @@
                       <template #trigger>
                         <span class="inline-flex rounded-md">
                           <button
-                            type="button"
-                            :class="btnSetup">
+                            :class="btnSetup"
+                            type="button">
                             Views
 
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
+                              class="w-6 h-6"
                               fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
                               stroke="currentColor"
-                              class="w-6 h-6">
+                              stroke-width="1.5"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg">
                               <path
+                                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                                 stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                stroke-linejoin="round" />
                             </svg>
                           </button>
                         </span>
@@ -700,21 +700,21 @@
                       <template #trigger>
                         <span class="inline-flex rounded-md">
                           <button
-                            type="button"
-                            :class="btnSetup">
+                            :class="btnSetup"
+                            type="button">
                             Admin
 
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
+                              class="w-6 h-6"
                               fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
                               stroke="currentColor"
-                              class="w-6 h-6">
+                              stroke-width="1.5"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg">
                               <path
+                                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                                 stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                stroke-linejoin="round" />
                             </svg>
                           </button>
                         </span>
@@ -733,6 +733,10 @@
                           Notifications
                         </DropdownLink>
 
+                        <DropdownLink :href="route('pdf-settings.index')">
+                          PDF Settings
+                        </DropdownLink>
+
                         <div class="border-t border-gray-100" />
                       </template>
                     </Dropdown>
@@ -748,20 +752,20 @@
                       <template #trigger>
                         <span class="inline-flex rounded-md">
                           <button
-                            type="button"
-                            :class="btnSetup">
+                            :class="btnSetup"
+                            type="button">
                             Reports
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
+                              class="w-6 h-6"
                               fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
                               stroke="currentColor"
-                              class="w-6 h-6">
+                              stroke-width="1.5"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg">
                               <path
+                                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                                 stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                stroke-linejoin="round" />
                             </svg>
                           </button>
                         </span>

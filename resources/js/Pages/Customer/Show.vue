@@ -1,20 +1,19 @@
 <script setup>
-  import AppLayout from '@/Layouts/AppLayout.vue';
-  import { computed, ref, watch, inject } from 'vue';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import { router, useForm, usePage, Link } from '@inertiajs/vue3';
-  import Icon from '@/Components/Icon.vue';
-  import InputError from '@/Components/InputError.vue';
-  import AreaInput from '@/Components/AreaInput.vue';
-  import SectionBorder from '@/Components/SectionBorder.vue';
-  import AddressModal from '@/Components/UI/AddressModal.vue';
-  import ContactModal from '@/Components/UI/ContactModal.vue';
-  import NumberContactDetailModal from '@/Components/UI/NumberContactDetailModal.vue';
-  import EmailContactDetailModal from '@/Components/UI/EmailContactDetailModal.vue';
-  import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid';
-  import { PhotoIcon, UserCircleIcon } from '@heroicons/vue/24/solid';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { computed, inject, ref } from 'vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { Link, router, useForm, usePage } from '@inertiajs/vue3';
+import Icon from '@/Components/Icon.vue';
+import InputError from '@/Components/InputError.vue';
+import AreaInput from '@/Components/AreaInput.vue';
+import SectionBorder from '@/Components/SectionBorder.vue';
+import AddressModal from '@/Components/UI/AddressModal.vue';
+import ContactModal from '@/Components/UI/ContactModal.vue';
+import NumberContactDetailModal from '@/Components/UI/NumberContactDetailModal.vue';
+import EmailContactDetailModal from '@/Components/UI/EmailContactDetailModal.vue';
+import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid';
 
-  const swal = inject('$swal');
+const swal = inject('$swal');
 
   const props = defineProps({
     customer: Object,
@@ -193,8 +192,8 @@
                       class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
                       <div class="sm:col-span-3">
                         <label
-                          for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="first_name">
                           Customer Parent
                         </label>
                         <div class="mt-2">
@@ -211,98 +210,98 @@
                           </select>
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.terms_of_payment_id" />
+                          :message="customerForm.errors.terms_of_payment_id"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="first_name">
                           First name
                         </label>
                         <div class="mt-2">
                           <input
+                            id="first_name"
                             v-model="customerForm.first_name"
                             :disabled="editDisabled"
-                            type="text"
-                            name="first_name"
-                            id="first_name"
                             autocomplete="given-name"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            name="first_name"
+                            type="text" />
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.first_name" />
+                          :message="customerForm.errors.first_name"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="last_legal_name"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="last_legal_name">
                           Last / Legal name
                         </label>
                         <div class="mt-2">
                           <input
+                            id="last_legal_name"
                             v-model="customerForm.last_legal_name"
                             :disabled="editDisabled"
-                            type="text"
-                            name="last_legal_name"
-                            id="last_legal_name"
                             autocomplete="family-name"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            name="last_legal_name"
+                            type="text" />
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.last_legal_name" />
+                          :message="customerForm.errors.last_legal_name"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="nickname"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="nickname">
                           Nick name
                         </label>
                         <div class="mt-2">
                           <input
-                            v-model="customerForm.nickname"
-                            type="text"
-                            :disabled="editDisabled"
-                            name="nickname"
                             id="nickname"
+                            v-model="customerForm.nickname"
+                            :disabled="editDisabled"
                             autocomplete="nickname"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            name="nickname"
+                            type="text" />
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.nickname" />
+                          :message="customerForm.errors.nickname"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="id_reg_no"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="id_reg_no">
                           Id/Reg no
                         </label>
                         <div class="mt-2">
                           <input
-                            v-model="customerForm.id_reg_no"
-                            type="text"
-                            :disabled="editDisabled"
-                            name="id_reg_no"
                             id="id_reg_no"
+                            v-model="customerForm.id_reg_no"
+                            :disabled="editDisabled"
                             autocomplete="id_reg_no"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            name="id_reg_no"
+                            type="text" />
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.id_reg_no" />
+                          :message="customerForm.errors.id_reg_no"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="id_reg_no"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="id_reg_no">
                           Customer rating
                         </label>
                         <div class="mt-2">
@@ -319,14 +318,14 @@
                           </select>
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.customer_rating_id" />
+                          :message="customerForm.errors.customer_rating_id"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="id_reg_no"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="id_reg_no">
                           Customer status
                         </label>
                         <div class="mt-2">
@@ -348,27 +347,27 @@
                           </select>
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.is_active" />
+                          :message="customerForm.errors.is_active"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-6">
                         <label
-                          for="comments"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="comments">
                           Comments
                         </label>
                         <AreaInput
                           id="comments"
-                          :rows="6"
-                          placeholder="Optional comments..."
                           v-model="customerForm.comment"
-                          type="text"
+                          :disabled="editDisabled"
+                          :rows="6"
                           class="mt-1 block w-full"
-                          :disabled="editDisabled" />
+                          placeholder="Optional comments..."
+                          type="text" />
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.comment" />
+                          :message="customerForm.errors.comment"
+                          class="mt-2" />
                       </div>
                     </div>
                   </div>
@@ -388,44 +387,44 @@
                       class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2">
                       <div class="sm:col-span-3">
                         <label
-                          for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="first_name">
                           Credit limit
                         </label>
                         <div class="mt-2">
                           <input
                             v-model="customerForm.credit_limit"
-                            type="number"
                             :disabled="editDisabled"
-                            class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            type="number" />
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.credit_limit" />
+                          :message="customerForm.errors.credit_limit"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="first_name">
                           Credit Hard limit
                         </label>
                         <div class="mt-2">
                           <input
                             v-model="customerForm.credit_limit_hard"
-                            type="number"
                             :disabled="editDisabled"
-                            class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            class="block w-full lg:w-2/3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            type="number" />
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.credit_limit_hard" />
+                          :message="customerForm.errors.credit_limit_hard"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="first_name">
                           Terms of payment basis
                         </label>
                         <div class="mt-2">
@@ -442,14 +441,14 @@
                           </select>
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.terms_of_payment_id" />
+                          :message="customerForm.errors.terms_of_payment_id"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="first_name">
                           Terms of payment
                         </label>
                         <div class="mt-2">
@@ -466,14 +465,14 @@
                           </select>
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.terms_of_payment_id" />
+                          :message="customerForm.errors.terms_of_payment_id"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="first_name">
                           Day overdue allowed
                         </label>
                         <div class="mt-2">
@@ -490,14 +489,14 @@
                           </select>
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.days_overdue_allowed_id" />
+                          :message="customerForm.errors.days_overdue_allowed_id"
+                          class="mt-2" />
                       </div>
 
                       <div class="sm:col-span-3">
                         <label
-                          for="first_name"
-                          class="block text-sm font-medium leading-6 text-gray-900">
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="first_name">
                           Invoice basis
                         </label>
                         <div class="mt-2">
@@ -514,8 +513,48 @@
                           </select>
                         </div>
                         <InputError
-                          class="mt-2"
-                          :message="customerForm.errors.invoice_basis_id" />
+                          :message="customerForm.errors.invoice_basis_id"
+                          class="mt-2" />
+                      </div>
+
+                      <div class="sm:col-span-3">
+                        <label
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="is_vat_exempt">
+                          VAT Exempt
+                        </label>
+                        <div class="mt-2">
+                          <select
+                            v-model="customerForm.is_vat_exempt"
+                            :disabled="editDisabled"
+                            class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <option :value="1">Yes</option>
+                            <option :value="0">No</option>
+                          </select>
+                        </div>
+                        <InputError
+                          :message="customerForm.errors.is_vat_exempt"
+                          class="mt-2" />
+                      </div>
+
+                      <div class="sm:col-span-3">
+                        <label
+                          class="block text-sm font-medium leading-6 text-gray-900"
+                          for="is_vat_cert_received">
+                          VAT Certificate Received
+                        </label>
+                        <div class="mt-2">
+                          <select
+                            v-model="customerForm.is_vat_cert_received"
+                            :disabled="editDisabled"
+                            class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <option :value="1">Yes</option>
+                            <option :value="0">No</option>
+                          </select>
+                        </div>
+                        <InputError
+                          :message="customerForm.errors.is_vat_cert_received"
+                          class="mt-2" />
                       </div>
                     </div>
                   </div>
@@ -531,8 +570,8 @@
 
                   <SecondaryButton
                     v-if="!editDisabled && can_update_customer"
-                    @click="updateCustomer"
-                    class="m-1">
+                    class="m-1"
+                    @click="updateCustomer">
                     Save
                   </SecondaryButton>
                 </div>
@@ -566,18 +605,18 @@
                     </select>
 
                     <SecondaryButton
-                      @click="addStaff"
-                      class="mt-2">
+                      class="mt-2"
+                      @click="addStaff">
                       Link (+)
                     </SecondaryButton>
                   </div>
 
                   <InputError
-                    class="mt-2"
-                    :message="staffForm.errors.staff_id" />
+                    :message="staffForm.errors.staff_id"
+                    class="mt-2" />
                   <InputError
-                    class="mt-2"
-                    :message="staffForm.errors.related_id" />
+                    :message="staffForm.errors.related_id"
+                    class="mt-2" />
                 </div>
               </div>
 
@@ -596,8 +635,8 @@
                         <div class="flex mt-1">
                           <div class="flex-none w-1/3">
                             <icon
-                              name="tick-circle"
-                              class="mr-2 w-6 h-6 fill-green-200" />
+                              class="mr-2 w-6 h-6 fill-green-200"
+                              name="tick-circle" />
                           </div>
                           <div class="flex-auto font-bold w-1/3">
                             {{ n.first_name }} {{ n.last_legal_name }}
@@ -634,8 +673,8 @@
                     <div v-if="viewAddressModal">
                       <address-modal
                         :address="currentAddress"
-                        :related_id="customer.id"
                         :related_class="relatedClass"
+                        :related_id="customer.id"
                         :show="viewAddressModal"
                         @close="closeModal" />
                     </div>
@@ -650,16 +689,16 @@
                           <div class="flex-none w-1/6">
                             <icon
                               v-if="n.address_type_id === 1"
-                              name="truck"
-                              class="mr-2 w-6 h-6 fill-green-200" />
+                              class="mr-2 w-6 h-6 fill-green-200"
+                              name="truck" />
                             <icon
                               v-if="n.address_type_id === 2"
-                              name="house"
-                              class="mr-2 w-6 h-6 fill-green-200" />
+                              class="mr-2 w-6 h-6 fill-green-200"
+                              name="house" />
                             <icon
                               v-if="n.address_type_id === 3"
-                              name="envelope"
-                              class="mr-2 w-6 h-6 fill-green-200" />
+                              class="mr-2 w-6 h-6 fill-green-200"
+                              name="envelope" />
                           </div>
 
                           <div class="flex-auto w-3/6">
@@ -670,8 +709,8 @@
                           <div class="flex-auto w-1/6">
                             <icon
                               v-if="n.is_primary === 1"
-                              name="tick-circle"
-                              class="mr-2 w-6 h-6 fill-green-200" />
+                              class="mr-2 w-6 h-6 fill-green-200"
+                              name="tick-circle" />
                           </div>
                           <div class="flex-auto w-1/6">
                             <SecondaryButton
@@ -700,8 +739,8 @@
 
               <contact-modal
                 :contact="null"
-                :related_id="customer.id"
                 :related_class="relatedClass"
+                :related_id="customer.id"
                 :show="viewContactModal"
                 @close="closeContactModal" />
 
@@ -716,24 +755,24 @@
                     :value="n.id"
                     class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
                     <number-contact-detail-modal
-                      :related_id="n.id"
                       :contact_type="contact_type"
                       :related_class="relatedClassContact"
+                      :related_id="n.id"
                       :show="viewNumberContactDetailModal"
                       @close="closeNumberContactDetailModal" />
 
                     <email-contact-detail-modal
-                      :related_id="n.id"
                       :contact_type="contact_type"
                       :related_class="relatedClassContact"
+                      :related_id="n.id"
                       :show="viewEmailContactDetailModal"
                       @close="closeEmailDetailModal" />
 
                     <div class="flex row mt-1">
                       <div class="flex-none w-1/6">
                         <icon
-                          name="person"
-                          class="mr-2 w-6 h-6 fill-green-200" />
+                          class="mr-2 w-6 h-6 fill-green-200"
+                          name="person" />
                       </div>
 
                       <div class="flex-auto w-3/6">
@@ -744,29 +783,29 @@
                       <div class="flex-auto w-1/6">
                         <icon
                           v-if="n.is_primary === 1"
-                          name="tick-circle"
-                          class="mr-2 w-6 h-6 fill-green-200" />
+                          class="mr-2 w-6 h-6 fill-green-200"
+                          name="tick-circle" />
                       </div>
                       <div class="flex-auto w-1/6">
                         <SecondaryButton
                           class="ml-2"
                           @click="viewNumberContactDetail">
                           <PhoneIcon
-                            class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400"
-                            aria-hidden="true" />
+                            aria-hidden="true"
+                            class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" />
                         </SecondaryButton>
 
                         <SecondaryButton
                           class="ml-2"
                           @click="viewEmailContactDetail">
                           <EnvelopeIcon
-                            class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400"
-                            aria-hidden="true" />
+                            aria-hidden="true"
+                            class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" />
                         </SecondaryButton>
 
                         <Link
-                          class="inline-flex items-center ml-2 mt-3 px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
-                          :href="route('contact.show', n.id)">
+                          :href="route('contact.show', n.id)"
+                          class="inline-flex items-center ml-2 mt-3 px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
                           View
                         </Link>
                       </div>

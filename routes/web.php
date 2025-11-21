@@ -19,6 +19,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationSeenController;
 use App\Http\Controllers\NumberContactDetailController;
 use App\Http\Controllers\PcOverviewController;
+use App\Http\Controllers\PdfSettingController;
 use App\Http\Controllers\PlanningDiaryController;
 use App\Http\Controllers\PlanningWeekController;
 use App\Http\Controllers\ProductController;
@@ -107,6 +108,11 @@ Route::middleware([
 
     Route::get('/import', [DataImportController::class, 'index'])->middleware('auth')->name('import.index');
     Route::post('/import', [DataImportController::class, 'import'])->middleware('auth')->name('import.process');
+
+    //PDF Settings
+    Route::get('/pdf-settings', [PdfSettingController::class, 'index'])->middleware('auth')->name('pdf-settings.index');
+    Route::post('/pdf-settings', [PdfSettingController::class, 'update'])->middleware('auth')->name('pdf-settings.update');
+    Route::post('/pdf-settings/reset-logo', [PdfSettingController::class, 'resetLogo'])->middleware('auth')->name('pdf-settings.reset-logo');
 
     //Modify User roles
 

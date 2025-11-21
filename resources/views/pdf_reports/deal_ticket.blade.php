@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>Deal Ticket</title>
     <style>
@@ -91,7 +91,7 @@
     <table style="width:100%">
         <tr>
             <td>
-                <img style="float: left" src="{{ $logo }}" width="235" height="110"/>
+                <img style="float: left" src="{{ $logo }}" width="235" height="110" />
             </td>
             <td style="float: right; text-align: right; font-size: 12px"><span><br><br>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
             </td>
@@ -197,7 +197,7 @@
                             <td class="table_sections table_row_value">
 
                                 <span>See Supplier address...</span>
-                            <!--                                <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
+                                <!--                                <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
                                 <br>
                                 <span>
                                     {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
@@ -237,7 +237,7 @@
                                 R {{number_format(round($transport_trans->TransportFinance->selling_price_per_ton,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading">VAT Exempt</td>
                             <td class="table_sections table_row_value">
-                                @if($transport_trans->TransportJob->is_product_zero_rated === 1)
+                                @if($transport_trans->Customer->is_vat_exempt === 1)
                                     <span>Yes</span>
                                 @else
                                     <span>No</span>
@@ -854,8 +854,8 @@
 
                     </table>
                 </div>
-                    <br>
-                    <br>
+                <br>
+                <br>
                 <li class="section_heading">Margin Calculation</li>
                 <div>
                     <table class="table_sections" style="width:100%;">
@@ -911,9 +911,9 @@
                     <table class="table_sections" style="width:100%;">
 
                         <thead>
-                        <th class="table_sections table_row_heading">Rule</th>
-                        <th class="table_section table_row_heading">Role</th>
-                        <th class="table_sections table_row_heading">Approved by</th>
+                        <th class="table_sections table_row_heading" style="text-align: left;">Rule</th>
+                        <th class="table_section table_row_heading" style="text-align: left;">Role</th>
+                        <th class="table_sections table_row_heading" style="text-align: left;">Approved by</th>
                         </thead>
                         <tbody>
 
@@ -936,8 +936,6 @@
 
                                                     <span>{{$approval->User->name}} - </span>
                                                     <span>{{$approval->created_at}}</span>
-
-
 
                                                 @endforeach
 
@@ -975,8 +973,6 @@
 
                                                     <span>{{$approval->User->name}} - </span>
                                                     <span>{{$approval->created_at}}</span>
-
-
 
                                                 @endforeach
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PdfSetting;
 use App\Models\SalesOrder;
 use App\Models\TransportTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -19,8 +20,9 @@ class SalesOrderController extends Controller
     {
 
         $final_sales_order = false;
-        // Use direct file path for DOMPDF - it handles file paths better than base64
-        $logo = public_path('images/pdflogo.jpg');
+        // Get PDF settings
+        $pdfSettings = PdfSetting::getActive();
+        $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
 
         $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
@@ -40,6 +42,7 @@ class SalesOrderController extends Controller
 
         $data = [
             'logo' => $logo,
+            'pdfSettings' => $pdfSettings,
             'final_sales_order'=>$final_sales_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,
@@ -62,10 +65,11 @@ class SalesOrderController extends Controller
     {
 
         $final_sales_order = false;
-        $path = public_path('images/pdflogo.jpg');
-        $type = 'jpeg'; // Use 'jpeg' for proper MIME type instead of 'jpg'
-        // Use direct file path for DOMPDF - it handles file paths better than base64
-        $logo = public_path('images/pdflogo.jpg');
+        // Get PDF settings
+        $pdfSettings = PdfSetting::getActive();
+        $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
+
+        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
             ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
             ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
@@ -83,6 +87,7 @@ class SalesOrderController extends Controller
 
         $data = [
             'logo' => $logo,
+            'pdfSettings' => $pdfSettings,
             'final_sales_order'=>$final_sales_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,
@@ -105,12 +110,13 @@ class SalesOrderController extends Controller
     {
 
         $final_sales_order = false;
-        $path = public_path('images/pdflogo.jpg');
-        $type = 'jpeg'; // Use 'jpeg' for proper MIME type instead of 'jpg'
-        $file_data = file_get_contents($path);
-        $logo = 'data:image/' . $type . ';base64,' . base64_encode($file_data);
-        // Use direct file path for DOMPDF - it handles file paths better than base64
-        $logo = public_path('images/pdflogo.jpg');
+        // Get PDF settings
+        $pdfSettings = PdfSetting::getActive();
+        $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
+
+        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
+            ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
+            ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
             ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
 
         $deal_ticket = $transport_trans->DealTicket;
@@ -127,6 +133,7 @@ class SalesOrderController extends Controller
         $data = [
             'client_id'=>$client_id,
             'logo' => $logo,
+            'pdfSettings' => $pdfSettings,
             'final_sales_order'=>$final_sales_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,

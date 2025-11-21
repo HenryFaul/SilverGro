@@ -535,7 +535,7 @@
                                         </td>
                                         <td class="table_sections table_row_heading" style="width: 25%;">VAT Exempt</td>
                                         <td class="table_sections table_row_value" style="width: 25%;">
-                                            @if($deal->TransportTransaction->TransportJob->is_product_zero_rated === 1)
+                                            @if($deal->TransportTransaction->Customer->is_vat_exempt === 1)
                                                 <span>Yes</span>
                                             @else
                                                 <span>No</span>
@@ -787,9 +787,11 @@
                                 <table class="table_sections" style="width:100%;">
                                     <thead>
                                     <tr>
-                                        <th class="table_sections table_row_heading">Rule</th>
-                                        <th class="table_sections table_row_heading">Role</th>
-                                        <th class="table_sections table_row_heading">Approved by</th>
+                                        <th class="table_sections table_row_heading" style="text-align: left;">Rule</th>
+                                        <th class="table_sections table_row_heading" style="text-align: left;">Role</th>
+                                        <th class="table_sections table_row_heading" style="text-align: left;">Approved
+                                            by
+                                        </th>
                                     </tr>
                                     </thead>
                                     <tbody>

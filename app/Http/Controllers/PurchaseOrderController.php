@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PdfSetting;
 use App\Models\PurchaseOrder;
 use App\Models\TransportTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -20,8 +21,9 @@ class PurchaseOrderController extends Controller
     {
 
         $final_sales_order = false;
-        // Use direct file path for DOMPDF - it handles file paths better than base64
-        $logo = public_path('images/pdflogo.jpg');
+        // Get PDF settings
+        $pdfSettings = PdfSetting::getActive();
+        $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
 
         $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
@@ -29,8 +31,6 @@ class PurchaseOrderController extends Controller
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
-        //dd($purchase_order);
-        //dd($sales_order);
 
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
@@ -41,6 +41,7 @@ class PurchaseOrderController extends Controller
 
         $data = [
             'logo' => $logo,
+            'pdfSettings' => $pdfSettings,
             'final_sales_order'=>$final_sales_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,
@@ -63,10 +64,11 @@ class PurchaseOrderController extends Controller
     {
 
         $final_sales_order = false;
-        $path = public_path('images/pdflogo.jpg');
-        $type = 'jpeg'; // Use 'jpeg' for proper MIME type instead of 'jpg'
-        // Use direct file path for DOMPDF - it handles file paths better than base64
-        $logo = public_path('images/pdflogo.jpg');
+        // Get PDF settings
+        $pdfSettings = PdfSetting::getActive();
+        $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
+
+        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
             ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
             ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
@@ -84,6 +86,7 @@ class PurchaseOrderController extends Controller
 
         $data = [
             'logo' => $logo,
+            'pdfSettings' => $pdfSettings,
             'final_sales_order'=>$final_sales_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,

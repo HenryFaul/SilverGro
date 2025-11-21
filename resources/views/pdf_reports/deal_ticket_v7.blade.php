@@ -114,9 +114,36 @@
     <table style="width:100%;">
         <tr>
             <td>
-                <img style="float: left;" src="{{ $logo }}" width="202" height="95" />
+                <img style="float: left;" src="{{ $logo }}" width="202" height="95" alt="Company Logo" />
             </td>
-            <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;"><span>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
+            <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;">
+                <span>
+                    @if(isset($pdfSettings))
+                        @if($pdfSettings->po_box)
+                            {{ $pdfSettings->po_box }}<br>
+                        @endif
+                        @if($pdfSettings->street_address)
+                            {{ $pdfSettings->street_address }}<br>
+                        @endif
+                        @if($pdfSettings->city)
+                            {{ $pdfSettings->city }}@if($pdfSettings->postal_code)
+                                , {{ $pdfSettings->postal_code }}
+                            @endif<br>
+                        @endif
+                        @if($pdfSettings->phone)
+                            {{ $pdfSettings->phone }}<br>
+                        @endif
+                        @if($pdfSettings->fax)
+                            {{ $pdfSettings->fax }}<br>
+                        @endif
+                        @if($pdfSettings->email)
+                            Email : <a>{{ $pdfSettings->email }}</a>
+                        @endif
+                    @else
+                        P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952
+                        <br>Email : <a>documents@silvergro.co.za</a>
+                    @endif
+                </span><br><br>
             </td>
         </tr>
 
@@ -261,7 +288,7 @@
                             </td>
                             <td class="table_sections table_row_heading" style="width: 25%;">VAT Exempt</td>
                             <td class="table_sections table_row_value" style="width: 25%;">
-                                @if($transport_trans->TransportJob->is_product_zero_rated === 1)
+                                @if($transport_trans->Customer->is_vat_exempt === 1)
                                     <span>Yes</span>
                                 @else
                                     <span>No</span>
@@ -356,7 +383,17 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Silvergro Linked SC #</td>
-                            <td class="table_sections table_row_value">{{$linked_trans_sc->id ?? 'none'}}</td>
+                            <td class="table_sections table_row_value">
+                                @if($linked_trans_sc && $linked_trans_sc->TransportTransactionPc)
+                                    @if($linked_trans_sc->TransportTransactionPc->a_sc)
+                                        SC {{ $linked_trans_sc->TransportTransactionPc->a_sc }}
+                                    @else
+                                        SC Not approved
+                                    @endif
+                                @else
+                                    SC not linked
+                                @endif
+                            </td>
                             <td class="table_sections table_row_heading"></td>
                             <td class="table_sections table_row_value"></td>
                         </tr>
@@ -584,9 +621,18 @@
                                 {{$transport_trans->TransportJob->supplier_loading_number}}
 
                             </td>
-                            <td class="table_sections table_row_heading" style="width: 25%;">Silvergro Linked PC #<</td>
-                            <td class="table_sections table_row_value"
-                                style="width: 25%;">{{$linked_trans_pc->id ?? 'none'}}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Silvergro Linked PC #</td>
+                            <td class="table_sections table_row_value" style="width: 25%;">
+                                @if($linked_trans_pc && $linked_trans_pc->TransportTransactionPc)
+                                    @if($linked_trans_pc->TransportTransactionPc->a_pc)
+                                        PC {{ $linked_trans_pc->TransportTransactionPc->a_pc }}
+                                    @else
+                                        PC Not approved
+                                    @endif
+                                @else
+                                    PC not linked
+                                @endif
+                            </td>
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Supplier Notes</td>
@@ -656,9 +702,9 @@
                     <table class="table_sections" style="width:100%;">
 
                         <thead>
-                        <th class="table_sections table_row_heading">Rule</th>
-                        <th class="table_section table_row_heading">Role</th>
-                        <th class="table_sections table_row_heading">Approved by</th>
+                        <th class="table_sections table_row_heading" style="text-align: left;">Rule</th>
+                        <th class="table_section table_row_heading" style="text-align: left;">Role</th>
+                        <th class="table_sections table_row_heading" style="text-align: left;">Approved by</th>
                         </thead>
                         <tbody>
 
@@ -724,13 +770,19 @@
                                     </tr>
                                 @endforeach
 
+                            @else
+                                <tr class="table_sections">
+                                    <td class="table_sections table_row_value" colspan="3">No Trade Operation Rules
+                                        applicable
+                                    </td>
+                                </tr>
                             @endif
 
                         @else
                             <tr class="table_sections">
-                                <td class="table_sections table_row_value">xxx</td>
-                                <td class="table_sections table_row_value">xxx</td>
-                                <td class="table_sections table_row_value">xxx</td>
+                                <td class="table_sections table_row_value" colspan="3">No Trade Operation Rules
+                                    applicable
+                                </td>
                             </tr>
                         @endif
 
