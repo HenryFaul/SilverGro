@@ -43,14 +43,6 @@ class SupplierController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -93,6 +85,14 @@ class SupplierController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -145,6 +145,8 @@ class SupplierController extends Controller
                 'id_reg_no' => ['nullable','string'],
                 'is_active' => ['nullable','boolean'],
                 'terms_of_payment_id' => ['required', 'integer','exists:terms_of_payments,id'],
+                'is_vat_exempt' => ['nullable','boolean'],
+                'is_vat_cert_received' => ['nullable','boolean'],
                 'account_number' => ['nullable','string'],
                 'comment' => ['nullable','string'],
             ])

@@ -17,7 +17,7 @@ class Supplier extends Model
     use SoftDeletes;
 
     public $fillable = ['id','first_name','last_legal_name','nickname','title','job_description','id_reg_no','is_active',
-        'terms_of_payment_id','account_number','comment'];
+        'terms_of_payment_id','is_vat_exempt','is_vat_cert_received','account_number','comment'];
 
 
     public function TermsOfPayment(): BelongsTo

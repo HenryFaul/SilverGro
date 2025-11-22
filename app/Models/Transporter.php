@@ -18,27 +18,13 @@ class Transporter extends Model
     use SoftDeletes;
 
     public $fillable = ['id','first_name','last_legal_name','nickname','title','job_description','id_reg_no','is_active',
-        'terms_of_payment_id','account_number','comment','is_git'];
+        'terms_of_payment_id','is_vat_exempt','is_vat_cert_received','account_number','comment','is_git'];
 
 
 
     protected $appends = [
         'trades_count'
     ];
-
-    protected function tradesCount(): Attribute
-    {
-        return new Attribute(
-            get: fn () => $this->TransportTransaction()->where('is_transaction_done','=',false)->where('include_in_calculations','=',true)->count()
-        );
-    }
-
-    public function TransportTransaction(): HasMany
-    {
-        return $this->hasMany(TransportTransaction::class);
-    }
-
-
 
     public function addressable(): MorphMany
     {
@@ -49,7 +35,6 @@ class Transporter extends Model
     {
         return $this->morphMany(Contact::class, 'poly_contact');
     }
-
 
     public function TermsOfPayment(): BelongsTo
     {
@@ -72,5 +57,17 @@ class Transporter extends Model
             $query->orderBy($value, $filters['direction'] ?? 'asc')
         );
 
+    }
+
+    protected function tradesCount(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->TransportTransaction()->where('is_transaction_done','=',false)->where('include_in_calculations','=',true)->count()
+        );
+    }
+
+    public function TransportTransaction(): HasMany
+    {
+        return $this->hasMany(TransportTransaction::class);
     }
 }

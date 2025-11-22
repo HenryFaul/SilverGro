@@ -42,14 +42,6 @@ class TransporterController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -85,6 +77,14 @@ class TransporterController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -135,6 +135,8 @@ class TransporterController extends Controller
                 'job_description' => ['nullable', 'string'],
                 'is_active' => ['nullable', 'boolean'],
                 'terms_of_payment_id' => ['required', 'integer','exists:terms_of_payments,id'],
+                'is_vat_exempt' => ['nullable','boolean'],
+                'is_vat_cert_received' => ['nullable','boolean'],
                 'account_number' => ['nullable', 'string'],
                 'is_git' => ['nullable', 'boolean'],
                 'comment' => ['nullable', 'string'],
