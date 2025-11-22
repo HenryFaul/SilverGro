@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <title>Sales Order Confirmation</title>
+    <title>Purchase Order Confirmation</title>
     <style>
         @page {
             margin: 100px 50px 80px 50px; /* Adjusted bottom margin for footer */
@@ -133,7 +133,7 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 12px;">
-                        <b><span>Sales Order Confirmation:</span> <span>MQ</span>
+                        <b><span>Purchase Order Confirmation:</span> <span>MQ</span>
                             <span>{{$transport_trans->a_mq}}</span>
                         </b>
                     </td>
@@ -315,7 +315,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Payment Terms</td>
                             <td class="table_sections table_row_value">
-                                {{$transport_trans->Customer->TermsOfPayment->value}}
+                                {{$transport_trans->Supplier->TermsOfPayment->value}}
                             </td>
                         </tr>
 
