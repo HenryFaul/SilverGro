@@ -631,66 +631,69 @@
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Date Earliest
                                                             </td>
-                                                            <td class="table_sections table_row_value">{{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">{{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Date Latest
                                                             </td>
-                                                            <td class="table_sections table_row_value">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
                                                         </tr>
                                                         <tr class="table_sections">
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">No. Of Loads
                                                             </td>
-                                                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->number_loads}}</td>
-                                                            <td class="table_sections table_row_heading">Vehicle Type
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">{{$transport_trans->TransportJob->number_loads}}</td>
+                                                            <td class="table_sections table_row_heading"
+                                                                style="width: 25%;">Vehicle Type
                                                             </td>
-                                                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Vehicle->VehicleType->name}}</td>
-
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Vehicle->VehicleType->name}}</td>
                                                         </tr>
-
                                                         <tr class="table_sections">
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Vehicle Reg
                                                             </td>
-                                                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Vehicle->reg_no}}</td>
-                                                            <td class="table_sections table_row_heading">Trailer #1
-                                                                Reg.
-                                                            </td>
-                                                            <td class="table_sections table_row_value">
-                                                                @if($transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_1)
-                                                                    <span>#1 {{$transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_1}}</span>
-                                                                @endif
-
-                                                            </td>
-                                                            <td class="table_sections table_row_heading">Trailer #2
-                                                                Reg.
-                                                            </td>
-                                                            <td class="table_sections table_row_value">
-                                                                @if($transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_2)
-                                                                    <span>#2 {{$transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_2}}</span>
-                                                                @endif
-                                                            </td>
-
-                                                        </tr>
-
-                                                        <tr class="table_sections">
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Vehicle->reg_no}}</td>
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Driver
                                                             </td>
-                                                            <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->first_name}} {{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->last_name}}
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->first_name}} {{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->last_name}}</td>
+                                                        </tr>
+                                                        <tr class="table_sections">
+                                                            <td class="table_sections table_row_heading"
+                                                                style="width: 25%;">Trailer #1 Reg.
                                                             </td>
-                                                            <td class="table_sections table_row_heading">Driver ID:</td>
-                                                            <td class="table_sections table_row_value">
-                                                                <span> {{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->comment}}</span>
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">
+                                                                @if($transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_1)
+                                                                    #1 {{$transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_1}}
+                                                                @endif
                                                             </td>
-
-                                                            <td class="table_sections table_row_heading">Driver Cell:
+                                                            <td class="table_sections table_row_heading"
+                                                                style="width: 25%;">Trailer #2 Reg.
                                                             </td>
-                                                            <td class="table_sections table_row_value">
-                                                                <span> {{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->cell_no}}</span>
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">
+                                                                @if($transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_2)
+                                                                    #2 {{$transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_2}}
+                                                                @endif
                                                             </td>
-
+                                                        </tr>
+                                                        <tr class="table_sections">
+                                                            <td class="table_sections table_row_heading"
+                                                                style="width: 25%;">Driver Cell
+                                                            </td>
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->cell_no}}</td>
+                                                            <td class="table_sections table_row_heading"
+                                                                style="width: 25%;">Driver Comment
+                                                            </td>
+                                                            <td class="table_sections table_row_value"
+                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->comment}}</td>
                                                         </tr>
 
 

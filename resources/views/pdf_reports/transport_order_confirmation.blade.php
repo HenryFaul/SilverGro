@@ -251,49 +251,45 @@
                     <table class="table_sections" style="width:100%;">
                         <tbody>
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Transport Date Earliest
+                            <td class="table_sections table_row_heading" style="width: 25%;">Transport Date Earliest
                             </td>
-                            <td class="table_sections table_row_value">{{$transport_trans->transport_date_earliest}}</td>
-                            <td class="table_sections table_row_heading">Collection from</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->LoadingHoursFrom->name}}
-                                <
-                            </td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->transport_date_earliest}}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Collection from</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->TransportJob->LoadingHoursFrom->name}}</td>
                         </tr>
-
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Transport Date Latest</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->transport_date_latest}}</td>
-                            <td class="table_sections table_row_heading">Collection to</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->LoadingHoursTo->name}}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Transport Date Latest</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->transport_date_latest}}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Collection to</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->TransportJob->LoadingHoursTo->name}}</td>
                         </tr>
-
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">No. Of Loads</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->number_loads}}</td>
-                            <td class="table_sections table_row_heading">Vehicle details</td>
-                            <td class="table_sections table_row_value">
-
+                            <td class="table_sections table_row_heading" style="width: 25%;">No. Of Loads</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%;">{{$transport_trans->TransportJob->number_loads}}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Vehicle details</td>
+                            <td class="table_sections table_row_value" style="width: 25%;">
                                 @foreach($transport_trans->TransportJob->TransportDriverVehicle as $driver_vehicle)
                                     <p style="font-weight: bold;">Driver vehicle:</p>
                                     <p>
                                         <span>Driver:</span>
                                         <span> {{$driver_vehicle->Driver->first_name}} {{$driver_vehicle->Driver->last_name}}</span>
                                     </p>
-
                                     <p>
                                         <span>Cell: </span>
                                         <span> {{$driver_vehicle->Driver->cell_no}}</span>
                                     </p>
-
                                     <p><span>Vehicle Reg: </span> <span>{{$driver_vehicle->Vehicle->reg_no}}  </span>
                                     </p>
                                     <p><span>Vehicle Type:</span>
                                         <span>{{$driver_vehicle->Vehicle->VehicleType->name}}</span></p>
                                     <p><span>Loading no:</span>
                                         <span>{{$driver_vehicle->driver_vehicle_loading_number}}</span></p>
-
                                 @endforeach
-
 
                             </td>
                         </tr>
