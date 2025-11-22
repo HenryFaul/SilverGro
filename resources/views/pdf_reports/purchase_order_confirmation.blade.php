@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>Purchase Order Confirmation </title>
     <style>
@@ -91,7 +91,7 @@
     <table style="width:100%">
         <tr>
             <td>
-                <img style="float: left" src="{{ $logo }}" width="235" height="110"/>
+                <img style="float: left" src="{{ $logo }}" width="235" height="110" />
             </td>
             <td style="float: right; text-align: right; font-size: 12px"><span><br><br>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
             </td>
@@ -191,7 +191,8 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Supplier Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->supplier_notes}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{!!nl2br($transport_trans->suppliers_notes)!!}</td>
                         </tr>
 
                         </tbody>
@@ -199,7 +200,8 @@
                     </table>
 
                     <p class="table_row_value">
-                        Herewith our confirmation of the PURCHASE ORDER for the following product, including the specific terms and
+                        Herewith our confirmation of the PURCHASE ORDER for the following product, including the
+                        specific terms and
                         conditions of this order. This document is a confirmation of our telephone order.
                     </p>
                 </div>
@@ -249,15 +251,19 @@
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Cost Price / Metric Ton</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Cost Price / Metric Ton
+                            </td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading">Cost Price / Unit</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Total Cost </td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Total Cost</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading"></td>
                             <td class="table_sections table_row_value"></td>
                         </tr>
@@ -277,7 +283,9 @@
                             </td>
                             <td class="table_sections table_row_value">{{$transport_trans->transport_date_earliest}}</td>
                             <td class="table_sections table_row_heading">Collection from</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->LoadingHoursFrom->name}}<</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->LoadingHoursFrom->name}}
+                                <
+                            </td>
                         </tr>
 
                         <tr class="table_sections">
@@ -315,29 +323,21 @@
                 </div>
                 <br>
                 <li class="section_heading">Supplier Notes</li>
-                <div class="">
-                    <table class="table_sections" style="width:100%;">
-                        <tbody>
+                <div class="table_row_value">
+                    {!!nl2br($transport_trans->suppliers_notes)!!}
+                </div>
 
-                        <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->supplier_notes}}</td>
+                <br>
 
-                        </tr>
-
-                        </tbody>
-
-                    </table>
-
-                    <br>
-
-                    <div class="table_row_value">
-                        The seller accepts the conditions as set out in this "PURCHASE ORDER", unless changes are presented in writing within 24 hours after receiving
-                        this document, for acceptance by the seller. Please sign this document and email a scanned copy to documents@silvergro.co.za. If the buyer
-                        does not sign this document and return it as per the above, the transaction will still be considered as legal and binding. FORCE MAJEURE : To be
-                        applied as per the SAGOS 1 (Version 09), section 11. We thank you for the opportunity to do business with you.
-                    </div>
-
+                <div class="table_row_value">
+                    The seller accepts the conditions as set out in this "PURCHASE ORDER", unless changes are
+                    presented in writing within 24 hours after receiving
+                    this document, for acceptance by the seller. Please sign this document and email a scanned copy
+                    to documents@silvergro.co.za. If the buyer
+                    does not sign this document and return it as per the above, the transaction will still be
+                    considered as legal and binding. FORCE MAJEURE : To be
+                    applied as per the SAGOS 1 (Version 09), section 11. We thank you for the opportunity to do
+                    business with you.
                 </div>
                 <br>
                 <li class="section_heading">Signatures</li>

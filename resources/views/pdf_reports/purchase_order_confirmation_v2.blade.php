@@ -344,107 +344,94 @@
                 </div>
                 <br>
                 <li class="section_heading">Supplier Notes</li>
-                <div class="">
-                    <table class="table_sections" style="width:100%;">
-                        <tbody>
-
-                        <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 25%;">Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">
-
-                                {!!nl2br($transport_trans->supplier_notes)!!}
-                            </td>
-
-                        </tr>
-
-                        </tbody>
-
-                    </table>
-
-                    <br>
-
-                    <div class="table_row_value">
-                        The seller accepts the conditions as set out in this "PURCHASE ORDER", unless changes are
-                        presented in writing within 24 hours after receiving
-                        this document, for acceptance by the seller. Please sign this document and email a scanned copy
-                        to documents@silvergro.co.za. If the buyer
-                        does not sign this document and return it as per the above, the transaction will still be
-                        considered as legal and binding. FORCE MAJEURE : To be
-                        applied as per the SAGOS 1 (Version 09), section 11. We thank you for the opportunity to do
-                        business with you.
-                    </div>
-
-
-                    @if(str_contains(strtolower($transport_trans->product->name), 'lucerne'))
-                        <br>
-                        <div class="table_row_value">
-                            Ensure load is fully covered with tarps and protected from rain.
-                        </div>
-                    @endif
-
-                    @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
-                        <br>
-                        <div class="table_row_value">
-                            Supplier to check for broken or wet bags and remove from loading.
-                        </div>
-                        <div class="table_row_value">
-                            If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain
-                            immediately.
-                        </div>
-                        <div class="table_row_value">
-                            Driver and Customer to do a bag count and sign for goods on the sales and transporter's
-                            delivery documentation.
-                        </div>
-                    @endif
-
+                <div class="table_row_value">
+                    {!!nl2br($transport_trans->suppliers_notes)!!}
                 </div>
+
                 <br>
-                <li class="section_heading">Signatures</li>
-                <div>
-                    <table class="" style="width:100%;">
-                        <tbody>
-                        <tr class="">
-                            <td class=" table_row_value" style="width:25%;">
-                                <br>
-                                <br>
-                                <br>
-                                <hr>
-                            </td>
-                            <td class=" table_row_value" style="width:25%;">
-                                <br>
-                                <br>
-                                <br>
-                                <hr>
-                            </td>
-                            <td class=" table_row_value" style="width:25%;">
-                                <br>
-                                <br>
-                                <br>
-                                <hr>
-                            </td>
-                            <td class=" table_row_value" style="width:25%;">
-                                <br>
-                                <br>
-                                <br>
-                                <hr>
-                            </td>
-                        </tr>
-                        <tr style="margin-top: 4px;">
-                            <td class=" table_row_heading">Trader</td>
-                            <td class=" table_row_heading">Trading Director</td>
-                            <td class=" table_row_heading">Financial Director</td>
-                            <td class=" table_row_heading">Supplier</td>
-                        </tr>
 
-                        </tbody>
-
-                    </table>
+                <div class="table_row_value">
+                    The seller accepts the conditions as set out in this "PURCHASE ORDER", unless changes are
+                    presented in writing within 24 hours after receiving
+                    this document, for acceptance by the seller. Please sign this document and email a scanned copy
+                    to documents@silvergro.co.za. If the buyer
+                    does not sign this document and return it as per the above, the transaction will still be
+                    considered as legal and binding. FORCE MAJEURE : To be
+                    applied as per the SAGOS 1 (Version 09), section 11. We thank you for the opportunity to do
+                    business with you.
                 </div>
 
-            </ol>
 
+                @if(str_contains(strtolower($transport_trans->product->name), 'lucerne'))
+                    <br>
+                    <div class="table_row_value">
+                        Ensure load is fully covered with tarps and protected from rain.
+                    </div>
+                @endif
+
+                @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
+                    <br>
+                    <div class="table_row_value">
+                        Supplier to check for broken or wet bags and remove from loading.
+                    </div>
+                    <div class="table_row_value">
+                        If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain
+                        immediately.
+                    </div>
+                    <div class="table_row_value">
+                        Driver and Customer to do a bag count and sign for goods on the sales and transporter's
+                        delivery documentation.
+                    </div>
+            @endif
 
         </div>
+        <br>
+        <li class="section_heading">Signatures</li>
+        <div>
+            <table class="" style="width:100%;">
+                <tbody>
+                <tr class="">
+                    <td class=" table_row_value" style="width:25%;">
+                        <br>
+                        <br>
+                        <br>
+                        <hr>
+                    </td>
+                    <td class=" table_row_value" style="width:25%;">
+                        <br>
+                        <br>
+                        <br>
+                        <hr>
+                    </td>
+                    <td class=" table_row_value" style="width:25%;">
+                        <br>
+                        <br>
+                        <br>
+                        <hr>
+                    </td>
+                    <td class=" table_row_value" style="width:25%;">
+                        <br>
+                        <br>
+                        <br>
+                        <hr>
+                    </td>
+                </tr>
+                <tr style="margin-top: 4px;">
+                    <td class=" table_row_heading">Trader</td>
+                    <td class=" table_row_heading">Trading Director</td>
+                    <td class=" table_row_heading">Financial Director</td>
+                    <td class=" table_row_heading">Supplier</td>
+                </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+
+        </ol>
+
+
+    </div>
 
     </div>
 </main>

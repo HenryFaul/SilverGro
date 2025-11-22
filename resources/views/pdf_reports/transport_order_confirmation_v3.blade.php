@@ -289,10 +289,12 @@
                     <table class="table_sections" style="width:100%;">
                         <tbody>
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 25%;">Product</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->product->name}}</td>
-                            <td class="table_sections table_row_heading">Weight planned (tons)</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportFinance->weight_ton_incoming}}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Date Earliest</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%; white-space: nowrap;">{{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
+                            <td class="table_sections table_row_heading" style="width: 25%;">Date Latest</td>
+                            <td class="table_sections table_row_value"
+                                style="width: 25%; white-space: nowrap;">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
                         </tr>
 
                         <tr class="table_sections">

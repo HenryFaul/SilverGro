@@ -1,19 +1,19 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { computed, inject, ref } from 'vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { Link, router, useForm, usePage } from '@inertiajs/vue3';
-import Icon from '@/Components/Icon.vue';
-import InputError from '@/Components/InputError.vue';
-import AreaInput from '@/Components/AreaInput.vue';
-import SectionBorder from '@/Components/SectionBorder.vue';
-import AddressModal from '@/Components/UI/AddressModal.vue';
-import ContactModal from '@/Components/UI/ContactModal.vue';
-import NumberContactDetailModal from '@/Components/UI/NumberContactDetailModal.vue';
-import EmailContactDetailModal from '@/Components/UI/EmailContactDetailModal.vue';
-import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid';
+  import AppLayout from '@/Layouts/AppLayout.vue';
+  import { computed, inject, ref } from 'vue';
+  import SecondaryButton from '@/Components/SecondaryButton.vue';
+  import { Link, router, useForm, usePage } from '@inertiajs/vue3';
+  import Icon from '@/Components/Icon.vue';
+  import InputError from '@/Components/InputError.vue';
+  import AreaInput from '@/Components/AreaInput.vue';
+  import SectionBorder from '@/Components/SectionBorder.vue';
+  import AddressModal from '@/Components/UI/AddressModal.vue';
+  import ContactModal from '@/Components/UI/ContactModal.vue';
+  import NumberContactDetailModal from '@/Components/UI/NumberContactDetailModal.vue';
+  import EmailContactDetailModal from '@/Components/UI/EmailContactDetailModal.vue';
+  import { EnvelopeIcon, PhoneIcon } from '@heroicons/vue/20/solid';
 
-const swal = inject('$swal');
+  const swal = inject('$swal');
 
   const props = defineProps({
     supplier: Object,

@@ -302,7 +302,7 @@
                             </td>
                             <td class="table_sections table_row_heading">Vat (Exempt)</td>
                             <td class="table_sections table_row_value">
-                                @if($transport_trans->Customer->is_vat_exempt)
+                                @if($transport_trans->Supplier->is_vat_exempt)
                                     Yes
                                 @else
                                     No
@@ -397,9 +397,10 @@
                             <td class="table_sections table_row_heading" style="width: 25%;">Date Earliest
                             </td>
                             <td class="table_sections table_row_value"
-                                style="width: 25%;">{{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
+                                style="width: 25%; white-space: nowrap;">{{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
                             <td class="table_sections table_row_heading" style="width: 25%;">Date Latest</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
+                            <td class="table_sections table_row_value"
+                                style="white-space: nowrap;">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
                             <td class="table_sections table_row_heading" style="width: 25%;"></td>
                             <td class="table_sections table_row_value"></td>
 
@@ -434,110 +435,97 @@
                 </div>
                 <br>
                 <li class="section_heading">Supplier Notes</li>
-                <div class="">
-                    <table class="table_sections" style="width:100%;">
-                        <tbody>
+                <div class="table_row_value">
+                    {!!nl2br($transport_trans->suppliers_notes)!!}
+                </div>
 
-                        <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 25%;"></td>
-                            <td class="table_sections table_row_value" colspan="3">
+                <br>
 
-                                {!!nl2br($transport_trans->supplier_notes)!!}
-                            </td>
+                <div class="table_row_value">
+                    The seller accepts the conditions as set out in this "PURCHASE ORDER", unless changes are
+                    presented in writing within 24 hours after receiving
+                    this document, for acceptance by the seller. Please sign this document and email a scanned copy
+                    to documents@silvergro.co.za. If the buyer
+                    does not sign this document and return it as per the above, the transaction will still be
+                    considered as legal and binding. FORCE MAJEURE : To be
+                    applied as per the SAGOS 1 (Version 09), section 11. We thank you for the opportunity to do
+                    business with you.
+                </div>
 
-                        </tr>
 
-                        </tbody>
-
-                    </table>
-
+                @if(str_contains(strtolower($transport_trans->product->name), 'lucerne'))
                     <br>
-
                     <div class="table_row_value">
-                        The seller accepts the conditions as set out in this "PURCHASE ORDER", unless changes are
-                        presented in writing within 24 hours after receiving
-                        this document, for acceptance by the seller. Please sign this document and email a scanned copy
-                        to documents@silvergro.co.za. If the buyer
-                        does not sign this document and return it as per the above, the transaction will still be
-                        considered as legal and binding. FORCE MAJEURE : To be
-                        applied as per the SAGOS 1 (Version 09), section 11. We thank you for the opportunity to do
-                        business with you.
+                        Ensure load is fully covered with tarps and protected from rain.
                     </div>
+                @endif
 
-
-                    @if(str_contains(strtolower($transport_trans->product->name), 'lucerne'))
-                        <br>
-                        <div class="table_row_value">
-                            Ensure load is fully covered with tarps and protected from rain.
-                        </div>
-                    @endif
-
-                    @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
-                        <br>
-                        <div class="table_row_value">
-                            Supplier to check for broken or wet bags and remove from loading.
-                        </div>
-                        <div class="table_row_value">
-                            If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain
-                            immediately.
-                        </div>
-                        <div class="table_row_value">
-                            Driver and Customer to do a bag count and sign for goods on the sales and transporter's
-                            delivery documentation.
-                        </div>
-                    @endif
-
-                </div>
-                <br>
-                <br>
-                <p class="section_heading">Prepared for Silvergro Feed & Grain by {{$user_name}} at {{$now}}
-                    <span></span>
-                </p>
-                <div>
-                    <table class="" style="width:100%;">
-                        <tbody>
-                        <tr class="">
-                            <td class=" table_row_value" style="width:25%;">
-                                <br>
-                                <br>
-                                <br>
-                                <hr>
-                            </td>
-                            <td class=" table_row_value" style="width:25%;">
-                                <br>
-                                <br>
-                                <br>
-
-                            </td>
-                            <td class=" table_row_value" style="width:25%;">
-                                <br>
-                                <br>
-                                <br>
-
-                            </td>
-                            <td class=" table_row_value" style="width:25%;">
-                                <br>
-                                <br>
-                                <br>
-                                <hr>
-                            </td>
-                        </tr>
-                        <tr style="margin-top: 4px;">
-                            <td class=" table_row_heading">Transporter Signature</td>
-                            <td class=" table_row_heading"></td>
-                            <td class=" table_row_heading"></td>
-                            <td class=" table_row_heading">Transporter Name</td>
-                        </tr>
-
-                        </tbody>
-
-                    </table>
-                </div>
-
-            </ol>
-
+                @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
+                    <br>
+                    <div class="table_row_value">
+                        Supplier to check for broken or wet bags and remove from loading.
+                    </div>
+                    <div class="table_row_value">
+                        If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain
+                        immediately.
+                    </div>
+                    <div class="table_row_value">
+                        Driver and Customer to do a bag count and sign for goods on the sales and transporter's
+                        delivery documentation.
+                    </div>
+            @endif
 
         </div>
+        <br>
+        <br>
+        <p class="section_heading">Prepared for Silvergro Feed & Grain by {{$user_name}} at {{$now}}
+            <span></span>
+        </p>
+        <div>
+            <table class="" style="width:100%;">
+                <tbody>
+                <tr class="">
+                    <td class=" table_row_value" style="width:25%;">
+                        <br>
+                        <br>
+                        <br>
+                        <hr>
+                    </td>
+                    <td class=" table_row_value" style="width:25%;">
+                        <br>
+                        <br>
+                        <br>
+
+                    </td>
+                    <td class=" table_row_value" style="width:25%;">
+                        <br>
+                        <br>
+                        <br>
+
+                    </td>
+                    <td class=" table_row_value" style="width:25%;">
+                        <br>
+                        <br>
+                        <br>
+                        <hr>
+                    </td>
+                </tr>
+                <tr style="margin-top: 4px;">
+                    <td class=" table_row_heading">Transporter Signature</td>
+                    <td class=" table_row_heading"></td>
+                    <td class=" table_row_heading"></td>
+                    <td class=" table_row_heading">Transporter Name</td>
+                </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+
+        </ol>
+
+
+    </div>
 
     </div>
 </main>
