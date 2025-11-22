@@ -916,7 +916,7 @@
                                                                 style="width: 25%;">Customer offloading number
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_numbe}}
+                                                                {{$transport_trans->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number}}
                                                             </td>
                                                         </tr>
 
@@ -1055,6 +1055,11 @@
                             <div class="table_row_value">
                                 <div class="table_row_value">
                                     <ol class="indented-list">
+                                        @if($transport_trans->transport_notes)
+                                            <li>
+                                                <strong>Transport Notes:</strong> {{$transport_trans->transport_notes}}
+                                            </li>
+                                        @endif
                                         @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
                                             <li>
                                                 Customer to check for broken or wet bags and make comments with
