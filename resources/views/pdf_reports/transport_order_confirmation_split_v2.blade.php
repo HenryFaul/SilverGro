@@ -561,6 +561,23 @@
                                                                 style="width:25%;">Business address
                                                             </td>
                                                             <td class="table_sections table_row_value" colspan="3">
+                                                                @if($primaryPhysicalAddress)
+                                                                    {{ $primaryPhysicalAddress->line_1 }}
+                                                                    @if($primaryPhysicalAddress->line_2)
+                                                                        , {{ $primaryPhysicalAddress->line_2 }}
+                                                                    @endif
+                                                                    @if($primaryPhysicalAddress->line_3)
+                                                                        , {{ $primaryPhysicalAddress->line_3 }}
+                                                                    @endif
+                                                                    @if($primaryPhysicalAddress->country)
+                                                                        , {{ $primaryPhysicalAddress->country }}
+                                                                    @endif
+                                                                    @if($primaryPhysicalAddress->code)
+                                                                        , {{ $primaryPhysicalAddress->code }}
+                                                                    @endif
+                                                                @else
+                                                                    <span>No Primary Physical Address Loaded</span>
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                         <tr class="table_sections">

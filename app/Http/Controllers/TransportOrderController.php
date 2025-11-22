@@ -26,7 +26,7 @@ class TransportOrderController extends Controller
         $pdfSettings = PdfSetting::getActive();
         $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
 
-        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
+        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter', fn($query) => $query->with(['addressable' => fn($q) => $q->with('AddressType')]))->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
             ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
             ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
@@ -172,6 +172,13 @@ class TransportOrderController extends Controller
         $now = (Carbon::now()->tz('Africa/Johannesburg'))->toDateTimeLocalString();
         $app_version = env("APP_VERSION_REP", "1");
 
+        // Get primary physical address for Transporter
+        $primaryPhysicalAddress = $transport_trans->Transporter->addressable
+            ->where('is_primary', true)
+            ->filter(function($address) {
+                return $address->AddressType && $address->AddressType->type === 'Physical';
+            })
+            ->first();
 
         $data = [
             'logo' => $logo,
@@ -186,7 +193,8 @@ class TransportOrderController extends Controller
             'now'=>$now,
             'app_version'=>$app_version,
             'transport_order'=>$transport_order,
-            'split_data'=>$split_data
+            'split_data'=>$split_data,
+            'primaryPhysicalAddress'=>$primaryPhysicalAddress
         ];
 
 
