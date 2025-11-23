@@ -1,44 +1,13 @@
 <script setup>
-  import InputError from '@/Components/InputError.vue';
-  import TextInput from '@/Components/TextInput.vue';
-  import AreaInput from '@/Components/AreaInput.vue';
-  import { computed, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
-  import { router, useForm, usePage } from '@inertiajs/vue3';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import DialogModal from '@/Components/DialogModal.vue';
-  import { CheckIcon, ChevronUpDownIcon, PaperClipIcon } from '@heroicons/vue/20/solid';
-  import {
-    Switch,
-    SwitchGroup,
-    SwitchLabel,
-    Listbox,
-    ListboxButton,
-    ListboxLabel,
-    ListboxOption,
-    ListboxOptions,
-  } from '@headlessui/vue';
-  import VueDatePicker from '@vuepic/vue-datepicker';
-  import '@vuepic/vue-datepicker/dist/main.css';
-  import {
-    Combobox,
-    ComboboxButton,
-    ComboboxInput,
-    ComboboxLabel,
-    ComboboxOption,
-    ComboboxOptions,
-  } from '@headlessui/vue';
+import InputError from '@/Components/InputError.vue';
+import AreaInput from '@/Components/AreaInput.vue';
+import { computed, onBeforeMount, onMounted, ref } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot, } from '@headlessui/vue';
+import '@vuepic/vue-datepicker/dist/main.css';
+import { XMarkIcon } from '@heroicons/vue/24/outline';
 
-  import {
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-    TransitionChild,
-    TransitionRoot,
-  } from '@headlessui/vue';
-  import { XMarkIcon } from '@heroicons/vue/24/outline';
-  import { LinkIcon, PlusIcon, QuestionMarkCircleIcon } from '@heroicons/vue/20/solid';
-
-  const emit = defineEmits(['close']);
+const emit = defineEmits(['close']);
 
   const close = () => {
     emit('close');
@@ -53,6 +22,8 @@
     vehicle_type_id: 1,
     comment: null,
     reg_no: null,
+    transporter_id: null,
+    regular_driver_id: null,
   });
 
   const format = () => {
@@ -72,11 +43,30 @@
   });
 
   let vehicleSlideProps = ref(null);
+  let transporters = ref([]);
+  let drivers = ref([]);
 
   const getComponentProps = () => {
     axios.get(route('props.vehicle_slide_over')).then((res) => {
       vehicleSlideProps.value = res.data['vehicle_types'];
+      transporters.value = res.data['transporters'] || [];
     });
+  };
+
+  const loadDrivers = (transporterId) => {
+    if (transporterId) {
+      axios
+        .get(route('props.drivers_for_transporter', { transporter: transporterId }))
+        .then((res) => {
+          drivers.value = res.data || [];
+        })
+        .catch(() => {
+          drivers.value = [];
+        });
+    } else {
+      drivers.value = [];
+      vehicleForm.regular_driver_id = null;
+    }
   };
 
   const createProduct = () => {
@@ -106,8 +96,8 @@
 <template>
   <div>
     <TransitionRoot
-      as="template"
-      :show="props.show">
+      :show="props.show"
+      as="template">
       <Dialog
         as="div"
         class="relative z-10"
@@ -143,13 +133,13 @@
                           </div>
                           <div class="flex h-7 items-center">
                             <button
-                              type="button"
                               class="text-gray-400 hover:text-gray-500"
+                              type="button"
                               @click="close">
                               <span class="sr-only">Close panel</span>
                               <XMarkIcon
-                                class="h-6 w-6"
-                                aria-hidden="true" />
+                                aria-hidden="true"
+                                class="h-6 w-6" />
                             </button>
                           </div>
                         </div>
@@ -169,14 +159,14 @@
                           </div>
                           <div class="sm:col-span-2">
                             <input
-                              v-model="vehicleForm.reg_no"
-                              type="text"
-                              name="reg_no"
                               id="reg_no"
-                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                              v-model="vehicleForm.reg_no"
+                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              name="reg_no"
+                              type="text" />
                             <InputError
-                              class="mt-2"
-                              :message="vehicleForm.errors.reg_no" />
+                              :message="vehicleForm.errors.reg_no"
+                              class="mt-2" />
                           </div>
                         </div>
 
@@ -201,8 +191,70 @@
                               </option>
                             </select>
                             <InputError
-                              class="mt-2"
-                              :message="vehicleForm.errors.vehicle_type_id" />
+                              :message="vehicleForm.errors.vehicle_type_id"
+                              class="mt-2" />
+                          </div>
+                        </div>
+
+                        <!--  transporter (optional) -->
+                        <div
+                          class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                          <div>
+                            <label
+                              class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">
+                              Transporter (Optional)
+                            </label>
+                          </div>
+                          <div class="sm:col-span-2">
+                            <select
+                              v-model="vehicleForm.transporter_id"
+                              class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              @change="loadDrivers(vehicleForm.transporter_id)">
+                              <option :value="null">-- Select Transporter --</option>
+                              <option
+                                v-for="t in transporters"
+                                :key="t.id"
+                                :value="t.id">
+                                {{ t.first_name }} {{ t.last_legal_name }}
+                              </option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">
+                              Link this vehicle to a transporter and driver
+                            </p>
+                            <InputError
+                              :message="vehicleForm.errors.transporter_id"
+                              class="mt-2" />
+                          </div>
+                        </div>
+
+                        <!--  driver (optional) -->
+                        <div
+                          v-if="vehicleForm.transporter_id"
+                          class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                          <div>
+                            <label
+                              class="block text-sm font-medium leading-6 text-gray-900 sm:mt-1.5">
+                              Driver (Optional)
+                            </label>
+                          </div>
+                          <div class="sm:col-span-2">
+                            <select
+                              v-model="vehicleForm.regular_driver_id"
+                              class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                              <option :value="null">-- Select Driver --</option>
+                              <option
+                                v-for="d in drivers"
+                                :key="d.id"
+                                :value="d.id">
+                                {{ d.first_name }} {{ d.last_legal_name }}
+                              </option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500">
+                              Optionally assign a default driver to this vehicle
+                            </p>
+                            <InputError
+                              :message="vehicleForm.errors.regular_driver_id"
+                              class="mt-2" />
                           </div>
                         </div>
 
@@ -218,14 +270,14 @@
                           <div class="sm:col-span-2">
                             <AreaInput
                               id="comments"
-                              :rows="6"
-                              placeholder="Optional comments..."
                               v-model="vehicleForm.comment"
-                              type="text"
-                              class="mt-1 block w-full" />
+                              :rows="6"
+                              class="mt-1 block w-full"
+                              placeholder="Optional comments..."
+                              type="text" />
                             <InputError
-                              class="mt-2"
-                              :message="vehicleForm.errors.comment" />
+                              :message="vehicleForm.errors.comment"
+                              class="mt-2" />
                           </div>
                         </div>
                       </div>
@@ -235,15 +287,15 @@
                     <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                       <div class="flex justify-end space-x-3">
                         <button
-                          type="button"
                           class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                          type="button"
                           @click="close">
                           Cancel
                         </button>
                         <button
+                          class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                           type="button"
-                          @click="createProduct"
-                          class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                          @click="createProduct">
                           Create
                         </button>
                       </div>

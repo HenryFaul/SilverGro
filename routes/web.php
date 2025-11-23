@@ -191,6 +191,7 @@ Route::middleware([
     //Transport Trans SlideOver Props
 
     Route::get('/props/vehicle_slide_over', [RegularVehicleController::class, 'getProps'])->middleware('auth')->name('props.vehicle_slide_over');
+    Route::get('/props/drivers_for_transporter/{transporter}', [RegularVehicleController::class, 'getDriversForTransporter'])->middleware('auth')->name('props.drivers_for_transporter');
 
     //Transport PC trans Modal Props
 

@@ -22,6 +22,7 @@ use App\Models\TermsOfPayment;
 use App\Models\TransactionSummary;
 use App\Models\TransLink;
 use App\Models\TransLinkSplit;
+use App\Models\TransportDriverVehicle;
 use App\Models\Transporter;
 use App\Models\TransportRateBasis;
 use App\Models\TransportTransaction;
@@ -117,8 +118,39 @@ class TransactionSummaryController extends Controller
         $packaging = Packaging::all();
         $billing_units = BillingUnits::all();
         $loading_hour_options = LoadingHourOption::all();
-        $all_drivers = RegularDriver::all();
-        $all_vehicles = RegularVehicle::with('VehicleType')->get();
+
+        // Get all drivers with their associated transporter information
+        $all_drivers = RegularDriver::all()->map(function ($driver) {
+            // Get the most recent transporter for this driver
+            $lastDriverVehicle = TransportDriverVehicle::where('regular_driver_id', $driver->id)
+                ->whereNotNull('transport_trans_id')
+                ->with('TransportTransaction.Transporter:id,first_name,last_legal_name')
+                ->orderByRaw('COALESCE(date_delivered, date_onroad, date_loaded, date_scheduled, created_at) DESC')
+                ->first();
+
+            $driver->transporter = $lastDriverVehicle && $lastDriverVehicle->TransportTransaction
+                ? $lastDriverVehicle->TransportTransaction->Transporter
+                : null;
+
+            return $driver;
+        });
+
+        // Get all vehicles with their associated transporter information
+        $all_vehicles = RegularVehicle::with('VehicleType')->get()->map(function ($vehicle) {
+            // Get the most recent transporter for this vehicle
+            $lastDriverVehicle = TransportDriverVehicle::where('regular_vehicle_id', $vehicle->id)
+                ->whereNotNull('transport_trans_id')
+                ->with('TransportTransaction.Transporter:id,first_name,last_legal_name')
+                ->orderByRaw('COALESCE(date_delivered, date_onroad, date_loaded, date_scheduled, created_at) DESC')
+                ->first();
+
+            $vehicle->transporter = $lastDriverVehicle && $lastDriverVehicle->TransportTransaction
+                ? $lastDriverVehicle->TransportTransaction->Transporter
+                : null;
+
+            return $vehicle;
+        });
+
         $all_transport_rates = TransportRateBasis::all();
         $all_status_entities = StatusEntity::all();
         $all_status_types = StatusType::all();

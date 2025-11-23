@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -22,11 +23,45 @@ class RegularVehicle extends Model
         return $this->belongsTo(VehicleType::class,'vehicle_type_id');
     }
 
+    public function TransportDriverVehicles(): HasMany
+    {
+        return $this->hasMany(TransportDriverVehicle::class, 'regular_vehicle_id');
+    }
+
+    /**
+     * Get all unique transporters associated with this vehicle through transport transactions
+     */
+    public function getTransportersAttribute()
+    {
+        return Transporter::whereIn('id',
+            TransportTransaction::whereHas('TransportDriverVehicle', function($query) {
+                $query->where('regular_vehicle_id', $this->id);
+            })->pluck('transporter_id')
+        )->get();
+    }
+
     public function scopeFilter(Builder $query, array $filters): Builder
     {
         return $query->when(
             $filters['searchName'] ?? false,
-            fn ($query, $value) => $query->where('reg_no', 'like', '%'.$value.'%')
+            fn ($query, $value) => $query->where(function($q) use ($value) {
+                // Search by vehicle reg_no
+                $q->where('reg_no', 'like', '%'.$value.'%')
+                  // Or search by transporter name
+                  ->orWhereHas('TransportDriverVehicles', function($subQuery) use ($value) {
+                      $subQuery->whereHas('TransportTransaction', function($transQuery) use ($value) {
+                          $transQuery->whereHas('Transporter', function($transporterQuery) use ($value) {
+                              $transporterQuery->where('first_name', 'like', '%'.$value.'%')
+                                               ->orWhere('last_legal_name', 'like', '%'.$value.'%');
+                          });
+                      })
+                      // Or search by driver name
+                      ->orWhereHas('Driver', function($driverQuery) use ($value) {
+                          $driverQuery->where('first_name', 'like', '%'.$value.'%')
+                                      ->orWhere('last_name', 'like', '%'.$value.'%');
+                      });
+                  });
+            })
         )->when(
             $filters['isActive'] ?? false,
             fn ($query, $value) => $query->where('is_active', $value == 'active' ? 1:0)

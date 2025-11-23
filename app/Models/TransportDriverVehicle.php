@@ -32,4 +32,9 @@ class TransportDriverVehicle extends Model
         return $this->belongsTo(RegularDriver::class,'regular_driver_id');
     }
 
+    public function TransportTransaction(): BelongsTo
+    {
+        return $this->belongsTo(TransportTransaction::class,'transport_trans_id');
+    }
+
 }

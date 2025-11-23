@@ -1,24 +1,14 @@
 <script setup>
-  import InputError from '@/Components/InputError.vue';
-  import TextInput from '@/Components/TextInput.vue';
-  import AreaInput from '@/Components/AreaInput.vue';
-  import { computed, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
-  import { useForm, usePage } from '@inertiajs/vue3';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import DialogModal from '@/Components/DialogModal.vue';
-  import { CheckIcon, ChevronUpDownIcon, PaperClipIcon } from '@heroicons/vue/20/solid';
-  import {
-    Switch,
-    SwitchGroup,
-    SwitchLabel,
-    Listbox,
-    ListboxButton,
-    ListboxLabel,
-    ListboxOption,
-    ListboxOptions,
-  } from '@headlessui/vue';
+import InputError from '@/Components/InputError.vue';
+import TextInput from '@/Components/TextInput.vue';
+import AreaInput from '@/Components/AreaInput.vue';
+import { computed, onBeforeMount, onUnmounted, ref } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import DialogModal from '@/Components/DialogModal.vue';
+import { Switch, SwitchGroup, SwitchLabel, } from '@headlessui/vue';
 
-  //let addressApi = ref();
+//let addressApi = ref();
   const emit = defineEmits(['close']);
 
   let props = defineProps({
@@ -210,8 +200,8 @@
 <template>
   <div>
     <dialog-modal
-      :show="show"
       :closeable="closeable"
+      :show="show"
       @close="close">
       <template #content>
         <div>
@@ -237,8 +227,8 @@
                   <TextInput
                     id="loading_no"
                     v-model="form.driver_vehicle_loading_number"
-                    type="text"
-                    class="mt-1 block w-full" />
+                    class="mt-1 block w-full"
+                    type="text" />
                   <!--                                    <InputError class="mt-2" :message="form.errors.line_1"/>-->
                 </div>
 
@@ -249,8 +239,8 @@
                   <TextInput
                     id="line_1"
                     v-model="form.weighbridge_upload_weight"
-                    type="number"
-                    class="mt-1 block w-full" />
+                    class="mt-1 block w-full"
+                    type="number" />
                   <!--                                    <InputError class="mt-2" :message="form.errors.line_1"/>-->
                 </div>
 
@@ -261,8 +251,8 @@
                   <TextInput
                     id="weighbridge_offload_weight"
                     v-model="form.weighbridge_offload_weight"
-                    type="number"
-                    class="mt-1 block w-full" />
+                    class="mt-1 block w-full"
+                    type="number" />
                   <!--                                    <InputError class="mt-2" :message="form.errors.line_1"/>-->
                 </div>
 
@@ -278,11 +268,11 @@
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                         ]">
                         <span
-                          aria-hidden="true"
                           :class="[
                             form.is_cancelled ? 'translate-x-5' : 'translate-x-0',
                             'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                          ]" />
+                          ]"
+                          aria-hidden="true" />
                       </Switch>
                       <SwitchLabel
                         as="span"
@@ -301,11 +291,11 @@
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                         ]">
                         <span
-                          aria-hidden="true"
                           :class="[
                             form.is_loaded ? 'translate-x-5' : 'translate-x-0',
                             'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                          ]" />
+                          ]"
+                          aria-hidden="true" />
                       </Switch>
                       <SwitchLabel
                         as="span"
@@ -324,11 +314,11 @@
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                         ]">
                         <span
-                          aria-hidden="true"
                           :class="[
                             form.is_onroad ? 'translate-x-5' : 'translate-x-0',
                             'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                          ]" />
+                          ]"
+                          aria-hidden="true" />
                       </Switch>
                       <SwitchLabel
                         as="span"
@@ -347,11 +337,11 @@
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                         ]">
                         <span
-                          aria-hidden="true"
                           :class="[
                             form.is_delivered ? 'translate-x-5' : 'translate-x-0',
                             'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                          ]" />
+                          ]"
+                          aria-hidden="true" />
                       </Switch>
                       <SwitchLabel
                         as="span"
@@ -374,13 +364,13 @@
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                         ]">
                         <span
-                          aria-hidden="true"
                           :class="[
                             form.is_transport_scheduled
                               ? 'translate-x-5'
                               : 'translate-x-0',
                             'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                          ]" />
+                          ]"
+                          aria-hidden="true" />
                       </Switch>
                       <SwitchLabel
                         as="span"
@@ -399,11 +389,11 @@
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                         ]">
                         <span
-                          aria-hidden="true"
                           :class="[
                             form.is_paid ? 'translate-x-5' : 'translate-x-0',
                             'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                          ]" />
+                          ]"
+                          aria-hidden="true" />
                       </Switch>
                       <SwitchLabel
                         as="span"
@@ -422,11 +412,11 @@
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
                         ]">
                         <span
-                          aria-hidden="true"
                           :class="[
                             form.is_payment_overdue ? 'translate-x-5' : 'translate-x-0',
                             'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                          ]" />
+                          ]"
+                          aria-hidden="true" />
                       </Switch>
                       <SwitchLabel
                         as="span"
@@ -446,19 +436,23 @@
                     v-model="form.regular_driver_id"
                     class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     <option
-                      v-for="n in props.all_drivers"
+                      v-for="n in props.all_vehicles"
                       :key="n.id"
                       :value="n.id">
-                      {{ n.first_name }} {{ n.last_legal_name }}
+                      {{ n.reg_no }} - {{ n.vehicle_type.name }}
+                      <template v-if="n.transporter">
+                        ({{ n.transporter.last_legal_name }})
+                      </template>
+                    </option>
                     </option>
                   </select>
 
                   <InputError
-                    class="mt-2"
-                    :message="form.errors.regular_driver_id" />
+                    :message="form.errors.regular_driver_id"
+                    class="mt-2" />
                   <div
-                    @click="toggleShowDriver"
-                    class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    @click="toggleShowDriver">
                     + Add driver
                   </div>
 
@@ -478,14 +472,14 @@
                         </div>
                         <div class="sm:col-span-2">
                           <input
-                            v-model="driverForm.first_name"
-                            type="text"
-                            name="name"
                             id="name"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            v-model="driverForm.first_name"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            name="name"
+                            type="text" />
                           <InputError
-                            class="mt-2"
-                            :message="driverForm.errors.first_name" />
+                            :message="driverForm.errors.first_name"
+                            class="mt-2" />
                         </div>
                       </div>
 
@@ -500,14 +494,14 @@
                         </div>
                         <div class="sm:col-span-2">
                           <input
-                            v-model="driverForm.last_name"
-                            type="text"
-                            name="last_name"
                             id="last_name"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            v-model="driverForm.last_name"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            name="last_name"
+                            type="text" />
                           <InputError
-                            class="mt-2"
-                            :message="driverForm.errors.last_name" />
+                            :message="driverForm.errors.last_name"
+                            class="mt-2" />
                         </div>
                       </div>
 
@@ -522,14 +516,14 @@
                         </div>
                         <div class="sm:col-span-2">
                           <input
-                            v-model="driverForm.cell_no"
-                            type="text"
-                            name="cell_no"
                             id="cell_no"
-                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            v-model="driverForm.cell_no"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            name="cell_no"
+                            type="text" />
                           <InputError
-                            class="mt-2"
-                            :message="driverForm.errors.cell_no" />
+                            :message="driverForm.errors.cell_no"
+                            class="mt-2" />
                         </div>
                       </div>
 
@@ -545,14 +539,14 @@
                         <div class="sm:col-span-2">
                           <AreaInput
                             id="comments2"
-                            :rows="6"
-                            placeholder="Optional comments..."
                             v-model="driverForm.comment"
-                            type="text"
-                            class="mt-1 block w-full" />
+                            :rows="6"
+                            class="mt-1 block w-full"
+                            placeholder="Optional comments..."
+                            type="text" />
                           <InputError
-                            class="mt-2"
-                            :message="driverForm.errors.comment" />
+                            :message="driverForm.errors.comment"
+                            class="mt-2" />
                         </div>
                       </div>
 
@@ -561,15 +555,15 @@
                         class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                         <div class="flex justify-end space-x-3">
                           <button
-                            type="button"
                             class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            type="button"
                             @click="toggleShowDriverVehicle">
                             Cancel
                           </button>
                           <button
+                            class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             type="button"
-                            @click="createProduct"
-                            class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            @click="createProduct">
                             Create
                           </button>
                         </div>
@@ -590,16 +584,20 @@
                       :key="n.id"
                       :value="n.id">
                       {{ n.reg_no }} - {{ n.vehicle_type.name }}
+                      <template v-if="n.transporter">
+                        ({{ n.transporter.first_name }}
+                        {{ n.transporter.last_legal_name }})
+                      </template>
                     </option>
                   </select>
 
                   <InputError
-                    class="mt-2"
-                    :message="form.errors.regular_driver_id" />
+                    :message="form.errors.regular_driver_id"
+                    class="mt-2" />
 
                   <div
-                    @click="toggleShowVehicle"
-                    class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    class="ml-3 underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    @click="toggleShowVehicle">
                     + Add vehicle
                   </div>
 
@@ -622,14 +620,14 @@
                           </div>
                           <div class="sm:col-span-2">
                             <input
-                              v-model="vehicleForm.reg_no"
-                              type="text"
-                              name="reg_no"
                               id="reg_no"
-                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                              v-model="vehicleForm.reg_no"
+                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              name="reg_no"
+                              type="text" />
                             <InputError
-                              class="mt-2"
-                              :message="vehicleForm.errors.reg_no" />
+                              :message="vehicleForm.errors.reg_no"
+                              class="mt-2" />
                           </div>
                         </div>
 
@@ -654,8 +652,8 @@
                               </option>
                             </select>
                             <InputError
-                              class="mt-2"
-                              :message="vehicleForm.errors.vehicle_type_id" />
+                              :message="vehicleForm.errors.vehicle_type_id"
+                              class="mt-2" />
                           </div>
                         </div>
 
@@ -671,14 +669,14 @@
                           <div class="sm:col-span-2">
                             <AreaInput
                               id="comments"
-                              :rows="6"
-                              placeholder="Optional comments..."
                               v-model="vehicleForm.comment"
-                              type="text"
-                              class="mt-1 block w-full" />
+                              :rows="6"
+                              class="mt-1 block w-full"
+                              placeholder="Optional comments..."
+                              type="text" />
                             <InputError
-                              class="mt-2"
-                              :message="vehicleForm.errors.comment" />
+                              :message="vehicleForm.errors.comment"
+                              class="mt-2" />
                           </div>
                         </div>
                       </div>
@@ -688,15 +686,15 @@
                         class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                         <div class="flex justify-end space-x-3">
                           <button
-                            type="button"
                             class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            type="button"
                             @click="toggleShowVehicle">
                             Cancel
                           </button>
                           <button
+                            class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             type="button"
-                            @click="createProductVehicle"
-                            class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            @click="createProductVehicle">
                             Create
                           </button>
                         </div>
@@ -712,15 +710,15 @@
 
                   <AreaInput
                     id="traders_notes"
-                    :rows="4"
-                    placeholder="Optional directions or comments..."
                     v-model="form.traders_notes"
-                    type="text"
-                    class="mt-1 block w-1/3" />
+                    :rows="4"
+                    class="mt-1 block w-1/3"
+                    placeholder="Optional directions or comments..."
+                    type="text" />
 
                   <InputError
-                    class="mt-2"
-                    :message="form.errors.traders_notes" />
+                    :message="form.errors.traders_notes"
+                    class="mt-2" />
                 </div>
 
                 <div class="mt-5">
@@ -730,15 +728,15 @@
 
                   <AreaInput
                     id="operations_alert_notes"
-                    :rows="4"
-                    placeholder="Optional directions or comments..."
                     v-model="form.operations_alert_notes"
-                    type="text"
-                    class="mt-1 block w-1/3" />
+                    :rows="4"
+                    class="mt-1 block w-1/3"
+                    placeholder="Optional directions or comments..."
+                    type="text" />
 
                   <InputError
-                    class="mt-2"
-                    :message="form.errors.operations_alert_notes" />
+                    :message="form.errors.operations_alert_notes"
+                    class="mt-2" />
                 </div>
               </div>
             </form>
@@ -749,15 +747,15 @@
       <template #footer>
         <div v-if="props.driver_vehicle == null">
           <SecondaryButton
-            @click="createDriverVehicle"
-            class="bg-red-400">
+            class="bg-red-400"
+            @click="createDriverVehicle">
             Create
           </SecondaryButton>
         </div>
         <div v-else>
           <SecondaryButton
-            @click="updateDriverVehicle"
-            class="ml-1 bg-green-400">
+            class="ml-1 bg-green-400"
+            @click="updateDriverVehicle">
             Save
           </SecondaryButton>
         </div>

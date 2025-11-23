@@ -150,15 +150,6 @@
     filteredContractTypes,
   } = useProductTab(props);
 
-  const {
-    transporterQuery,
-    filteredTransporters,
-    selectedVehicleQuery,
-    filteredSelectedVehicles,
-    selectedDriverQuery,
-    filteredSelectedDrivers,
-  } = useTransportTab(props);
-
   const permissions = computed(() => usePage().props.permissions);
   const roles_permissions = computed(() => usePage().props.roles_permissions);
   computed(() =>
@@ -241,6 +232,17 @@
   } = useTransactionStatusForms(props, isUpdating);
   // Combined form initialization moved to composable
   const { combined_Form, updateSelectValuesInternal } = useTransactionCombinedForm(props);
+
+  // Initialize transport tab filters (drivers and vehicles filtered by selected transporter)
+  const {
+    transporterQuery,
+    filteredTransporters,
+    selectedVehicleQuery,
+    filteredSelectedVehicles,
+    selectedDriverQuery,
+    filteredSelectedDrivers,
+  } = useTransportTab(props, combined_Form);
+
   // Wrapper for updateSelectValues to pass temp_form update
   let updateSelectValues;
 
@@ -1766,8 +1768,17 @@
                                   <div class="relative mt-2">
                                     <ComboboxInput
                                       :display-value="
-                                        (driver) =>
-                                          driver?.first_name + ' ' + driver?.last_name
+                                        (driver) => {
+                                          if (!driver) return '';
+                                          const driverName =
+                                            driver.first_name + ' ' + driver.last_name;
+                                          const transporterName = driver.transporter
+                                            ? driver.transporter.last_legal_name
+                                            : null;
+                                          return transporterName
+                                            ? driverName + ' (' + transporterName + ')'
+                                            : driverName;
+                                        }
                                       "
                                       class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                       @change="
@@ -1804,6 +1815,11 @@
                                               ]">
                                               {{ driver.first_name }}
                                               {{ driver.last_name }}
+                                              <span
+                                                v-if="driver.transporter"
+                                                class="text-gray-500">
+                                                ({{ driver.transporter.last_legal_name }})
+                                              </span>
                                             </span>
                                             <span
                                               v-if="selected"
@@ -1955,10 +1971,19 @@
                                   <div class="relative mt-2">
                                     <ComboboxInput
                                       :display-value="
-                                        (vehicle) =>
-                                          vehicle?.reg_no +
-                                          ' ' +
-                                          vehicle?.vehicle_type.name
+                                        (vehicle) => {
+                                          if (!vehicle) return '';
+                                          const vehicleInfo =
+                                            vehicle.reg_no +
+                                            ' ' +
+                                            vehicle.vehicle_type.name;
+                                          const transporterName = vehicle.transporter
+                                            ? vehicle.transporter.last_legal_name
+                                            : null;
+                                          return transporterName
+                                            ? vehicleInfo + ' (' + transporterName + ')'
+                                            : vehicleInfo;
+                                        }
                                       "
                                       class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                       @change="
@@ -1995,6 +2020,13 @@
                                               ]">
                                               {{ vehicle.reg_no }}
                                               {{ vehicle.vehicle_type.name }}
+                                              <span
+                                                v-if="vehicle.transporter"
+                                                class="text-gray-500">
+                                                ({{
+                                                  vehicle.transporter.last_legal_name
+                                                }})
+                                              </span>
                                             </span>
                                             <span
                                               v-if="selected"
