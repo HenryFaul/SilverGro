@@ -3,10 +3,10 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <title>Deal Ticket</title>
+    <title>Split Deal Ticket</title>
     <style>
         @page {
-            margin: 100px 40px;
+            margin: 100px 30px 60px 30px;
             font-family: sans-serif;
         }
 
@@ -30,10 +30,9 @@
             bottom: -60px;
             left: 0;
             right: 0;
-            height: 30px;
+            height: 40px;
             font-size: 10px;
-            background-color: #0f0f0f;
-            color: white;
+            color: #0f0f0f;
             line-height: 25px;
             text-align: center;
         }
@@ -58,14 +57,33 @@
             font-size: 10px;
         }
 
+        /* table, th, td {
+             border: 0px solid black;
+             border-collapse: collapse;
+         }
+
+         .table_sections {
+             border: 1px solid black;
+             border-collapse: collapse;
+         }*/
+
         table, th, td {
-            border: 0px solid black;
+            border: none; /* Remove border from all tables, table headers, and table data cells */
             border-collapse: collapse;
         }
 
         .table_sections {
+            border: none; /* Remove the border around each table section */
+        }
+
+        .table_sections_bordered {
             border: 1px solid black;
             border-collapse: collapse;
+        }
+
+        .table_sections_bordered th,
+        .table_sections_bordered td {
+            border: 1px solid black;
         }
 
         th, td {
@@ -73,7 +91,7 @@
         }
 
         .section_heading {
-            font-size: 10px;
+            font-size: 14px;
             font-weight: bold;
             margin-bottom: 1px;
             padding-bottom: 0px;
@@ -82,6 +100,32 @@
 
         .page-break {
             page-break-after: always;
+        }
+
+        ol, ul {
+            margin: 0;
+            padding: 0;
+            list-style-position: inside;
+        }
+
+        hr {
+            margin-top: 1px;
+            margin-bottom: 1px
+        }
+
+        p {
+            margin: 2px 0;
+            padding: 0;
+        }
+
+        div {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            margin-top: 2px;
+            margin-bottom: 2px;
         }
 
 
@@ -93,7 +137,7 @@
     <table style="width:100%;">
         <tr>
             <td>
-                <img style="float: left;" src="{{ $logo }}" width="188" height="88" alt="Company Logo" />
+                <img style="float: left;" src="{{ $logo }}" width="202" height="95" alt="Company Logo" />
             </td>
             <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;">
                 <span>
@@ -176,13 +220,13 @@
 
                         <li class="section_heading">Split Check</li>
                         <div>
-                            <table class="table_sections" style="width:100%;">
+                            <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
-                                <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                <tr class="table_sections_bordered">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
                                         is_transporter_same
                                     </td>
-                                    <td class="table_sections table_row_value"
+                                    <td class="table_sections_bordered table_row_value"
                                         style="width: 25%;">
 
                                         @if($split_data['is_transporter_same'])
@@ -192,9 +236,10 @@
                                         @endif
 
                                     </td>
-                                    <td class="table_sections table_row_heading" style="width: 25%;">is_supplier_same
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
+                                        is_supplier_same
                                     </td>
-                                    <td class="table_sections table_row_value"
+                                    <td class="table_sections_bordered table_row_value"
                                         style="width: 25%;">
                                         @if($split_data['is_supplier_same'])
                                             Yes
@@ -205,10 +250,11 @@
                                     </td>
                                 </tr>
 
-                                <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">is_customer_same
+                                <tr class="table_sections_bordered">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
+                                        is_customer_same
                                     </td>
-                                    <td class="table_sections table_row_value"
+                                    <td class="table_sections_bordered table_row_value"
                                         style="width: 25%;">
                                         @if($split_data['is_customer_same'])
                                             Yes
@@ -216,9 +262,10 @@
                                             No
                                         @endif
                                     </td>
-                                    <td class="table_sections table_row_heading" style="width: 25%;">is_product_same
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
+                                        is_product_same
                                     </td>
-                                    <td class="table_sections table_row_value"
+                                    <td class="table_sections_bordered table_row_value"
                                         style="width: 25%;">
                                         @if($split_data['is_product_same'])
                                             Yes
@@ -227,20 +274,20 @@
                                         @endif
                                     </td>
                                 </tr>
-                                <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                <tr class="table_sections_bordered">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
                                         is_product_billing_units_outgoing_same
                                     </td>
-                                    <td class="table_sections table_row_value"
+                                    <td class="table_sections_bordered table_row_value"
                                         style="width: 25%;">@if($split_data['is_product_billing_units_outgoing_same'])
                                             Yes
                                         @else
                                             No
                                         @endif</td>
-                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
                                         is_product_billing_units_incoming_same
                                     </td>
-                                    <td class="table_sections table_row_value" style="width: 25%;">
+                                    <td class="table_sections_bordered table_row_value" style="width: 25%;">
                                         @if($split_data['is_product_billing_units_incoming_same'])
                                             Yes
                                         @else
@@ -249,20 +296,20 @@
                                     </td>
                                 </tr>
 
-                                <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                <tr class="table_sections_bordered">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
                                         is_transport_rate_basis_same
                                     </td>
-                                    <td class="table_sections table_row_value"
+                                    <td class="table_sections_bordered table_row_value"
                                         style="width: 25%;">@if($split_data['is_transport_rate_basis_same'])
                                             Yes
                                         @else
                                             No
                                         @endif</td>
-                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
                                         is_transport_rate_same
                                     </td>
-                                    <td class="table_sections table_row_value" style="width: 25%;">
+                                    <td class="table_sections_bordered table_row_value" style="width: 25%;">
                                         @if($split_data['is_transport_rate_same'])
                                             Yes
                                         @else
@@ -271,34 +318,34 @@
                                     </td>
                                 </tr>
 
-                                <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                <tr class="table_sections_bordered">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
                                         sum_weight_ton_incoming_planned
                                     </td>
-                                    <td class="table_sections table_row_value"
+                                    <td class="table_sections_bordered table_row_value"
                                         style="width: 25%;">
                                         {{$split_data['sum_weight_ton_incoming_planned']}} tons
                                     </td>
-                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
                                         sum_weight_ton_outgoing_planned
                                     </td>
-                                    <td class="table_sections table_row_value" style="width: 25%;">
+                                    <td class="table_sections_bordered table_row_value" style="width: 25%;">
                                         {{$split_data['sum_weight_ton_outgoing_planned']}} tons
                                     </td>
                                 </tr>
 
-                                <tr class="table_sections">
-                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                <tr class="table_sections_bordered">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
                                         sum_weight_ton_incoming_actual
                                     </td>
-                                    <td class="table_sections table_row_value"
+                                    <td class="table_sections_bordered table_row_value"
                                         style="width: 25%;">
                                         {{$split_data['sum_weight_ton_incoming']}} tons
                                     </td>
-                                    <td class="table_sections table_row_heading" style="width: 25%;">
+                                    <td class="table_sections_bordered table_row_heading" style="width: 25%;">
                                         sum_weight_ton_outgoing_actual
                                     </td>
-                                    <td class="table_sections table_row_value" style="width: 25%;">
+                                    <td class="table_sections_bordered table_row_value" style="width: 25%;">
                                         {{$split_data['sum_weight_ton_outgoing']}} tons
                                     </td>
                                 </tr>
@@ -307,42 +354,55 @@
 
                             </table>
                         </div>
-                        <br>
                         <li class="section_heading">Split Summary Overview</li>
                         <div>
-                            <table class="table_sections" style="width:100%;">
+                            <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
-                                <tr class="table_sections">
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Deal Ticket</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Supplier Order
+                                <tr class="table_sections_bordered">
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Deal
+                                        Ticket
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Supplier
+                                        Order
                                         #
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Cust Order #</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Supplier</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Customer</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Transporter</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Product</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading"></td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Cust
+                                        Order #
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">
+                                        Supplier
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">
+                                        Customer
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">
+                                        Transporter
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">
+                                        Product
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading"></td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
 
-                                    <tr class="table_sections" style="width:100%;">
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                    <tr class="table_sections_bordered" style="width:100%;">
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                            MQ{{$deal->TransportTransaction->a_mq}}
                                         </td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportJob->supplier_loading_number}}</td>
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->supplier_loading_number}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportJob->customer_order_number}}</td>
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->customer_order_number}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->Supplier->last_legal_name}}</td>
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Supplier->last_legal_name}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->Customer->last_legal_name}}</td>
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Customer->last_legal_name}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->Transporter->last_legal_name}}</td>
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Transporter->last_legal_name}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->Product->name}}</td>
-                                        <td style="width: 12.5%;" class="table_sections table_row_value"></td>
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Product->name}}</td>
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value"></td>
                                     </tr>
 
                                 @endforeach
@@ -351,44 +411,55 @@
 
                             </table>
                         </div>
-                        <br>
                         <div class="">
                             <p>Planned:</p>
-                            <table class="table_sections" style="width:100%;">
+                            <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
-                                <tr class="table_sections">
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Deal Ticket</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Tons In</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Cost/Ton
+                                <tr class="table_sections_bordered">
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Deal
+                                        Ticket
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Load basis</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Rate/Ton
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                        Tons In
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Tons Out
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                        Cost/Ton
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan Price/Ton
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Load
+                                        basis
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Plan GP/Ton</td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                        Rate/Ton
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                        Tons Out
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                        Price/Ton
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                        GP/Ton
+                                    </td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
 
-                                    <tr class="table_sections" style="width:100%;">
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                    <tr class="table_sections_bordered" style="width:100%;">
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             MQ{{$deal->TransportTransaction->a_mq}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming,2)}}</td>
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming,2)}}</td>
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton,2), 2, '.', ' ')}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportJob->RateBasis->name}}</td>
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->RateBasis->name}}</td>
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_outgoing,2)}}</td>
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_outgoing,2)}}</td>
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->selling_price_per_ton,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->gross_profit_per_ton,2), 2, '.', ' ')}}</td>
                                     </tr>
 
@@ -398,44 +469,53 @@
 
                             </table>
                             <p>Actual:</p>
-                            <table class="table_sections" style="width:100%;">
+                            <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
-                                <tr class="table_sections">
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Deal Ticket</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual Tons In
+                                <tr class="table_sections_bordered">
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Deal
+                                        Ticket
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual Cost/Ton
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                        Tons In
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Load basis</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual Rate/Ton
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                        Cost/Ton
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual Tons Out
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Load
+                                        basis
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                        Rate/Ton
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                        Tons Out
+                                    </td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
                                         Price/Ton
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Actual GP/Ton
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                        GP/Ton
                                     </td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
 
-                                    <tr class="table_sections" style="width:100%;">
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                    <tr class="table_sections_bordered" style="width:100%;">
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             MQ{{$deal->TransportTransaction->a_mq}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming_actual,2)}}</td>
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming_actual,2)}}</td>
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton_actual,2), 2, '.', ' ')}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportJob->RateBasis->name}}</td>
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->RateBasis->name}}</td>
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton_actual,2), 2, '.', ' ')}}</td>
                                         <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_outgoing_actual,2)}}</td>
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                            class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_outgoing_actual,2)}}</td>
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->selling_price_per_ton_actual,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->gross_profit_per_ton_actual,2), 2, '.', ' ')}}</td>
                                     </tr>
 
@@ -483,7 +563,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <br>
 
                             <li class="section_heading">Customer Information and Deal Pricing
                                 [MQ{{$deal->TransportTransaction->a_mq}}]
@@ -631,7 +710,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <br>
 
                             <li class="section_heading">Transport [MQ{{$deal->TransportTransaction->a_mq}}]</li>
                             <div>
@@ -691,7 +769,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <br>
 
                             <li class="section_heading">Supplier Information and Deal Cost
                                 [MQ{{$deal->TransportTransaction->a_mq}}]
@@ -757,7 +834,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <br>
 
                             <li class="section_heading">Margin Calculation [MQ{{$deal->TransportTransaction->a_mq}}]
                             </li>
@@ -807,7 +883,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <br>
 
                             <li class="section_heading">Approvals [MQ{{$deal->TransportTransaction->a_mq}}]</li>
                             <div>
@@ -883,7 +958,6 @@
                             </div>
 
                         @endforeach
-                        <br>
                         <li class="section_heading">Signatures [all MQ]</li>
                         <div>
                             <table class="" style="width:100%;">
@@ -892,17 +966,14 @@
                                     <td class=" table_row_value" style="width:25%;">
                                         <br>
                                         <br>
-                                        <br>
                                         <hr>
                                     </td>
                                     <td class=" table_row_value" style="width:25%;">
                                         <br>
                                         <br>
-                                        <br>
                                         <hr>
                                     </td>
                                     <td class=" table_row_value" style="width:25%;">
-                                        <br>
                                         <br>
                                         <br>
                                         <hr>
@@ -931,12 +1002,24 @@
 
 
 <footer>
-    <div>
-        <span>SilverGro Feed & Grain</span>
-        <span>| Generated by {{$user_name}}</span>
-        <span>| version {{$app_version}}</span>
-        <span>| Page: </span> <span class="page_num"> </span>
-    </div>
+    <script type="text/php">
+        if (isset($pdf) && $PAGE_NUM > 1) {
+            // Set up footer text with values from Blade
+            $user_name = "{{ $user_name ?? 'Unknown User' }}";
+            $app_version = "{{ $app_version ?? '1.0' }}";
+            $left_text = "SilverGro Feed & Grain | Generated by " . $user_name . " | version " . $app_version;
+            $page_text = "Page {$PAGE_NUM} of {$PAGE_COUNT}";
+
+            // Set font properties
+            $font = $fontMetrics->getFont("sans-serif");
+            $size = 8;
+
+            // Positioning
+            $y = $pdf->get_height() - 45;
+            $pdf->text(50, $y, $left_text, $font, $size);
+            $pdf->text($pdf->get_width() - 100, $y, $page_text, $font, $size);
+        }
+    </script>
 </footer>
 
 

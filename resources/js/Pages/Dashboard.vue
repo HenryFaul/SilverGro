@@ -1,8 +1,7 @@
 <script setup>
-  import AppLayout from '@/Layouts/AppLayout.vue';
-  import Welcome from '@/Components/Welcome.vue';
-  import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/vue/20/solid';
-  const props = defineProps({
+import AppLayout from '@/Layouts/AppLayout.vue';
+
+const props = defineProps({
     month: Date,
     planned_tons_in: Number,
     planned_tons_out: Number,
@@ -46,11 +45,8 @@
                   <div class="text-center">
                     <h2
                       class="text-3xl font-bold tracking-tight text-indigo-500 sm:text-4xl">
-                      Stats overview for:
+                      Current Stats overview:
                     </h2>
-                    <p class="mt-4 text-lg leading-8 text-gray-600">
-                      Current month: {{ month }}
-                    </p>
                   </div>
                 </div>
 
@@ -150,11 +146,11 @@
                   class="shadow-2xl m-10 p-10">
                   <div>
                     <apexchart
-                      :width="chart.width"
                       :height="chart.height"
-                      :type="chart.type"
                       :options="chart.options"
-                      :series="chart.series" />
+                      :series="chart.series"
+                      :type="chart.type"
+                      :width="chart.width" />
                   </div>
                 </div>
               </div>

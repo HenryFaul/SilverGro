@@ -210,7 +210,7 @@ class DealTicketController extends Controller
         // Check if the load is split and set the orientation accordingly
         if ($transport_trans->is_split_load) {
 
-            $pdf = PDF::loadView('pdf_reports.deal_ticket_split_v6', $data);
+            $pdf = PDF::loadView('pdf_reports.deal_ticket_split_v7', $data);
             $pdf->setPaper('A4','landscape');
 
         } else {
@@ -424,10 +424,10 @@ class DealTicketController extends Controller
                 'linked_trans_pc' => $linked_trans_pc
             ];
 
-            // Check if the load is split and set the orientation accordingly
-            if ($transport_trans->is_split_load) {
+        // Check if the load is split and set the orientation accordingly
+        if ($transport_trans->is_split_load) {
 
-                $pdf = PDF::loadView('pdf_reports.deal_ticket_split_v6', $data);
+                $pdf = PDF::loadView('pdf_reports.deal_ticket_split_v7', $data);
                 $pdf->setPaper('A4','landscape');
 
             } else {
