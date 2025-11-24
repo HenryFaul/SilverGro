@@ -6,7 +6,7 @@ import { computed, onBeforeMount, onUnmounted, ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import DialogModal from '@/Components/DialogModal.vue';
-import { Switch, SwitchGroup, SwitchLabel, } from '@headlessui/vue';
+import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue';
 
 //let addressApi = ref();
   const emit = defineEmits(['close']);
@@ -443,7 +443,6 @@ import { Switch, SwitchGroup, SwitchLabel, } from '@headlessui/vue';
                       <template v-if="n.transporter">
                         ({{ n.transporter.last_legal_name }})
                       </template>
-                    </option>
                     </option>
                   </select>
 

@@ -1,40 +1,12 @@
 <script setup>
-  import InputError from '@/Components/InputError.vue';
-  import TextInput from '@/Components/TextInput.vue';
-  import AreaInput from '@/Components/AreaInput.vue';
-  import { computed, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
-  import { useForm, usePage } from '@inertiajs/vue3';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import DialogModal from '@/Components/DialogModal.vue';
-  import { CheckIcon, ChevronUpDownIcon, PaperClipIcon } from '@heroicons/vue/20/solid';
-  import {
-    Switch,
-    SwitchGroup,
-    SwitchLabel,
-    Listbox,
-    ListboxButton,
-    ListboxLabel,
-    ListboxOption,
-    ListboxOptions,
-  } from '@headlessui/vue';
-  import {
-    Combobox,
-    ComboboxButton,
-    ComboboxInput,
-    ComboboxLabel,
-    ComboboxOption,
-    ComboboxOptions,
-  } from '@headlessui/vue';
+import { computed, onBeforeMount, onUnmounted, ref } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import DialogModal from '@/Components/DialogModal.vue';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, } from '@headlessui/vue';
 
-  import {
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-    TransitionChild,
-    TransitionRoot,
-  } from '@headlessui/vue';
-
-  //let addressApi = ref();
+//let addressApi = ref();
   const emit = defineEmits(['close']);
 
   let props = defineProps({
@@ -53,49 +25,88 @@
   let contractLinkModalPropsSc = ref(null);
   let contractLinkModalPropsSplit = ref(null);
 
-  const filteredPc = computed(() =>
-    pcQuery.value === ''
+  const filteredPc = computed(() => {
+    if (
+      !contractLinkModalProps.value ||
+      !contractLinkModalProps.value['transport_trans']
+    ) {
+      return [];
+    }
+    return pcQuery.value === ''
       ? contractLinkModalProps.value['transport_trans']
       : contractLinkModalProps.value['transport_trans'].filter((contract) => {
           return contract.id >= pcQuery.value;
-        })
-  );
+        });
+  });
 
-  const filteredSc = computed(() =>
-    scQuery.value === ''
+  const filteredSc = computed(() => {
+    if (
+      !contractLinkModalPropsSc.value ||
+      !contractLinkModalPropsSc.value['transport_trans']
+    ) {
+      return [];
+    }
+    return scQuery.value === ''
       ? contractLinkModalPropsSc.value['transport_trans']
       : contractLinkModalPropsSc.value['transport_trans'].filter((contract) => {
           return contract.id >= scQuery.value;
-        })
-  );
+        });
+  });
 
-  const filteredSplits = computed(() =>
-    scQuery.value === ''
+  const filteredSplits = computed(() => {
+    if (
+      !contractLinkModalPropsSplit.value ||
+      !contractLinkModalPropsSplit.value['transport_trans']
+    ) {
+      return [];
+    }
+    return scQuery.value === ''
       ? contractLinkModalPropsSplit.value['transport_trans']
       : contractLinkModalPropsSplit.value['transport_trans'].filter((contract) => {
           return contract.id >= scQuery.value;
-        })
-  );
+        });
+  });
 
   const getComponentProps = () => {
     //props.trade_slide_over
 
     //props.all_products.find(element => element.id === props.transaction.product_id)
 
-    axios.get(route('props.contract_link_split_primary')).then((res) => {
-      contractLinkModalProps.value = res.data;
-      form.to_link_id = res.data['transport_trans'][0];
-    });
+    axios
+      .get(route('props.contract_link_split_primary'))
+      .then((res) => {
+        contractLinkModalProps.value = res.data;
+        if (res.data?.transport_trans && res.data.transport_trans.length > 0) {
+          form.to_link_id = res.data.transport_trans[0];
+        }
+      })
+      .catch((err) => {
+        console.error('Error loading contract link split primary:', err);
+      });
 
-    axios.get(route('props.contract_link_sc_modal')).then((res) => {
-      contractLinkModalPropsSc.value = res.data;
-      form.to_link_id_sc = res.data['transport_trans'][0];
-    });
+    axios
+      .get(route('props.contract_link_sc_modal'))
+      .then((res) => {
+        contractLinkModalPropsSc.value = res.data;
+        if (res.data?.transport_trans && res.data.transport_trans.length > 0) {
+          form.to_link_id_sc = res.data.transport_trans[0];
+        }
+      })
+      .catch((err) => {
+        console.error('Error loading contract link sc modal:', err);
+      });
 
-    axios.get(route('props.contract_link_split_primary')).then((res) => {
-      contractLinkModalPropsSplit.value = res.data;
-      form.to_link_id_split = res.data['transport_trans'][0];
-    });
+    axios
+      .get(route('props.contract_link_split_primary'))
+      .then((res) => {
+        contractLinkModalPropsSplit.value = res.data;
+        if (res.data?.transport_trans && res.data.transport_trans.length > 0) {
+          form.to_link_id_split = res.data.transport_trans[0];
+        }
+      })
+      .catch((err) => {
+        console.error('Error loading contract link split:', err);
+      });
   };
 
   const close = () => {
@@ -141,14 +152,14 @@
 <template>
   <div>
     <dialog-modal
-      :show="show"
       :closeable="closeable"
+      :show="show"
       @close="close">
       <template #content>
         <div>
           <div
-            class=""
-            v-if="contractLinkModalProps != null && contractLinkModalPropsSc != null">
+            v-if="contractLinkModalProps != null && contractLinkModalPropsSc != null"
+            class="">
             <form class="w-full">
               <!--                            'transport_trans_id','transport_job_id','regular_driver_id','regular_vehicle_id','weighbridge_upload_weight','weighbridge_offload_weight',
                             'is_weighbridge_variance','is_cancelled','date_cancelled','is_loaded','date_loaded','is_onroad','date_onroad',
@@ -170,18 +181,18 @@
                     </div>
 
                     <Combobox
-                      as="div"
-                      v-model="form.to_link_id">
+                      v-model="form.to_link_id"
+                      as="div">
                       <div class="relative mt-2">
                         <ComboboxInput
+                          :display-value="(type) => type?.id"
                           class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                          @change="splitQuery = $event.target.value"
-                          :display-value="(type) => type?.id" />
+                          @change="splitQuery = $event.target.value" />
                         <ComboboxButton
                           class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                           <ChevronUpDownIcon
-                            class="h-5 w-5 text-gray-400"
-                            aria-hidden="true" />
+                            aria-hidden="true"
+                            class="h-5 w-5 text-gray-400" />
                         </ComboboxButton>
 
                         <ComboboxOptions
@@ -190,9 +201,9 @@
                           <ComboboxOption
                             v-for="contract in filteredSplits"
                             :key="contract.id"
+                            v-slot="{ active, selected }"
                             :value="contract"
-                            as="template"
-                            v-slot="{ active, selected }">
+                            as="template">
                             <li
                               :class="[
                                 'relative cursor-default select-none py-2 pl-3 pr-9 text-xs',
@@ -212,8 +223,8 @@
                                   active ? 'text-white' : 'text-indigo-600',
                                 ]">
                                 <CheckIcon
-                                  class="h-5 w-5"
-                                  aria-hidden="true" />
+                                  aria-hidden="true"
+                                  class="h-5 w-5" />
                               </span>
                             </li>
                           </ComboboxOption>
@@ -274,8 +285,8 @@
       <template #footer>
         <div>
           <SecondaryButton
-            @click="createTransLink"
-            class="bg-red-400">
+            class="bg-red-400"
+            @click="createTransLink">
             Create
           </SecondaryButton>
         </div>
