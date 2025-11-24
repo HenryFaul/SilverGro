@@ -1772,12 +1772,14 @@
                                           if (!driver) return '';
                                           const driverName =
                                             driver.first_name + ' ' + driver.last_name;
-                                          const transporterName = driver.transporter
-                                            ? driver.transporter.last_legal_name
-                                            : null;
-                                          return transporterName
-                                            ? driverName + ' (' + transporterName + ')'
-                                            : driverName;
+                                          if (driver.transporter) {
+                                            return (
+                                              driverName +
+                                              ' - ' +
+                                              driver.transporter.last_legal_name
+                                            );
+                                          }
+                                          return driverName;
                                         }
                                       "
                                       class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -1817,8 +1819,8 @@
                                               {{ driver.last_name }}
                                               <span
                                                 v-if="driver.transporter"
-                                                class="text-gray-500">
-                                                ({{ driver.transporter.last_legal_name }})
+                                                class="text-gray-500 font-normal">
+                                                - {{ driver.transporter.last_legal_name }}
                                               </span>
                                             </span>
                                             <span
@@ -1977,12 +1979,14 @@
                                             vehicle.reg_no +
                                             ' ' +
                                             vehicle.vehicle_type.name;
-                                          const transporterName = vehicle.transporter
-                                            ? vehicle.transporter.last_legal_name
-                                            : null;
-                                          return transporterName
-                                            ? vehicleInfo + ' (' + transporterName + ')'
-                                            : vehicleInfo;
+                                          if (vehicle.transporter) {
+                                            return (
+                                              vehicleInfo +
+                                              ' - ' +
+                                              vehicle.transporter.last_legal_name
+                                            );
+                                          }
+                                          return vehicleInfo;
                                         }
                                       "
                                       class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -2022,10 +2026,9 @@
                                               {{ vehicle.vehicle_type.name }}
                                               <span
                                                 v-if="vehicle.transporter"
-                                                class="text-gray-500">
-                                                ({{
-                                                  vehicle.transporter.last_legal_name
-                                                }})
+                                                class="text-gray-500 font-normal">
+                                                -
+                                                {{ vehicle.transporter.last_legal_name }}
                                               </span>
                                             </span>
                                             <span

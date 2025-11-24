@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed, ref, unref } from 'vue';
 
 /**
  * Generic composable for filtered dropdown/combobox lists in Transaction Summary
@@ -37,11 +37,14 @@ export function useFilteredListMultiField(items, searchFields) {
   const query = ref('');
 
   const filteredItems = computed(() => {
+    // Get the actual value if items is a computed ref
+    const itemsArray = unref(items);
+
     if (query.value === '') {
-      return items;
+      return itemsArray;
     }
 
-    return items.filter((item) => {
+    return itemsArray.filter((item) => {
       return searchFields.some((field) => {
         const fieldValue = item[field];
         if (!fieldValue) return false;

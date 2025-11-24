@@ -10,6 +10,7 @@ use App\Models\TransportTransaction;
 use Illuminate\Http\Request;
 use Inertia\Response;
 use Inertia\ResponseFactory;
+use Log;
 use SebastianBergmann\CodeCoverage\Driver\Driver;
 
 class RegularDriverController extends Controller
@@ -76,8 +77,61 @@ class RegularDriverController extends Controller
             'last_name' => ['required','string'],
             'comment' => ['nullable','string'],
             'cell_no' => ['required','string'],
+            'transporter_id' => ['nullable','integer','exists:transporters,id'],
+            'transport_trans_id' => ['nullable','integer','exists:transport_transactions,id'],
+            'transport_job_id' => ['nullable','integer','exists:transport_jobs,id'],
+            'regular_vehicle_id' => ['nullable','integer','exists:regular_vehicles,id'],
         ]);
 
+        // Normalize input for similarity check (remove spaces, lowercase)
+        $normalizedFirstName = strtolower(preg_replace('/\s+/', '', $request->first_name));
+        $normalizedLastName = strtolower(preg_replace('/\s+/', '', $request->last_name));
+        $normalizedCell = preg_replace('/\s+/', '', $request->cell_no);
+
+        // Check for similar existing drivers
+        $similarDriver = RegularDriver::whereRaw('LOWER(REPLACE(first_name, \' \', \'\')) = ?', [$normalizedFirstName])
+            ->whereRaw('LOWER(REPLACE(last_name, \' \', \'\')) = ?', [$normalizedLastName])
+            ->first();
+
+        // If similar driver found
+        if ($similarDriver) {
+            // Check if this driver has an existing transporter association
+            $lastDriverVehicle = TransportDriverVehicle::where('regular_driver_id', $similarDriver->id)
+                ->whereNotNull('transport_trans_id')
+                ->with('TransportTransaction.Transporter:id,first_name,last_legal_name')
+                ->orderByRaw('COALESCE(date_delivered, date_onroad, date_loaded, date_scheduled, created_at) DESC')
+                ->first();
+
+            $existingTransporter = $lastDriverVehicle && $lastDriverVehicle->TransportTransaction
+                ? $lastDriverVehicle->TransportTransaction->Transporter
+                : null;
+
+
+            // Build appropriate message based on transporter association
+            if ($existingTransporter) {
+                $message = 'Similar driver found: ' . $similarDriver->first_name . ' ' . $similarDriver->last_name .
+                          ' (currently associated with ' . $existingTransporter->last_legal_name . '). ' .
+                          'Duplicate prevented. You can select this existing driver from the dropdown.';
+            } else {
+                $message = 'Similar driver found: ' . $similarDriver->first_name . ' ' . $similarDriver->last_name .
+                          '. Duplicate prevented. This driver is now available in the dropdown for selection.';
+            }
+
+            // If transport transaction info provided, link driver to transaction
+            if ($request->transport_trans_id && $request->transport_job_id) {
+                $this->linkDriverToTransaction($similarDriver->id, $request->transport_trans_id, $request->transport_job_id, $request->regular_vehicle_id);
+                Log::info('Driver linked to transaction');
+            }
+
+            $request->session()->flash('flash.bannerStyle', 'info');
+            $request->session()->flash('flash.banner', $message);
+            $request->session()->flash('flash.is_existing', true);
+            $request->session()->flash('flash.driver_id', $similarDriver->id); // Pass driver ID to frontend
+
+            return redirect()->back();
+        }
+
+        // No similar driver found, create new one
         $driver = RegularDriver::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
@@ -86,8 +140,15 @@ class RegularDriverController extends Controller
         ]);
 
         if ($driver->exists()) {
+            // If transport transaction info provided, link driver to transaction
+            if ($request->transport_trans_id && $request->transport_job_id) {
+                $this->linkDriverToTransaction($driver->id, $request->transport_trans_id, $request->transport_job_id, $request->regular_vehicle_id);
+            }
+
             $request->session()->flash('flash.bannerStyle', 'success');
             $request->session()->flash('flash.banner', 'Driver Created');
+            $request->session()->flash('flash.is_existing', false);
+            $request->session()->flash('flash.driver_id', $driver->id); // Pass driver ID to frontend
         }
         else{
             $request->session()->flash('flash.bannerStyle', 'danger');
@@ -95,6 +156,44 @@ class RegularDriverController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    /**
+     * Link driver to transport transaction via TransportDriverVehicle
+     */
+    private function linkDriverToTransaction($driverId, $transportTransId, $transportJobId, $vehicleId = null)
+    {
+        // Check if link already exists
+        $existingLink = TransportDriverVehicle::where('transport_trans_id', $transportTransId)
+            ->where('transport_job_id', $transportJobId)
+            ->first();
+
+        if ($existingLink) {
+            // Update existing link with new driver (and vehicle if provided)
+            $existingLink->regular_driver_id = $driverId;
+            if ($vehicleId) {
+                $existingLink->regular_vehicle_id = $vehicleId;
+            }
+            // Set multiple dates to ensure this is recognized as most recent
+            // Use date_loaded as it's earlier in COALESCE than date_scheduled
+            $existingLink->date_scheduled = now();
+            $existingLink->date_loaded = now();
+            $existingLink->is_loaded = true;
+            $existingLink->is_transport_scheduled = true;
+            $existingLink->save();
+        } else {
+            // Create new link - need vehicle_id (use null/default if not provided)
+            $link = TransportDriverVehicle::create([
+                'transport_trans_id' => $transportTransId,
+                'transport_job_id' => $transportJobId,
+                'regular_driver_id' => $driverId,
+                'regular_vehicle_id' => $vehicleId ?? 1, // Default to "N/A" vehicle if none provided
+                'date_scheduled' => now(),
+                'date_loaded' => now(), // Set earlier date in COALESCE priority
+                'is_transport_scheduled' => true,
+                'is_loaded' => true,
+            ]);
+        }
     }
 
     /**

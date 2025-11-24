@@ -15,20 +15,72 @@ export function useTransactionForms() {
   });
 
   const createDriver = (toggleShowDriver) => {
-    driverForm.post(route('regular_driver.store'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        // Reset form fields
-        driverForm.first_name = null;
-        driverForm.last_name = null;
-        driverForm.cell_no = null;
-        driverForm.comment = null;
-        toggleShowDriver();
-      },
-      onError: (e) => {
-        console.log(e);
-      },
-    });
+    driverForm
+      .transform((data) => ({
+        ...data,
+        transporter_id: usePage().props.selected_transaction?.transporter_id || null,
+        transport_trans_id: usePage().props.selected_transaction?.id || null,
+        transport_job_id: usePage().props.selected_transaction?.transport_job?.id || null,
+        regular_vehicle_id:
+          usePage().props.selected_transaction?.transport_job?.transport_driver_vehicle
+            ?.regular_vehicle_id || null,
+      }))
+      .post(route('regular_driver.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+          // Get flash messages from page props (Inertia automatically updates this)
+          const flash = usePage().props.jetstream?.flash;
+
+          // Show notification based on whether driver is new or existing
+          if (flash && flash.banner) {
+            const isExisting =
+              flash.is_existing || flash.banner.includes('Similar driver found');
+            const style = flash.bannerStyle || 'success';
+            const message = flash.banner;
+
+            if (window.swal) {
+              window
+                .swal({
+                  title: isExisting ? 'Existing Driver Linked' : 'Driver Created',
+                  text: message + '\n\nDriver has been linked to this transaction.',
+                  icon:
+                    style === 'info'
+                      ? 'info'
+                      : style === 'success'
+                        ? 'success'
+                        : 'warning',
+                  button: 'OK',
+                })
+                .then(() => {
+                  window.location.reload();
+                });
+            } else {
+              // No swal available, reload immediately
+              window.location.reload();
+            }
+          } else {
+            // No flash message, reload immediately
+            window.location.reload();
+          }
+
+          // Reset form fields
+          driverForm.first_name = null;
+          driverForm.last_name = null;
+          driverForm.cell_no = null;
+          driverForm.comment = null;
+          toggleShowDriver();
+        },
+        onError: (e) => {
+          if (window.swal) {
+            window.swal({
+              title: 'Error',
+              text: 'Failed to create/link driver',
+              icon: 'error',
+              button: 'OK',
+            });
+          }
+        },
+      });
   };
 
   // Vehicle creation form
@@ -39,15 +91,72 @@ export function useTransactionForms() {
   });
 
   const createVehicle = (toggleShowVehicle) => {
-    vehicleForm.post(route('regular_vehicle.store'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        toggleShowVehicle();
-      },
-      onError: (e) => {
-        console.log(e);
-      },
-    });
+    vehicleForm
+      .transform((data) => ({
+        ...data,
+        transporter_id: usePage().props.selected_transaction?.transporter_id || null,
+        transport_trans_id: usePage().props.selected_transaction?.id || null,
+        transport_job_id: usePage().props.selected_transaction?.transport_job?.id || null,
+        regular_driver_id:
+          usePage().props.selected_transaction?.transport_job?.transport_driver_vehicle
+            ?.regular_driver_id || null,
+      }))
+      .post(route('regular_vehicle.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+          // Get flash messages from page props (Inertia automatically updates this)
+          const flash = usePage().props.jetstream?.flash;
+
+          // Show notification based on whether vehicle is new or existing
+          if (flash && flash.banner) {
+            const isExisting =
+              flash.is_existing || flash.banner.includes('Similar vehicle found');
+            const style = flash.bannerStyle || 'success';
+            const message = flash.banner;
+            const vehicleId = flash.vehicle_id;
+
+            if (window.swal) {
+              window
+                .swal({
+                  title: isExisting ? 'Existing Vehicle Linked' : 'Vehicle Created',
+                  text: message + '\n\nVehicle has been linked to this transaction.',
+                  icon:
+                    style === 'info'
+                      ? 'info'
+                      : style === 'success'
+                        ? 'success'
+                        : 'warning',
+                  button: 'OK',
+                })
+                .then(() => {
+                  window.location.reload();
+                });
+            } else {
+              // No swal available, reload immediately
+              window.location.reload();
+            }
+          } else {
+            // No flash message, reload immediately
+            window.location.reload();
+          }
+
+          // Reset form fields
+          vehicleForm.reg_no = null;
+          vehicleForm.comment = null;
+          vehicleForm.vehicle_type_id = 1;
+          toggleShowVehicle();
+        },
+        onError: () => {
+          if (window.swal) {
+            window.swal({
+              title: 'Error',
+              text: 'Failed to create/link vehicle',
+              icon: 'error',
+              button: 'OK',
+            });
+          }
+        },
+      });
   };
 
   // Transaction link form (for split loads)
@@ -62,8 +171,8 @@ export function useTransactionForms() {
         onSuccess: () => {
           window.swal(usePage().props.jetstream.flash?.banner || '');
         },
-        onError: (e) => {
-          console.log(e);
+        onError: () => {
+          // Error handled by Inertia
         },
       });
     }

@@ -10,26 +10,52 @@ export function useTransportTab(props, combined_Form) {
   const { query: transporterQuery, filteredItems: filteredTransporters } =
     useFilteredList(props.all_transporters, 'last_legal_name');
 
-  // Filter vehicles by selected transporter
+  // Filter vehicles by selected transporter - show only vehicles for this transporter or unallocated
   const vehiclesForTransporter = computed(() => {
     if (!combined_Form.transporter_id || !combined_Form.transporter_id.id) {
       return props.all_vehicles;
     }
+
     const transporterId = combined_Form.transporter_id.id;
-    return props.all_vehicles.filter(
-      (vehicle) => vehicle.transporter && vehicle.transporter.id === transporterId
-    );
+
+    return props.all_vehicles.filter((vehicle) => {
+      // Always include "N/A" or generic vehicles
+      if (vehicle.reg_no === 'N/A' || vehicle.reg_no === 'n/a') {
+        return true;
+      }
+
+      // Include vehicles with no transporter (available to be assigned)
+      if (!vehicle.transporter) {
+        return true;
+      }
+
+      // Include vehicles associated with the selected transporter
+      return vehicle.transporter.id === transporterId;
+    });
   });
 
-  // Filter drivers by selected transporter
+  // Filter drivers by selected transporter - show only drivers for this transporter or unallocated
   const driversForTransporter = computed(() => {
     if (!combined_Form.transporter_id || !combined_Form.transporter_id.id) {
       return props.all_drivers;
     }
+
     const transporterId = combined_Form.transporter_id.id;
-    return props.all_drivers.filter(
-      (driver) => driver.transporter && driver.transporter.id === transporterId
-    );
+
+    return props.all_drivers.filter((driver) => {
+      // Always include "Unallocated" driver (generic default)
+      if (driver.first_name === 'Unallocated' || driver.last_name === 'Unallocated') {
+        return true;
+      }
+
+      // Include drivers with no transporter (available to be assigned)
+      if (!driver.transporter) {
+        return true;
+      }
+
+      // Include drivers associated with the selected transporter
+      return driver.transporter.id === transporterId;
+    });
   });
 
   // Vehicle filter (now filtered by transporter)

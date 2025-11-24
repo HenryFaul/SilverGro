@@ -29,6 +29,7 @@ use App\Models\TransportTransaction;
 use App\Models\VehicleType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Log;
 use Spatie\Activitylog\Models\Activity;
 
 class TransactionSummaryController extends Controller
@@ -134,6 +135,7 @@ class TransactionSummaryController extends Controller
 
             return $driver;
         });
+
 
         // Get all vehicles with their associated transporter information
         $all_vehicles = RegularVehicle::with('VehicleType')->get()->map(function ($vehicle) {
