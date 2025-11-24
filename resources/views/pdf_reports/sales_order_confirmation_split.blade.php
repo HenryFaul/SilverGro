@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>Sales Order Confirmation </title>
     <style>
@@ -91,9 +91,37 @@
     <table style="width:100%">
         <tr>
             <td>
-                <img style="float: left" src="{{ $logo }}" width="235" height="110"/>
+                <img style="float: left" src="{{ $logo }}" width="235" height="110" alt="Company Logo" />
             </td>
-            <td style="float: right; text-align: right; font-size: 12px"><span><br><br>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
+            <td style="float: right; text-align: right; font-size: 12px">
+                <span>
+                    <br><br>
+                    @if(isset($pdfSettings))
+                        @if($pdfSettings->po_box)
+                            {{ $pdfSettings->po_box }}<br>
+                        @endif
+                        @if($pdfSettings->street_address)
+                            {{ $pdfSettings->street_address }}<br>
+                        @endif
+                        @if($pdfSettings->city)
+                            {{ $pdfSettings->city }}@if($pdfSettings->postal_code)
+                                , {{ $pdfSettings->postal_code }}
+                            @endif<br>
+                        @endif
+                        @if($pdfSettings->phone)
+                            {{ $pdfSettings->phone }}<br>
+                        @endif
+                        @if($pdfSettings->fax)
+                            {{ $pdfSettings->fax }}<br>
+                        @endif
+                        @if($pdfSettings->email)
+                            Email : <a>{{ $pdfSettings->email }}</a>
+                        @endif
+                    @else
+                        P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952
+                        <br>Email : <a>documents@silvergro.co.za</a>
+                    @endif
+                </span><br><br>
             </td>
         </tr>
 
@@ -193,7 +221,8 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Customer Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->customer_notes}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{{$transport_trans->customer_notes}}</td>
                         </tr>
 
                         </tbody>
@@ -201,7 +230,8 @@
                     </table>
 
                     <p class="table_row_value">
-                        Herewith our confirmation of the SALES ORDER for the following product, including the specific terms and conditions of
+                        Herewith our confirmation of the SALES ORDER for the following product, including the specific
+                        terms and conditions of
                         this order. This document is a confirmation of our telephone order.
                     </p>
                 </div>
@@ -251,15 +281,19 @@
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Cost Price / Metric Ton</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Cost Price / Metric Ton
+                            </td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading">Cost Price / Unit</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Total Cost </td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Total Cost</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading"></td>
                             <td class="table_sections table_row_value"></td>
                         </tr>
@@ -279,7 +313,9 @@
                             </td>
                             <td class="table_sections table_row_value">{{$transport_trans->transport_date_earliest}}</td>
                             <td class="table_sections table_row_heading">Delivery from</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->OffloadingHoursFrom->name}}<</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportJob->OffloadingHoursFrom->name}}
+                                <
+                            </td>
                         </tr>
 
                         <tr class="table_sections">
@@ -323,7 +359,8 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->customer_notes}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{{$transport_trans->customer_notes}}</td>
 
                         </tr>
 
@@ -334,13 +371,20 @@
                     <br>
 
                     <div class="table_row_value">
-                        The buyer accepts the conditions as set out in this "SALES ORDER", unless changes are presented in writing within 24 hours after receiving this
-                        document, for acceptance by the seller. Please sign this document and email a scanned copy to documents@silvergro.co.za. If the buyer does
-                        not sign this document and return it as per the above, the transaction will still be considered as legal and binding. In the event of a quality
-                        dispute, in the event of immediate direct resolution efforts failing, an independent professional will be appointed by the seller at the expense of
-                        the default party. This transaction is subject to the terms, conditions and rules, including the arbitration clause and rules in contract form known
-                        as Sagos 1 (Current Version) with which the parties are fully familiar with and which will be applicable to the extent in which it will not be
-                        contradictory to what the parties agreed upon. FORCE MAJEURE : To be applied as per the SAGOS 1 (Version 09), section 11. We thank you for
+                        The buyer accepts the conditions as set out in this "SALES ORDER", unless changes are presented
+                        in writing within 24 hours after receiving this
+                        document, for acceptance by the seller. Please sign this document and email a scanned copy to
+                        documents@silvergro.co.za. If the buyer does
+                        not sign this document and return it as per the above, the transaction will still be considered
+                        as legal and binding. In the event of a quality
+                        dispute, in the event of immediate direct resolution efforts failing, an independent
+                        professional will be appointed by the seller at the expense of
+                        the default party. This transaction is subject to the terms, conditions and rules, including the
+                        arbitration clause and rules in contract form known
+                        as Sagos 1 (Current Version) with which the parties are fully familiar with and which will be
+                        applicable to the extent in which it will not be
+                        contradictory to what the parties agreed upon. FORCE MAJEURE : To be applied as per the SAGOS 1
+                        (Version 09), section 11. We thank you for
                         the opportunity to do business with you.
                     </div>
 

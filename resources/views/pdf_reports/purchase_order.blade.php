@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>Purchase Contract</title>
     <style>
@@ -91,9 +91,37 @@
     <table style="width:100%">
         <tr>
             <td>
-                <img style="float: left" src="{{ $logo }}" width="235" height="110"/>
+                <img style="float: left" src="{{ $logo }}" width="235" height="110" alt="Company Logo" />
             </td>
-            <td style="float: right; text-align: right; font-size: 12px"><span><br><br>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
+            <td style="float: right; text-align: right; font-size: 12px">
+                <span>
+                    <br><br>
+                    @if(isset($pdfSettings))
+                        @if($pdfSettings->po_box)
+                            {{ $pdfSettings->po_box }}<br>
+                        @endif
+                        @if($pdfSettings->street_address)
+                            {{ $pdfSettings->street_address }}<br>
+                        @endif
+                        @if($pdfSettings->city)
+                            {{ $pdfSettings->city }}@if($pdfSettings->postal_code)
+                                , {{ $pdfSettings->postal_code }}
+                            @endif<br>
+                        @endif
+                        @if($pdfSettings->phone)
+                            {{ $pdfSettings->phone }}<br>
+                        @endif
+                        @if($pdfSettings->fax)
+                            {{ $pdfSettings->fax }}<br>
+                        @endif
+                        @if($pdfSettings->email)
+                            Email : <a>{{ $pdfSettings->email }}</a>
+                        @endif
+                    @else
+                        P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952
+                        <br>Email : <a>documents@silvergro.co.za</a>
+                    @endif
+                </span><br><br>
             </td>
         </tr>
 
@@ -169,7 +197,8 @@
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Product Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->product_notes}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{{$transport_trans->product_notes}}</td>
                         </tr>
 
                         </tbody>
@@ -255,7 +284,8 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Total Selling Price (A)
                             </td>
-                            <td class="table_sections table_row_value"> R {{number_format(round($transport_trans->TransportFinance->selling_price_per_unit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->selling_price_per_unit,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading">Product Zero Rated</td>
                             <td class="table_sections table_row_value">
                                 @if($transport_trans->TransportJob->is_product_zero_rated === 1)
@@ -295,7 +325,8 @@
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Customer Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->customer_notes}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{{$transport_trans->customer_notes}}</td>
                         </tr>
 
                         </tbody>
@@ -309,7 +340,8 @@
                         <tbody>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading">Transporter Name</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->Transporter->last_legal_name}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{{$transport_trans->Transporter->last_legal_name}}</td>
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Order Confirmed By</td>
@@ -323,25 +355,30 @@
                             </td>
                             <td class="table_sections table_row_value">{{$transport_trans->transport_date_earliest}}</td>
                             <td class="table_sections table_row_heading">Rate Basis</td>
-                            <td class="table_sections table_row_value">{{$transport_trans->TransportFinance->TransportRateBasis->name}}<</td>
+                            <td class="table_sections table_row_value">{{$transport_trans->TransportFinance->TransportRateBasis->name}}
+                                <
+                            </td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Transport Date Latest</td>
                             <td class="table_sections table_row_value">{{$transport_trans->transport_date_latest}}</td>
                             <td class="table_sections table_row_heading">Tarrif / Metric Ton</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->selling_price_per_ton,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->selling_price_per_ton,2), 2, '.', ' ')}}</td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">No. Of Loads</td>
                             <td class="table_sections table_row_value">{{$transport_trans->TransportJob->number_loads}}</td>
                             <td class="table_sections table_row_heading">Load Tarrif (B)</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->transport_cost,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->transport_cost,2), 2, '.', ' ')}}</td>
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Transport Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->transport_notes}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{{$transport_trans->transport_notes}}</td>
 
                         </tr>
 
@@ -356,7 +393,8 @@
                         <tbody>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading">Supplier Name</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->Supplier->last_legal_name}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{{$transport_trans->Supplier->last_legal_name}}</td>
                         </tr>
 
                         <tr class="table_sections">
@@ -384,14 +422,16 @@
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Cost Price / Unit</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading" style="width: 20%;">Terms of Payment</td>
                             <td class="table_sections table_row_value">{{$transport_trans->Supplier->TermsOfPayment->value}}</td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Supplier Notes</td>
-                            <td class="table_sections table_row_value" colspan="3">{{$transport_trans->supplier_notes}}</td>
+                            <td class="table_sections table_row_value"
+                                colspan="3">{{$transport_trans->supplier_notes}}</td>
 
                         </tr>
 
@@ -405,30 +445,38 @@
                         <tbody>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Gross Profit A-B-C</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->gross_profit,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->gross_profit,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading">Additional Cost 1</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->additional_cost_1,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->additional_cost_1,2), 2, '.', ' ')}}</td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Gross Profit / Metric Ton
                             </td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->gross_profit_per_ton,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->gross_profit_per_ton,2), 2, '.', ' ')}}</td>
                             <td class="table_sections table_row_heading">Additional Cost 2</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->additional_cost_2,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->additional_cost_2,2), 2, '.', ' ')}}</td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Gross Profit %</td>
-                            <td class="table_sections table_row_value">{{number_format(round($transport_trans->TransportFinance->gross_profit_percent,2), 2, '.', ' ')}} %</td>
+                            <td class="table_sections table_row_value">{{number_format(round($transport_trans->TransportFinance->gross_profit_percent,2), 2, '.', ' ')}}
+                                %
+                            </td>
                             <td class="table_sections table_row_heading">Additional Cost 3</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->additional_cost_3,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->additional_cost_3,2), 2, '.', ' ')}}</td>
                         </tr>
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;"></td>
                             <td class="table_sections table_row_value"></td>
                             <td class="table_sections table_row_heading">Total Cost</td>
-                            <td class="table_sections table_row_value">R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_value">
+                                R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
                         </tr>
 
 
@@ -468,8 +516,6 @@
                                                     <span>{{$approval->User->name}} - </span>
                                                     <span>{{$approval->created_at}}</span>
 
-
-
                                                 @endforeach
 
                                             @endif
@@ -506,8 +552,6 @@
 
                                                     <span>{{$approval->User->name}} - </span>
                                                     <span>{{$approval->created_at}}</span>
-
-
 
                                                 @endforeach
 

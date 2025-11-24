@@ -114,9 +114,36 @@
     <table style="width:100%;">
         <tr>
             <td>
-                <img style="float: left;" src="{{ $logo }}" width="202" height="95" />
+                <img style="float: left;" src="{{ $logo }}" width="202" height="95" alt="Company Logo" />
             </td>
-            <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;"><span>P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952<br>Email : <a>documents@silvergro.co.za</a></span><br><br>
+            <td style="float: right; text-align: right; font-size: 10px; padding-top: 7px;">
+                <span>
+                    @if(isset($pdfSettings))
+                        @if($pdfSettings->po_box)
+                            {{ $pdfSettings->po_box }}<br>
+                        @endif
+                        @if($pdfSettings->street_address)
+                            {{ $pdfSettings->street_address }}<br>
+                        @endif
+                        @if($pdfSettings->city)
+                            {{ $pdfSettings->city }}@if($pdfSettings->postal_code)
+                                , {{ $pdfSettings->postal_code }}
+                            @endif<br>
+                        @endif
+                        @if($pdfSettings->phone)
+                            {{ $pdfSettings->phone }}<br>
+                        @endif
+                        @if($pdfSettings->fax)
+                            {{ $pdfSettings->fax }}<br>
+                        @endif
+                        @if($pdfSettings->email)
+                            Email : <a>{{ $pdfSettings->email }}</a>
+                        @endif
+                    @else
+                        P.O. Box 71658, Rink Street<br>Port Elizabeth, 6001<br>Tel : +27 82 897 5966<br>+27 41 582 1952
+                        <br>Email : <a>documents@silvergro.co.za</a>
+                    @endif
+                </span><br><br>
             </td>
         </tr>
 
