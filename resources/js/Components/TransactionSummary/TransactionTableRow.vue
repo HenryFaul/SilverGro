@@ -3,8 +3,8 @@ import { computed } from 'vue';
 import { CheckIcon, XMarkIcon } from '@heroicons/vue/20/solid';
 import Icon from '@/Components/Icon.vue';
 import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
-import { formatNiceDate } from '@/composables/useDateFormatters';
-import { truncateText } from '@/composables/useTextFormatters';
+import { formatNiceDate } from '@/Composables/useDateFormatters';
+import { truncateText } from '@/Composables/useTextFormatters';
 
 // Helper function for formatting numbers as currency
   const formatNiceNumberInt = (_number) => {
