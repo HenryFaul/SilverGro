@@ -1,27 +1,16 @@
 <script setup>
-  import AppLayout from '@/Layouts/AppLayout.vue';
-  import { computed, ref, watch } from 'vue';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
-  import { router, useForm, usePage, Link } from '@inertiajs/vue3';
-  import { debounce, throttle } from 'lodash';
-  import PaginationModified from '@/Components/UI/PaginationModified.vue';
-  import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { computed, ref, watch } from 'vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { router, useForm, usePage } from '@inertiajs/vue3';
+import { debounce } from 'lodash';
+import PaginationModified from '@/Components/UI/PaginationModified.vue';
+import TradeSlideOver from '@/Components/UI/TradeSlideOver.vue';
 
-  import Icon from '@/Components/Icon.vue';
-  import {
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-    TransitionChild,
-    TransitionRoot,
-  } from '@headlessui/vue';
-  import { XMarkIcon } from '@heroicons/vue/24/outline';
-  import { LinkIcon, PlusIcon, QuestionMarkCircleIcon } from '@heroicons/vue/20/solid';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
-  import VueDatePicker from '@vuepic/vue-datepicker';
-  import '@vuepic/vue-datepicker/dist/main.css';
-
-  const format = () => {
+const format = () => {
     const _date = new Date(filterForm.end_date);
     const day = _date.getDate();
     const month = _date
@@ -49,10 +38,17 @@
     start_date: String,
     end_date: String,
     contract_types: Object,
-    download_url: Object,
+    download_url: String,
     custom_reports: Object,
   });
   const roles_permissions = computed(() => usePage().props.roles_permissions);
+
+  // Watch for flash messages
+  const page = usePage();
+  const downloadUrl = computed(
+    () => page.props.flash?.download_url || props.download_url
+  );
+  const flashError = computed(() => page.props.flash?.error);
 
   let NiceTDate = (date) => {
     const _date = new Date(date);
@@ -284,13 +280,30 @@ let sc = ref(true);
 })*/
 
   const generateExcel = () => {
-    filterForm.get(route('excel_report.transactions.generate'), {
-      only: ['download_url', 'custom_report_id'],
-      preserveScroll: true,
-      onSuccess: (res) => {
-        // console.log(res);
+    router.get(
+      route('excel_report.transactions.generate'),
+      {
+        supplier_name: filterForm.supplier_name,
+        customer_name: filterForm.customer_name,
+        transporter_name: filterForm.transporter_name,
+        product_name: filterForm.product_name,
+        start_date: filterForm.start_date,
+        end_date: filterForm.end_date,
+        contract_type_id: filterForm.contract_type_id,
+        id: filterForm.id,
+        custom_report_id: filterForm.custom_report_id,
       },
-    });
+      {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: (page) => {
+          console.log('Export request completed');
+        },
+        onError: (errors) => {
+          console.error('Export failed:', errors);
+        },
+      }
+    );
   };
 </script>
 
@@ -429,13 +442,41 @@ let sc = ref(true);
                     <div v-else>null</div>
                   </div>
 
+                  <!-- Error message -->
                   <div
-                    class="m-2 p-2"
-                    v-if="download_url">
+                    v-if="flashError"
+                    class="m-2 p-2">
+                    <div class="rounded-md bg-red-50 p-4">
+                      <div class="flex">
+                        <div class="flex-shrink-0">
+                          <svg
+                            class="h-5 w-5 text-red-400"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                              fill-rule="evenodd" />
+                          </svg>
+                        </div>
+                        <div class="ml-3">
+                          <h3 class="text-sm font-medium text-red-800">Export Error</h3>
+                          <div class="mt-2 text-sm text-red-700">
+                            <p>{{ flashError }}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Download button -->
+                  <div
+                    v-if="downloadUrl"
+                    class="m-2 p-2">
                     <a
-                      :href="route('excel_report.transactions.download', download_url)"
-                      target="_blank"
-                      class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                      :href="route('excel_report.transactions.download', downloadUrl)"
+                      class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      target="_blank">
                       Download Excel
                     </a>
                   </div>
@@ -584,38 +625,38 @@ let sc = ref(true);
                 <thead class="bg-indigo-400 text-right">
                   <tr class="font-bold">
                     <th
-                      scope="col"
-                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
+                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase"
+                      scope="col">
                       ID
                     </th>
                     <th
-                      scope="col"
-                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
+                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase"
+                      scope="col">
                       Type
                     </th>
                     <th
-                      scope="col"
-                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
+                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase"
+                      scope="col">
                       DATE
                     </th>
                     <th
-                      scope="col"
-                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
+                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase"
+                      scope="col">
                       Supplier
                     </th>
                     <th
-                      scope="col"
-                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
+                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase"
+                      scope="col">
                       Customer
                     </th>
                     <th
-                      scope="col"
-                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
+                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase"
+                      scope="col">
                       Transporter
                     </th>
                     <th
-                      scope="col"
-                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase">
+                      class="w-2/12 py-4 px-6 text-xs font-semibold tracking-wider text-left text-white uppercase"
+                      scope="col">
                       Product
                     </th>
 

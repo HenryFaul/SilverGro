@@ -19,6 +19,7 @@ use App\Models\TransportJob;
 use App\Models\TransportLoad;
 use App\Models\TransportStatus;
 use App\Models\TransportTransaction;
+use App\Models\TransactionSummaryFlatView;
 use Illuminate\Http\Request;
 
 class CustomReportController extends Controller
@@ -68,6 +69,7 @@ class CustomReportController extends Controller
         $transport_job = TransportJob::first();
         $transport_load = TransportLoad::first();
         $transport_status = TransportStatus::first();
+        $transaction_flat_view = TransactionSummaryFlatView::first();
 
 
         $model_data = array(
@@ -88,6 +90,7 @@ class CustomReportController extends Controller
                ['name'=>get_class($transport_job),'attributes'=> array_keys($transport_job->getAttributes())],
                ['name'=>get_class($transport_load),'attributes'=> array_keys($transport_load->getAttributes())],
                ['name'=>get_class($transport_status),'attributes'=> array_keys($transport_status->getAttributes())],
+               ['name'=>get_class($transaction_flat_view),'attributes'=> $transaction_flat_view ? array_keys($transaction_flat_view->getAttributes()) : []],
            )
         );
 
@@ -99,14 +102,6 @@ class CustomReportController extends Controller
                 'model_data'=>$model_data
             ]
         );
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -137,6 +132,14 @@ class CustomReportController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
     }
 
     /**

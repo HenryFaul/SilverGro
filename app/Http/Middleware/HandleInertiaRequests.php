@@ -45,7 +45,12 @@ class HandleInertiaRequests extends Middleware
             },
             'app_logo'=>$logo,
             'roles_permissions'=>['roles'=>$roles,'permissions'=>$permissions],
-            'unread_notification_count'=>$unread_notification_count
+            'unread_notification_count'=>$unread_notification_count,
+            'flash' => [
+                'download_url' => fn () => $request->session()->get('download_url'),
+                'error' => fn () => $request->session()->get('error'),
+                'success' => fn () => $request->session()->get('success'),
+            ],
         ]);
     }
 }

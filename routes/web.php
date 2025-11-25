@@ -50,6 +50,7 @@ use App\Http\Controllers\TransportTransactionController;
 use App\Models\Customer;
 use App\Models\CustomerParent;
 use App\Models\RegularDriver;
+use App\Models\TransactionSummaryFlatView;
 use App\Models\TransportDriverVehicle;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -178,6 +179,26 @@ Route::middleware([
 
     Route::resource('custom_report_model', CustomReportModelController::class)->middleware('auth')
         ->only(['store']);
+
+    // Test route for flat view
+    Route::get('/test-flat-view', function() {
+        try {
+            $count = TransactionSummaryFlatView::count();
+            $first = TransactionSummaryFlatView::first();
+            return response()->json([
+                'success' => true,
+                'count' => $count,
+                'first_record' => $first ? $first->toArray() : null,
+                'message' => 'Flat view is working!'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    })->middleware('auth');
 
     //Transaction Spreadhseet
 

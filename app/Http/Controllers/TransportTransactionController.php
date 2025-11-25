@@ -40,6 +40,7 @@ use App\Models\TransportOrder;
 use App\Models\TransportRateBasis;
 use App\Models\TransportStatus;
 use App\Models\TransportTransaction;
+use App\Models\TransactionSummaryFlatView;
 use App\Models\User;
 use Carbon\Carbon;
 use Error;
@@ -50,6 +51,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 use JetBrains\PhpStorm\ArrayShape;
+use Log;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -840,7 +842,6 @@ class TransportTransactionController extends Controller
 
     public function generate(Request $request)
     {
-
         $filters = $request->only([
             'supplier_name',
             'customer_name',
@@ -854,7 +855,6 @@ class TransportTransactionController extends Controller
             'custom_report_id'
         ]);
 
-
         $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Supplier')->with('Transporter')->with('Product')
             ->index($filters)
             ->orderBy('transport_date_earliest', 'desc')
@@ -864,15 +864,27 @@ class TransportTransactionController extends Controller
 
             $customer_report = CustomReport::where('id', $request->custom_report_id)->first();
 
+            if (!$customer_report) {
+                Log::error('Custom report not found', ['custom_report_id' => $request->custom_report_id]);
+                return back()->with('error', 'Report not found');
+            }
+
             $datestamp = time();
             $file_name = ':nam_silvergrow_:dat.xlsx';
             $file_name = str_ireplace(':nam', $customer_report->name, $file_name);
             $file_name = str_ireplace(':dat', $datestamp, $file_name);
 
             try {
+                Log::info('Starting export', [
+                    'custom_report_id' => $request->custom_report_id,
+                    'transaction_count' => $transactions->count()
+                ]);
+
                 $spreadsheet = $this->makeExcelDynamic($transactions, $request->custom_report_id);
 
                 if ($spreadsheet != null) {
+                    Log::info('Spreadsheet created successfully');
+
                     $spreadsheet->getProperties()
                         ->setCreator("silvergrow")
                         ->setLastModifiedBy("silvergrow")
@@ -885,26 +897,37 @@ class TransportTransactionController extends Controller
 
                     $filePdf = Storage::put('reports/excel/' . $file_name, $resource);
 
+                    Log::info('File saved', ['file_name' => $file_name]);
 
-                    return inertia(
-                        'Transaction/Index',
-                        [
-                            'download_url' => $file_name
-                        ]
-                    );
+                    // Return back with download_url as a string
+                    return back()->with('download_url', $file_name);
 
+                } else {
+                    Log::error('Spreadsheet returned null');
+                    return back()->with('error', 'Failed to generate spreadsheet');
                 }
 
-
             } catch (Error $e) {
-
-                return "Error with your spreadsheet";
+                Log::error('Error in export', [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                return back()->with('error', 'Error creating spreadsheet: ' . $e->getMessage());
 
             } catch (Exception $e) {
+                Log::error('Exception in export', [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                return back()->with('error', 'Export failed: ' . $e->getMessage());
             }
         }
 
-
+        return back()->with('error', 'No transactions found');
     }
 
     /**
@@ -971,6 +994,27 @@ class TransportTransactionController extends Controller
             $custom_report = CustomReport::where('id', $custom_report_id)->first();
             $custom_report_model = $custom_report->CustomReportModels;
 
+            Log::info('makeExcelDynamic called', [
+                'custom_report_id' => $custom_report_id,
+                'report_name' => $custom_report->name,
+                'model_count' => $custom_report_model->count()
+            ]);
+
+            // Check if this report uses the TransactionSummaryFlatView
+            $uses_flat_view = $custom_report_model->contains(function ($model) {
+                Log::info('Checking model', ['class_name' => $model->class_name]);
+                return $model->class_name === 'App\\Models\\TransactionSummaryFlatView';
+            });
+
+            Log::info('Flat view check result', ['uses_flat_view' => $uses_flat_view]);
+
+            // If using flat view, use the simplified export method
+            if ($uses_flat_view) {
+                Log::info('Using flat view export method');
+                return $this->makeExcelFromFlatView($transactions, $custom_report);
+            }
+
+            Log::info('Using standard export method');
 
             $transport_transaction = TransportTransaction::first();
             $customer = Customer::first();
@@ -1762,6 +1806,146 @@ class TransportTransactionController extends Controller
 
 
         return null;
+    }
+
+    /**
+     * Create Excel export from TransactionSummaryFlatView
+     * This is a simplified export method that works directly with the flattened view
+     */
+    public function makeExcelFromFlatView($transactions, $custom_report): ?Spreadsheet
+    {
+        try {
+            // Increase limits for large exports
+            ini_set('memory_limit', '512M');
+            set_time_limit(300); // 5 minutes
+
+            Log::info('Starting makeExcelFromFlatView', [
+                'transaction_count' => $transactions->count(),
+                'custom_report_id' => $custom_report->id,
+                'custom_report_name' => $custom_report->name
+            ]);
+
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet()->setTitle(substr($custom_report->name, 0, 31));
+
+            $styleArray1 = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN
+                    ]
+                ],
+                'font' => array(
+                    'bold' => true
+                )
+            ];
+
+            // Get transaction IDs from the filtered transactions
+            $transaction_ids = $transactions->pluck('id')->toArray();
+            $total_ids = count($transaction_ids);
+            Log::info('Transaction IDs for flat view export', ['total_count' => $total_ids]);
+
+            // Get the selected attributes from the custom report
+            $selected_attributes = $custom_report->CustomReportModels
+                ->where('class_name', 'App\\Models\\TransactionSummaryFlatView')
+                ->pluck('attribute_name')
+                ->toArray();
+
+            Log::info('Selected attributes', ['count' => count($selected_attributes)]);
+
+            // If no attributes selected, get one record to determine all attributes
+            if (empty($selected_attributes)) {
+                $sample = TransactionSummaryFlatView::first();
+                if ($sample) {
+                    $selected_attributes = array_keys($sample->getAttributes());
+                    Log::info('Using all attributes', ['count' => count($selected_attributes)]);
+                } else {
+                    Log::error('No data in flat view to determine attributes');
+                    return null;
+                }
+            }
+
+            // Set headers
+            $col = 1;
+            foreach ($selected_attributes as $attribute) {
+                $sheet->setCellValue([$col, 1], $attribute);
+                $col++;
+            }
+
+            // Apply header styling
+            $sheet->getStyle([1, 1, $col - 1, 1])->applyFromArray($styleArray1);
+
+            // Process data in chunks to avoid memory issues
+            $row = 2;
+            $chunk_size = 500; // Process 500 records at a time
+            $chunks = array_chunk($transaction_ids, $chunk_size);
+            $total_chunks = count($chunks);
+
+            Log::info('Processing in chunks', ['total_chunks' => $total_chunks, 'chunk_size' => $chunk_size]);
+
+            foreach ($chunks as $chunk_index => $chunk) {
+                Log::info("Processing chunk", ['chunk' => $chunk_index + 1, 'of' => $total_chunks]);
+
+                // Fetch this chunk of data
+                $flat_data = TransactionSummaryFlatView::whereIn('transaction_id', $chunk)->get();
+
+                Log::info('Fetched chunk data', ['records' => $flat_data->count()]);
+
+                if ($flat_data->isEmpty()) {
+                    Log::warning('No data in chunk', ['chunk' => $chunk_index + 1]);
+                    continue;
+                }
+
+                // Populate data rows for this chunk
+                foreach ($flat_data as $record) {
+                    $col = 1;
+                    foreach ($selected_attributes as $attribute) {
+                        $value = $record->$attribute ?? '';
+                        $sheet->setCellValue([$col, $row], $value);
+                        $col++;
+                    }
+                    $row++;
+                }
+
+                // Free memory
+                unset($flat_data);
+                gc_collect_cycles();
+            }
+
+            $total_rows = $row - 2;
+            Log::info('Populated spreadsheet', ['rows' => $total_rows, 'cols' => count($selected_attributes)]);
+
+            // Auto-size columns
+            foreach ($sheet->getColumnIterator() as $column) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            }
+
+            // Page setup
+            $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
+            $sheet->getPageSetup()->setFitToPage(true);
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+
+            Log::info('makeExcelFromFlatView completed successfully');
+            return $spreadsheet;
+
+        } catch (Error $e) {
+            Log::error('Error in makeExcelFromFlatView (Error)', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        } catch (\Exception $e) {
+            Log::error('Exception in makeExcelFromFlatView', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
     }
 
     public function makeExcel($transactions): ?Spreadsheet
