@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PdfSetting;
 use App\Models\SalesOrder;
+use App\Models\TransLinkSplit;
 use App\Models\TransportTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -78,6 +79,41 @@ class SalesOrderController extends Controller
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
 
+        // Get split data if it's a split load
+        $split_data = null;
+        if ($transport_trans->is_split_load) {
+            $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id', '=', $transport_trans->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance')->with('TransportLoad'))->first();
+
+            $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
+
+            if (isset($primary_linked_trans_split->transport_trans_id)) {
+                $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
+                    ->with(['TransportTransaction' => function ($query) {
+                        $query->with([
+                            'Customer' => function ($query) {
+                                $query->with(['InvoiceBasis', 'TermsOfPaymentBasis', 'TermsOfPayment', 'addressablePhysical', 'contactable.numberable', 'contactable.emailable']);
+                            },
+                            'Supplier',
+                            'Transporter',
+                            'Product',
+                            'TransportFinance',
+                            'TransportLoad' => function ($query) {
+                                $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing', 'PackagingOutgoing', 'ProductSource', 'DeliveryAddress']);
+                            },
+                            'TransportJob' => function ($query) {
+                                $query->with(['OffloadingHoursFrom', 'OffloadingHoursTo']);
+                            }
+                        ])->orderBy('sl_global_id', 'desc');
+                    }])
+                    ->get();
+
+                $split_data = [
+                    'primary_linked_trans_split' => $primary_trans,
+                    'linked_trans_split' => $linked_trans_split,
+                ];
+            }
+        }
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
         $user_name = Auth::user()->name;
@@ -96,11 +132,18 @@ class SalesOrderController extends Controller
             'rules_with_approvals'=>$rules_with_approvals,
             'user_name'=>$user_name,
             'now'=>$now,
-            'app_version'=>$app_version
+            'app_version'=>$app_version,
+            'split_data'=>$split_data
         ];
 
-        $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_v3',$data);
-        $pdf->setPaper('A4', 'portrait');
+        // Check if the load is split and set the orientation and view accordingly
+        if ($transport_trans->is_split_load) {
+            $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_split_v3', $data);
+            $pdf->setPaper('A4', 'landscape');
+        } else {
+            $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_v3',$data);
+            $pdf->setPaper('A4', 'portrait');
+        }
 
         return $pdf->stream();
 
@@ -123,6 +166,39 @@ class SalesOrderController extends Controller
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
 
+        // Get split data if it's a split load
+        $split_data = null;
+        if ($transport_trans->is_split_load) {
+            $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id', '=', $transport_trans->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance')->with('TransportLoad'))->first();
+
+            $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
+
+            if (isset($primary_linked_trans_split->transport_trans_id)) {
+                $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
+                    ->with(['TransportTransaction' => function ($query) {
+                        $query->with([
+                            'Customer',
+                            'Supplier',
+                            'Transporter',
+                            'Product',
+                            'TransportFinance',
+                            'TransportLoad' => function ($query) {
+                                $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing', 'PackagingOutgoing', 'ProductSource', 'DeliveryAddress']);
+                            },
+                            'TransportJob' => function ($query) {
+                                $query->with(['OffloadingHoursFrom', 'OffloadingHoursTo']);
+                            }
+                        ])->orderBy('sl_global_id', 'desc');
+                    }])
+                    ->get();
+
+                $split_data = [
+                    'primary_linked_trans_split' => $primary_trans,
+                    'linked_trans_split' => $linked_trans_split,
+                ];
+            }
+        }
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
         $user_name = Auth::user()->name;
@@ -142,11 +218,12 @@ class SalesOrderController extends Controller
             'rules_with_approvals'=>$rules_with_approvals,
             'user_name'=>$user_name,
             'now'=>$now,
-            'app_version'=>$app_version
+            'app_version'=>$app_version,
+            'split_data'=>$split_data
         ];
 
         $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_split_v3',$data);
-        $pdf->setPaper('A4', 'portrait');
+        $pdf->setPaper('A4', 'landscape');
 
         return $pdf->stream();
 

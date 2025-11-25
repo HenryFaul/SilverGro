@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PdfSetting;
 use App\Models\PurchaseOrder;
+use App\Models\TransLinkSplit;
 use App\Models\TransportTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -63,20 +64,55 @@ class PurchaseOrderController extends Controller
     public function viewConfirmationPDF(Request $request, $id): Response
     {
 
-        $final_sales_order = false;
+        $final_purchase_order = false;
         // Get PDF settings
         $pdfSettings = PdfSetting::getActive();
         $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
 
-        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
-            ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
-            ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
+        $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment')->with('addressablePhysical')->with('contactable.numberable')->with('contactable.emailable'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
+            ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingIncoming')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsIncoming')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')
+            ->with('TransportJob',fn($query) => $query->with('LoadingHoursFrom')->with('LoadingHoursTo')->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
             ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
 
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
 
+        // Get split data if it's a split load
+        $split_data = null;
+        if ($transport_trans->is_split_load) {
+            $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id', '=', $transport_trans->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
+                ->with('Product')->with('TransportFinance')->with('TransportLoad'))->first();
+
+            $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
+
+            if (isset($primary_linked_trans_split->transport_trans_id)) {
+                $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
+                    ->with(['TransportTransaction' => function ($query) {
+                        $query->with([
+                            'Customer',
+                            'Supplier' => function ($query) {
+                                $query->with(['TermsOfPayment', 'addressablePhysical', 'contactable.numberable', 'contactable.emailable']);
+                            },
+                            'Transporter',
+                            'Product',
+                            'TransportFinance',
+                            'TransportLoad' => function ($query) {
+                                $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing', 'PackagingIncoming', 'ProductSource', 'CollectionAddress']);
+                            },
+                            'TransportJob' => function ($query) {
+                                $query->with(['LoadingHoursFrom', 'LoadingHoursTo']);
+                            }
+                        ])->orderBy('sl_global_id', 'desc');
+                    }])
+                    ->get();
+
+                $split_data = [
+                    'primary_linked_trans_split' => $primary_trans,
+                    'linked_trans_split' => $linked_trans_split,
+                ];
+            }
+        }
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
         $user_name = Auth::user()->name;
@@ -87,7 +123,7 @@ class PurchaseOrderController extends Controller
         $data = [
             'logo' => $logo,
             'pdfSettings' => $pdfSettings,
-            'final_sales_order'=>$final_sales_order,
+            'final_purchase_order'=>$final_purchase_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,
             'sales_order'=>$sales_order,
@@ -95,11 +131,18 @@ class PurchaseOrderController extends Controller
             'rules_with_approvals'=>$rules_with_approvals,
             'user_name'=>$user_name,
             'now'=>$now,
-            'app_version'=>$app_version
+            'app_version'=>$app_version,
+            'split_data'=>$split_data
         ];
 
-        $pdf = PDF::loadView('pdf_reports.purchase_order_confirmation_v3',$data);
-        $pdf->setPaper('A4', 'portrait');
+        // Check if the load is split and set the orientation and view accordingly
+        if ($transport_trans->is_split_load) {
+            $pdf = PDF::loadView('pdf_reports.purchase_order_confirmation_split_v3', $data);
+            $pdf->setPaper('A4','landscape');
+        } else {
+            $pdf = PDF::loadView('pdf_reports.purchase_order_confirmation_v3',$data);
+            $pdf->setPaper('A4', 'portrait');
+        }
 
         return $pdf->stream();
 

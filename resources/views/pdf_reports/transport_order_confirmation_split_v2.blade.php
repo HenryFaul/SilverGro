@@ -77,6 +77,16 @@
             border: none; /* Remove the border around each table section */
         }
 
+        .table_sections_bordered {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        .table_sections_bordered th,
+        .table_sections_bordered td {
+            border: 1px solid black;
+        }
+
         th, td {
             padding: 1px;
         }
@@ -197,11 +207,40 @@
                         <table class="table_sections" style="width:100%;">
                             <tbody>
                             <tr class="table_sections">
-                                <td class="table_sections table_row_heading" style="width: 15%;">Transporter Name:</td>
+                                <td class="table_sections table_row_heading" style="width: 25%;">Transporter Name:</td>
                                 <td class="table_sections table_row_value"
-                                    style="width: 55%;">{{$split_data['primary_linked_trans_split']->Transporter->last_legal_name}}</td>
-                                <td class="table_sections table_row_heading" style="width: 10%;">Att:</td>
+                                    colspan="3">{{$split_data['primary_linked_trans_split']->Transporter->last_legal_name}}</td>
+                            </tr>
 
+                            <tr class="table_sections">
+                                <td class="table_sections table_row_heading" style="width: 25%;">Business Address:</td>
+                                <td class="table_sections table_row_value" colspan="3">
+                                    @if($split_data['primary_linked_trans_split']->Supplier->addressablePhysical == "[]")
+                                        <span>No physical address loaded...</span>
+                                    @else
+                                        <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_1}}</span>
+                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_2)
+                                            ,
+                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_2}}</span>
+                                        @endif
+                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_3)
+                                            ,
+                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_3}}</span>
+                                        @endif
+                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->country)
+                                            ,
+                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->country}}</span>
+                                        @endif
+                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->code)
+                                            ,
+                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->code}}</span>
+                                        @endif
+                                    @endif
+                                </td>
+                            </tr>
+
+                            <tr class="table_sections">
+                                <td class="table_sections table_row_heading" style="width: 25%;">Att:</td>
                                 <td class="table_sections table_row_value" colspan="3">
                                     @if($split_data['primary_linked_trans_split']->Transporter->contactable=="[]")
                                         <span>No contact loaded</span>
@@ -228,54 +267,19 @@
                                                         <span>{{$email->value}}</span>
                                                     @endforeach
                                                 @endif
-
                                             </div>
                                         @endforeach
                                     @endif
                                 </td>
-
                             </tr>
 
                             <tr class="table_sections">
-
-                                <td class="table_sections table_row_heading" style="width: 10%;">Business Address:</td>
-                                <td class="table_sections table_row_value"
-                                    style="width: 55%;">
-
-                                    @if($split_data['primary_linked_trans_split']->Supplier->addressablePhysical == "[]")
-                                        <span>No physical address loaded...</span>
-                                    @else
-                                        <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_1}}</span>
-                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_2)
-                                            ,
-                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_2}}</span>
-                                        @endif
-                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_3)
-                                            ,
-                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_3}}</span>
-                                        @endif
-                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->country)
-                                            ,
-                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->country}}</span>
-                                        @endif
-                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->code)
-                                            ,
-                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->code}}</span>
-                                        @endif
-                                    @endif
+                                <td class="table_sections table_row_heading" style="width: 25%;">Collection Address:
                                 </td>
-                            </tr>
-                            <tr class="table_sections">
-                                <td class="table_sections table_row_heading" style="width: 10%;">Collection Address:
-                                </td>
-                                <td class="table_sections table_row_value"
-                                    style="width: 55%;">
-
+                                <td class="table_sections table_row_value" colspan="3">
                                     <span>{{$split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_1}}</span>
                                     @if($split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_2)
-                                        ,
-                                        {{$split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_2}}
-                                        </span>
+                                        , {{$split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_2}}
                                     @endif
                                     @if($split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_3)
                                         ,
@@ -289,53 +293,45 @@
                                         ,
                                         <span>{{$split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->code}}</span>
                                     @endif
-
                                 </td>
                             </tr>
 
                             <tr class="table_sections">
-                                <td class="table_sections table_row_heading" style="width: 10%;">Transport date
+                                <td class="table_sections table_row_heading" style="width: 25%;">Transport date
                                     earliest
                                 </td>
-                                <td class="table_sections table_row_value"
-                                    style="width: 55%;">
-
+                                <td class="table_sections table_row_value" style="width: 25%;">
                                     {{ $split_data['primary_linked_trans_split']->transport_date_earliest ? $split_data['primary_linked_trans_split']->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}
                                 </td>
-                                <td class="table_sections table_row_heading" style="width: 15%;">Transport date latest
+                                <td class="table_sections table_row_heading" style="width: 25%;">Transport date latest
                                 </td>
-                                <td class="table_sections table_row_value"
-                                    style="width: 20%;">
+                                <td class="table_sections table_row_value" style="width: 25%;">
                                     {{ $split_data['primary_linked_trans_split']->transport_date_latest->format('D d/M/Y')}}
                                 </td>
                             </tr>
 
                             <tr class="table_sections">
-                                <td class="table_sections table_row_heading" style="width: 10%;">Vehicle reg</td>
+                                <td class="table_sections table_row_heading" style="width: 25%;">Vehicle reg</td>
                                 <td class="table_sections table_row_value"
-                                    style="width: 55%;">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->Vehicle->reg_no}}</td>
-                                <td class="table_sections table_row_heading" style="width: 15%;"></td>
-                                <td class="table_sections table_row_value"
-                                    style="width: 20%;"></td>
+                                    colspan="3">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->Vehicle->reg_no}}</td>
                             </tr>
 
                             <tr class="table_sections">
-                                <td class="table_sections table_row_heading" style="width: 10%;">Trailer #1</td>
+                                <td class="table_sections table_row_heading" style="width: 25%;">Trailer #1</td>
                                 <td class="table_sections table_row_value"
-                                    style="width: 55%;">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->trailer_reg_1}}</td>
-                                <td class="table_sections table_row_heading" style="width: 15%;">Trailer #2</td>
+                                    style="width: 25%;">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->trailer_reg_1}}</td>
+                                <td class="table_sections table_row_heading" style="width: 25%;">Trailer #2</td>
                                 <td class="table_sections table_row_value"
-                                    style="width: 20%;">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->trailer_reg_2}}</td>
+                                    style="width: 25%;">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->trailer_reg_2}}</td>
                             </tr>
 
-
                             <tr class="table_sections">
-                                <td class="table_sections table_row_heading" style="width: 10%;">Driver</td>
+                                <td class="table_sections table_row_heading" style="width: 25%;">Driver</td>
                                 <td class="table_sections table_row_value"
-                                    style="width: 55%;">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->Driver->first_name}} {{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->Driver->last_name}}</td>
-                                <td class="table_sections table_row_heading" style="width: 15%;">Cell</td>
+                                    style="width: 25%;">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->Driver->first_name}} {{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->Driver->last_name}}</td>
+                                <td class="table_sections table_row_heading" style="width: 25%;">Cell</td>
                                 <td class="table_sections table_row_value"
-                                    style="width: 20%;">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->Driver->cell_no}}</td>
+                                    style="width: 25%;">{{$split_data['primary_linked_trans_split']->TransportJob->TransportDriverVehicle[0]->Driver->cell_no}}</td>
                             </tr>
 
                             </tbody>
@@ -347,42 +343,60 @@
                         <hr>
                         <li class="section_heading">Split Summary Overview</li>
                         <div>
-                            <table class="table_sections" style="width:100%;">
+                            <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
-                                <tr class="table_sections">
-                                    <td style="width: 10%;" class="table_sections table_row_heading">Transport Order
+                                <tr>
+                                    <td style="width: 10%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Transport
+                                        Order
                                     </td>
-                                    <td style="width: 15%;" class="table_sections table_row_heading">Supplier</td>
-                                    <td style="width: 10%;" class="table_sections table_row_heading">Supplier Loading #
+                                    <td style="width: 15%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Supplier
                                     </td>
-                                    <td style="width: 15%;" class="table_sections table_row_heading">Customer</td>
-                                    <td style="width: 10%;" class="table_sections table_row_heading">Cust Order #</td>
-                                    <td style="width: 10%;" class="table_sections table_row_heading">Cust Offloading #
+                                    <td style="width: 10%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Supplier
+                                        Loading #
                                     </td>
-                                    <td style="width: 15%;" class="table_sections table_row_heading">Transporter</td>
-                                    <td style="width: 15%;" class="table_sections table_row_heading">Product</td>
+                                    <td style="width: 15%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Customer
+                                    </td>
+                                    <td style="width: 10%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Cust Order
+                                        #
+                                    </td>
+                                    <td style="width: 10%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Cust
+                                        Offloading #
+                                    </td>
+                                    <td style="width: 15%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">
+                                        Transporter
+                                    </td>
+                                    <td style="width: 15%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Product
+                                    </td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
 
-                                    <tr class="table_sections" style="width:100%;">
-                                        <td class="table_sections table_row_value">
+                                    <tr style="width:100%;">
+                                        <td style="text-align: left;" class="table_sections_bordered table_row_value">
                                             MQ{{$deal->TransportTransaction->a_mq}}</td>
-                                        <td
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->Supplier->last_legal_name}}</td>
-                                        <td
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportJob->supplier_loading_number}}</td>
+                                        <td style="text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Supplier->last_legal_name}}</td>
+                                        <td style="text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->supplier_loading_number}}</td>
 
-                                        <td
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->Customer->last_legal_name}}</td>
-                                        <td
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportJob->customer_order_number}}</td>
-                                        <td
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number}}</td>
-                                        <td
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->Transporter->last_legal_name}}</td>
-                                        <td
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->Product->name}}</td>
+                                        <td style="text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Customer->last_legal_name}}</td>
+                                        <td style="text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->customer_order_number}}</td>
+                                        <td style="text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number}}</td>
+                                        <td style="text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Transporter->last_legal_name}}</td>
+                                        <td style="text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Product->name}}</td>
                                     </tr>
 
                                 @endforeach
@@ -404,115 +418,156 @@
                                     $total_weight_ton_outgoing += $deal->TransportTransaction->TransportFinance->weight_ton_outgoing;
                                 }
                             @endphp
-                            <table class="table_sections" style="width:100%;">
-                                <tbody>
-                                <tr class="table_sections">
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Transport Order
-                                    </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Product</td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Billing Units
-                                    </td>
-                                    <td style="width: 12.5%;" class="table_sections table_row_heading">Packaging
-                                        Incoming
-                                    </td>
-                                    <td style="width: 12.5%;  text-align: center;"
-                                        class="table_sections table_row_heading">BU In
-                                    </td>
-                                    <td style="width: 12.5%; text-align: right;"
-                                        class="table_sections table_row_heading">Cost PU
-                                    </td>
-                                    <td style="width: 12.5%; text-align: right;"
-                                        class="table_sections table_row_heading">Cost PT
-                                    </td>
-                                    <td style="width: 12.5%;  text-align: center;"
-                                        class="table_sections table_row_heading">Planned TI
-                                    </td>
-                                    <td style="width: 12.5%; text-align: right;"
-                                        class="table_sections table_row_heading">Transport Rate
-                                    </td>
-                                    <td style="width: 12.5%; text-align: right;"
-                                        class="table_sections table_row_heading">Load Rate
-                                    </td>
-                                    <td style="width: 12.5%; text-align: right;"
-                                        class="table_sections table_row_heading">Effective Rate/Ton
-                                    </td>
-                                    <td style="width: 12.5%;  text-align: center;"
-                                        class="table_sections table_row_heading">Planned TO
-                                    </td>
-                                    <td style="width: 12.5%; text-align: right;"
-                                        class="table_sections table_row_heading">Selling Ton
-                                    </td>
 
+                                <!-- First Table: Product and Load Details -->
+                            <br>
+                            <table class="table_sections_bordered" style="width:100%; margin-bottom: 5px;">
+                                <tbody>
+                                <tr>
+                                    <td style="width: 14%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">
+                                        Transport Order
+                                    </td>
+                                    <td style="width: 18%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">
+                                        Product
+                                    </td>
+                                    <td style="width: 16%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">
+                                        Billing Units
+                                    </td>
+                                    <td style="width: 18%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">
+                                        Packaging Incoming
+                                    </td>
+                                    <td style="width: 12%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">BU In
+                                    </td>
+                                    <td style="width: 11%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Cost PU
+                                    </td>
+                                    <td style="width: 11%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Cost PT
+                                    </td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
-
-                                    <tr class="table_sections" style="width:100%;">
-                                        <td style="width: 12.5%;" class="table_sections table_row_value">
+                                    <tr style="width:100%;">
+                                        <td style="width: 14%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">
                                             MQ{{$deal->TransportTransaction->a_mq}}</td>
-                                        <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->Product->name}}</td>
-                                        <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportLoad->BillingUnitsIncoming->name}}</td>
-                                        <td style="width: 12.5%;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportLoad->PackagingIncoming->name }}</td>
-                                        <td style="width: 12.5%;  text-align: center;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportLoad->no_units_incoming}}</td>
-                                        <td style="width: 12.5%; text-align: right;"
-                                            class="table_sections table_row_value">
+                                        <td style="width: 18%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Product->name}}</td>
+                                        <td style="width: 16%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportLoad->BillingUnitsIncoming->name}}</td>
+                                        <td style="width: 18%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportLoad->PackagingIncoming->name }}</td>
+                                        <td style="width: 12%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportLoad->no_units_incoming}}</td>
+                                        <td style="width: 11%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">
                                             R{{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%; text-align: right;"
-                                            class="table_sections table_row_value">
+                                        <td style="width: 11%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">
                                             R{{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton,2), 2, '.', ' ')}}</td>
-
-                                        <td style="width: 12.5%;  text-align: center;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportFinance->weight_ton_incoming}}</td>
-
-                                        <td style="width: 12.5%; text-align: right;"
-                                            class="table_sections table_row_value">
-                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%; text-align: right;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportFinance->TransportRateBasis->name}}</td>
-                                        <td style="width: 12.5%; text-align: right;"
-                                            class="table_sections table_row_value">
-                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_cost,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%;  text-align: center;"
-                                            class="table_sections table_row_value">{{$deal->TransportTransaction->TransportFinance->weight_ton_outgoing}}</td>
-                                        <td style="width: 12.5%; text-align: right;"
-                                            class="table_sections table_row_value">
-                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->selling_price_per_ton,2), 2, '.', ' ')}}</td>
                                     </tr>
-
                                 @endforeach
-                                <tr class="table_sections">
-                                    <td class="table_sections table_row_heading">TOTALS</td>
-                                    <td class="table_sections table_row_heading"></td>
-                                    <td class="table_sections table_row_heading"></td>
-                                    <td class="table_sections table_row_heading"></td>
-                                    <td style=" text-align: center;"
-                                        class="table_sections table_row_heading">{{ number_format($total_units_incoming, 0, '.', ' ') }}</td>
-                                    <td class="table_sections table_row_heading"></td>
-                                    <td class="table_sections table_row_heading"></td>
-                                    <td style=" text-align: center;"
-                                        class="table_sections table_row_heading">{{ number_format($total_weight_ton_incoming, 0, '.', ' ') }}</td>
-                                    <td class="table_sections table_row_heading"></td>
-                                    <td class="table_sections table_row_heading"></td>
-                                    <td class="table_sections table_row_heading"></td>
-                                    <td style=" text-align: center;"
-                                        class="table_sections table_row_heading">{{ number_format($total_weight_ton_outgoing, 0, '.', ' ') }}</td>
-                                    <td class="table_sections table_row_heading"></td>
-                                    <td class="table_sections table_row_heading"></td>
+
+                                <tr>
+                                    <td style="text-align: left;" class="table_sections_bordered table_row_heading">
+                                        TOTALS
+                                    </td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading"></td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading"></td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading"></td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading">{{ number_format($total_units_incoming, 0, '.', ' ') }}</td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading"></td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Second Table: Transport and Pricing Details -->
+                            <table class="table_sections_bordered" style="width:100%;">
+                                <tbody>
+                                <tr>
+                                    <td style="width: 14%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">
+                                        Transport Order
+                                    </td>
+                                    <td style="width: 12%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Planned TI
+                                    </td>
+                                    <td style="width: 15%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Transport Rate
+                                    </td>
+                                    <td style="width: 15%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Load Rate
+                                    </td>
+                                    <td style="width: 16%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Effective Rate/Ton
+                                    </td>
+                                    <td style="width: 14%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Planned TO
+                                    </td>
+                                    <td style="width: 14%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Selling Ton
+                                    </td>
                                 </tr>
 
+                                @foreach ($split_data['linked_trans_split'] as $deal)
+                                    <tr style="width:100%;">
+                                        <td style="width: 14%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">
+                                            MQ{{$deal->TransportTransaction->a_mq}}</td>
+                                        <td style="width: 12%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportFinance->weight_ton_incoming}}</td>
+                                        <td style="width: 15%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}</td>
+                                        <td style="width: 15%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportFinance->TransportRateBasis->name}}</td>
+                                        <td style="width: 16%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_cost,2), 2, '.', ' ')}}</td>
+                                        <td style="width: 14%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportFinance->weight_ton_outgoing}}</td>
+                                        <td style="width: 14%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->selling_price_per_ton,2), 2, '.', ' ')}}</td>
+                                    </tr>
+                                @endforeach
+
+                                <tr>
+                                    <td style="text-align: left;" class="table_sections_bordered table_row_heading">
+                                        TOTALS
+                                    </td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading">{{ number_format($total_weight_ton_incoming, 0, '.', ' ') }}</td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading"></td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading"></td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading"></td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading">{{ number_format($total_weight_ton_outgoing, 0, '.', ' ') }}</td>
+                                    <td style="text-align: left;"
+                                        class="table_sections_bordered table_row_heading"></td>
+                                </tr>
                                 </tbody>
 
                             </table>
                         </div>
                         <hr>
-                        <div style="margin-top: 1px"></div>
-
-                        <div style="margin-top: 5px"></div>
-                        <div class="table_row_heading">Transport notes:</div>
+                        <div style="margin-top: 2px; margin-bottom: 2px;" class="table_row_heading">Transport notes:
+                        </div>
 
                         <div>
                             <table class="table_sections" style="width:100%; border: 1px solid black;">
@@ -649,8 +704,8 @@
                                                     </table>
 
                                                 </div>
-                                                <br>
-                                                <li class="section_heading">Transport Details</li>
+                                                <li class="section_heading" style="margin-top: 4px;">Transport Details
+                                                </li>
                                                 <div>
                                                     <table class="table_sections" style="width:100%;">
                                                         <tbody>
@@ -728,8 +783,9 @@
 
                                                     </table>
                                                 </div>
-                                                <br>
-                                                <li class="section_heading">Product & Tariff Detail</li>
+                                                <li class="section_heading" style="margin-top: 4px;">Product & Tariff
+                                                    Detail
+                                                </li>
                                                 <div>
                                                     <table class="table_sections" style="width:100%;">
                                                         <tbody>
@@ -802,8 +858,7 @@
 
                                                     </table>
                                                 </div>
-                                                <br>
-                                                <li class="section_heading">Loading Detail</li>
+                                                <li class="section_heading" style="margin-top: 4px;">Loading Detail</li>
                                                 <div class="">
                                                     <table class="table_sections" style="width:100%;">
                                                         <tbody>
@@ -891,9 +946,8 @@
 
                                                     </table>
                                                 </div>
-                                                <br>
-                                                <li class="section_heading">Offloading Detail</li>
-
+                                                <li class="section_heading" style="margin-top: 4px;">Offloading Detail
+                                                </li>
                                                 <div class="">
                                                     <table class="table_sections" style="width:100%;">
                                                         <tbody>
@@ -1005,9 +1059,9 @@
 
                     <div class="page-break"></div>
                     <div>
-                        <br>
-                        <li class="section_heading">Standard Terms and Conditions</li>
-                        <br>
+                        <li class="section_heading" style="margin-top: 4px; margin-bottom: 2px;">Standard Terms and
+                            Conditions
+                        </li>
                         <div class="table_row_value">
 
                             <div class="table_row_value">
@@ -1074,9 +1128,7 @@
 
                             </div>
                         </div>
-                        <br>
-                        <li class="section_heading">Special Notes</li>
-                        <br>
+                        <li class="section_heading" style="margin-top: 4px; margin-bottom: 2px;">Special Notes</li>
                         <div class="table_row_value">
 
                             <div class="table_row_value">
@@ -1127,8 +1179,8 @@
                             </div>
                         </div>
 
-                        <br>
-                        <p class="section_heading">Prepared for Silvergro Feed & Grain by {{$user_name}} at {{$now}}
+                        <p class="section_heading" style="margin-top: 4px; margin-bottom: 2px;">Prepared for Silvergro
+                            Feed & Grain by {{$user_name}} at {{$now}}
                             <span></span></p>
                         <div>
                             <table class="" style="width:100%;">
@@ -1137,23 +1189,19 @@
                                     <td class=" table_row_value" style="width:25%;">
                                         <br>
                                         <br>
-                                        <br>
                                         <hr>
                                     </td>
                                     <td class=" table_row_value" style="width:25%;">
                                         <br>
                                         <br>
-                                        <br>
 
                                     </td>
                                     <td class=" table_row_value" style="width:25%;">
                                         <br>
                                         <br>
-                                        <br>
 
                                     </td>
                                     <td class=" table_row_value" style="width:25%;">
-                                        <br>
                                         <br>
                                         <br>
                                         <hr>

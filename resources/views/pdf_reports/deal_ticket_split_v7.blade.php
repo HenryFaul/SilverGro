@@ -412,7 +412,7 @@
                             </table>
                         </div>
                         <div class="">
-                            <p>Planned:</p>
+                            <p style="margin-top: 2px; margin-bottom: 2px;">Planned:</p>
                             <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
                                 <tr class="table_sections_bordered">
@@ -468,7 +468,7 @@
                                 </tbody>
 
                             </table>
-                            <p>Actual:</p>
+                            <p style="margin-top: 4px; margin-bottom: 2px;">Actual:</p>
                             <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
                                 <tr class="table_sections_bordered">

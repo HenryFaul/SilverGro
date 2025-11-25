@@ -313,8 +313,7 @@
 
                     </table>
                 </div>
-                <br>
-                <li class="section_heading">Delivery and Transport</li>
+                <li class="section_heading" style="margin-top: 4px;">Delivery and Transport</li>
                 <div>
                     <table class="table_sections" style="width:100%;">
                         <tbody>
@@ -375,8 +374,7 @@
 
                     </table>
                 </div>
-                <br>
-                <li class="section_heading">Customer Notes</li>
+                <li class="section_heading" style="margin-top: 4px;">Customer Notes</li>
                 <div class="">
                     <table class="table_sections" style="width:100%;">
                         <tbody>
@@ -414,8 +412,7 @@
 
 
                     @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
-                        <br>
-                        <div class="table_row_value">
+                        <div class="table_row_value" style="margin-top: 4px;">
                             Customer to check for broken or wet bags and make comments with qualities on delivery
                             documentation, and bring this to the transporters attention.
                         </div>
@@ -433,15 +430,13 @@
                     @endif
 
                     @if(str_contains(strtolower($transport_trans->product->name), 'bagged') && str_contains(strtolower($transport_trans->product->name), 'chop'))
-                        <br>
-                        <div class="table_row_value">
+                        <div class="table_row_value" style="margin-top: 4px;">
                             Customer to use with 7 days of delivery.
                         </div>
                     @endif
 
                     @if(str_contains(strtolower($transport_trans->TransportLoad->ProductSource->name), 'import'))
-                        <br>
-                        <div class="table_row_value">
+                        <div class="table_row_value" style="margin-top: 4px;">
                             In the event that goods described in this contract are to be delivered out of an African
                             territory, such as Malawi, Zimbabwe, Zambia or Mozambique, no warranty is given in regard to
                             delivery or delivery time. It is hereby agreed that there can be no claim for late, or non
@@ -450,8 +445,7 @@
                     @endif
 
                 </div>
-                <br>
-                <li class="section_heading">Signatures</li>
+                <li class="section_heading" style="margin-top: 4px; margin-bottom: 2px;">Signatures</li>
                 <div>
                     <table class="" style="width:100%;">
                         <tbody>
@@ -459,23 +453,19 @@
                             <td class=" table_row_value" style="width:25%;">
                                 <br>
                                 <br>
+                                <hr>
+                            </td>
+                            <td class=" table_row_value" style="width:25%;">
+                                <br>
                                 <br>
                                 <hr>
                             </td>
                             <td class=" table_row_value" style="width:25%;">
                                 <br>
                                 <br>
-                                <br>
                                 <hr>
                             </td>
                             <td class=" table_row_value" style="width:25%;">
-                                <br>
-                                <br>
-                                <br>
-                                <hr>
-                            </td>
-                            <td class=" table_row_value" style="width:25%;">
-                                <br>
                                 <br>
                                 <br>
                                 <hr>
