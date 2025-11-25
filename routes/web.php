@@ -400,7 +400,7 @@ Route::middleware([
     Route::post('/purchase_order/receive', [PurchaseOrderController::class, 'receive'])->middleware('auth')->name('purchase_order.received');
 
     //PurchaseOrder Confirmation
-    Route::get('/pdf_report/purchase_order_confirmation_view/{id}', [PurchaseOrderController::class, 'viewConfirmationPDF'])->middleware('auth')->name('pdf_report.sales_order_confirmation_view');
+    Route::get('/pdf_report/purchase_order_confirmation_view/{id}', [PurchaseOrderController::class, 'viewConfirmationPDF'])->middleware('auth')->name('pdf_report.purchase_order_confirmation_view');
 
 
     //TransportOrder
