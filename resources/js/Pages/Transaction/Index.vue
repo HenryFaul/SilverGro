@@ -81,6 +81,12 @@ const format = () => {
 
   let curClient = ref(null);
 
+  // Export state management
+  const isExporting = ref(false);
+  const showSuccessNotification = ref(false);
+  const showErrorNotification = ref(false);
+  const notificationMessage = ref('');
+
   //let tableStats = ref("Showing page " + props.transactions.current_page + "  of " + props.transactions.total + " entries.");
 
   let filter = debounce(() => {
@@ -280,6 +286,10 @@ let sc = ref(true);
 })*/
 
   const generateExcel = () => {
+    isExporting.value = true;
+    showSuccessNotification.value = false;
+    showErrorNotification.value = false;
+
     router.get(
       route('excel_report.transactions.generate'),
       {
@@ -297,10 +307,25 @@ let sc = ref(true);
         preserveScroll: true,
         preserveState: true,
         onSuccess: (page) => {
-          console.log('Export request completed');
+          isExporting.value = false;
+          if (downloadUrl.value) {
+            notificationMessage.value = 'Report generated successfully!';
+            showSuccessNotification.value = true;
+            setTimeout(() => {
+              showSuccessNotification.value = false;
+            }, 5000);
+          }
         },
         onError: (errors) => {
-          console.error('Export failed:', errors);
+          isExporting.value = false;
+          notificationMessage.value = 'Export failed. Please try again.';
+          showErrorNotification.value = true;
+          setTimeout(() => {
+            showErrorNotification.value = false;
+          }, 5000);
+        },
+        onFinish: () => {
+          isExporting.value = false;
         },
       }
     );
@@ -317,301 +342,277 @@ let sc = ref(true);
       <div class="max-w-full mx-auto sm:px-4 lg:px-6">
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
           <div class="m-2 p-2">
-            <div class="ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-              <div class="flex col-span-6">
+            <!-- Single Row Filter Layout -->
+            <div class="ml-4 flex flex-wrap items-end gap-2">
+              <!-- Date Filters -->
+              <div>
+                <div class="ml-3 text-indigo-400 text-sm font-bold">Start Date</div>
+                <div class="w-40">
+                  <VueDatePicker
+                    v-model="filterForm.start_date"
+                    :format="formatStart"
+                    :teleport="true"></VueDatePicker>
+                </div>
+              </div>
+              <div>
+                <div class="ml-3 text-indigo-400 text-sm font-bold">End Date</div>
+                <div class="w-40">
+                  <VueDatePicker
+                    v-model="filterForm.end_date"
+                    :format="format"
+                    :teleport="true"></VueDatePicker>
+                </div>
+              </div>
+
+              <!-- Contract Type Dropdown -->
+              <div>
+                <select
+                  v-model="filterForm.contract_type_id"
+                  class="input-filter-l w-40 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option :value="null">All contracts</option>
+                  <option
+                    v-for="n in contract_types"
+                    :key="n.id"
+                    :value="n.id">
+                    {{ n.name }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Search Inputs -->
+              <input
+                v-model.number="filterForm.supplier_name"
+                aria-label="Search"
+                class="block w-40 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Supplier..."
+                type="search" />
+
+              <input
+                v-model.number="filterForm.customer_name"
+                aria-label="Search"
+                class="block w-40 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Customer..."
+                type="search" />
+
+              <input
+                v-model.number="filterForm.transporter_name"
+                aria-label="Search"
+                class="block w-40 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Transporter..."
+                type="search" />
+
+              <input
+                v-model.number="filterForm.product_name"
+                aria-label="Search"
+                class="block w-40 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Product..."
+                type="search" />
+
+              <input
+                v-model.number="filterForm.id"
+                aria-label="Search"
+                class="block w-40 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Contract No..."
+                type="search" />
+
+              <!-- Items Per Page -->
+              <div>
+                <select
+                  v-model="filterForm.show"
+                  class="input-filter-l w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option :value="5">5</option>
+                  <option :value="10">10</option>
+                  <option :value="25">25</option>
+                  <option :value="100">100</option>
+                  <option :value="200">200</option>
+                  <option :value="500">500</option>
+                </select>
+              </div>
+
+              <!-- Action Buttons -->
+              <secondary-button @click="filter">Search</secondary-button>
+              <secondary-button @click="clear">Clear</secondary-button>
+              <secondary-button @click="showTradeSlideOver">Add (+)</secondary-button>
+            </div>
+
+            <!-- Second Row: Report Selector and Export Button -->
+            <div class="ml-4 mt-4 flex flex-wrap items-center gap-4">
+              <!-- Report Selector -->
+              <div
+                v-if="custom_reports != null"
+                class="flex items-end gap-2">
                 <div>
-                  <div class="ml-3 text-indigo-400 text-sm font-bold">Start Date</div>
-                  <div class="w-48">
-                    <VueDatePicker
-                      v-model="filterForm.start_date"
-                      :format="formatStart"
-                      :teleport="true"></VueDatePicker>
-                  </div>
-                </div>
-                <div class="ml-2">
-                  <div class="ml-3 text-indigo-400 text-sm font-bold">End Date</div>
-                  <div class="w-48">
-                    <VueDatePicker
-                      v-model="filterForm.end_date"
-                      :format="format"
-                      :teleport="true"></VueDatePicker>
-                  </div>
-                </div>
-
-                <div class="mt-5 ml-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Select Report
+                  </label>
                   <select
-                    v-model="filterForm.contract_type_id"
-                    class="input-filter-l w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option :value="null">All contracts</option>
-
+                    v-model="filterForm.custom_report_id"
+                    class="block w-64 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     <option
-                      v-for="n in contract_types"
+                      v-for="n in custom_reports"
                       :key="n.id"
                       :value="n.id">
                       {{ n.name }}
                     </option>
                   </select>
                 </div>
-                <div class="mt-5 ml-2">
-                  <select
-                    v-model="filterForm.show"
-                    class="input-filter-l w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option :value="5">5</option>
-                    <option :value="10">10</option>
-                    <option :value="25">25</option>
-                    <option :value="100">100</option>
-                    <option :value="200">200</option>
-                    <option :value="500">500</option>
-                  </select>
+
+                <!-- Export Button with Loading Spinner -->
+                <button
+                  :class="
+                    isExporting
+                      ? 'bg-indigo-400 cursor-not-allowed'
+                      : 'bg-indigo-600 hover:bg-indigo-500 focus-visible:outline-indigo-600'
+                  "
+                  :disabled="isExporting"
+                  class="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  @click="generateExcel">
+                  <svg
+                    v-if="isExporting"
+                    class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"></circle>
+                    <path
+                      class="opacity-75"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      fill="currentColor"></path>
+                  </svg>
+                  <span>{{ isExporting ? 'Generating...' : 'Generate Export' }}</span>
+                </button>
+              </div>
+
+              <!-- Download button -->
+              <div v-if="downloadUrl && !isExporting">
+                <a
+                  :href="route('excel_report.transactions.download', downloadUrl)"
+                  class="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                  target="_blank">
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2" />
+                  </svg>
+                  Download Excel
+                </a>
+              </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="ml-4 mt-4 space-y-2">
+              <!-- Success Notification -->
+              <div
+                v-if="showSuccessNotification"
+                class="rounded-md bg-green-50 p-4 max-w-md animate-fade-in">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <svg
+                      class="h-5 w-5 text-green-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-green-800">
+                      {{ notificationMessage }}
+                    </p>
+                  </div>
+                  <div class="ml-auto pl-3">
+                    <button
+                      class="inline-flex rounded-md bg-green-50 p-1.5 text-green-500 hover:bg-green-100"
+                      @click="showSuccessNotification = false">
+                      <span class="sr-only">Dismiss</span>
+                      <svg
+                        class="h-5 w-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div class="col-span-4 flex">
-                <input
-                  v-model.number="filterForm.supplier_name"
-                  aria-label="Search"
-                  class="block w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="supplier name..."
-                  type="search" />
 
-                <input
-                  v-model.number="filterForm.customer_name"
-                  aria-label="Search"
-                  class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="customer name..."
-                  type="search" />
-
-                <input
-                  v-model.number="filterForm.transporter_name"
-                  aria-label="Search"
-                  class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="transporter name..."
-                  type="search" />
-
-                <input
-                  v-model.number="filterForm.product_name"
-                  aria-label="Search"
-                  class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="product name..."
-                  type="search" />
-
-                <input
-                  v-model.number="filterForm.id"
-                  aria-label="Search"
-                  class="block ml-2 w-48 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="contract no..."
-                  type="search" />
-              </div>
-              <div class="col-span-4 flex">
-                <div>
-                  <secondary-button
-                    class=""
-                    @click="filter">
-                    Search
-                  </secondary-button>
-                  <secondary-button
-                    class="ml-1"
-                    @click="clear">
-                    Clear
-                  </secondary-button>
-                  <secondary-button
-                    class="ml-1"
-                    @click="showTradeSlideOver">
-                    Add (+)
-                  </secondary-button>
-                  <secondary-button
-                    class="ml-1"
-                    @click="generateExcel">
-                    Export
-                  </secondary-button>
-
-                  <div class="mt-3 w-72">
-                    <div
-                      v-if="custom_reports != null"
-                      class="mt-2">
-                      <select
-                        v-model="filterForm.custom_report_id"
-                        class="mt-2 block w-2/3 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        <option
-                          v-for="n in custom_reports"
-                          :key="n.id"
-                          :value="n.id">
-                          {{ n.name }}
-                        </option>
-                      </select>
-                    </div>
-                    <div v-else>null</div>
+              <!-- Error Notification -->
+              <div
+                v-if="showErrorNotification"
+                class="rounded-md bg-red-50 p-4 max-w-md animate-fade-in">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <svg
+                      class="h-5 w-5 text-red-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                        fill-rule="evenodd" />
+                    </svg>
                   </div>
-
-                  <!-- Error message -->
-                  <div
-                    v-if="flashError"
-                    class="m-2 p-2">
-                    <div class="rounded-md bg-red-50 p-4">
-                      <div class="flex">
-                        <div class="flex-shrink-0">
-                          <svg
-                            class="h-5 w-5 text-red-400"
-                            fill="currentColor"
-                            viewBox="0 0 20 20">
-                            <path
-                              clip-rule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-                              fill-rule="evenodd" />
-                          </svg>
-                        </div>
-                        <div class="ml-3">
-                          <h3 class="text-sm font-medium text-red-800">Export Error</h3>
-                          <div class="mt-2 text-sm text-red-700">
-                            <p>{{ flashError }}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-red-800">
+                      {{ notificationMessage }}
+                    </p>
                   </div>
-
-                  <!-- Download button -->
-                  <div
-                    v-if="downloadUrl"
-                    class="m-2 p-2">
-                    <a
-                      :href="route('excel_report.transactions.download', downloadUrl)"
-                      class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      target="_blank">
-                      Download Excel
-                    </a>
+                  <div class="ml-auto pl-3">
+                    <button
+                      class="inline-flex rounded-md bg-red-50 p-1.5 text-red-500 hover:bg-red-100"
+                      @click="showErrorNotification = false">
+                      <span class="sr-only">Dismiss</span>
+                      <svg
+                        class="h-5 w-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
+              </div>
 
-                <div class="flex ml-6">
-                  <div class="relative flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="mon"
-                        v-model="mon"
-                        aria-describedby="candidates-description"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                        name="mon"
-                        type="checkbox" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        class="font-medium text-gray-900"
-                        for="mon">
-                        Mon
-                      </label>
-                    </div>
+              <!-- Flash Error (from backend) -->
+              <div
+                v-if="flashError"
+                class="rounded-md bg-red-50 p-4 max-w-md">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <svg
+                      class="h-5 w-5 text-red-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                        fill-rule="evenodd" />
+                    </svg>
                   </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="tue"
-                        v-model="tue"
-                        aria-describedby="candidates-description"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                        name="tue"
-                        type="checkbox" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        class="font-medium text-gray-900"
-                        for="tue">
-                        Tue
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="wed"
-                        v-model="wed"
-                        aria-describedby="candidates-description"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                        name="wed"
-                        type="checkbox" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        class="font-medium text-gray-900"
-                        for="wed">
-                        Wed
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="thu"
-                        v-model="thu"
-                        aria-describedby="candidates-description"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                        name="thu"
-                        type="checkbox" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        class="font-medium text-gray-900"
-                        for="thu">
-                        Thu
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="fri"
-                        v-model="fri"
-                        aria-describedby="candidates-description"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                        name="fri"
-                        type="checkbox" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        class="font-medium text-gray-900"
-                        for="fri">
-                        Fri
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="sat"
-                        v-model="sat"
-                        aria-describedby="candidates-description"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                        name="sat"
-                        type="checkbox" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        class="font-medium text-gray-900"
-                        for="sat">
-                        Sat
-                      </label>
-                    </div>
-                  </div>
-                  <div class="relative ml-2 flex items-start">
-                    <div class="flex h-6 items-center">
-                      <input
-                        id="sun"
-                        v-model="sun"
-                        aria-describedby="candidates-description"
-                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                        name="sun"
-                        type="checkbox" />
-                    </div>
-                    <div class="ml-3 text-sm leading-6">
-                      <label
-                        class="font-medium text-gray-900"
-                        for="sun">
-                        Sun
-                      </label>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">Export Error</h3>
+                    <div class="mt-2 text-sm text-red-700">
+                      <p>{{ flashError }}</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="col-span-4 mb-3"></div>
             </div>
 
             <div>
@@ -695,7 +696,7 @@ let sc = ref(true);
                       {{ transaction.transporter.last_legal_name }}
                     </td>
 
-                    <td class="py-1 px-6">
+                    <td class="py-1 px-6 whitespace-nowrap">
                       {{ transaction.product.name }}
                     </td>
 
@@ -727,3 +728,20 @@ let sc = ref(true);
     </div>
   </AppLayout>
 </template>
+
+<style scoped>
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+</style>
