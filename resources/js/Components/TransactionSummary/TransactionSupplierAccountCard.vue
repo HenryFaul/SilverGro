@@ -1,7 +1,7 @@
 <script setup>
-  import { defineProps, defineEmits } from 'vue';
-  import { Link } from '@inertiajs/vue3';
+  import { ref } from 'vue';
   import InputError from '@/Components/InputError.vue';
+  import AddressModal from '@/Components/UI/AddressModal.vue';
   import {
     Combobox,
     ComboboxButton,
@@ -18,7 +18,9 @@
     collectionAddressQuery: { type: String, default: '' },
   });
 
-  const emit = defineEmits(['update:collectionAddressQuery']);
+  const emit = defineEmits(['update:collectionAddressQuery', 'address-created']);
+
+  const showAddressModal = ref(false);
 </script>
 
 <template>
@@ -112,12 +114,20 @@
             </div>
 
             <div class="mt-2">
-              <Link
+              <button
+                type="button"
                 class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                :href="route('supplier.show', combinedForm.supplier_id)">
+                @click="showAddressModal = true">
                 + Add supplier address
-              </Link>
+              </button>
             </div>
+
+            <AddressModal
+              :related_id="combinedForm.supplier_id?.id"
+              related_class="App\Models\Supplier"
+              :show="showAddressModal"
+              @close="showAddressModal = false"
+              @address-created="emit('address-created')" />
           </div>
         </dd>
       </div>

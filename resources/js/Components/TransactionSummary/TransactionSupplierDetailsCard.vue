@@ -100,6 +100,11 @@ const props = defineProps({
         <dd class="flex items-start gap-x-2">
           <div v-if="filteredLinkedContractsPc && filteredLinkedContractsPc[0]">
             <div>PC:{{ filteredLinkedContractsPc[0].transport_trans_id }}</div>
+            <div
+              v-if="filteredLinkedContractsPc[0].transport_transaction_pc.a_pc"
+              class="font-medium text-indigo-600">
+              Approved: PC{{ filteredLinkedContractsPc[0].transport_transaction_pc.a_pc }}
+            </div>
             <div>
               {{
                 filteredLinkedContractsPc[0].transport_transaction_pc.supplier

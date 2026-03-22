@@ -5,6 +5,7 @@
  * Extracts ~400 lines of form setup logic from Index.vue
  */
 
+import { watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
 export function useTransactionCombinedForm(props) {
@@ -708,6 +709,26 @@ export function useTransactionCombinedForm(props) {
 
     combined_Form.clearErrors();
   };
+
+  // When all_suppliers or all_customers props are refreshed (e.g. after adding a new address),
+  // sync the currently-selected supplier/customer objects so address dropdowns update immediately.
+  watch(
+    () => props.all_suppliers,
+    (newSuppliers) => {
+      const currentId = combined_Form.supplier_id?.id;
+      if (currentId) combined_Form.supplier_id = findById(newSuppliers, currentId);
+    }
+  );
+
+  watch(
+    () => props.all_customers,
+    (newCustomers) => {
+      for (const field of ['customer_id', 'customer_id_2', 'customer_id_3', 'customer_id_4', 'customer_id_5']) {
+        const currentId = combined_Form[field]?.id;
+        if (currentId) combined_Form[field] = findById(newCustomers, currentId);
+      }
+    }
+  );
 
   return {
     combined_Form,

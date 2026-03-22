@@ -114,6 +114,11 @@
           <dd class="flex items-start gap-x-2">
             <div v-if="filteredLinkedContractsSc[0]">
               <div>SC:{{ filteredLinkedContractsSc[0].transport_trans_id }}</div>
+              <div
+                v-if="filteredLinkedContractsSc[0].transport_transaction_pc.a_sc"
+                class="font-medium text-indigo-600">
+                Approved: SC{{ filteredLinkedContractsSc[0].transport_transaction_pc.a_sc }}
+              </div>
               <div>
                 {{
                   filteredLinkedContractsSc[0].transport_transaction_pc.customer
@@ -239,12 +244,20 @@
                 </Combobox>
               </div>
               <div class="mt-2">
-                <Link
-                  :href="route('customer.show', combinedForm.customer_id)"
-                  class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button
+                  type="button"
+                  class="underline text-sm text-indigo-500 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  @click="showAddressModal = true">
                   + Add customer address
-                </Link>
+                </button>
               </div>
+
+              <AddressModal
+                :related_id="combinedForm.customer_id?.id"
+                related_class="App\Models\Customer"
+                :show="showAddressModal"
+                @close="showAddressModal = false"
+                @address-created="emit('address-created')" />
             </div>
           </dd>
         </div>
@@ -536,7 +549,8 @@
 </template>
 
 <script setup>
-  import { Link } from '@inertiajs/vue3';
+  import { ref } from 'vue';
+  import AddressModal from '@/Components/UI/AddressModal.vue';
   import {
     Combobox,
     ComboboxButton,
@@ -601,7 +615,7 @@
     },
   });
 
-  defineEmits([
+  const emit = defineEmits([
     'update:delivery-address-query',
     'update:billing-units-outgoing-query',
     'update:package-outgoing-query',
@@ -610,5 +624,8 @@
     'delete-trans-link',
     'view-contract-link-sc',
     'close-contract-link-sc',
+    'address-created',
   ]);
+
+  const showAddressModal = ref(false);
 </script>

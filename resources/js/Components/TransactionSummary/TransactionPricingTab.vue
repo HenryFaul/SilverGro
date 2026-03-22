@@ -235,9 +235,9 @@
           </div>
 
           <div class="flex justify-between gap-x-4 py-3">
-            <dt class="text-gray-500">Selling Weight (tons)</dt>
+            <dt class="text-gray-500">{{ sellingWeightLabel }}</dt>
             <dd class="text-gray-700">
-              {{ selectedTransaction.transport_finance.weight_ton_outgoing }}
+              {{ sellingWeightTons }}
             </dd>
           </div>
 
@@ -558,6 +558,7 @@
 </template>
 
 <script setup>
+  import { computed } from 'vue';
   import { Switch, SwitchGroup } from '@headlessui/vue';
   import TransactionPackagingSelect from './TransactionPackagingSelect.vue';
   import TransactionBillingUnitsSelect from './TransactionBillingUnitsSelect.vue';
@@ -593,4 +594,18 @@
       required: true,
     },
   });
+
+  const isOffloadBasis = computed(() =>
+    props.selectedTransaction.customer?.invoice_basis?.value === 'Offload Weight'
+  );
+
+  const sellingWeightTons = computed(() =>
+    isOffloadBasis.value
+      ? props.selectedTransaction.transport_finance.weight_ton_outgoing
+      : props.selectedTransaction.transport_finance.weight_ton_incoming
+  );
+
+  const sellingWeightLabel = computed(() =>
+    isOffloadBasis.value ? 'Weight Used — Offload (tons)' : 'Weight Used — Upload (tons)'
+  );
 </script>

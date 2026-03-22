@@ -70,13 +70,11 @@ class TransportFinance extends Model
 
         $transport_Finance = $this;
         $transport_Load = ($transport_Finance->TransportLoad);
-        //get the associated customer
-        $customer = $transport_Finance->TransportTransaction;
-        //get customer Invoice basis
-        $customer_invoice_basis = $customer->InvoiceBasis;
-
         $assigned_user_comm = $transport_Finance->AssignedUserComm;
         $transport_trans = $transport_Finance->TransportTransaction;
+        //get the associated customer and their invoice basis (upload vs offload weight)
+        $customer = $transport_trans->Customer;
+        $customer_invoice_basis = $customer?->InvoiceBasis;
         $transport_job = ($transport_trans->TransportJob);
         $is_split_load = false;
         $deal_ticket = $transport_trans->DealTicket;

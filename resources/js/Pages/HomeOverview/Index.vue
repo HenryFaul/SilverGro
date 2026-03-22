@@ -1,15 +1,13 @@
 <script setup>
   import AppLayout from '@/Layouts/AppLayout.vue';
   import { computed, inject, onBeforeMount, ref, watch } from 'vue';
-  import SecondaryButton from '@/Components/SecondaryButton.vue';
   import { Link, useForm, usePage } from '@inertiajs/vue3';
   import { debounce } from 'lodash';
   import PaginationModified from '@/Components/UI/PaginationModified.vue';
-  import VueDatePicker from '@vuepic/vue-datepicker';
-  import '@vuepic/vue-datepicker/dist/main.css';
   import Icon from '@/Components/Icon.vue';
   import BaseTooltip from '@/Components/UI/BaseTooltip.vue';
   import { CheckIcon, XMarkIcon } from '@heroicons/vue/20/solid';
+  import TransactionFilters from '@/Components/TransactionSummary/TransactionFilters.vue';
 
   const swal = inject('$swal');
 
@@ -503,187 +501,30 @@
       <div
         class="bg-white m-2 shadow-xl sm:rounded-lg flex flex-col overflow-hidden"
         style="height: calc(75vh)">
-        <div
-          class="flex-shrink-0 bg-white px-2 sm:px-4 lg:px-6 py-2 border-b border-gray-200">
-          <div class="flex flex-wrap items-center gap-2">
-            <div class="w-32 sm:w-36">
-              <VueDatePicker
-                v-model="filterForm.start_date"
-                :format="formatStart"
-                :teleport="true"></VueDatePicker>
-            </div>
-            <div class="w-32 sm:w-36">
-              <VueDatePicker
-                v-model="filterForm.end_date"
-                :format="format"
-                :teleport="true"></VueDatePicker>
-            </div>
-            <select
-              v-model="filterForm.contract_type_id"
-              class="input-filter-l w-32 sm:w-36 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm">
-              <option :value="null">All contracts</option>
-              <option
-                v-for="n in contract_types"
-                :key="n.id"
-                :value="n.id">
-                {{ n.name }}
-              </option>
-            </select>
-            <select
-              v-model="filterForm.show"
-              class="input-filter-l w-16 sm:w-20 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm">
-              <option :value="5">5</option>
-              <option :value="10">10</option>
-              <option :value="25">25</option>
-              <option :value="50">50</option>
-              <option :value="100">100</option>
-              <option :value="200">200</option>
-              <option :value="500">500</option>
-            </select>
-            <input
-              v-model.number="filterForm.old_id"
-              aria-label="Search"
-              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
-              placeholder="old no..."
-              type="search" />
-            <input
-              v-model.number="filterForm.id"
-              aria-label="Search"
-              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
-              placeholder="ID no..."
-              type="search" />
-            <input
-              v-model.number="filterForm.a_mq"
-              aria-label="Search"
-              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
-              placeholder="MQ no..."
-              type="search" />
-            <input
-              v-model.number="filterForm.a_pc"
-              aria-label="Search"
-              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
-              placeholder="PC no..."
-              type="search" />
-            <input
-              v-model.number="filterForm.a_sc"
-              aria-label="Search"
-              class="block w-20 sm:w-24 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
-              placeholder="SC no..."
-              type="search" />
-            <input
-              v-model.number="filterForm.supplier_name"
-              aria-label="Search"
-              class="block w-24 sm:w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
-              placeholder="supplier..."
-              type="search" />
-            <input
-              v-model.number="filterForm.customer_name"
-              aria-label="Search"
-              class="block w-24 sm:w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
-              placeholder="customer..."
-              type="search" />
-            <input
-              v-model.number="filterForm.transporter_name"
-              aria-label="Search"
-              class="block w-28 sm:w-32 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
-              placeholder="transporter..."
-              type="search" />
-            <input
-              v-model.number="filterForm.product_name"
-              aria-label="Search"
-              class="block w-24 sm:w-28 rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
-              placeholder="product..."
-              type="search" />
-
-            <secondary-button @click="filter">Search</secondary-button>
-            <secondary-button @click="clear">Clear</secondary-button>
-            <secondary-button @click="toggleDetails">Toggle</secondary-button>
-
-            <div class="flex items-center gap-0.5 sm:gap-1">
-              <input
-                id="mon"
-                v-model="mon"
-                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
-                type="checkbox" />
-              <label
-                class="text-xs text-gray-700"
-                for="mon">
-                Mon
-              </label>
-            </div>
-            <div class="flex items-center gap-0.5 sm:gap-1">
-              <input
-                id="tue"
-                v-model="tue"
-                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
-                type="checkbox" />
-              <label
-                class="text-xs text-gray-700"
-                for="tue">
-                Tue
-              </label>
-            </div>
-            <div class="flex items-center gap-0.5 sm:gap-1">
-              <input
-                id="wed"
-                v-model="wed"
-                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
-                type="checkbox" />
-              <label
-                class="text-xs text-gray-700"
-                for="wed">
-                Wed
-              </label>
-            </div>
-            <div class="flex items-center gap-0.5 sm:gap-1">
-              <input
-                id="thu"
-                v-model="thu"
-                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
-                type="checkbox" />
-              <label
-                class="text-xs text-gray-700"
-                for="thu">
-                Thu
-              </label>
-            </div>
-            <div class="flex items-center gap-0.5 sm:gap-1">
-              <input
-                id="fri"
-                v-model="fri"
-                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
-                type="checkbox" />
-              <label
-                class="text-xs text-gray-700"
-                for="fri">
-                Fri
-              </label>
-            </div>
-            <div class="flex items-center gap-0.5 sm:gap-1">
-              <input
-                id="sat"
-                v-model="sat"
-                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
-                type="checkbox" />
-              <label
-                class="text-xs text-gray-700"
-                for="sat">
-                Sat
-              </label>
-            </div>
-            <div class="flex items-center gap-0.5 sm:gap-1">
-              <input
-                id="sun"
-                v-model="sun"
-                class="h-3 w-3 sm:h-3.5 sm:w-3.5 rounded border-gray-300 text-indigo-600"
-                type="checkbox" />
-              <label
-                class="text-xs text-gray-700"
-                for="sun">
-                Sun
-              </label>
-            </div>
-          </div>
+        <div class="flex-shrink-0 bg-white border-b border-gray-200">
+          <transaction-filters
+            :contract-types="contract_types"
+            :filter-form="filterForm"
+            :format-end="format"
+            :format-start="formatStart"
+            :fri="fri"
+            :mon="mon"
+            :sat="sat"
+            :show-add="false"
+            :sun="sun"
+            :thu="thu"
+            :tue="tue"
+            :wed="wed"
+            @clear="clear"
+            @search="filter"
+            @toggle-details="toggleDetails"
+            @update:fri="fri = $event"
+            @update:mon="mon = $event"
+            @update:sat="sat = $event"
+            @update:sun="sun = $event"
+            @update:thu="thu = $event"
+            @update:tue="tue = $event"
+            @update:wed="wed = $event" />
         </div>
 
         <div class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8">

@@ -201,20 +201,14 @@ class TransportTransactionController extends Controller
             'customer_id' => $found_customer->id
         ]);
 
-        $terms_of_payment = $found_customer->TermsOfPayment->days;
-        $terms_of_payment_days = is_numeric($terms_of_payment) ? $terms_of_payment : 0;
-        $invoice_date = Carbon::parse($request->transport_date_earliest)->tz('Africa/Johannesburg');
-        $invoice_pay_by_date = $invoice_date->addDays($terms_of_payment_days);
-
-
         $transport_invoice_details = TransportInvoiceDetails::create([
             'transport_trans_id' => $transport_trans->id,
             'invoice_id' => $transport_invoice->id,
             'is_invoiced' => false,
             'is_invoice_paid' => false,
             'invoice_paid_date' => null,
-            'invoice_pay_by_date' => $invoice_pay_by_date,
-            'invoice_date' => $invoice_date,
+            'invoice_pay_by_date' => null,
+            'invoice_date' => null,
             'invoice_amount' => 0,
             'cost_price' => 0,
             'selling_price' => 0,

@@ -1,6 +1,6 @@
 <script setup>
   import { computed, onBeforeMount, ref } from 'vue';
-  import { Link, useForm, usePage } from '@inertiajs/vue3';
+  import { Link, router, useForm, usePage } from '@inertiajs/vue3';
   import AppLayout from '@/Layouts/AppLayout.vue';
   import InputError from '@/Components/InputError.vue';
   import SecondaryButton from '@/Components/SecondaryButton.vue';
@@ -440,6 +440,11 @@
   // vehicleSlideProps, getComponentProps now provided by useTransactionHelpers composable
 
   // createDriver, createVehicle, deleteTransLink now provided by useTransactionForms composable
+  // Reload all_suppliers and all_customers after a new address is added inline
+  const reloadAddresses = () => {
+    router.reload({ only: ['all_suppliers', 'all_customers'] });
+  };
+
   // Wrapper functions to pass toggle handlers
   const createProduct = () => createDriver(toggleShowDriver);
   const createProductVehicle = () => createVehicle(toggleShowVehicle);
@@ -458,44 +463,45 @@
     </template>
 
     <div class="p-1">
-      <div class="bg-white overflow-x-auto m-1 p-1 shadow-xl sm:rounded-lg">
+      <div class="bg-white m-1 p-1 shadow-xl sm:rounded-lg">
         <div>
+          <!-- Transaction Filters Component -->
+          <transaction-filters
+            :contract-types="contract_types"
+            :filter-form="filterForm"
+            :format-end="format"
+            :format-start="formatStart"
+            :fri="fri"
+            :mon="mon"
+            :sat="sat"
+            :sun="sun"
+            :thu="thu"
+            :tue="tue"
+            :wed="wed"
+            @clear="clear"
+            @search="filter"
+            @add-trade="showTradeSlideOver"
+            @toggle-details="toggleDetails"
+            @update:mon="mon = $event"
+            @update:tue="tue = $event"
+            @update:wed="wed = $event"
+            @update:thu="thu = $event"
+            @update:fri="fri = $event"
+            @update:sat="sat = $event"
+            @update:sun="sun = $event" />
+
+          <div>
+            <trade-slide-over
+              :show="viewTradeSlideOver"
+              @close="closeTradeSlideOver"
+              @created_trade="doCreatedTrade" />
+          </div>
+
           <div class="px-4 sm:px-6 lg:px-8">
-            <div class="mt-3 flow-root">
+            <div class="mt-1 flow-root">
               <div class="-mx-4 -my-4 sm:-mx-6 lg:-mx-8">
-                <div class="inline-block min-w-full py-2 align-middle">
-                  <!-- Transaction Filters Component -->
-                  <transaction-filters
-                    :contract-types="contract_types"
-                    :filter-form="filterForm"
-                    :format-end="format"
-                    :format-start="formatStart"
-                    :fri="fri"
-                    :mon="mon"
-                    :sat="sat"
-                    :sun="sun"
-                    :thu="thu"
-                    :tue="tue"
-                    :wed="wed"
-                    @clear="clear"
-                    @search="filter"
-                    @add-trade="showTradeSlideOver"
-                    @toggle-details="toggleDetails"
-                    @update:mon="mon = $event"
-                    @update:tue="tue = $event"
-                    @update:wed="wed = $event"
-                    @update:thu="thu = $event"
-                    @update:fri="fri = $event"
-                    @update:sat="sat = $event"
-                    @update:sun="sun = $event" />
-
-                  <div>
-                    <trade-slide-over
-                      :show="viewTradeSlideOver"
-                      @close="closeTradeSlideOver"
-                      @created_trade="doCreatedTrade" />
-                  </div>
-
+                <div class="overflow-x-auto">
+                  <div class="inline-block min-w-full py-2 align-middle">
                   <!-- Transaction Table Component -->
                   <transaction-table
                     :filtered-transactions="filteredTrans"
@@ -507,14 +513,16 @@
                     :transactions="transactions"
                     @sort="sort"
                     @select-transaction="updateSelectedTrans" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="sticky bg-white m-2 p-1 shadow-xl sm:rounded-lg">
+    <div class="sticky bg-white m-2 p-1 shadow-xl sm:rounded-lg">
         <div>
           <div class="px-2 sm:px-3 lg:px-4">
             <div>
@@ -722,9 +730,8 @@
                         :combined-form="combined_Form"
                         :filtered-collection-address="filteredCollectionAddress"
                         :selected-transaction="selected_transaction"
-                        @update:collectionAddressQuery="
-                          (v) => (collectionAddressQuery = v)
-                        " />
+                        @update:collectionAddressQuery="(v) => (collectionAddressQuery = v)"
+                        @address-created="reloadAddresses" />
 
                       <transaction-product-card
                         :combined-form="combined_Form"
@@ -795,7 +802,8 @@
                       @close-split-link="closeSplitLink"
                       @delete-trans-link="deleteTransLink"
                       @view-contract-link-sc="viewContractLinkSc"
-                      @close-contract-link-sc="closeContractLinkSc" />
+                      @close-contract-link-sc="closeContractLinkSc"
+                      @address-created="reloadAddresses" />
                   </div>
 
                   <!-- Tab 111: Multi-Customer Table (Split loads) -->
@@ -4676,6 +4684,5 @@
           </div>
         </div>
       </div>
-    </div>
   </AppLayout>
 </template>

@@ -19,7 +19,7 @@
 
   const query = ref('');
 
-  const emit = defineEmits(['close']);
+  const emit = defineEmits(['close', 'address-created']);
 
   const props = defineProps({
     related_id: Number,
@@ -185,6 +185,7 @@
     form.post(route('address.store'), {
       preserveScroll: true,
       onSuccess: () => {
+        emit('address-created');
         close();
       },
 

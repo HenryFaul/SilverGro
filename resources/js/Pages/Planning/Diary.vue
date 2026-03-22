@@ -535,7 +535,7 @@ const props = defineProps({
                                     </div>
                                     <div
                                       v-if="trans.suppliers_notes"
-                                      class="mt-1">
+                                      class="mt-1 whitespace-normal break-words">
                                       <span class="font-bold">Notes:</span>
                                       <span>
                                         {{ trans.suppliers_notes }}
@@ -543,7 +543,7 @@ const props = defineProps({
                                     </div>
                                     <div
                                       v-else
-                                      class="mt-1">
+                                      class="mt-1 whitespace-normal">
                                       <span class="font-bold">Notes:</span>
                                       <span>None...</span>
                                     </div>
@@ -684,7 +684,7 @@ const props = defineProps({
                                     </div>
                                     <div
                                       v-if="trans.customer_notes"
-                                      class="mt-1">
+                                      class="mt-1 whitespace-normal break-words">
                                       <span class="font-bold">Notes:</span>
                                       <span>
                                         {{ trans.customer_notes }}
@@ -692,7 +692,7 @@ const props = defineProps({
                                     </div>
                                     <div
                                       v-else
-                                      class="mt-1">
+                                      class="mt-1 whitespace-normal">
                                       <span class="font-bold">Notes:</span>
                                       <span>None...</span>
                                     </div>
@@ -815,7 +815,7 @@ const props = defineProps({
                                           <span>
                                             {{
                                               NiceNumber(
-                                                trans.transport_finance.transport_rate
+                                                trans.transport_finance.transport_cost
                                               )
                                             }}
                                           </span>
@@ -824,7 +824,7 @@ const props = defineProps({
                                     </div>
                                     <div
                                       v-if="trans.transport_notes"
-                                      class="mt-1">
+                                      class="mt-1 whitespace-normal break-words">
                                       <span class="font-bold">Notes:</span>
                                       <span>
                                         {{ trans.transport_notes }}
@@ -832,7 +832,7 @@ const props = defineProps({
                                     </div>
                                     <div
                                       v-else
-                                      class="mt-1">
+                                      class="mt-1 whitespace-normal">
                                       <span class="font-bold">Notes:</span>
                                       <span>None...</span>
                                     </div>
@@ -884,7 +884,7 @@ const props = defineProps({
                             <td class=" ">
                               <div :class="card_style">
                                 <div class="">
-                                  <div class="flex-row">
+                                  <div class="flex-row break-words whitespace-normal">
                                     <span class="font-bold">Process notes:</span>
                                     <span v-if="trans.process_notes">
                                       {{ trans.process_notes }}
@@ -892,9 +892,9 @@ const props = defineProps({
                                     <span v-else>None...</span>
                                   </div>
 
-                                  <div class="flex-row mt-3">
+                                  <div class="flex-row mt-3 break-words whitespace-normal">
                                     <span class="font-bold">Traders notes:</span>
-                                    <span v-if="trans.process_notes">
+                                    <span v-if="trans.traders_notes">
                                       {{ trans.traders_notes }}
                                     </span>
                                     <span v-else>None...</span>
