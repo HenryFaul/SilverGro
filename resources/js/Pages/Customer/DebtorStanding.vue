@@ -325,36 +325,35 @@ watch(
                         </td>
 
                         <td class="border-b border-gray-200'">
+                          <!-- Green: within soft credit limit -->
                           <base-tooltip
-                            v-if="debtor.customer.credit_limit > debtor.total_outstanding"
+                            v-if="debtor.customer.credit_limit >= debtor.total_outstanding"
                             content="All Payments Up to Date">
                             <flag-icon class="h-5 w-5 fill-green-500" />
                           </base-tooltip>
 
+                          <!-- Red: hard limit exceeded AND overdue exists -->
                           <base-tooltip
                             v-else-if="
-                              debtor.customer.credit_limit_hard <
-                                debtor.total_outstanding &&
-                              debtor.customer.credit_limit < debtor.total_overdue
+                              debtor.customer.credit_limit_hard < debtor.total_outstanding &&
+                              debtor.total_overdue > 0
                             "
-                            content="Hard Credit Limit exceeded and some payments overdue">
+                            content="Hard Credit Limit exceeded and payments overdue">
                             <flag-icon class="h-5 w-5 fill-red-500" />
                           </base-tooltip>
 
+                          <!-- Orange: hard limit exceeded, no overdue -->
                           <base-tooltip
-                            v-else-if="
-                              debtor.customer.credit_limit < debtor.total_outstanding
-                            "
-                            content="Payment outstanding exceeds Credit Limit">
-                            <flag-icon class="h-5 w-5 fill-yellow-500" />
-                          </base-tooltip>
-
-                          <base-tooltip
-                            v-else-if="
-                              debtor.customer.credit_limit_hard < debtor.total_outstanding
-                            "
+                            v-else-if="debtor.customer.credit_limit_hard < debtor.total_outstanding"
                             content="Hard Credit Limit exceeded">
                             <flag-icon class="h-5 w-5 fill-orange-500" />
+                          </base-tooltip>
+
+                          <!-- Yellow: soft limit exceeded -->
+                          <base-tooltip
+                            v-else-if="debtor.customer.credit_limit < debtor.total_outstanding"
+                            content="Payment outstanding exceeds Credit Limit">
+                            <flag-icon class="h-5 w-5 fill-yellow-500" />
                           </base-tooltip>
                         </td>
 

@@ -315,7 +315,7 @@
                             <td class="table_sections table_row_heading" style="width: 20%;">Cost Price / Metric Ton
                             </td>
                             <td class="table_sections table_row_value">
-                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_ton,2), 2, '.', ' ')}}</td>
                         </tr>
 
                         <tr class="table_sections">
@@ -394,14 +394,6 @@
                                 {{$transport_trans->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number}}
                             </td>
                         </tr>
-                        <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Supplier loading no</td>
-                            <td class="table_sections table_row_value" colspan="3">
-                                {{$transport_trans->TransportJob->supplier_loading_number}}
-                            </td>
-
-                        </tr>
-
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 50%;">Vehicle Registration</td>
                             <td class="table_sections table_row_value"
@@ -495,15 +487,18 @@
                 </div>
 
 
-                @if(str_contains(strtolower($transport_trans->product->name), 'lucerne'))
+                @if(str_contains(strtolower($transport_trans->product->name), 'lucerne') || str_contains(strtolower($transport_trans->product->name), 'bagged'))
                     <br>
+                    <li class="section_heading">Special Notes</li>
+                @endif
+
+                @if(str_contains(strtolower($transport_trans->product->name), 'lucerne'))
                     <div class="table_row_value">
                         Ensure load is fully covered with tarps and protected from rain.
                     </div>
                 @endif
 
                 @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
-                    <br>
                     <div class="table_row_value">
                         Supplier to check for broken or wet bags and remove from loading.
                     </div>
@@ -515,7 +510,7 @@
                         Driver and Customer to do a bag count and sign for goods on the sales and transporter's
                         delivery documentation.
                     </div>
-            @endif
+                @endif
 
         </div>
         <br>

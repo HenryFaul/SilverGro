@@ -325,8 +325,8 @@ const swal = inject('$swal');
 
     if (props.linked_trans_other != null) {
       for (let linked of props.linked_trans_other) {
-        if (linked.transport_transaction.transport_finance.weight_ton_outgoing != null) {
-          mq_weight += linked.transport_transaction.transport_finance.weight_ton_outgoing;
+        if (linked.transport_transaction.transport_finance.weight_ton_outgoing_actual != null) {
+          mq_weight += linked.transport_transaction.transport_finance.weight_ton_outgoing_actual;
         }
       }
     }
@@ -368,9 +368,11 @@ const swal = inject('$swal');
   };
 
   const getTitle = computed(() => {
-    return props.selected_transaction != null
-      ? props.selected_transaction.contract_type.name + props.selected_transaction.id
-      : 'PC Overview';
+    if (props.selected_transaction == null) return 'SC Overview';
+    const base = 'SC:' + props.selected_transaction.id;
+    return props.selected_transaction.a_sc
+      ? base + ' (SC' + props.selected_transaction.a_sc + ')'
+      : base;
   });
 
   const header_styler = computed(
@@ -386,7 +388,14 @@ const swal = inject('$swal');
   <AppLayout :title="getTitle">
     <template #header>
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        <div v-if="selected_transaction != null">SC Overview: {{ getTitle }}</div>
+        <div v-if="selected_transaction != null">
+          SC Overview: SC:{{ selected_transaction.id }}
+          <span
+            v-if="selected_transaction.a_sc"
+            class="ml-2 font-bold text-indigo-600">
+            | Approved SC{{ selected_transaction.a_sc }}
+          </span>
+        </div>
         <div v-else>SC Overview</div>
       </h2>
     </template>
@@ -574,8 +583,12 @@ const swal = inject('$swal');
                                 class="text-indigo-500 font-bold">
                                 SC:{{ transaction.a_sc }}
                               </span>
-                              <span v-if="transaction.a_sc"></span>
-                              <span class="font-bold">ID:{{ transaction.id }}</span>
+                              <div class="font-bold">ID:{{ transaction.id }}</div>
+                              <div
+                                v-if="transaction.old_id"
+                                class="text-xs text-gray-400">
+                                Old:{{ transaction.old_id }}
+                              </div>
                             </td>
                             <td :class="row_styler">
                               {{ transaction.contract_type.name }}
@@ -642,7 +655,7 @@ const swal = inject('$swal');
         </div>
       </div>
 
-      <div class="sticky bg-white m-2 p-2 shadow-xl sm:rounded-lg">
+      <div class="sticky bottom-0 z-10 bg-white m-2 p-2 shadow-xl sm:rounded-lg">
         <div>
           <div class="px-4 sm:px-6 lg:px-8">
             <div>

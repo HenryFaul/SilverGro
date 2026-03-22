@@ -84,8 +84,8 @@ class DebtorStandingController extends Controller
 
                 // Only process contract type 4
                 if ($contract_type_id === 4) {
-                    // If amount paid less than invoice amount
-                    if ($invoice_detail->invoice_amount_paid < $invoice_detail->invoice_amount) {
+                    // Treat as unpaid only if not flagged as paid AND amount not fully settled
+                    if (!$invoice_detail->is_invoice_paid && $invoice_detail->invoice_amount_paid < $invoice_detail->invoice_amount) {
                         $counter++;
 
                         $invoice_balance = ($invoice_detail->invoice_amount - $invoice_detail->invoice_amount_paid);
@@ -204,7 +204,8 @@ class DebtorStandingController extends Controller
                     'TransportTransaction.Customer:id,last_legal_name'
                 ])
                 ->whereHas('TransportInvoiceDetails', function (Builder $query) {
-                    $query->where('outstanding', '>', 0);
+                    $query->where('outstanding', '>', 0)
+                          ->where('is_invoice_paid', false);
                 })
                 ->get();
         }

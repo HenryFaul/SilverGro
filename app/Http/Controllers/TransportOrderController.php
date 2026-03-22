@@ -172,13 +172,19 @@ class TransportOrderController extends Controller
         $now = (Carbon::now()->tz('Africa/Johannesburg'))->toDateTimeLocalString();
         $app_version = env("APP_VERSION_REP", "1");
 
-        // Get primary physical address for Transporter
-        $primaryPhysicalAddress = $transport_trans->Transporter->addressable
-            ->where('is_primary', true)
-            ->filter(function($address) {
-                return $address->AddressType && $address->AddressType->type === 'Physical';
-            })
-            ->first();
+        // Get business address for Transporter — try in order of preference:
+        // 1. Primary + Physical, 2. Any Physical, 3. Primary (any type), 4. Any address
+        $transporterAddresses = $transport_trans->Transporter->addressable;
+
+        $primaryPhysicalAddress =
+            $transporterAddresses->where('is_primary', 1)
+                ->filter(fn($a) => $a->AddressType && $a->AddressType->type === 'Physical')
+                ->first()
+            ?? $transporterAddresses
+                ->filter(fn($a) => $a->AddressType && $a->AddressType->type === 'Physical')
+                ->first()
+            ?? $transporterAddresses->where('is_primary', 1)->first()
+            ?? $transporterAddresses->first();
 
         $data = [
             'logo' => $logo,

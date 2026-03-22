@@ -601,7 +601,7 @@
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width:50%;">Total cost</td>
+                            <td class="table_sections table_row_heading" style="width:50%;">Total Supplier Cost</td>
                             <td class="table_sections table_row_value"
                                 style="background-color: #62FD473F">
                                 R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>

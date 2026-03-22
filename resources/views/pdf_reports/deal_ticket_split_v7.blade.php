@@ -876,7 +876,7 @@
                                     <tr class="table_sections">
                                         <td class="table_sections table_row_heading" style="width: 25%;"></td>
                                         <td class="table_sections table_row_value"></td>
-                                        <td class="table_sections table_row_heading">Total Cost</td>
+                                        <td class="table_sections table_row_heading">Total Supplier Cost</td>
                                         <td class="table_sections table_row_value">
                                             R {{ number_format(round($deal->TransportTransaction->TransportFinance->total_cost_price, 2), 2, '.', ' ') }}</td>
                                     </tr>

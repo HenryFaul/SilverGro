@@ -484,7 +484,7 @@
 
                         <tr class="table_sections">
 
-                            <td class="table_sections table_row_heading" style="width: 25%;">Customer loading number
+                            <td class="table_sections table_row_heading" style="width: 25%;">Customer order number
                             </td>
                             <td class="table_sections table_row_value">
                                 {{$transport_trans->TransportJob->customer_order_number}}
