@@ -263,14 +263,14 @@ return new class extends Migration
 
                 -- Driver/Vehicle Info (Aggregated - pipe-separated)
                 (
-                    SELECT STRING_AGG(
+                    SELECT GROUP_CONCAT(
                         CONCAT_WS(' - ',
                             CONCAT(rd.first_name, ' ', rd.last_name),
                             rv.reg_no,
                             tdv.weighbridge_upload_weight,
                             tdv.weighbridge_offload_weight
-                        ),
-                        ' | '
+                        )
+                        SEPARATOR ' | '
                     )
                     FROM transport_driver_vehicles tdv
                     LEFT JOIN regular_drivers rd ON tdv.regular_driver_id = rd.id
@@ -281,12 +281,12 @@ return new class extends Migration
 
                 -- Transport Status (Aggregated - pipe-separated)
                 (
-                    SELECT STRING_AGG(
+                    SELECT GROUP_CONCAT(
                         CONCAT_WS(': ',
                             se.entity,
                             stype.type
-                        ),
-                        ' | '
+                        )
+                        SEPARATOR ' | '
                     )
                     FROM transport_statuses ts
                     LEFT JOIN status_entities se ON ts.status_entity_id = se.id

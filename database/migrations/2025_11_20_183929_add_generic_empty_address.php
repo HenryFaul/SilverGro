@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use App\Models\Address;
 
@@ -12,6 +13,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
         // Create a generic "No Address" record with ID 1
         Address::updateOrCreate(
             ['id' => 1],
@@ -30,6 +33,8 @@ return new class extends Migration
                 'directions' => 'Generic placeholder address for when no address is specified',
             ]
         );
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
     }
 
     /**

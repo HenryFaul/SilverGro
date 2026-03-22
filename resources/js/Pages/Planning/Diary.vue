@@ -566,7 +566,7 @@ const props = defineProps({
                                                       toolTipGen('Loaded', index)
                                                     ">
                                                     <icon
-                                                      class="mr-3 w-6 h-6 fill-green-300 animate-pulse"
+                                                      class="mr-3 w-6 h-6 fill-orange-400 animate-pulse"
                                                       name="truck" />
                                                   </base-tooltip>
                                                 </div>
@@ -715,7 +715,7 @@ const props = defineProps({
                                                       toolTipGen('Delivered', index)
                                                     ">
                                                     <icon
-                                                      class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse"
+                                                      class="mr-3 w-6 h-6 fill-red-500 animate-pulse"
                                                       name="truck" />
                                                   </base-tooltip>
                                                 </div>

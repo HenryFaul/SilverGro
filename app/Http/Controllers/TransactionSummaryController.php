@@ -576,7 +576,10 @@ class TransactionSummaryController extends Controller
             'operations_alert_notes' => ['nullable', 'string'],
             'driver_vehicle_loading_number' => ['nullable', 'string'],
             'trailer_reg_1' => ['nullable', 'string'],
-            'trailer_reg_2' => ['nullable', 'string']
+            'trailer_reg_2' => ['nullable', 'string'],
+            'date_loaded' => ['nullable', 'date'],
+            'date_onroad' => ['nullable', 'date'],
+            'date_delivered' => ['nullable', 'date'],
         ]);
 
         $cur_date = (Carbon::now())->toDateString();
@@ -586,9 +589,9 @@ class TransactionSummaryController extends Controller
         $is_weighbridge_variance = !(($request->weighbridge_upload_weight == $request->weighbridge_offload_weight));
         //Stamps if changed
         $date_cancelled = $request->is_cancelled && (!($transportDriverVehicle->is_cancelled)) ? $cur_date : $transportDriverVehicle->date_cancelled;
-        $date_loaded = $request->is_loaded && (!($transportDriverVehicle->is_loaded)) ? $cur_date : $transportDriverVehicle->date_loaded;
-        $date_onroad = $request->is_onroad && (!($transportDriverVehicle->is_onroad)) ? $cur_date : $transportDriverVehicle->date_onroad;
-        $date_delivered = $request->is_delivered && (!($transportDriverVehicle->is_delivered)) ? $cur_date : $transportDriverVehicle->date_delivered;
+        $date_loaded = $request->date_loaded ?: ($request->is_loaded && (!($transportDriverVehicle->is_loaded)) ? $cur_date : $transportDriverVehicle->date_loaded);
+        $date_onroad = $request->date_onroad ?: ($request->is_onroad && (!($transportDriverVehicle->is_onroad)) ? $cur_date : $transportDriverVehicle->date_onroad);
+        $date_delivered = $request->date_delivered ?: ($request->is_delivered && (!($transportDriverVehicle->is_delivered)) ? $cur_date : $transportDriverVehicle->date_delivered);
         $date_scheduled = $request->is_transport_scheduled && (!($transportDriverVehicle->is_transport_scheduled)) ? $cur_date : $transportDriverVehicle->date_scheduled;
         $date_paid = $request->is_paid && (!($transportDriverVehicle->is_paid)) ? $cur_date : $transportDriverVehicle->date_paid;
         $date_payment_overdue = $request->is_payment_overdue && (!($transportDriverVehicle->is_payment_overdue)) ? $cur_date : $transportDriverVehicle->date_payment_overdue;

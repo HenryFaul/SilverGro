@@ -3194,6 +3194,11 @@
                                       aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
+                                <input
+                                  v-if="combined_Form.is_loaded"
+                                  v-model="combined_Form.date_loaded"
+                                  type="date"
+                                  class="mt-1 block w-full rounded-md border-0 py-1 px-2 text-xs text-gray-700 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600" />
                               </div>
                             </dd>
                           </div>
@@ -3223,6 +3228,11 @@
                                       aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
+                                <input
+                                  v-if="combined_Form.is_delivered"
+                                  v-model="combined_Form.date_delivered"
+                                  type="date"
+                                  class="mt-1 block w-full rounded-md border-0 py-1 px-2 text-xs text-gray-700 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600" />
                               </div>
                             </dd>
                           </div>
@@ -3252,6 +3262,11 @@
                                       aria-hidden="true" />
                                   </Switch>
                                 </SwitchGroup>
+                                <input
+                                  v-if="combined_Form.is_onroad"
+                                  v-model="combined_Form.date_onroad"
+                                  type="date"
+                                  class="mt-1 block w-full rounded-md border-0 py-1 px-2 text-xs text-gray-700 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600" />
                               </div>
                             </dd>
                           </div>

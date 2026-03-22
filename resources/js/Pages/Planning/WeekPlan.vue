@@ -707,37 +707,44 @@
                               :key="trans.id"
                               :class="DayStyle(trans.transport_date_earliest)">
                               <td class="px-2 py-1">
-                                <div v-if="trans.supplier.terms_of_payment_id == 1">
-                                  <base-tooltip content="Supplier C.O.D account.">
+                                <div class="flex items-center gap-1">
+                                  <base-tooltip
+                                    v-if="trans.supplier.terms_of_payment_id == 1"
+                                    content="Supplier C.O.D account.">
                                     <icon
-                                      class="mr-3 w-6 h-6 fill-red-500"
+                                      class="w-6 h-6 fill-red-500"
                                       name="bell-solid" />
                                   </base-tooltip>
-                                </div>
 
-                                <div
-                                  v-if="
-                                    trans.transport_driver_vehicle.is_payment_overdue
-                                  ">
-                                  <base-tooltip content="Payment overdue.">
+                                  <base-tooltip
+                                    v-if="trans.transport_driver_vehicle.is_payment_overdue"
+                                    content="Payment overdue.">
                                     <icon
-                                      class="mr-3 w-3 h-3 fill-red-500"
+                                      class="w-3 h-3 fill-red-500"
                                       name="dollar" />
                                   </base-tooltip>
-                                </div>
 
-                                <div v-if="hasAnyAlerts(trans)">
-                                  <base-tooltip :content="warningLister(trans)">
+                                  <base-tooltip
+                                    v-if="trans.transport_invoice_details && isPaymentOverdue(trans.transport_invoice_details)"
+                                    content="Invoice payment overdue.">
                                     <icon
-                                      class="mr-3 w-3 h-3 animate-pulse fill-red-500"
+                                      class="w-3 h-3 fill-orange-500"
+                                      name="dollar" />
+                                  </base-tooltip>
+
+                                  <base-tooltip
+                                    v-if="hasAnyAlerts(trans)"
+                                    :content="warningLister(trans)">
+                                    <icon
+                                      class="w-3 h-3 animate-pulse fill-red-500"
                                       name="triangle" />
                                   </base-tooltip>
-                                </div>
 
-                                <div v-if="!trans.include_in_calculations">
-                                  <base-tooltip content="Exclude from calculations.">
+                                  <base-tooltip
+                                    v-if="!trans.include_in_calculations"
+                                    content="Exclude from calculations.">
                                     <icon
-                                      class="mr-3 w-3 h-3 fill-gray-500"
+                                      class="w-3 h-3 fill-gray-500"
                                       name="info" />
                                   </base-tooltip>
                                 </div>
@@ -813,31 +820,21 @@
                                     v-for="(
                                       item, index
                                     ) of trans.transport_driver_vehicle">
-                                    <div v-if="item.is_delivered || item.is_loaded">
-                                      <div v-if="item.is_delivered">
-                                        <base-tooltip
-                                          :content="toolTipGen('Delivered', index)">
-                                          <icon
-                                            class="mr-3 w-6 h-6 fill-green-300 animate-pulse"
-                                            name="truck" />
-                                        </base-tooltip>
-                                      </div>
-
-                                      <div v-if="item.is_loaded">
-                                        <base-tooltip
-                                          :content="toolTipGen('Loaded', index)">
-                                          <icon
-                                            class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse"
-                                            name="truck" />
-                                        </base-tooltip>
-                                      </div>
-                                    </div>
-
-                                    <div v-else>
+                                    <base-tooltip
+                                      v-if="item.is_delivered"
+                                      :content="toolTipGen('Delivered', index)">
                                       <icon
-                                        class="mr-2 w-3 h-3"
-                                        name="cross-solid" />
-                                    </div>
+                                        class="mr-3 w-6 h-6 fill-green-300 animate-pulse"
+                                        name="truck" />
+                                    </base-tooltip>
+
+                                    <base-tooltip
+                                      v-else-if="item.is_loaded"
+                                      :content="toolTipGen('Loaded', index)">
+                                      <icon
+                                        class="mr-3 w-6 h-6 fill-yellow-300 animate-pulse"
+                                        name="truck" />
+                                    </base-tooltip>
                                   </div>
                                 </div>
                               </td>

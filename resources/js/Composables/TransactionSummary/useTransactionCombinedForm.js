@@ -282,16 +282,16 @@ export function useTransactionCombinedForm(props) {
     is_loaded:
       props.selected_transaction.transport_job.transport_driver_vehicle[0]?.is_loaded,
     date_loaded:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_loaded,
+      props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_loaded?.slice(0, 10),
     is_onroad:
       props.selected_transaction.transport_job.transport_driver_vehicle[0]?.is_onroad,
     date_onroad:
-      props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_onroad,
+      props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_onroad?.slice(0, 10),
     is_delivered:
       props.selected_transaction.transport_job.transport_driver_vehicle[0]?.is_delivered,
     date_delivered:
       props.selected_transaction.transport_job.transport_driver_vehicle[0]
-        ?.date_delivered,
+        ?.date_delivered?.slice(0, 10),
     is_transport_scheduled:
       props.selected_transaction.transport_job.transport_driver_vehicle[0]
         ?.is_transport_scheduled,
@@ -671,17 +671,17 @@ export function useTransactionCombinedForm(props) {
       is_loaded:
         props.selected_transaction.transport_job.transport_driver_vehicle[0]?.is_loaded,
       date_loaded:
-        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_loaded,
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_loaded?.slice(0, 10),
       is_onroad:
         props.selected_transaction.transport_job.transport_driver_vehicle[0]?.is_onroad,
       date_onroad:
-        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_onroad,
+        props.selected_transaction.transport_job.transport_driver_vehicle[0]?.date_onroad?.slice(0, 10),
       is_delivered:
         props.selected_transaction.transport_job.transport_driver_vehicle[0]
           ?.is_delivered,
       date_delivered:
         props.selected_transaction.transport_job.transport_driver_vehicle[0]
-          ?.date_delivered,
+          ?.date_delivered?.slice(0, 10),
       is_transport_scheduled:
         props.selected_transaction.transport_job.transport_driver_vehicle[0]
           ?.is_transport_scheduled,

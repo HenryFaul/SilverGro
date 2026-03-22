@@ -383,7 +383,7 @@
     filter();
   };
 
-  let showDetails = ref(true);
+  let showDetails = ref(false);
 
   const toggleDetails = () => {
     showDetails.value === true ? (showDetails.value = false) : (showDetails.value = true);
@@ -417,10 +417,10 @@
 
   const header_styler = computed(
     () =>
-      'sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-200 px-3 py-2 text-left text-sm font-semibold text-gray-900 sm:table-cell'
+      'sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-200 px-1 py-2 text-left text-sm font-semibold text-gray-900 sm:table-cell'
   );
   const row_styler = computed(
-    () => 'whitespace-nowrap border-b px-3 py-1 text-sm text-gray-500 lg:table-cell'
+    () => 'whitespace-nowrap border-b px-1 py-1 text-sm text-gray-500 lg:table-cell'
   );
 
   const isPaymentOverdue = (invoice_details) => {
@@ -692,7 +692,7 @@
               <thead>
                 <tr>
                   <th
-                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-200 py-1 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 lg:pl-8"
+                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-200 py-1 pl-1 pr-1 text-left text-sm font-semibold text-gray-900"
                     scope="col">
                     ID
                   </th>
@@ -1012,7 +1012,14 @@
                   <td
                     v-if="showDetails"
                     :class="row_styler">
-                    {{ transaction.transport_load.no_units_incoming }}
+                    <span
+                      v-if="transaction.transport_finance?.weight_ton_incoming_actual"
+                      class="text-green-600 font-medium">
+                      {{ transaction.transport_finance.weight_ton_incoming_actual }}
+                    </span>
+                    <span v-else>
+                      {{ transaction.transport_load.no_units_incoming }}
+                    </span>
                   </td>
 
                   <td
@@ -1179,22 +1186,22 @@
                             {{ weight_offloaded }}
                           </td>
                           <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
-                            {{ NiceNumber(cost_price) }}
+                            {{ NiceNumberInt(cost_price) }}
                           </td>
                           <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
-                            {{ NiceNumber(trans_cost) }}
+                            {{ NiceNumberInt(trans_cost) }}
                           </td>
                           <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
-                            {{ NiceNumber(other_costs) }}
+                            {{ NiceNumberInt(other_costs) }}
                           </td>
                           <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
-                            {{ NiceNumber(selling_price) }}
+                            {{ NiceNumberInt(selling_price) }}
                           </td>
                           <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
-                            {{ NiceNumber(gp) }}
+                            {{ NiceNumberInt(gp) }}
                           </td>
                           <td class="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
-                            {{ gp_perc }}%
+                            {{ gp_perc?.toFixed(2) }}%
                           </td>
                         </tr>
                       </tbody>
