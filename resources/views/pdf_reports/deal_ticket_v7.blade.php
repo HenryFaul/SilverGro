@@ -375,7 +375,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Customer offloading #</td>
                             <td class="table_sections table_row_value"
-                                style="background-color: #62FD473F">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number}}</td>
+                                style="background-color: #62FD473F">@if($transport_trans->TransportJob && isset($transport_trans->TransportJob->TransportDriverVehicle[0])){{$transport_trans->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number ?? ''}}@endif</td>
                             <td class="table_sections table_row_heading">Customer order #</td>
                             <td class="table_sections table_row_value"
                                 style="background-color: #62FD473F">{{$transport_trans->TransportJob->customer_order_number}}</td>
@@ -423,10 +423,11 @@
                                 colspan="3">{{$transport_trans->Transporter->last_legal_name}}</td>
                         </tr>
 
+                        @if($transport_trans->TransportJob && isset($transport_trans->TransportJob->TransportDriverVehicle[0]))
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 50%;">Vehicle Registration</td>
                             <td class="table_sections table_row_value"
-                                colspan="3">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Vehicle->reg_no}}</td>
+                                colspan="3">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Vehicle->reg_no ?? 'N/A'}}</td>
                         </tr>
 
                         <tr class="table_sections">
@@ -444,14 +445,15 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 50%;">Driver Name</td>
                             <td class="table_sections table_row_value"
-                                colspan="3">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->first_name}} {{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->last_name}}</td>
+                                colspan="3">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->first_name ?? ''}} {{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->last_name ?? ''}}</td>
                         </tr>
 
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 50%;">Driver cell</td>
                             <td class="table_sections table_row_value"
-                                colspan="3">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->cell_no}} </td>
+                                colspan="3">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->cell_no ?? 'N/A'}} </td>
                         </tr>
+                        @endif
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 50%;">Weight Tons Incoming
                             </td>

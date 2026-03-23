@@ -41,6 +41,8 @@ class DealTicketController extends Controller
                 ->with('DeliveryAddress')->with('DeliveryAddress_2')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))
             ->with('DealTicket')->with('TransportFinance', fn($query) => $query->with('TransportRateBasis'))->first();
 
+        abort_if(is_null($transport_trans), 404, 'Transaction #'.$id.' not found.');
+
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
@@ -63,11 +65,11 @@ class DealTicketController extends Controller
             $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id', '=', $transport_trans->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
                 ->with('Product')->with('TransportFinance')->with('TransportLoad'))->first();
 
-            $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
-
+            $primary_trans = null;
             $linked_trans_split = null;
 
-            if (isset($primary_linked_trans_split->transport_trans_id)) {
+            if ($primary_linked_trans_split && isset($primary_linked_trans_split->transport_trans_id)) {
+                $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
                 $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
                     ->with(['TransportTransaction' => function ($query) {
                         $query->with([
@@ -101,68 +103,64 @@ class DealTicketController extends Controller
             $sum_weight_ton_outgoing_planned = 0;
 
 
-            $first = $linked_trans_split->first();
-            $first_transporter_id = $first->TransportTransaction->transporter_id;
-            $first_supplier_id = $first->TransportTransaction->supplier_id;
-            $first_customer_id = $first->TransportTransaction->customer_id;
-            $first_product_id = $first->TransportTransaction->product_id;
-            $first_product_billing_unit_outgoing_id = $first->TransportTransaction->TransportLoad->BillingUnitsOutgoing->id;
-            $first_product_billing_unit_incoming_id = $first->TransportTransaction->TransportLoad->BillingUnitsIncoming->id;
-            $first_transport_rate_basis_id = $first->TransportTransaction->TransportJob->transport_rate_basis_id;
-            $first_transport_rate = $first->TransportTransaction->TransportFinance->transport_rate;
+            if ($linked_trans_split && $linked_trans_split->isNotEmpty()) {
+                $first = $linked_trans_split->first();
+                $first_transporter_id = $first->TransportTransaction->transporter_id;
+                $first_supplier_id = $first->TransportTransaction->supplier_id;
+                $first_customer_id = $first->TransportTransaction->customer_id;
+                $first_product_id = $first->TransportTransaction->product_id;
+                $first_product_billing_unit_outgoing_id = $first->TransportTransaction->TransportLoad->BillingUnitsOutgoing->id;
+                $first_product_billing_unit_incoming_id = $first->TransportTransaction->TransportLoad->BillingUnitsIncoming->id;
+                $first_transport_rate_basis_id = $first->TransportTransaction->TransportJob->transport_rate_basis_id;
+                $first_transport_rate = $first->TransportTransaction->TransportFinance->transport_rate;
 
-            foreach ($linked_trans_split as $split) {
-                if ($split->TransportTransaction->transporter_id !== $first_transporter_id) {
-                    $is_transporter_same = false;
-                }
-                if ($split->TransportTransaction->supplier_id !== $first_supplier_id) {
-                    $is_supplier_same = false;
-                }
-                if ($split->TransportTransaction->customer_id !== $first_customer_id) {
-                    $is_customer_same = false;
-                }
-                if ($split->TransportTransaction->product_id !== $first_product_id) {
-                    $is_product_same = false;
-                }
+                foreach ($linked_trans_split as $split) {
+                    if ($split->TransportTransaction->transporter_id !== $first_transporter_id) {
+                        $is_transporter_same = false;
+                    }
+                    if ($split->TransportTransaction->supplier_id !== $first_supplier_id) {
+                        $is_supplier_same = false;
+                    }
+                    if ($split->TransportTransaction->customer_id !== $first_customer_id) {
+                        $is_customer_same = false;
+                    }
+                    if ($split->TransportTransaction->product_id !== $first_product_id) {
+                        $is_product_same = false;
+                    }
 
-                if ($split->TransportTransaction->TransportLoad->BillingUnitsOutgoing->id !== $first_product_billing_unit_outgoing_id) {
-                    $is_product_billing_units_outgoing_same = false;
-                }
+                    if ($split->TransportTransaction->TransportLoad->BillingUnitsOutgoing->id !== $first_product_billing_unit_outgoing_id) {
+                        $is_product_billing_units_outgoing_same = false;
+                    }
 
-                if ($split->TransportTransaction->TransportLoad->BillingUnitsIncoming->id !== $first_product_billing_unit_incoming_id) {
-                    $is_product_billing_units_incoming_same = false;
-                }
+                    if ($split->TransportTransaction->TransportLoad->BillingUnitsIncoming->id !== $first_product_billing_unit_incoming_id) {
+                        $is_product_billing_units_incoming_same = false;
+                    }
 
-                if ($split->TransportTransaction->TransportJob->transport_rate_basis_id !== $first_transport_rate_basis_id) {
-                    $is_transport_rate_basis_same = false;
-                }
+                    if ($split->TransportTransaction->TransportJob->transport_rate_basis_id !== $first_transport_rate_basis_id) {
+                        $is_transport_rate_basis_same = false;
+                    }
 
-                if ($split->TransportTransaction->TransportFinance->transport_rate !== $first_transport_rate) {
-                    $is_transport_rate_same = false;
-                }
+                    if ($split->TransportTransaction->TransportFinance->transport_rate !== $first_transport_rate) {
+                        $is_transport_rate_same = false;
+                    }
 
-                // Break early if all flags are already false
-                if (!$is_transporter_same && !$is_supplier_same && !$is_customer_same && !$is_product_same && !$is_product_billing_units_outgoing_same && !$is_product_billing_units_incoming_same && !$is_transport_rate_basis_same && !$is_transport_rate_same) {
-                    break;
+                    // Break early if all flags are already false
+                    if (!$is_transporter_same && !$is_supplier_same && !$is_customer_same && !$is_product_same && !$is_product_billing_units_outgoing_same && !$is_product_billing_units_incoming_same && !$is_transport_rate_basis_same && !$is_transport_rate_same) {
+                        break;
+                    }
                 }
-            }
-
-            if (true) {
 
                 foreach ($linked_trans_split as $trans) {
-
                     $transport_finance = $trans->TransportTransaction->TransportFinance;
                     $sum_weight_ton_incoming += $transport_finance->weight_ton_incoming_actual;
                     $sum_weight_ton_outgoing += $transport_finance->weight_ton_outgoing_actual;
 
                     $sum_weight_ton_incoming_planned += $transport_finance->weight_ton_incoming;
                     $sum_weight_ton_outgoing_planned += $transport_finance->weight_ton_outgoing;
-
                 }
-
             }
 
-            $primary_tran = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
+            $primary_tran = $primary_linked_trans_split ? TransportTransaction::find($primary_linked_trans_split->transport_trans_id) : null;
 
             $split_data = [
                 'primary_linked_trans_split' => $primary_trans,
@@ -237,6 +235,8 @@ class DealTicketController extends Controller
         $transport_trans = TransportTransaction::where('id', $request->transport_trans_id)->with('ContractType')->with('Transporter')->with('Supplier', fn($query) => $query->with('TermsOfPayment'))->with('Customer', fn($query) => $query->with('InvoiceBasis')->with('addressablePhysical')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad', fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance', fn($query) => $query->with('TransportRateBasis'))->first();
 
+        abort_if(is_null($transport_trans), 404, 'Transaction #'.$request->transport_trans_id.' not found.');
+
         $deal_ticket = $transport_trans->DealTicket;
 
         /*  if (!($deal_ticket->is_active)){
@@ -281,11 +281,11 @@ class DealTicketController extends Controller
                 $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id', '=', $transport_trans->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
                     ->with('Product')->with('TransportFinance')->with('TransportLoad'))->first();
 
-                $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
-
+                $primary_trans = null;
                 $linked_trans_split = null;
 
-                if (isset($primary_linked_trans_split->transport_trans_id)) {
+                if ($primary_linked_trans_split && isset($primary_linked_trans_split->transport_trans_id)) {
+                    $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
                     $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
                         ->with(['TransportTransaction' => function ($query) {
                             $query->with([
@@ -319,68 +319,64 @@ class DealTicketController extends Controller
                 $sum_weight_ton_outgoing_planned = 0;
 
 
-                $first = $linked_trans_split->first();
-                $first_transporter_id = $first->TransportTransaction->transporter_id;
-                $first_supplier_id = $first->TransportTransaction->supplier_id;
-                $first_customer_id = $first->TransportTransaction->customer_id;
-                $first_product_id = $first->TransportTransaction->product_id;
-                $first_product_billing_unit_outgoing_id = $first->TransportTransaction->TransportLoad->BillingUnitsOutgoing->id;
-                $first_product_billing_unit_incoming_id = $first->TransportTransaction->TransportLoad->BillingUnitsIncoming->id;
-                $first_transport_rate_basis_id = $first->TransportTransaction->TransportJob->transport_rate_basis_id;
-                $first_transport_rate = $first->TransportTransaction->TransportFinance->transport_rate;
+                if ($linked_trans_split && $linked_trans_split->isNotEmpty()) {
+                    $first = $linked_trans_split->first();
+                    $first_transporter_id = $first->TransportTransaction->transporter_id;
+                    $first_supplier_id = $first->TransportTransaction->supplier_id;
+                    $first_customer_id = $first->TransportTransaction->customer_id;
+                    $first_product_id = $first->TransportTransaction->product_id;
+                    $first_product_billing_unit_outgoing_id = $first->TransportTransaction->TransportLoad->BillingUnitsOutgoing->id;
+                    $first_product_billing_unit_incoming_id = $first->TransportTransaction->TransportLoad->BillingUnitsIncoming->id;
+                    $first_transport_rate_basis_id = $first->TransportTransaction->TransportJob->transport_rate_basis_id;
+                    $first_transport_rate = $first->TransportTransaction->TransportFinance->transport_rate;
 
-                foreach ($linked_trans_split as $split) {
-                    if ($split->TransportTransaction->transporter_id !== $first_transporter_id) {
-                        $is_transporter_same = false;
-                    }
-                    if ($split->TransportTransaction->supplier_id !== $first_supplier_id) {
-                        $is_supplier_same = false;
-                    }
-                    if ($split->TransportTransaction->customer_id !== $first_customer_id) {
-                        $is_customer_same = false;
-                    }
-                    if ($split->TransportTransaction->product_id !== $first_product_id) {
-                        $is_product_same = false;
-                    }
+                    foreach ($linked_trans_split as $split) {
+                        if ($split->TransportTransaction->transporter_id !== $first_transporter_id) {
+                            $is_transporter_same = false;
+                        }
+                        if ($split->TransportTransaction->supplier_id !== $first_supplier_id) {
+                            $is_supplier_same = false;
+                        }
+                        if ($split->TransportTransaction->customer_id !== $first_customer_id) {
+                            $is_customer_same = false;
+                        }
+                        if ($split->TransportTransaction->product_id !== $first_product_id) {
+                            $is_product_same = false;
+                        }
 
-                    if ($split->TransportTransaction->TransportLoad->BillingUnitsOutgoing->id !== $first_product_billing_unit_outgoing_id) {
-                        $is_product_billing_units_outgoing_same = false;
-                    }
+                        if ($split->TransportTransaction->TransportLoad->BillingUnitsOutgoing->id !== $first_product_billing_unit_outgoing_id) {
+                            $is_product_billing_units_outgoing_same = false;
+                        }
 
-                    if ($split->TransportTransaction->TransportLoad->BillingUnitsIncoming->id !== $first_product_billing_unit_incoming_id) {
-                        $is_product_billing_units_incoming_same = false;
-                    }
+                        if ($split->TransportTransaction->TransportLoad->BillingUnitsIncoming->id !== $first_product_billing_unit_incoming_id) {
+                            $is_product_billing_units_incoming_same = false;
+                        }
 
-                    if ($split->TransportTransaction->TransportJob->transport_rate_basis_id !== $first_transport_rate_basis_id) {
-                        $is_transport_rate_basis_same = false;
-                    }
+                        if ($split->TransportTransaction->TransportJob->transport_rate_basis_id !== $first_transport_rate_basis_id) {
+                            $is_transport_rate_basis_same = false;
+                        }
 
-                    if ($split->TransportTransaction->TransportFinance->transport_rate !== $first_transport_rate) {
-                        $is_transport_rate_same = false;
-                    }
+                        if ($split->TransportTransaction->TransportFinance->transport_rate !== $first_transport_rate) {
+                            $is_transport_rate_same = false;
+                        }
 
-                    // Break early if all flags are already false
-                    if (!$is_transporter_same && !$is_supplier_same && !$is_customer_same && !$is_product_same && !$is_product_billing_units_outgoing_same && !$is_product_billing_units_incoming_same && !$is_transport_rate_basis_same && !$is_transport_rate_same) {
-                        break;
+                        // Break early if all flags are already false
+                        if (!$is_transporter_same && !$is_supplier_same && !$is_customer_same && !$is_product_same && !$is_product_billing_units_outgoing_same && !$is_product_billing_units_incoming_same && !$is_transport_rate_basis_same && !$is_transport_rate_same) {
+                            break;
+                        }
                     }
-                }
-
-                if (true) {
 
                     foreach ($linked_trans_split as $trans) {
-
                         $transport_finance = $trans->TransportTransaction->TransportFinance;
                         $sum_weight_ton_incoming += $transport_finance->weight_ton_incoming_actual;
                         $sum_weight_ton_outgoing += $transport_finance->weight_ton_outgoing_actual;
 
                         $sum_weight_ton_incoming_planned += $transport_finance->weight_ton_incoming;
                         $sum_weight_ton_outgoing_planned += $transport_finance->weight_ton_outgoing;
-
                     }
-
                 }
 
-                $primary_tran = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
+                $primary_tran = $primary_linked_trans_split ? TransportTransaction::find($primary_linked_trans_split->transport_trans_id) : null;
 
                 $split_data = [
                     'primary_linked_trans_split' => $primary_trans,

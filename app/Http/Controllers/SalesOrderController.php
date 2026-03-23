@@ -28,6 +28,8 @@ class SalesOrderController extends Controller
         $transport_trans = TransportTransaction::where('id', $id)->with('ContractType')->with('Transporter')->with('Supplier',fn($query) => $query->with('TermsOfPayment'))->with('Customer',fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportLoad',fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))->with('DealTicket')->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
 
+        abort_if(is_null($transport_trans), 404, 'Transaction #'.$id.' not found.');
+
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
@@ -75,6 +77,8 @@ class SalesOrderController extends Controller
             ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
             ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
 
+        abort_if(is_null($transport_trans), 404, 'Transaction #'.$id.' not found.');
+
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
@@ -85,9 +89,9 @@ class SalesOrderController extends Controller
             $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id', '=', $transport_trans->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
                 ->with('Product')->with('TransportFinance')->with('TransportLoad'))->first();
 
-            $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
-
-            if (isset($primary_linked_trans_split->transport_trans_id)) {
+            $primary_trans = null;
+            if ($primary_linked_trans_split && isset($primary_linked_trans_split->transport_trans_id)) {
+                $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
                 $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
                     ->with(['TransportTransaction' => function ($query) {
                         $query->with([
@@ -162,6 +166,8 @@ class SalesOrderController extends Controller
             ->with('TransportJob',fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
             ->with('TransportFinance',fn($query) => $query->with('TransportRateBasis'))->first();
 
+        abort_if(is_null($transport_trans), 404, 'Transaction #'.$id.' not found.');
+
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
@@ -172,9 +178,9 @@ class SalesOrderController extends Controller
             $primary_linked_trans_split = TransLinkSplit::where('linked_transport_trans_id', '=', $transport_trans->id)->with('TransportTransaction', fn($query) => $query->with('Customer')->with('Supplier')->with('Transporter')
                 ->with('Product')->with('TransportFinance')->with('TransportLoad'))->first();
 
-            $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
-
-            if (isset($primary_linked_trans_split->transport_trans_id)) {
+            $primary_trans = null;
+            if ($primary_linked_trans_split && isset($primary_linked_trans_split->transport_trans_id)) {
+                $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
                 $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
                     ->with(['TransportTransaction' => function ($query) {
                         $query->with([
