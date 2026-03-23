@@ -208,8 +208,13 @@
                             <tbody>
                             <tr class="table_sections">
                                 <td class="table_sections table_row_heading" style="width: 25%;">Transporter Name:</td>
-                                <td class="table_sections table_row_value"
-                                    colspan="3"><strong style="font-size: 14px;">{{$split_data['primary_linked_trans_split']->Transporter->last_legal_name}}</strong></td>
+                                <td class="table_sections table_row_value" colspan="3">
+                                    @if($split_data['is_transporter_same'])
+                                        <strong style="font-size: 14px;">{{$split_data['primary_linked_trans_split']->Transporter->last_legal_name}}</strong>
+                                    @else
+                                        <strong style="font-size: 14px; color: red;">Different transporter - align in each trade</strong>
+                                    @endif
+                                </td>
                             </tr>
 
                             <tr class="table_sections">
