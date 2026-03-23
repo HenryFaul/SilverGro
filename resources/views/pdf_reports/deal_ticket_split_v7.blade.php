@@ -526,9 +526,69 @@
                             </table>
                         </div>
 
+                        {{-- Summary Notes Page --}}
+                        <div class="page-break"></div>
+                        <div style="margin-top: 15px;">
+
+                        <b style="font-size: 12px;">Supplier Notes:</b>
+                        <table class="table_sections_bordered" style="width:100%; margin-bottom: 8px;">
+                            <thead>
+                            <tr>
+                                <th class="table_sections_bordered table_row_heading" style="width:15%;">Order #</th>
+                                <th class="table_sections_bordered table_row_heading">Supplier Notes:</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($split_data['linked_trans_split'] as $note_deal)
+                            <tr>
+                                <td class="table_sections_bordered table_row_value">MQ{{$note_deal->TransportTransaction->a_mq}}</td>
+                                <td class="table_sections_bordered table_row_value">{!! nl2br($note_deal->TransportTransaction->supplier_notes) !!}</td>
+                            </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+
+                        <b style="font-size: 12px;">Transport Notes:</b>
+                        <table class="table_sections_bordered" style="width:100%; margin-bottom: 8px;">
+                            <thead>
+                            <tr>
+                                <th class="table_sections_bordered table_row_heading" style="width:15%;">Order #</th>
+                                <th class="table_sections_bordered table_row_heading">Transport Notes:</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($split_data['linked_trans_split'] as $note_deal)
+                            <tr>
+                                <td class="table_sections_bordered table_row_value">MQ{{$note_deal->TransportTransaction->a_mq}}</td>
+                                <td class="table_sections_bordered table_row_value">{!! nl2br($note_deal->TransportTransaction->transport_notes) !!}</td>
+                            </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+
+                        <b style="font-size: 12px;">Customer Notes:</b>
+                        <table class="table_sections_bordered" style="width:100%;">
+                            <thead>
+                            <tr>
+                                <th class="table_sections_bordered table_row_heading" style="width:15%;">Order #</th>
+                                <th class="table_sections_bordered table_row_heading">Customer Notes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($split_data['linked_trans_split'] as $note_deal)
+                            <tr>
+                                <td class="table_sections_bordered table_row_value">MQ{{$note_deal->TransportTransaction->a_mq}}</td>
+                                <td class="table_sections_bordered table_row_value">{!! nl2br($note_deal->TransportTransaction->customer_notes) !!}</td>
+                            </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+
+                        </div>
+
                         @foreach ($split_data['linked_trans_split'] as $deal)
                             <div class="page-break"></div>
-                            <li class="section_heading">Product Information [MQ{{$deal->TransportTransaction->a_mq}}]
+                            <li class="section_heading" style="margin-top: 15px;">Product Information [MQ{{$deal->TransportTransaction->a_mq}}]
                             </li>
                             <div>
                                 <table class="table_sections" style="width:100%;">
