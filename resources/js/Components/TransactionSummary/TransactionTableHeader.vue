@@ -83,12 +83,12 @@
       </th>
 
       <!-- Detail Columns (conditional) -->
-      <th
-        v-if="showDetails"
-        :class="headerClass"
-        scope="col">
-        Trade Status
-      </th>
+      <th v-if="showDetails" :class="headerClass" scope="col">D/T</th>
+      <th v-if="showDetails" :class="headerClass" scope="col">P/O</th>
+      <th v-if="showDetails" :class="headerClass" scope="col">S/O</th>
+      <th v-if="showDetails" :class="headerClass" scope="col">T/O</th>
+      <th v-if="showDetails" :class="headerClass" scope="col">WB</th>
+      <th v-if="showDetails" :class="headerClass" scope="col">INV</th>
       <th
         v-if="showDetails"
         :class="headerClass"

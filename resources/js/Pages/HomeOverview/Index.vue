@@ -584,12 +584,12 @@
                     PRODUCT
                   </th>
 
-                  <th
-                    v-if="showDetails"
-                    :class="header_styler"
-                    scope="col">
-                    Trade Status
-                  </th>
+                  <th v-if="showDetails" :class="header_styler" scope="col">D/T</th>
+                  <th v-if="showDetails" :class="header_styler" scope="col">P/O</th>
+                  <th v-if="showDetails" :class="header_styler" scope="col">S/O</th>
+                  <th v-if="showDetails" :class="header_styler" scope="col">T/O</th>
+                  <th v-if="showDetails" :class="header_styler" scope="col">WB</th>
+                  <th v-if="showDetails" :class="header_styler" scope="col">INV</th>
 
                   <th
                     v-if="showDetails"
@@ -670,27 +670,18 @@
                     </Link>
                   </td>
                   <td :class="row_styler">
-                    <div v-if="transaction.supplier.terms_of_payment_id == 1">
-                      <base-tooltip content="Supplier C.O.D account.">
-                        <icon
-                          class="mr-3 w-6 h-6 fill-red-500"
-                          name="bell-solid" />
+                    <div class="flex items-center gap-1">
+                      <base-tooltip v-if="transaction.supplier.terms_of_payment_id == 1" content="Supplier C.O.D account.">
+                        <icon class="w-5 h-5 fill-red-500" name="bell-solid" />
                       </base-tooltip>
-                    </div>
-
-                    <div v-if="hasAnyAlerts(transaction)">
-                      <base-tooltip :content="warningLister(transaction)">
-                        <icon
-                          class="mr-3 w-3 h-3 animate-pulse fill-red-500"
-                          name="triangle" />
+                      <base-tooltip v-if="transaction.transport_invoice_details && isPaymentOverdue(transaction.transport_invoice_details)" content="Payment overdue.">
+                        <icon class="w-4 h-4 fill-red-500" name="dollar" />
                       </base-tooltip>
-                    </div>
-
-                    <div v-if="!transaction.include_in_calculations">
-                      <base-tooltip content="Exclude from calculations.">
-                        <icon
-                          class="mr-3 w-3 h-3 fill-gray-500"
-                          name="info" />
+                      <base-tooltip v-if="hasAnyAlerts(transaction)" :content="warningLister(transaction)">
+                        <icon class="w-4 h-4 animate-pulse fill-red-500" name="triangle" />
+                      </base-tooltip>
+                      <base-tooltip v-if="!transaction.include_in_calculations" content="Exclude from calculations.">
+                        <icon class="w-4 h-4 fill-gray-500" name="info" />
                       </base-tooltip>
                     </div>
                   </td>
@@ -740,42 +731,29 @@
                     {{ transaction.product.name }}
                   </td>
 
-                  <td
-                    v-if="showDetails"
-                    :class="row_styler">
-                    <div class="flex items-center gap-0.5">
-                      <base-tooltip content="Deal Ticket">
-                        <check-icon v-if="transaction.deal_ticket?.is_active" class="w-4 h-4 fill-green-300" />
-                        <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
-                      </base-tooltip>
-                      <base-tooltip content="Purchase Order">
-                        <check-icon v-if="transaction.purchase_order?.is_active" class="w-4 h-4 fill-green-300" />
-                        <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
-                      </base-tooltip>
-                      <base-tooltip content="Sales Order">
-                        <check-icon v-if="transaction.sales_order?.is_active" class="w-4 h-4 fill-green-300" />
-                        <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
-                      </base-tooltip>
-                      <base-tooltip content="Transport Order">
-                        <check-icon v-if="transaction.transport_order?.is_active" class="w-4 h-4 fill-green-300" />
-                        <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
-                      </base-tooltip>
-                      <base-tooltip content="Weighbridge Certificate">
-                        <check-icon v-if="transaction.transport_load?.is_weighbridge_certificate_received" class="w-4 h-4 fill-green-300" />
-                        <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
-                      </base-tooltip>
-                      <base-tooltip content="Invoice">
-                        <check-icon v-if="transaction.transport_invoice?.is_active" class="w-4 h-4 fill-green-300" />
-                        <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
-                      </base-tooltip>
-                      <base-tooltip
-                        v-if="isPaymentOverdue(transaction.transport_invoice_details)"
-                        content="Payment overdue">
-                        <icon
-                          class="w-4 h-4 fill-red-500"
-                          name="dollar" />
-                      </base-tooltip>
-                    </div>
+                  <td v-if="showDetails" :class="row_styler">
+                    <check-icon v-if="transaction.deal_ticket?.is_active" class="w-4 h-4 fill-green-300" />
+                    <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
+                  </td>
+                  <td v-if="showDetails" :class="row_styler">
+                    <check-icon v-if="transaction.purchase_order?.is_active" class="w-4 h-4 fill-green-300" />
+                    <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
+                  </td>
+                  <td v-if="showDetails" :class="row_styler">
+                    <check-icon v-if="transaction.sales_order?.is_active" class="w-4 h-4 fill-green-300" />
+                    <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
+                  </td>
+                  <td v-if="showDetails" :class="row_styler">
+                    <check-icon v-if="transaction.transport_order?.is_active" class="w-4 h-4 fill-green-300" />
+                    <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
+                  </td>
+                  <td v-if="showDetails" :class="row_styler">
+                    <check-icon v-if="transaction.transport_load?.is_weighbridge_certificate_received" class="w-4 h-4 fill-green-300" />
+                    <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
+                  </td>
+                  <td v-if="showDetails" :class="row_styler">
+                    <check-icon v-if="transaction.transport_invoice?.is_active" class="w-4 h-4 fill-green-300" />
+                    <x-mark-icon v-else class="w-4 h-4 fill-red-400" />
                   </td>
 
                   <td
