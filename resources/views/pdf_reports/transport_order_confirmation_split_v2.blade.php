@@ -274,7 +274,14 @@
                             </tr>
 
                             <tr class="table_sections">
-                                <td class="table_sections table_row_heading" style="width: 25%;">Collection Address:
+                                <td class="table_sections table_row_heading" style="width: 25%;">Supplier:</td>
+                                <td class="table_sections table_row_value" colspan="3">
+                                    <strong>{{$split_data['primary_linked_trans_split']->Supplier->last_legal_name}}</strong>
+                                </td>
+                            </tr>
+
+                            <tr class="table_sections">
+                                <td class="table_sections table_row_heading" style="width: 25%;">Supplier Collection Address:
                                 </td>
                                 <td class="table_sections table_row_value" colspan="3">
                                     <span>{{$split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_1}}</span>
