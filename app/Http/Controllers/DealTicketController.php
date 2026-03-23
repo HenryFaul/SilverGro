@@ -45,7 +45,7 @@ class DealTicketController extends Controller
 
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
-        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+        $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
         if (!($deal_ticket->is_active)) {
             abort(403);
@@ -246,7 +246,7 @@ class DealTicketController extends Controller
           }*/
 
         $sales_order = $transport_trans->SalesOrder;
-        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+        $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
         if (false) {
             $request->session()->flash('flash.bannerStyle', 'danger');

@@ -33,7 +33,7 @@ class PurchaseOrderController extends Controller
 
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
-        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+        $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
@@ -80,7 +80,7 @@ class PurchaseOrderController extends Controller
 
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
-        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+        $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
         // Get split data if it's a split load
         $split_data = null;

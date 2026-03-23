@@ -35,8 +35,8 @@ class TransportOrderController extends Controller
 
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
-        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
-        $transport_order = $transport_trans->TransportOrder->load('ConfirmedByType');
+        $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
+        $transport_order = $transport_trans->TransportOrder?->load('ConfirmedByType');
 
         //check if split load
 

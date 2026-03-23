@@ -32,7 +32,7 @@ class SalesOrderController extends Controller
 
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
-        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+        $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
         //dd($purchase_order);
         //dd($sales_order);
 
@@ -81,7 +81,7 @@ class SalesOrderController extends Controller
 
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
-        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+        $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
         // Get split data if it's a split load
         $split_data = null;
@@ -170,7 +170,7 @@ class SalesOrderController extends Controller
 
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
-        $purchase_order = $transport_trans->PurchaseOrder->load('ConfirmedByType');
+        $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
         // Get split data if it's a split load
         $split_data = null;

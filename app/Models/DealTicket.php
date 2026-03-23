@@ -37,7 +37,7 @@ class DealTicket extends Model implements HasMedia
             $trade_rule = TradeRule::where('max_trade_value', '>=', $selling_price)->where('min_trade_value', '<=', $selling_price)->with('PolyRuleRoles')->first();
 
             if ($trade_rule == null) {
-                $trade_rule = TradeRule::find(1)->with('PolyRuleRoles')->first();
+                $trade_rule = TradeRule::where('id', 1)->with('PolyRuleRoles')->first();
             }
 
             $trade_rules_opp = TradeRuleOpp::with('PolyRuleRoles')->where('is_active', true)->get();
@@ -51,7 +51,7 @@ class DealTicket extends Model implements HasMedia
                 foreach ($trade_rule_roles as $trade_rule_role) {
                     //Find approval for the role
                     $transport_approval = TransportApproval::where('transport_trans_id', $transport_trans->id)
-                        ->where('transport_job_id', $transport_trans->TransportJob->id)
+                        ->where('transport_job_id', $transport_trans->TransportJob?->id)
                         ->where('poly_approval_id', $trade_rule->id)
                         ->where('poly_approval_type', get_class($trade_rule))
                         ->where('role_name', $trade_rule_role->role)
@@ -78,7 +78,7 @@ class DealTicket extends Model implements HasMedia
                                 foreach ($trade_rule_opp->PolyRuleRoles as $rule) {
                                     //dd($trade_rule_opp);
                                     $transport_approval_opp = TransportApproval::where('transport_trans_id', $transport_trans->id)
-                                        ->where('transport_job_id', $transport_trans->TransportJob->id)
+                                        ->where('transport_job_id', $transport_trans->TransportJob?->id)
                                         ->where('poly_approval_id', $trade_rule_opp->id)
                                         ->where('poly_approval_type', get_class($trade_rule_opp))
                                         ->where('role_name', $rule->role)
@@ -98,7 +98,7 @@ class DealTicket extends Model implements HasMedia
                                 foreach ($trade_rule_opp->PolyRuleRoles as $rule) {
                                     //dd($trade_rule_opp);
                                     $transport_approval_opp = TransportApproval::where('transport_trans_id', $transport_trans->id)
-                                        ->where('transport_job_id', $transport_trans->TransportJob->id)
+                                        ->where('transport_job_id', $transport_trans->TransportJob?->id)
                                         ->where('poly_approval_id', $trade_rule_opp->id)
                                         ->where('poly_approval_type', get_class($trade_rule_opp))
                                         ->where('role_name', $rule->role)
@@ -151,7 +151,7 @@ class DealTicket extends Model implements HasMedia
                 ->with('PolyRuleRoles')->first();
 
             if ($trade_rule == null) {
-                $trade_rule = TradeRule::find(1)->with('PolyRuleRoles')->first();
+                $trade_rule = TradeRule::where('id', 1)->with('PolyRuleRoles')->first();
             }
 
             $trade_rules_opp = TradeRuleOpp::with('PolyRuleRoles')->where('is_active', true)->get();
@@ -162,7 +162,7 @@ class DealTicket extends Model implements HasMedia
                 foreach ($trade_rule_roles as $trade_rule_role) {
                     //Find approval for the role
                     $transport_approval = TransportApproval::where('transport_trans_id', $transport_trans->id)
-                        ->where('transport_job_id', $transport_trans->TransportJob->id)
+                        ->where('transport_job_id', $transport_trans->TransportJob?->id)
                         ->where('poly_approval_id', $trade_rule->id)
                         ->where('poly_approval_type', get_class($trade_rule))
                         ->where('role_name', $trade_rule_role->role)
@@ -184,7 +184,7 @@ class DealTicket extends Model implements HasMedia
                                 foreach ($trade_rule_opp->PolyRuleRoles as $rule) {
                                     //dd($trade_rule_opp);
                                     $transport_approval_opp = TransportApproval::where('transport_trans_id', $transport_trans->id)
-                                        ->where('transport_job_id', $transport_trans->TransportJob->id)
+                                        ->where('transport_job_id', $transport_trans->TransportJob?->id)
                                         ->where('poly_approval_id', $trade_rule_opp->id)
                                         ->where('poly_approval_type', get_class($trade_rule_opp))
                                         ->where('role_name', $rule->role)
@@ -203,7 +203,7 @@ class DealTicket extends Model implements HasMedia
                                 foreach ($trade_rule_opp->PolyRuleRoles as $rule) {
                                     //dd($trade_rule_opp);
                                     $transport_approval_opp = TransportApproval::where('transport_trans_id', $transport_trans->id)
-                                        ->where('transport_job_id', $transport_trans->TransportJob->id)
+                                        ->where('transport_job_id', $transport_trans->TransportJob?->id)
                                         ->where('poly_approval_id', $trade_rule_opp->id)
                                         ->where('poly_approval_type', get_class($trade_rule_opp))
                                         ->where('role_name', $rule->role)

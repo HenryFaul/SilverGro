@@ -50,9 +50,9 @@ class Supplier extends Model
     {
         return $query->when(
             $filters['searchName'] ?? false,
-            fn ($query, $value) => $query->where('first_name', 'like', '%'.$value.'%')
+            fn ($query, $value) => $query->where(fn ($q) => $q->where('first_name', 'like', '%'.$value.'%')
                 ->orWhere('last_legal_name', 'like', '%'.$value.'%')
-                ->orWhere('id_reg_no', 'like', '%'.$value.'%')
+                ->orWhere('id_reg_no', 'like', '%'.$value.'%'))
         )->when(
             $filters['isActive'] ?? false,
             fn ($query, $value) => $query->where('is_active', $value == 'active' ? 1:0)

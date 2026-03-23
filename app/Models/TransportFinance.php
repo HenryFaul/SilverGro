@@ -69,7 +69,10 @@ class TransportFinance extends Model
         //gross_profit_percent_actual,gross_profit_per_ton_actual
 
         $transport_Finance = $this;
-        $transport_Load = ($transport_Finance->TransportLoad);
+        $transport_Load = $transport_Finance->TransportLoad;
+        if (!$transport_Load) {
+            return;
+        }
         $assigned_user_comm = $transport_Finance->AssignedUserComm;
         $transport_trans = $transport_Finance->TransportTransaction;
         //get the associated customer and their invoice basis (upload vs offload weight)
