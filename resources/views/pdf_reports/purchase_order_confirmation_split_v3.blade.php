@@ -287,7 +287,7 @@
 
                         @foreach ($split_data['linked_trans_split'] as $deal)
                             <hr style="margin-top: 5px; margin-bottom: 5px;">
-                            <li class="section_heading">Supplier Details [MQ{{$deal->TransportTransaction->a_mq}}]</li>
+                            <li class="section_heading" style="margin-top: 15px;">Supplier Details [MQ{{$deal->TransportTransaction->a_mq}}]</li>
                             <div>
                                 <table class="table_sections" style="width:100%;">
                                     <tbody>
