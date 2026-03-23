@@ -204,51 +204,83 @@
                         <div>
                             <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
+                                @php
+                                    $summary_total_units = 0;
+                                    $summary_total_cost = 0;
+                                    $summary_total_tons = 0;
+                                    foreach ($split_data['linked_trans_split'] as $d) {
+                                        $summary_total_units += $d->TransportTransaction->TransportLoad->no_units_incoming;
+                                        $summary_total_cost  += $d->TransportTransaction->TransportFinance->total_cost_price;
+                                        $summary_total_tons  += $d->TransportTransaction->TransportFinance->weight_ton_incoming;
+                                    }
+                                @endphp
                                 <tr>
-                                    <td style="width: 16%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">Purchase
-                                        Order
+                                    <td style="width: 10%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Purchase Order
+                                    </td>
+                                    <td style="width: 12%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Supplier Loading #
                                     </td>
                                     <td style="width: 16%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">Supplier
-                                        Loading #
+                                        class="table_sections_bordered table_row_heading">Product
                                     </td>
-                                    <td style="width: 16%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">
-                                        Transporter
+                                    <td style="width: 12%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Packaging
                                     </td>
-                                    <td style="width: 20%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">
-                                        Product
+                                    <td style="width: 12%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Billing Units
                                     </td>
-                                    <td style="width: 16%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">Tons
-                                        In
+                                    <td style="width: 10%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Quantity of Units
                                     </td>
-                                    <td style="width: 16%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">
-                                        Cost/Ton
+                                    <td style="width: 12%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Cost per Billing Unit
+                                    </td>
+                                    <td style="width: 10%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Total Cost
+                                    </td>
+                                    <td style="width: 10%; text-align: left;"
+                                        class="table_sections_bordered table_row_heading">Planned Tons
                                     </td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
                                     <tr style="width:100%;">
-                                        <td style="width: 16%; text-align: left;"
+                                        <td style="width: 10%; text-align: left;"
                                             class="table_sections_bordered table_row_value">
                                             MQ{{$deal->TransportTransaction->a_mq}}</td>
-                                        <td style="width: 16%; text-align: left;"
+                                        <td style="width: 12%; text-align: left;"
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->supplier_loading_number}}</td>
                                         <td style="width: 16%; text-align: left;"
-                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Transporter->last_legal_name}}</td>
-                                        <td style="width: 20%; text-align: left;"
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Product->name}}</td>
-                                        <td style="width: 16%; text-align: left;"
-                                            class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming,2)}}</td>
-                                        <td style="width: 16%; text-align: left;"
+                                        <td style="width: 12%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportLoad->PackagingIncoming->name ?? ''}}</td>
+                                        <td style="width: 12%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportLoad->BillingUnitsIncoming->name ?? ''}}</td>
+                                        <td style="width: 10%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportLoad->no_units_incoming}}</td>
+                                        <td style="width: 12%; text-align: left;"
                                             class="table_sections_bordered table_row_value">
-                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton,2), 2, '.', ' ')}}</td>
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}</td>
+                                        <td style="width: 10%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
+                                        <td style="width: 10%; text-align: left;"
+                                            class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming,2)}}</td>
                                     </tr>
                                 @endforeach
+
+                                <tr>
+                                    <td class="table_sections_bordered table_row_heading">TOTALS</td>
+                                    <td class="table_sections_bordered table_row_heading"></td>
+                                    <td class="table_sections_bordered table_row_heading"></td>
+                                    <td class="table_sections_bordered table_row_heading"></td>
+                                    <td class="table_sections_bordered table_row_heading"></td>
+                                    <td class="table_sections_bordered table_row_heading">{{ number_format($summary_total_units, 0, '.', ' ') }}</td>
+                                    <td class="table_sections_bordered table_row_heading"></td>
+                                    <td class="table_sections_bordered table_row_heading">R {{ number_format(round($summary_total_cost, 2), 2, '.', ' ') }}</td>
+                                    <td class="table_sections_bordered table_row_heading">{{ number_format(round($summary_total_tons, 2), 2, '.', ' ') }}</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
