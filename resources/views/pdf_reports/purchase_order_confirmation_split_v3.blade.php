@@ -193,7 +193,7 @@
 
             <ol type="1">
                 @if($transport_trans->is_split_load)
-                    <h3>SPLIT LOAD PURCHASE ORDER
+                    <h3>SPLIT PURCHASE ORDER MASTER
                         @if(isset($split_data))
                             +{{count($split_data['linked_trans_split'])}}
                         @endif
