@@ -419,11 +419,13 @@
                                 $total_units_incoming = 0;
                                 $total_weight_ton_incoming = 0;
                                 $total_weight_ton_outgoing = 0;
+                                $total_transport_cost = 0;
 
                                 foreach ($split_data['linked_trans_split'] as $deal) {
                                     $total_units_incoming += $deal->TransportTransaction->TransportLoad->no_units_incoming;
                                     $total_weight_ton_incoming += $deal->TransportTransaction->TransportFinance->weight_ton_incoming;
                                     $total_weight_ton_outgoing += $deal->TransportTransaction->TransportFinance->weight_ton_outgoing;
+                                    $total_transport_cost += $deal->TransportTransaction->TransportFinance->transport_cost;
                                 }
                             @endphp
 
@@ -487,10 +489,10 @@
                                     <td style="text-align: left;" class="table_sections_bordered table_row_heading"></td>
                                     <td style="text-align: left;" class="table_sections_bordered table_row_heading"></td>
                                     <td style="text-align: left;" class="table_sections_bordered table_row_heading">{{ number_format($total_units_incoming, 0, '.', ' ') }}</td>
-                                    <td style="text-align: left;" class="table_sections_bordered table_row_heading">{{ number_format($total_weight_ton_incoming, 0, '.', ' ') }}</td>
+                                    <td style="text-align: left;" class="table_sections_bordered table_row_heading">{{ number_format($total_weight_ton_incoming, 2, '.', ' ') }}</td>
                                     <td style="text-align: left;" class="table_sections_bordered table_row_heading"></td>
                                     <td style="text-align: left;" class="table_sections_bordered table_row_heading"></td>
-                                    <td style="text-align: left;" class="table_sections_bordered table_row_heading"></td>
+                                    <td style="text-align: left;" class="table_sections_bordered table_row_heading">R {{ number_format($total_transport_cost, 2, '.', ' ') }}</td>
                                 </tr>
                                 </tbody>
                             </table>
