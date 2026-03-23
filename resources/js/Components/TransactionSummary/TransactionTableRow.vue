@@ -273,76 +273,43 @@ import { truncateText } from '@/Composables/useTextFormatters';
       {{ transaction.product?.name || '' }}
     </td>
 
-    <!-- Deal Ticket (D/T) -->
+    <!-- Status Icons (D/T, P/O, S/O, T/O, WB, INV, $) -->
     <td
       v-if="showDetails"
       :class="cellClass">
-      <CheckIcon
-        v-if="transaction.deal_ticket?.is_active"
-        class="w-5 h-5 fill-green-300" />
-      <XMarkIcon
-        v-else
-        class="w-5 h-5 fill-red-400" />
-    </td>
-
-    <!-- Purchase Order (P/O) -->
-    <td
-      v-if="showDetails"
-      :class="cellClass">
-      <CheckIcon
-        v-if="transaction.purchase_order?.is_active"
-        class="w-5 h-5 fill-green-300" />
-      <XMarkIcon
-        v-else
-        class="w-5 h-5 fill-red-400" />
-    </td>
-
-    <!-- Sales Order (S/O) -->
-    <td
-      v-if="showDetails"
-      :class="cellClass">
-      <CheckIcon
-        v-if="transaction.sales_order?.is_active"
-        class="w-5 h-5 fill-green-300" />
-      <XMarkIcon
-        v-else
-        class="w-5 h-5 fill-red-400" />
-    </td>
-
-    <!-- Transport Order (T/O) -->
-    <td
-      v-if="showDetails"
-      :class="cellClass">
-      <CheckIcon
-        v-if="transaction.transport_order?.is_active"
-        class="w-5 h-5 fill-green-300" />
-      <XMarkIcon
-        v-else
-        class="w-5 h-5 fill-red-400" />
-    </td>
-
-    <!-- Weighbridge (WB) -->
-    <td
-      v-if="showDetails"
-      :class="cellClass">
-      <CheckIcon
-        v-if="transaction.transport_load?.is_weighbridge_certificate_received"
-        class="w-5 h-5 fill-green-300" />
-      <XMarkIcon
-        v-else
-        class="w-5 h-5 fill-red-400" />
-    </td>
-
-    <!-- Invoice (INV) -->
-    <td
-      v-if="showDetails"
-      :class="cellClass">
-      <CheckIcon
-        v-if="transaction.transport_invoice?.is_active"
-        class="w-5 h-5 fill-green-300" />
-      <XMarkIcon
-        v-else
-        class="w-5 h-5 fill-red-400" />
+      <div class="flex items-center gap-0.5">
+        <BaseTooltip content="Deal Ticket">
+          <CheckIcon v-if="transaction.deal_ticket?.is_active" class="w-4 h-4 fill-green-300" />
+          <XMarkIcon v-else class="w-4 h-4 fill-red-400" />
+        </BaseTooltip>
+        <BaseTooltip content="Purchase Order">
+          <CheckIcon v-if="transaction.purchase_order?.is_active" class="w-4 h-4 fill-green-300" />
+          <XMarkIcon v-else class="w-4 h-4 fill-red-400" />
+        </BaseTooltip>
+        <BaseTooltip content="Sales Order">
+          <CheckIcon v-if="transaction.sales_order?.is_active" class="w-4 h-4 fill-green-300" />
+          <XMarkIcon v-else class="w-4 h-4 fill-red-400" />
+        </BaseTooltip>
+        <BaseTooltip content="Transport Order">
+          <CheckIcon v-if="transaction.transport_order?.is_active" class="w-4 h-4 fill-green-300" />
+          <XMarkIcon v-else class="w-4 h-4 fill-red-400" />
+        </BaseTooltip>
+        <BaseTooltip content="Weighbridge Certificate">
+          <CheckIcon v-if="transaction.transport_load?.is_weighbridge_certificate_received" class="w-4 h-4 fill-green-300" />
+          <XMarkIcon v-else class="w-4 h-4 fill-red-400" />
+        </BaseTooltip>
+        <BaseTooltip content="Invoice">
+          <CheckIcon v-if="transaction.transport_invoice?.is_active" class="w-4 h-4 fill-green-300" />
+          <XMarkIcon v-else class="w-4 h-4 fill-red-400" />
+        </BaseTooltip>
+        <BaseTooltip
+          v-if="isPaymentOverdue(transaction.transport_invoice_details)"
+          content="Payment overdue">
+          <icon
+            class="w-4 h-4 fill-red-500"
+            name="dollar" />
+        </BaseTooltip>
+      </div>
     </td>
 
     <!-- Units -->
