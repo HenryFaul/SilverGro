@@ -210,7 +210,7 @@
 
             <ol type="1">
                 @if($transport_trans->is_split_load)
-                    <h3>SPLIT LOAD DEAL
+                    <h3>SPLIT LOAD MASTER
                         @if(isset($split_data))
                             +{{count($split_data['linked_trans_split'])}}
                         @endif
