@@ -419,51 +419,56 @@
                             <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
                                 <tr class="table_sections_bordered">
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Deal
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Deal
                                         Ticket
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Plan
                                         Tons In
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Plan
                                         Cost/Ton
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Load
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Load
                                         basis
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Plan
                                         Rate/Ton
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Plan
                                         Tons Out
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Plan
                                         Price/Ton
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Plan
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Plan
                                         GP/Ton
+                                    </td>
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Plan
+                                        Gross GP
                                     </td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
 
                                     <tr class="table_sections_bordered" style="width:100%;">
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             MQ{{$deal->TransportTransaction->a_mq}}</td>
-                                        <td style="width: 12.5%;"
+                                        <td style="width: 11.1%;"
                                             class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming,2)}}</td>
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%;"
+                                        <td style="width: 11.1%;"
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->RateBasis->name}}</td>
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%;"
+                                        <td style="width: 11.1%;"
                                             class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_outgoing,2)}}</td>
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->selling_price_per_ton,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->gross_profit_per_ton,2), 2, '.', ' ')}}</td>
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->gross_profit,2), 2, '.', ' ')}}</td>
                                     </tr>
 
                                 @endforeach
@@ -475,51 +480,56 @@
                             <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
                                 <tr class="table_sections_bordered">
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Deal
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Deal
                                         Ticket
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Actual
                                         Tons In
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Actual
                                         Cost/Ton
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Load
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Load
                                         basis
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Actual
                                         Rate/Ton
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Actual
                                         Tons Out
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Actual
                                         Price/Ton
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">Actual
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Actual
                                         GP/Ton
+                                    </td>
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Actual
+                                        Gross GP
                                     </td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
 
                                     <tr class="table_sections_bordered" style="width:100%;">
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             MQ{{$deal->TransportTransaction->a_mq}}</td>
-                                        <td style="width: 12.5%;"
+                                        <td style="width: 11.1%;"
                                             class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_incoming_actual,2)}}</td>
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton_actual,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%;"
+                                        <td style="width: 11.1%;"
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->RateBasis->name}}</td>
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton_actual,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%;"
+                                        <td style="width: 11.1%;"
                                             class="table_sections_bordered table_row_value">{{round($deal->TransportTransaction->TransportFinance->weight_ton_outgoing_actual,2)}}</td>
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->selling_price_per_ton_actual,2), 2, '.', ' ')}}</td>
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value">
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->gross_profit_per_ton_actual,2), 2, '.', ' ')}}</td>
+                                        <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
+                                            R {{number_format(round($deal->TransportTransaction->TransportFinance->gross_profit_actual,2), 2, '.', ' ')}}</td>
                                     </tr>
 
                                 @endforeach
