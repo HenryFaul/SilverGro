@@ -215,25 +215,25 @@
                             <tr class="table_sections">
                                 <td class="table_sections table_row_heading" style="width: 25%;">Business Address:</td>
                                 <td class="table_sections table_row_value" colspan="3">
-                                    @if($split_data['primary_linked_trans_split']->Supplier->addressablePhysical == "[]")
+                                    @if(!$split_data['split_transporter_address'])
                                         <span>No physical address loaded...</span>
                                     @else
-                                        <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_1}}</span>
-                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_2)
+                                        <span>{{$split_data['split_transporter_address']->line_1}}</span>
+                                        @if($split_data['split_transporter_address']->line_2)
                                             ,
-                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_2}}</span>
+                                            <span>{{$split_data['split_transporter_address']->line_2}}</span>
                                         @endif
-                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_3)
+                                        @if($split_data['split_transporter_address']->line_3)
                                             ,
-                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->line_3}}</span>
+                                            <span>{{$split_data['split_transporter_address']->line_3}}</span>
                                         @endif
-                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->country)
+                                        @if($split_data['split_transporter_address']->country)
                                             ,
-                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->country}}</span>
+                                            <span>{{$split_data['split_transporter_address']->country}}</span>
                                         @endif
-                                        @if($split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->code)
+                                        @if($split_data['split_transporter_address']->code)
                                             ,
-                                            <span>{{$split_data['primary_linked_trans_split']->Customer->addressablePhysical[0]->code}}</span>
+                                            <span>{{$split_data['split_transporter_address']->code}}</span>
                                         @endif
                                     @endif
                                 </td>

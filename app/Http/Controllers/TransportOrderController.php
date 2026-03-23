@@ -51,7 +51,7 @@ class TransportOrderController extends Controller
             $linked_trans_split = null;
 
             if ($primary_linked_trans_split && isset($primary_linked_trans_split->transport_trans_id)) {
-                $primary_trans = TransportTransaction::find($primary_linked_trans_split->transport_trans_id);
+                $primary_trans = TransportTransaction::with(['Transporter' => fn($q) => $q->with(['addressable' => fn($q2) => $q2->with('AddressType')])])->find($primary_linked_trans_split->transport_trans_id);
                 $linked_trans_split = TransLinkSplit::where('transport_trans_id', '=', $primary_linked_trans_split->transport_trans_id)
                     ->with(['TransportTransaction' => function ($query) {
                         $query->with([
@@ -144,8 +144,20 @@ class TransportOrderController extends Controller
 
             $primary_tran = $primary_linked_trans_split ? TransportTransaction::find($primary_linked_trans_split->transport_trans_id) : null;
 
+            $splitTransporterAddresses = $primary_trans?->Transporter?->addressable ?? collect();
+            $splitTransporterAddress =
+                $splitTransporterAddresses->where('is_primary', 1)
+                    ->filter(fn($a) => $a->AddressType && $a->AddressType->type === 'Physical')
+                    ->first()
+                ?? $splitTransporterAddresses
+                    ->filter(fn($a) => $a->AddressType && $a->AddressType->type === 'Physical')
+                    ->first()
+                ?? $splitTransporterAddresses->where('is_primary', 1)->first()
+                ?? $splitTransporterAddresses->first();
+
             $split_data = [
                 'primary_linked_trans_split' => $primary_trans,
+                'split_transporter_address' => $splitTransporterAddress,
                 'linked_trans_split' => $linked_trans_split,
                 'primary_trans' => $primary_tran,
                 'is_transporter_same' => $is_transporter_same,
