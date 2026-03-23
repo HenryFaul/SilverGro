@@ -279,7 +279,7 @@
                                     @if($split_data['is_supplier_same'])
                                         <strong>{{$split_data['primary_linked_trans_split']->Supplier->last_legal_name}}</strong>
                                     @else
-                                        <strong style="color: red;">(Different Supplier)</strong>
+                                        <strong style="color: red;">Different supplier - align in each trade</strong>
                                     @endif
                                 </td>
                             </tr>
@@ -289,7 +289,7 @@
                                 </td>
                                 <td class="table_sections table_row_value" colspan="3">
                                     @if(!$split_data['is_supplier_same'])
-                                        <strong style="color: red;">(Different Supplier)</strong>
+                                        <strong style="color: red;">Different supplier - align in each trade</strong>
                                     @else
                                     <span>{{$split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_1}}</span>
                                     @if($split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_2)
