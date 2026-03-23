@@ -182,7 +182,7 @@
 
                 <tr>
                     <td>
-                        <h5 style="margin: 0; padding: 0;">SPLIT LOAD DEAL
+                        <h5 style="margin: 0; padding: 0;">SPLIT LOAD MASTER
                             @if(isset($split_data))
                                 +{{count($split_data['linked_trans_split'])}}
                             @endif
