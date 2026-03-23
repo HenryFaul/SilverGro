@@ -428,8 +428,8 @@
                                     <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Plan
                                         Cost/Ton
                                     </td>
-                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Load
-                                        basis
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Rate
+                                        Basis
                                     </td>
                                     <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Plan
                                         Rate/Ton
@@ -458,7 +458,7 @@
                                         <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton,2), 2, '.', ' ')}}</td>
                                         <td style="width: 11.1%;"
-                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->RateBasis->name}}</td>
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportFinance->TransportRateBasis->name ?? ''}}</td>
                                         <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}</td>
                                         <td style="width: 11.1%;"
@@ -489,8 +489,8 @@
                                     <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Actual
                                         Cost/Ton
                                     </td>
-                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Load
-                                        basis
+                                    <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Rate
+                                        Basis
                                     </td>
                                     <td style="width: 11.1%;" class="table_sections_bordered table_row_heading">Actual
                                         Rate/Ton
@@ -519,7 +519,7 @@
                                         <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->cost_price_per_ton_actual,2), 2, '.', ' ')}}</td>
                                         <td style="width: 11.1%;"
-                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->RateBasis->name}}</td>
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportFinance->TransportRateBasis->name ?? ''}}</td>
                                         <td style="width: 11.1%;" class="table_sections_bordered table_row_value">
                                             R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton_actual,2), 2, '.', ' ')}}</td>
                                         <td style="width: 11.1%;"

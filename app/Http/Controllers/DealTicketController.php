@@ -77,7 +77,9 @@ class DealTicketController extends Controller
                             'Supplier',
                             'Transporter',
                             'Product',
-                            'TransportFinance',
+                            'TransportFinance' => function ($query) {
+                                $query->with('TransportRateBasis');
+                            },
                             'TransportLoad' => function ($query) {
                                 $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing', 'PackagingIncoming']);
                             }
@@ -293,7 +295,9 @@ class DealTicketController extends Controller
                                 'Supplier',
                                 'Transporter',
                                 'Product',
-                                'TransportFinance',
+                                'TransportFinance' => function ($query) {
+                                    $query->with('TransportRateBasis');
+                                },
                                 'TransportLoad' => function ($query) {
                                     $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing', 'PackagingIncoming']);
                                 }
