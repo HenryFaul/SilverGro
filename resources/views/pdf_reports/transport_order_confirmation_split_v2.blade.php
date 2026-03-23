@@ -442,10 +442,10 @@
                                     </td>
                                     <td style="width: 35%; text-align: left;"
                                         class="table_sections_bordered table_row_heading">
-                                        Packaging Incoming
+                                        Packaging
                                     </td>
                                     <td style="width: 15%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">BU In
+                                        class="table_sections_bordered table_row_heading">Quantity Billing Units
                                     </td>
                                 </tr>
 
@@ -486,16 +486,16 @@
                                         Transport Order
                                     </td>
                                     <td style="width: 20%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">Planned TI
+                                        class="table_sections_bordered table_row_heading">Planned Tons
                                     </td>
                                     <td style="width: 20%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">Transport Rate
+                                        class="table_sections_bordered table_row_heading">Transport Rate / Ton
                                     </td>
                                     <td style="width: 20%; text-align: left;"
                                         class="table_sections_bordered table_row_heading">Rate Basis
                                     </td>
                                     <td style="width: 20%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">Effective Rate/Ton
+                                        class="table_sections_bordered table_row_heading">Load Rate
                                     </td>
                                 </tr>
 
