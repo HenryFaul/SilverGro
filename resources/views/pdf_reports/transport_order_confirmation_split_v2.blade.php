@@ -276,7 +276,11 @@
                             <tr class="table_sections">
                                 <td class="table_sections table_row_heading" style="width: 25%;">Supplier:</td>
                                 <td class="table_sections table_row_value" colspan="3">
-                                    <strong>{{$split_data['primary_linked_trans_split']->Supplier->last_legal_name}}</strong>
+                                    @if($split_data['is_supplier_same'])
+                                        <strong>{{$split_data['primary_linked_trans_split']->Supplier->last_legal_name}}</strong>
+                                    @else
+                                        <strong style="color: red;">(Different Supplier)</strong>
+                                    @endif
                                 </td>
                             </tr>
 
@@ -284,6 +288,9 @@
                                 <td class="table_sections table_row_heading" style="width: 25%;">Supplier Collection Address:
                                 </td>
                                 <td class="table_sections table_row_value" colspan="3">
+                                    @if(!$split_data['is_supplier_same'])
+                                        <strong style="color: red;">(Different Supplier)</strong>
+                                    @else
                                     <span>{{$split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_1}}</span>
                                     @if($split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_2)
                                         , {{$split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->line_2}}
@@ -299,6 +306,7 @@
                                     @if($split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->code)
                                         ,
                                         <span>{{$split_data['primary_linked_trans_split']->TransportLoad->CollectionAddress->code}}</span>
+                                    @endif
                                     @endif
                                 </td>
                             </tr>
