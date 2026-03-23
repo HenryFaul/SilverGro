@@ -381,7 +381,9 @@
                                     <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">
                                         Product
                                     </td>
-                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading"></td>
+                                    <td style="width: 12.5%;" class="table_sections_bordered table_row_heading">
+                                        Pkg Incoming
+                                    </td>
                                 </tr>
 
                                 @foreach ($split_data['linked_trans_split'] as $deal)
@@ -402,7 +404,8 @@
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Transporter->last_legal_name}}</td>
                                         <td style="width: 12.5%;"
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Product->name}}</td>
-                                        <td style="width: 12.5%;" class="table_sections_bordered table_row_value"></td>
+                                        <td style="width: 12.5%;"
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportLoad->PackagingIncoming->name ?? ''}}</td>
                                     </tr>
 
                                 @endforeach

@@ -79,7 +79,7 @@ class DealTicketController extends Controller
                             'Product',
                             'TransportFinance',
                             'TransportLoad' => function ($query) {
-                                $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing']);
+                                $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing', 'PackagingIncoming']);
                             }
                         ])->orderBy('sl_global_id', 'desc');  // Ordering by sl_global_id
                     }])
@@ -295,7 +295,7 @@ class DealTicketController extends Controller
                                 'Product',
                                 'TransportFinance',
                                 'TransportLoad' => function ($query) {
-                                    $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing']);
+                                    $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing', 'PackagingIncoming']);
                                 }
                             ])->orderBy('sl_global_id', 'desc');  // Ordering by sl_global_id
                         }])
