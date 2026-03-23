@@ -285,6 +285,26 @@
                             </table>
                         </div>
 
+                        <div style="margin-top: 10px;">
+                            <b style="font-size: 12px;">Supplier Notes:</b>
+                            <table class="table_sections_bordered" style="width:100%; margin-bottom: 8px;">
+                                <thead>
+                                <tr>
+                                    <th class="table_sections_bordered table_row_heading" style="width: 15%; text-align: left;">Order #</th>
+                                    <th class="table_sections_bordered table_row_heading" style="text-align: left;">Supplier Notes</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($split_data['linked_trans_split'] as $note_deal)
+                                    <tr>
+                                        <td class="table_sections_bordered table_row_value">MQ{{$note_deal->TransportTransaction->a_mq}}</td>
+                                        <td class="table_sections_bordered table_row_value">{!! nl2br($note_deal->TransportTransaction->suppliers_notes) !!}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
                         @foreach ($split_data['linked_trans_split'] as $deal)
                             <hr style="margin-top: 5px; margin-bottom: 5px;">
                             <li class="section_heading" style="margin-top: 15px;">Supplier Details [MQ{{$deal->TransportTransaction->a_mq}}]</li>
