@@ -366,33 +366,26 @@
                             <table class="table_sections_bordered" style="width:100%;">
                                 <tbody>
                                 <tr>
-                                    <td style="width: 10%; text-align: left;"
+                                    <td style="width: 14%; text-align: left;"
                                         class="table_sections_bordered table_row_heading">Transport
                                         Order
                                     </td>
-                                    <td style="width: 15%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">Supplier
-                                    </td>
-                                    <td style="width: 10%; text-align: left;"
+                                    <td style="width: 14%; text-align: left;"
                                         class="table_sections_bordered table_row_heading">Supplier
                                         Loading #
                                     </td>
-                                    <td style="width: 15%; text-align: left;"
+                                    <td style="width: 20%; text-align: left;"
                                         class="table_sections_bordered table_row_heading">Customer
                                     </td>
-                                    <td style="width: 10%; text-align: left;"
+                                    <td style="width: 14%; text-align: left;"
                                         class="table_sections_bordered table_row_heading">Cust Order
                                         #
                                     </td>
-                                    <td style="width: 10%; text-align: left;"
+                                    <td style="width: 14%; text-align: left;"
                                         class="table_sections_bordered table_row_heading">Cust
                                         Offloading #
                                     </td>
-                                    <td style="width: 15%; text-align: left;"
-                                        class="table_sections_bordered table_row_heading">
-                                        Transporter
-                                    </td>
-                                    <td style="width: 15%; text-align: left;"
+                                    <td style="width: 24%; text-align: left;"
                                         class="table_sections_bordered table_row_heading">Product
                                     </td>
                                 </tr>
@@ -403,18 +396,13 @@
                                         <td style="text-align: left;" class="table_sections_bordered table_row_value">
                                             MQ{{$deal->TransportTransaction->a_mq}}</td>
                                         <td style="text-align: left;"
-                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Supplier->last_legal_name}}</td>
-                                        <td style="text-align: left;"
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->supplier_loading_number}}</td>
-
                                         <td style="text-align: left;"
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Customer->last_legal_name}}</td>
                                         <td style="text-align: left;"
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->customer_order_number}}</td>
                                         <td style="text-align: left;"
-                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number}}</td>
-                                        <td style="text-align: left;"
-                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Transporter->last_legal_name}}</td>
+                                            class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number ?? ''}}</td>
                                         <td style="text-align: left;"
                                             class="table_sections_bordered table_row_value">{{$deal->TransportTransaction->Product->name}}</td>
                                     </tr>
