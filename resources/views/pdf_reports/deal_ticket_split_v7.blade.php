@@ -11,7 +11,8 @@
         }
 
         body {
-            margin-top: 5px;
+            margin-top: 0;
+            padding-top: 0;
             padding: 5px;
             margin-right: 10px;
         }
@@ -210,7 +211,7 @@
 
             <ol type="1">
                 @if($transport_trans->is_split_load)
-                    <h3>SPLIT LOAD MASTER
+                    <h3 style="margin-top: 0; padding-top: 0;">SPLIT LOAD MASTER
                         @if(isset($split_data))
                             +{{count($split_data['linked_trans_split'])}}
                         @endif
