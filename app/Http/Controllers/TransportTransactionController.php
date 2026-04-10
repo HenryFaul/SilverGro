@@ -254,7 +254,7 @@ class TransportTransactionController extends Controller
         );
 
 
-        $this->syncDefaultCommUsers($transport_trans);
+        $this->syncDefaultCommUsers($transport_trans->id, $request->supplier_id['id'], $request->customer_id['id']);
 
         $request->session()->flash('flash.bannerStyle', 'success');
         $request->session()->flash('flash.banner', 'Created:' . $transport_trans->id);
@@ -826,7 +826,7 @@ class TransportTransactionController extends Controller
         $newSupplierId = $request->supplier_id['id'];
         $newCustomerId = $request->is_split_load ? 2 : $request->customer_id['id'];
         $this->removeStaleCommUsers($transportTransaction->id, $oldSupplierId, $newSupplierId, $oldCustomerId, $newCustomerId);
-        $this->syncDefaultCommUsers($transportTransaction);
+        $this->syncDefaultCommUsers($transportTransaction->id, $newSupplierId, $newCustomerId);
 
         if ($update_related_models == 1) {
             $transport_finance = ($transportTransaction->TransportFinance);
@@ -2072,19 +2072,18 @@ class TransportTransactionController extends Controller
 
     /**
      * Auto-populate AssignedUserComm records from the linked staff of the
-     * transaction's supplier and customer. Zips the two lists (shorter side
-     * repeats its last entry). Skips pairs that already exist.
+     * given supplier and customer. Zips the two lists (shorter side repeats
+     * its last entry). Skips pairs that already exist.
      */
-    private function syncDefaultCommUsers(TransportTransaction $transaction): void
+    private function syncDefaultCommUsers(int $transactionId, int $supplierId, int $customerId): void
     {
-        $transaction->loadMissing('TransportFinance');
-        $financeId = $transaction->TransportFinance?->id;
+        $financeId = TransportFinance::where('transport_trans_id', $transactionId)->value('id');
         if (!$financeId) {
             return;
         }
 
-        $supplierIds = Supplier::find($transaction->supplier_id)?->staff->pluck('id')->toArray() ?? [];
-        $customerIds = Customer::find($transaction->customer_id)?->staff->pluck('id')->toArray() ?? [];
+        $supplierIds = Supplier::find($supplierId)?->staff->pluck('id')->toArray() ?? [];
+        $customerIds = Customer::find($customerId)?->staff->pluck('id')->toArray() ?? [];
 
         if (empty($supplierIds) && empty($customerIds)) {
             return;
@@ -2093,22 +2092,22 @@ class TransportTransactionController extends Controller
         $maxCount = max(count($supplierIds) ?: 1, count($customerIds) ?: 1);
 
         for ($i = 0; $i < $maxCount; $i++) {
-            $suppId = $supplierIds[$i] ?? $supplierIds[array_key_last($supplierIds)] ?? 1;
-            $custId = $customerIds[$i] ?? $customerIds[array_key_last($customerIds)] ?? 1;
+            $suppId = $supplierIds[$i] ?? ($supplierIds ? $supplierIds[array_key_last($supplierIds)] : 1);
+            $custId = $customerIds[$i] ?? ($customerIds ? $customerIds[array_key_last($customerIds)] : 1);
 
-            $exists = AssignedUserComm::where('transport_trans_id', $transaction->id)
+            $exists = AssignedUserComm::where('transport_trans_id', $transactionId)
                 ->where('assigned_user_supplier_id', $suppId)
                 ->where('assigned_user_customer_id', $custId)
                 ->exists();
 
             if (!$exists) {
                 AssignedUserComm::create([
-                    'transport_trans_id'       => $transaction->id,
-                    'transport_finance_id'     => $financeId,
+                    'transport_trans_id'        => $transactionId,
+                    'transport_finance_id'      => $financeId,
                     'assigned_user_supplier_id' => $suppId,
                     'assigned_user_customer_id' => $custId,
-                    'supplier_comm'            => 0,
-                    'customer_comm'            => 0,
+                    'supplier_comm'             => 0,
+                    'customer_comm'             => 0,
                 ]);
             }
         }
