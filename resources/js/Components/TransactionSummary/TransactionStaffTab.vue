@@ -25,8 +25,8 @@
             <div
               v-for="(user_comm, index) in selectedTransaction.assigned_user_comm"
               :key="user_comm.id">
-              <div class="ml-5 border border-gray-200 p-4 m-3 rounded-lg shadow-md bg-white">
-                <div class="px-2 pb-2 sm:px-0">
+              <div class="ml-5 border border-gray-200 p-6 mb-5 rounded-lg shadow-md bg-white">
+                <div class="px-2 pb-3 sm:px-0">
                   <h3 class="text-base font-semibold leading-2 text-indigo-400">
                     User Comm {{ index + 1 }}
                   </h3>
@@ -36,7 +36,7 @@
                 </div>
                 <div class="mt-2 border-t border-gray-100">
                   <dl class="divide-y divide-gray-100">
-                    <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
                         Supplier User
                       </dt>
@@ -47,7 +47,7 @@
                       </dd>
                     </div>
 
-                    <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
                         Customer User
                       </dt>
@@ -58,7 +58,7 @@
                       </dd>
                     </div>
 
-                    <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
                         Supplier Commission
                       </dt>
@@ -68,7 +68,7 @@
                       </dd>
                     </div>
 
-                    <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
                         Customer Commission
                       </dt>
@@ -92,7 +92,7 @@
                   </div>
 
                   <SecondaryButton
-                    class="m-1"
+                    class="mt-4"
                     @click="$emit('delete-assigned-comm', user_comm.id)">
                     Delete
                   </SecondaryButton>
