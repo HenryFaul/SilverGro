@@ -1,7 +1,7 @@
 <script setup>
 import InputError from '@/Components/InputError.vue';
 import AreaInput from '@/Components/AreaInput.vue';
-import { computed, onBeforeMount, onMounted, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot, } from '@headlessui/vue';
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -42,6 +42,13 @@ const emit = defineEmits(['close']);
     await getComponentProps();
   });
 
+  watch(() => props.show, (newVal) => {
+    if (newVal) {
+      vehicleForm.reset();
+      drivers.value = [];
+    }
+  });
+
   let vehicleSlideProps = ref(null);
   let transporters = ref([]);
   let drivers = ref([]);
@@ -73,6 +80,8 @@ const emit = defineEmits(['close']);
     vehicleForm.post(route('regular_vehicle.store'), {
       preserveScroll: true,
       onSuccess: () => {
+        vehicleForm.reset();
+        drivers.value = [];
         close();
       },
       onError: (e) => {
