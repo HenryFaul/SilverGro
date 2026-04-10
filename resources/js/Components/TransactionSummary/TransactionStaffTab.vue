@@ -26,7 +26,7 @@
               v-for="(user_comm, index) in selectedTransaction.assigned_user_comm"
               :key="user_comm.id">
               <div class="ml-5 border border-gray-200 p-6 mb-5 rounded-lg shadow-md bg-white">
-                <div class="px-2 pb-3 sm:px-0">
+                <div class="px-2 pt-3 pb-3 sm:px-0">
                   <h3 class="text-base font-semibold leading-2 text-indigo-400">
                     User Comm {{ index + 1 }}
                   </h3>
