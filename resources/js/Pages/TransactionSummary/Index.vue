@@ -1,5 +1,5 @@
 <script setup>
-  import { computed, onBeforeMount, ref } from 'vue';
+  import { computed, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
   import { Link, router, useForm, usePage } from '@inertiajs/vue3';
   import AppLayout from '@/Layouts/AppLayout.vue';
   import InputError from '@/Components/InputError.vue';
@@ -111,6 +111,35 @@
   });
 
   onBeforeMount(async () => {});
+
+  const reloadTradeData = () => {
+    router.reload({
+      only: ['selected_transaction', 'transactions'],
+      preserveScroll: true,
+    });
+  };
+
+  const handleVisibilityChange = () => {
+    if (!document.hidden) {
+      reloadTradeData();
+    }
+  };
+
+  let pollInterval = null;
+
+  onMounted(() => {
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    pollInterval = setInterval(() => {
+      if (!document.hidden) {
+        reloadTradeData();
+      }
+    }, 30000);
+  });
+
+  onUnmounted(() => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    clearInterval(pollInterval);
+  });
 
   // tabs and tab selection moved to composable for cleaner code
   const { tabs, selectedTabId, selectTab } = useTransactionTabs(
