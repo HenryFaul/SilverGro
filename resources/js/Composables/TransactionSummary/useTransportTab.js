@@ -19,7 +19,7 @@ export function useTransportTab(props, combined_Form) {
     const transporterId = combined_Form.transporter_id.id;
 
     return props.all_vehicles.filter((vehicle) => {
-      // Always include "N/A" or generic vehicles
+      // Always include "N/A" or generic vehicles (Unallocated placeholder)
       if (vehicle.reg_no === 'N/A' || vehicle.reg_no === 'n/a') {
         return true;
       }
@@ -31,6 +31,11 @@ export function useTransportTab(props, combined_Form) {
 
       // Include vehicles associated with the selected transporter
       return vehicle.transporter.id === transporterId;
+    }).sort((a, b) => {
+      // Always show Unallocated (N/A) first
+      if (a.reg_no === 'N/A' || a.reg_no === 'n/a') return -1;
+      if (b.reg_no === 'N/A' || b.reg_no === 'n/a') return 1;
+      return 0;
     });
   });
 

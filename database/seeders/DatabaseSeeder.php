@@ -918,6 +918,7 @@ class DatabaseSeeder extends Seeder
         //regular vehicle
 
         RegularVehicle::create([
+            'id' => 1,
             'vehicle_type_id'=>1,
             'reg_no' => 'N/A',
             'comment'=>'Unallocated vehicle.'
@@ -926,7 +927,8 @@ class DatabaseSeeder extends Seeder
         //regular driver
 
         RegularDriver::create([
-           'first_name'=>'Unallocated',
+            'id' => 1,
+            'first_name'=>'Unallocated',
             'last_name'=>'Unallocated',
         ]);
 

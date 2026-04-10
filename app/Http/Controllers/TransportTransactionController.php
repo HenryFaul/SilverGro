@@ -242,12 +242,15 @@ class TransportTransactionController extends Controller
             'is_active' => false
         ]);
 
+        $unallocated_vehicle_id = RegularVehicle::where('reg_no', 'N/A')->value('id') ?? 1;
+        $unallocated_driver_id = RegularDriver::where('first_name', 'Unallocated')->value('id') ?? 1;
+
         $transport_driver_vehicle = TransportDriverVehicle::create(
             [
                 'transport_trans_id' => $transport_trans->id,
                 'transport_job_id' => $transport_job->id,
-                'regular_driver_id' => 1,
-                'regular_vehicle_id' => 1,
+                'regular_driver_id' => $unallocated_driver_id,
+                'regular_vehicle_id' => $unallocated_vehicle_id,
                 'weighbridge_upload_weight' => 0,
                 'weighbridge_offload_weight' => 0,
             ]
@@ -411,12 +414,15 @@ class TransportTransactionController extends Controller
             'status_id' => $transport_invoice_details_to_clone->status_id,
         ]);
 
+        $unallocated_vehicle_id_clone = RegularVehicle::where('reg_no', 'N/A')->value('id') ?? 1;
+        $unallocated_driver_id_clone = RegularDriver::where('first_name', 'Unallocated')->value('id') ?? 1;
+
         $transport_driver_vehicle = TransportDriverVehicle::create(
             [
                 'transport_trans_id' => $transport_trans->id,
                 'transport_job_id' => $transport_job->id,
-                'regular_driver_id' => 1,
-                'regular_vehicle_id' => 1,
+                'regular_driver_id' => $unallocated_driver_id_clone,
+                'regular_vehicle_id' => $unallocated_vehicle_id_clone,
                 'weighbridge_upload_weight' => 0,
                 'weighbridge_offload_weight' => 0,
             ]

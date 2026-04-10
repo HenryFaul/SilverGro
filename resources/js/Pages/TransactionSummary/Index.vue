@@ -2012,6 +2012,7 @@
                                       :display-value="
                                         (vehicle) => {
                                           if (!vehicle) return '';
+                                          if (vehicle.reg_no === 'N/A' || vehicle.reg_no === 'n/a') return 'Unallocated';
                                           const vehicleInfo =
                                             vehicle.reg_no +
                                             ' ' +
@@ -2059,14 +2060,19 @@
                                                 'block truncate',
                                                 selected && 'font-semibold',
                                               ]">
-                                              {{ vehicle.reg_no }}
-                                              {{ vehicle.vehicle_type.name }}
-                                              <span
-                                                v-if="vehicle.transporter"
-                                                class="text-gray-500 font-normal">
-                                                -
-                                                {{ vehicle.transporter.last_legal_name }}
-                                              </span>
+                                              <template v-if="vehicle.reg_no === 'N/A' || vehicle.reg_no === 'n/a'">
+                                                Unallocated
+                                              </template>
+                                              <template v-else>
+                                                {{ vehicle.reg_no }}
+                                                {{ vehicle.vehicle_type.name }}
+                                                <span
+                                                  v-if="vehicle.transporter"
+                                                  class="text-gray-500 font-normal">
+                                                  -
+                                                  {{ vehicle.transporter.last_legal_name }}
+                                                </span>
+                                              </template>
                                             </span>
                                             <span
                                               v-if="selected"
