@@ -174,24 +174,19 @@ class RegularDriverController extends Controller
             if ($vehicleId) {
                 $existingLink->regular_vehicle_id = $vehicleId;
             }
-            // Set multiple dates to ensure this is recognized as most recent
-            // Use date_loaded as it's earlier in COALESCE than date_scheduled
+            // Use date_scheduled for COALESCE ordering — do NOT touch is_loaded or date_loaded
             $existingLink->date_scheduled = now();
-            $existingLink->date_loaded = now();
-            $existingLink->is_loaded = true;
             $existingLink->is_transport_scheduled = true;
             $existingLink->save();
         } else {
-            // Create new link - need vehicle_id (use null/default if not provided)
+            // Create new link — do NOT set is_loaded/date_loaded; let user control those
             $link = TransportDriverVehicle::create([
                 'transport_trans_id' => $transportTransId,
                 'transport_job_id' => $transportJobId,
                 'regular_driver_id' => $driverId,
-                'regular_vehicle_id' => $vehicleId ?? 1, // Default to "N/A" vehicle if none provided
+                'regular_vehicle_id' => $vehicleId ?? 1,
                 'date_scheduled' => now(),
-                'date_loaded' => now(), // Set earlier date in COALESCE priority
                 'is_transport_scheduled' => true,
-                'is_loaded' => true,
             ]);
         }
     }
