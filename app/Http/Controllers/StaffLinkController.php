@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\CustomerParent;
 use App\Models\Staff;
 use App\Models\Supplier;
 use App\Rules\StaffAssignRule;
@@ -27,7 +28,9 @@ class StaffLinkController extends Controller
 
         $related_entity = match ($related_class) {
             'App\Models\Customer' => Customer::find($request->related_id),
+            'App\Models\CustomerParent' => CustomerParent::find($request->related_id),
             'App\Models\Supplier' => Supplier::find($request->related_id),
+            default => null,
         };
 
 
@@ -56,13 +59,20 @@ class StaffLinkController extends Controller
 
         $related_entity = match ($related_class) {
             'App\Models\Customer' => Customer::find($request->related_id),
+            'App\Models\CustomerParent' => CustomerParent::find($request->related_id),
             'App\Models\Supplier' => Supplier::find($request->related_id),
+            default => null,
         };
+
+        if ($staff === null || $related_entity === null) {
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'Staff not unlinked');
+            return redirect()->back();
+        }
 
         $res = $related_entity->staff()->detach($staff);
 
-        if ($res){
-
+        if ($res) {
             $request->session()->flash('flash.bannerStyle', 'success');
             $request->session()->flash('flash.banner', 'Staff unlinked');
             return redirect()->back();
