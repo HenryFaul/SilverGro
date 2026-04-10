@@ -75,7 +75,7 @@ defineProps({
   });
 
   const classesAdmin = computed(() => {
-    return route().current('staff.*')
+    return route().current('staff.*') || route().current('roles.*')
       ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm focus:outline-none focus:border-indigo-700 transition'
       : 'font-semibold text-black text-sm';
   });
@@ -735,6 +735,10 @@ defineProps({
 
                         <DropdownLink :href="route('pdf-settings.index')">
                           PDF Settings
+                        </DropdownLink>
+
+                        <DropdownLink :href="route('roles.index')">
+                          Roles
                         </DropdownLink>
 
                         <div class="border-t border-gray-100" />

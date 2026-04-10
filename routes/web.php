@@ -26,6 +26,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RegularDriverController;
 use App\Http\Controllers\RegularVehicleController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleModifyController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\ScOverviewController;
@@ -421,6 +422,12 @@ Route::middleware([
     //Staff comm
 
     Route::get('/staff_comm', [StaffController::class, 'staffComm'])->middleware('auth')->name('staff.comm');
+    Route::get('/staff_comm/export', [StaffController::class, 'staffCommExport'])->middleware('auth')->name('staff.comm.export');
+
+    // Roles management
+    Route::get('/roles', [RoleController::class, 'index'])->middleware('auth')->name('roles.index');
+    Route::put('/roles/{role}', [RoleController::class, 'update'])->middleware('auth')->name('roles.update');
+    Route::put('/roles/{role}/permission', [RoleController::class, 'togglePermission'])->middleware('auth')->name('roles.permission.toggle');
 
 
 
