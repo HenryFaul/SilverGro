@@ -44,74 +44,48 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
+     *
+     * Idempotent: safe to re-run against an existing database.
+     * Uses firstOrCreate throughout so only missing records are inserted.
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        // ─── Permissions ─────────────────────────────────────────────────────────
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        Permission::firstOrCreate(['name' => 'view_only']);
+        Permission::firstOrCreate(['name' => 'update_supplier']);
+        Permission::firstOrCreate(['name' => 'update_product']);
+        Permission::firstOrCreate(['name' => 'update_customer']);
+        Permission::firstOrCreate(['name' => 'update_transporter']);
+        Permission::firstOrCreate(['name' => 'update_contact']);
+        Permission::firstOrCreate(['name' => 'update_pricing']);
+        Permission::firstOrCreate(['name' => 'update_process']);
+        Permission::firstOrCreate(['name' => 'delete_system_document']);
+        Permission::firstOrCreate(['name' => 'delete_user_document']);
+        Permission::firstOrCreate(['name' => 'manage_users']);
+        Permission::firstOrCreate(['name' => 'create_pc']);
+        Permission::firstOrCreate(['name' => 'create_sc']);
+        Permission::firstOrCreate(['name' => 'create_mq']);
+        Permission::firstOrCreate(['name' => 'link_mq']);
+        Permission::firstOrCreate(['name' => 'approve_deal_ticket']);
+        Permission::firstOrCreate(['name' => 'override_deal_ticket']);
+        Permission::firstOrCreate(['name' => 'edit_adjusted_gp']);
+        Permission::firstOrCreate(['name' => 'edit_transport_trans']);
 
-        //Standard
-/*        Add new line
-    Update supplier
-    Update product
-    Update customer
-    Update transport
-    Update pricing
-    Update process
-    Delete system documents
-    Delete user documents
-    Manage users
-    Manage products
-    Create dealtickerts
-    Create purchase contracts
-    Create sales contracts*/
+        // ─── Roles ───────────────────────────────────────────────────────────────
 
+        $viewOnlyRole         = Role::firstOrCreate(['name' => 'ViewOnlyRole']);
+        $SystemTesterRole     = Role::firstOrCreate(['name' => 'SystemTesterRole']);
+        $AdminRole            = Role::firstOrCreate(['name' => 'AdminRole']);
+        $TraderRole           = Role::firstOrCreate(['name' => 'TraderRole']);
+        $LogisticsRole        = Role::firstOrCreate(['name' => 'LogisticsRole']);
+        $TradeDirectorRole    = Role::firstOrCreate(['name' => 'TradeDirectorRole']);
+        $FinancialDirectorRole = Role::firstOrCreate(['name' => 'FinancialDirectorRole']);
+        $OpsAdminManger       = Role::firstOrCreate(['name' => 'OpsAdmin Manager']);
 
-        Permission::create(['name' => 'view_only']);
-        Permission::create(['name' => 'update_supplier']);
-        Permission::create(['name' => 'update_product']);
-        Permission::create(['name' => 'update_customer']);
-        Permission::create(['name' => 'update_transporter']);
-        Permission::create(['name' => 'update_contact']);
-        Permission::create(['name' => 'update_pricing']);
-        Permission::create(['name' => 'update_process']);
-        Permission::create(['name' => 'delete_system_document']);
-        Permission::create(['name' => 'delete_user_document']);
-        Permission::create(['name' => 'manage_users']);
-        Permission::create(['name' => 'create_pc']);
-        Permission::create(['name' => 'create_sc']);
-        Permission::create(['name' => 'create_mq']);
-        Permission::create(['name' => 'link_mq']);
-        Permission::create(['name' => 'approve_deal_ticket']);
-        Permission::create(['name' => 'override_deal_ticket']);
-        Permission::create(['name' => 'edit_adjusted_gp']);
-        Permission::create(['name' => 'edit_transport_trans']);
+        // givePermissionTo uses syncWithoutDetaching internally — idempotent.
 
-     /*   System Tester
-        Admin
-        Trader
-        Logistics
-        Trading Director
-        Financial Director
-        Super Admin*/
-
-        $viewOnlyRole = Role::create(['name' => 'ViewOnlyRole']);
-        $SystemTesterRole = Role::create(['name' => 'SystemTesterRole']);
-        $AdminRole = Role::create(['name' => 'AdminRole']);
-        $TraderRole = Role::create(['name' => 'TraderRole']);
-        $LogisticsRole = Role::create(['name' => 'LogisticsRole']);
-        $TradeDirectorRole = Role::create(['name' => 'TradeDirectorRole']);
-        $FinancialDirectorRole = Role::create(['name' => 'FinancialDirectorRole']);
-        $OpsAdminManger = Role::create(['name' => 'OpsAdmin Manager']);
-
-
-        $viewOnlyRole->givePermissionTo([
-            'view_only',
-        ]);
+        $viewOnlyRole->givePermissionTo(['view_only']);
 
         $AdminRole->givePermissionTo([
             'update_supplier',
@@ -128,8 +102,9 @@ class DatabaseSeeder extends Seeder
             'create_sc',
             'create_mq',
             'link_mq',
+            'approve_deal_ticket',
             'edit_adjusted_gp',
-            'edit_transport_trans'
+            'edit_transport_trans',
         ]);
 
         $SystemTesterRole->givePermissionTo([
@@ -149,7 +124,7 @@ class DatabaseSeeder extends Seeder
             'link_mq',
             'approve_deal_ticket',
             'edit_adjusted_gp',
-            'edit_transport_trans'
+            'edit_transport_trans',
         ]);
 
         $TraderRole->givePermissionTo([
@@ -167,7 +142,7 @@ class DatabaseSeeder extends Seeder
             'create_sc',
             'create_mq',
             'link_mq',
-            'edit_transport_trans'
+            'edit_transport_trans',
         ]);
 
         $LogisticsRole->givePermissionTo([
@@ -185,7 +160,7 @@ class DatabaseSeeder extends Seeder
             'create_sc',
             'create_mq',
             'link_mq',
-            'edit_transport_trans'
+            'edit_transport_trans',
         ]);
 
         $TradeDirectorRole->givePermissionTo([
@@ -205,7 +180,7 @@ class DatabaseSeeder extends Seeder
             'link_mq',
             'approve_deal_ticket',
             'edit_adjusted_gp',
-            'edit_transport_trans'
+            'edit_transport_trans',
         ]);
 
         $FinancialDirectorRole->givePermissionTo([
@@ -225,26 +200,7 @@ class DatabaseSeeder extends Seeder
             'link_mq',
             'approve_deal_ticket',
             'edit_adjusted_gp',
-            'edit_transport_trans'
-        ]);
-
-        $AdminRole->givePermissionTo([
-            'update_supplier',
-            'update_product',
-            'update_customer',
-            'update_transporter',
-            'update_contact',
-            'update_pricing',
-            'update_process',
-            'delete_system_document',
-            'delete_user_document',
-            'manage_users',
-            'create_pc',
-            'create_sc',
-            'create_mq',
-            'link_mq',
-            'approve_deal_ticket',
-            'edit_transport_trans'
+            'edit_transport_trans',
         ]);
 
         $OpsAdminManger->givePermissionTo([
@@ -263,1016 +219,396 @@ class DatabaseSeeder extends Seeder
             'create_mq',
             'link_mq',
             'approve_deal_ticket',
-            'edit_transport_trans'
+            'edit_transport_trans',
         ]);
 
-        //Staff
+        // ─── Staff / Users ────────────────────────────────────────────────────────
 
-        $unallocated_user =  User::create([
-            'name' => 'Unallocated',
-            'email' => 'unallocated@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
+        $unallocated_user = User::firstOrCreate(
+            ['email' => 'unallocated@silvergro.co.za'],
+            ['name' => 'Unallocated', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $unallocated_user->id], ['first_name' => 'Unallocated']);
 
-        Staff::create([
-            'first_name' => 'Unallocated',
-            'user_id'=> $unallocated_user->id
-        ]);
+        $allan_user = User::firstOrCreate(
+            ['email' => 'allan@silvergro.co.za'],
+            ['name' => 'Allan', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $allan_user->id], ['first_name' => 'Allan']);
 
+        $maralize_user = User::firstOrCreate(
+            ['email' => 'maralize@silvergro.co.za'],
+            ['name' => 'Marlize', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $maralize_user->id], ['first_name' => 'Marlize']);
 
-        $allan_user =  User::create([
-            'name' => 'Allan',
-            'email' => 'allan@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
+        $harry_user = User::firstOrCreate(
+            ['email' => 'harry@silvergro.co.za'],
+            ['name' => 'Harry', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $harry_user->id], ['first_name' => 'Harry']);
 
-       Staff::create([
-            'first_name' => 'Allan',
-            'user_id'=> $allan_user->id
-        ]);
+        $lize_user = User::firstOrCreate(
+            ['email' => 'lize@silvergro.co.za'],
+            ['name' => 'Liza-Marie', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $lize_user->id], ['first_name' => 'Liza-Marie']);
 
-        $maralize_user =  User::create([
-            'name' => 'Marlize',
-            'email' => 'maralize@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
+        $desire_user = User::firstOrCreate(
+            ['email' => 'desiree@silvergro.co.za'],
+            ['name' => 'Desiree', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $desire_user->id], ['first_name' => 'Desiree']);
 
-        Staff::create([
-            'first_name' => 'Marlize',
-            'user_id'=> $maralize_user->id
-        ]);
+        $hennie_user = User::firstOrCreate(
+            ['email' => 'hennie@silvergro.co.za'],
+            ['name' => 'Hennie', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $hennie_user->id], ['first_name' => 'Hennie']);
 
-        $harry_user =  User::create([
-            'name' => 'Harry',
-            'email' => 'harry@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
+        $petro_user = User::firstOrCreate(
+            ['email' => 'petro@silvergro.co.za'],
+            ['name' => 'Petro', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $petro_user->id], ['first_name' => 'Petro']);
 
-        Staff::create([
-            'first_name' => 'Harry',
-            'user_id'=> $harry_user->id
-        ]);
+        $landi_user = User::firstOrCreate(
+            ['email' => 'Landi@silvergro.co.za'],
+            ['name' => 'Landi', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $landi_user->id], ['first_name' => 'Landi']);
 
+        $henry_user = User::firstOrCreate(
+            ['email' => 'rhfaul@gmail.com'],
+            ['name' => 'Henry', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $henry_user->id], ['first_name' => 'Henry']);
 
-        $lize_user =  User::create([
-            'name' => 'Liza-Marie',
-            'email' => 'lize@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
+        $simone_user = User::firstOrCreate(
+            ['email' => 'simone@silvergro.co.za'],
+            ['name' => 'simone', 'password' => bcrypt('test1234')]
+        );
+        Staff::firstOrCreate(['user_id' => $simone_user->id], ['first_name' => 'simone']);
 
-        Staff::create([
-            'first_name' => 'Liza-Marie',
-            'user_id'=> $lize_user->id
-        ]);
-
-
-
-        $desire_user =  User::create([
-            'name' => 'Desiree',
-            'email' => 'desiree@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
-
-        Staff::create([
-            'first_name' => 'Desiree',
-            'user_id'=> $desire_user->id
-        ]);
-
-        $hennie_user =  User::create([
-            'name' => 'Hennie',
-            'email' => 'hennie@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
-
-        Staff::create([
-            'first_name' => 'Hennie',
-            'user_id'=> $hennie_user->id
-        ]);
-
-        $petro_user =  User::create([
-            'name' => 'Petro',
-            'email' => 'petro@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
-
-        Staff::create([
-            'first_name' => 'Petro',
-            'user_id'=> $petro_user->id
-        ]);
-
-        $landi_user =  User::create([
-            'name' => 'Landi',
-            'email' => 'Landi@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
-
-        Staff::create([
-            'first_name' => 'Landi',
-            'user_id'=> $landi_user->id
-        ]);
-
-
-        $henry_user =  User::create([
-            'name' => 'Henry',
-            'email' => 'rhfaul@gmail.com',
-            'password' => bcrypt('test1234')
-        ]);
-
-        Staff::create([
-            'first_name' => 'Henry',
-            'user_id'=> $henry_user->id
-        ]);
-
-
-        $simone_user =  User::create([
-            'name' => 'simone',
-            'email' => 'simone@silvergro.co.za',
-            'password' => bcrypt('test1234')
-        ]);
-
-        Staff::create([
-            'first_name' => 'simone',
-            'user_id'=> $simone_user->id
-        ]);
-
-
+        // assignRole uses syncWithoutDetaching — idempotent.
         $henry_user->assignRole('SystemTesterRole');
         $henry_user->assignRole('TraderRole');
         $henry_user->assignRole('AdminRole');
 
-        /*Staff::create([
-            'first_name' => 'Allan',
-        ]);
+        // ─── Trade Rules ──────────────────────────────────────────────────────────
 
-        Staff::create([
-            'first_name' => 'Marlize',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Harry',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Liza-Marie',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Desire',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Hennie',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Petro',
-        ]);
-
-        Staff::create([
-            'first_name' => 'Landi',
-        ]);*/
-
-
-
-        //$view->assignRole('ViewOnly');
-
-
-        //TradeRules
-
-    /*    'name','min_trade_value','max_trade_vale'*/
-
-        //'poly_rule_type','poly_rule_id','role'
-
-       $rule_1 = TradeRule::create([
-            'name' => 'R0 to  R199,999.00',
-            'min_trade_value' => 0,
-            'max_trade_value' =>  199999.00 ,
-        ]);
-
-        TradeRuleRole::create([
-            'poly_rule_id' => $rule_1->id,
+        $rule_1 = TradeRule::firstOrCreate(
+            ['name' => 'R0 to  R199,999.00'],
+            ['min_trade_value' => 0, 'max_trade_value' => 199999.00]
+        );
+        TradeRuleRole::firstOrCreate([
+            'poly_rule_id'   => $rule_1->id,
             'poly_rule_type' => get_class($rule_1),
-            'role' => 'TraderRole',
+            'role'           => 'TraderRole',
         ]);
 
-        $rule_2 = TradeRule::create([
-            'name' => 'R200 000 to  R3,999,999.00',
-            'min_trade_value' => 200000,
-            'max_trade_value' =>   3999999.00,
-        ]);
-
-        TradeRuleRole::create([
-            'poly_rule_id' => $rule_2->id,
+        $rule_2 = TradeRule::firstOrCreate(
+            ['name' => 'R200 000 to  R3,999,999.00'],
+            ['min_trade_value' => 200000, 'max_trade_value' => 3999999.00]
+        );
+        TradeRuleRole::firstOrCreate([
+            'poly_rule_id'   => $rule_2->id,
             'poly_rule_type' => get_class($rule_1),
-            'role' => 'TradeDirectorRole',
+            'role'           => 'TradeDirectorRole',
         ]);
-
-        TradeRuleRole::create([
-            'poly_rule_id' => $rule_2->id,
+        TradeRuleRole::firstOrCreate([
+            'poly_rule_id'   => $rule_2->id,
             'poly_rule_type' => get_class($rule_1),
-            'role' => 'TraderRole',
+            'role'           => 'TraderRole',
         ]);
 
-
-        $rule_3 = TradeRule::create([
-            'name' => 'R4 000 000 to  R9,999,999.00',
-            'min_trade_value' => 4000000,
-            'max_trade_value' =>   9999999.00,
-        ]);
-
-        TradeRuleRole::create([
-            'poly_rule_id' => $rule_3->id,
+        $rule_3 = TradeRule::firstOrCreate(
+            ['name' => 'R4 000 000 to  R9,999,999.00'],
+            ['min_trade_value' => 4000000, 'max_trade_value' => 9999999.00]
+        );
+        TradeRuleRole::firstOrCreate([
+            'poly_rule_id'   => $rule_3->id,
             'poly_rule_type' => get_class($rule_1),
-            'role' => 'TradeDirectorRole',
+            'role'           => 'TradeDirectorRole',
         ]);
-
-        TradeRuleRole::create([
-            'poly_rule_id' => $rule_3->id,
+        TradeRuleRole::firstOrCreate([
+            'poly_rule_id'   => $rule_3->id,
             'poly_rule_type' => get_class($rule_1),
-            'role' => 'FinancialDirectorRole',
+            'role'           => 'FinancialDirectorRole',
         ]);
-
-        TradeRuleRole::create([
-            'poly_rule_id' => $rule_3->id,
+        TradeRuleRole::firstOrCreate([
+            'poly_rule_id'   => $rule_3->id,
             'poly_rule_type' => get_class($rule_1),
-            'role' => 'TraderRole',
+            'role'           => 'TraderRole',
         ]);
 
-        $rule_opp_1 = TradeRuleOpp::create([
-            'name' => 'Purchase is C.O.D',
-        ]);
+        $rule_opp_1 = TradeRuleOpp::firstOrCreate(['name' => 'Purchase is C.O.D']);
+        $rule_opp_2 = TradeRuleOpp::firstOrCreate(['name' => 'Supplier Suspended']);
 
-        $rule_opp_2 = TradeRuleOpp::create([
-            'name' => 'Supplier Suspended',
-        ]);
-
-        TradeRuleRole::create([
-            'poly_rule_id' => $rule_opp_1->id,
+        TradeRuleRole::firstOrCreate([
+            'poly_rule_id'   => $rule_opp_1->id,
             'poly_rule_type' => get_class($rule_opp_1),
-            'role' => 'FinancialDirectorRole',
+            'role'           => 'FinancialDirectorRole',
         ]);
-
-        TradeRuleRole::create([
-            'poly_rule_id' => $rule_opp_2->id,
+        TradeRuleRole::firstOrCreate([
+            'poly_rule_id'   => $rule_opp_2->id,
             'poly_rule_type' => get_class($rule_opp_1),
-            'role' => 'FinancialDirectorRole',
-        ]);
-
-        //TransLinkTypes
-
-/*        •	sc_to_pc
-            •	pc_to_sc
-            •	mq_to_pc
-            •	mq_to_sc
-*/
-
-        TransLinkType::create([
-            'name' => 'sc_to_pc'
-        ]);
-
-        TransLinkType::create([
-            'name' => 'pc_to_sc'
-        ]);
-
-        TransLinkType::create([
-            'name' => 'mq_to_pc'
-        ]);
-
-        TransLinkType::create([
-            'name' => 'mq_to_sc'
-        ]);
-
-        TransLinkType::create([
-            'name' => 'pc_to_pc'
-        ]);
-
-        //AddressType
-        //delivery 1, physical 2, postal 3
-        AddressType::create([
-            'type' => 'Delivery'
-        ]);
-
-        AddressType::create([
-            'type' => 'Physical'
-        ]);
-
-        AddressType::create([
-            'type' => 'Postal'
-        ]);
-
-        AddressType::create([
-            'type' => 'Collection'
-        ]);
-
-        //CustomerRating
-        CustomerRating::create([
-            'value' => 'A'
-        ]);
-        CustomerRating::create([
-            'value' => 'B'
-        ]);
-        CustomerRating::create([
-            'value' => 'C'
-        ]);
-        CustomerRating::create([
-            'value' => 'D'
-        ]);
-        CustomerRating::create([
-            'value' => 'E'
-        ]);
-        CustomerRating::create([
-            'value' => 'F'
-        ]);
-
-        //InvoiceBasis
-
-        InvoiceBasis::create([
-            'value' => 'Upload Weight'
-        ]);
-
-        InvoiceBasis::create([
-            'value' => 'Offload Weight'
-        ]);
-
-
-        //ContactType
-
-        ContactType::create([
-            'type' => 'Telephone'
-        ]);
-
-        ContactType::create([
-            'type' => 'Cellphone'
-        ]);
-
-        ContactType::create([
-            'type' => 'Fax number'
-        ]);
-
-        ContactType::create([
-            'type' => 'Email'
-        ]);
-
-
-        //TermsOfPaymentBasis
-
-        TermsOfPaymentBasis::create([
-            'value' => 'Days from Invoice Date'
-        ]);
-
-        TermsOfPaymentBasis::create([
-            'value' => 'Days from Statement'
-        ]);
-
-        //TermsOfPayment
-
-        TermsOfPayment::create([
-            'value' => 'C.O.D',
-            'days' => 0
-        ]);
-
-        TermsOfPayment::create([
-            'value' => 'Unallocated',
-            'days' => 0
-        ]);
-
-        TermsOfPayment::create([
-            'value' => '3 Days',
-            'days' => 3
-
-        ]);
-
-        TermsOfPayment::create([
-            'value' => '7 Days',
-            'days' => 7
-        ]);
-
-        TermsOfPayment::create([
-            'value' => '14 Days',
-            'days' => 14
-        ]);
-
-        TermsOfPayment::create([
-            'value' => '30 Days',
-            'days' => 30
-        ]);
-
-        TermsOfPayment::create([
-            'value' => '60 Days',
-            'days' => 60
-        ]);
-
-        TermsOfPayment::create([
-            'value' => '90 Days',
-            'days' => 90
-        ]);
-
-        TermsOfPayment::create([
-            'value' => 'F.C.A',
-            'days' => 0
-        ]);
-
-        TermsOfPayment::create([
-            'value' => 'Prepaid',
-            'days' => 0
-        ]);
-
-
-
-        //Unallocated types
-
-       $customer_parent= CustomerParent::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1,
-            'invoice_basis_id'=>1,
-            'terms_of_payment_basis_id'=>1,
-            'days_overdue_allowed_id'=>1,
-            'customer_rating_id'=>1]);
-
-
-        $customer_parent_2= CustomerParent::create(['id'=>2,'last_legal_name'=>'Split Parent','terms_of_payment_id'=>1,
-            'invoice_basis_id'=>1,
-            'terms_of_payment_basis_id'=>2,
-            'days_overdue_allowed_id'=>1,
-            'customer_rating_id'=>1]);
-
-        $address = Address::create([
-            'line_1' => 'Split Address',
-            'line_2' => 'See split customer',
-            'line_3' => '',
-            'country' => 'none',
-            'code' => 1234,
-            'address_type_id' => 1,
-            'poly_address_type' => 'App\\Models\\CustomerParent',
-            'poly_address_id' => $customer_parent_2->id,
-            'is_primary' => 1,
-            'longitude' => 0,
-            'latitude' => 0,
-            'directions' => 'Address per split customer',
-        ]);
-
-
-
-        Supplier::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1]);
-        Transporter::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1]);
-        Customer::create(['id'=>1,'last_legal_name'=>'Unallocated','terms_of_payment_id'=>1,
-            'invoice_basis_id'=>1,
-            'terms_of_payment_basis_id'=>1,
-            'days_overdue_allowed_id'=>1,
-            'customer_rating_id'=>1,'customer_parent_id'=>$customer_parent->id]);
-
-   /*    $customer_2 = Customer::create(['last_legal_name'=>'Split Customer','terms_of_payment_id'=>1,
-            'invoice_basis_id'=>1,
-            'terms_of_payment_basis_id'=>2,
-            'days_overdue_allowed_id'=>1,
-            'customer_rating_id'=>1,'customer_parent_id'=>$customer_parent_2->id]);
-
-        $address = Address::create([
-            'line_1' => 'Split Address',
-            'line_2' => 'See split customer',
-            'line_3' => '',
-            'country' => 'none',
-            'code' => 1234,
-            'address_type_id' => 1,
-            'poly_address_type' => 'App\\Models\\Customer',
-            'poly_address_id' => $customer_2->id,
-            'is_primary' => 1,
-            'longitude' => 0,
-            'latitude' => 0,
-            'directions' => 'Address per split customer',
-        ]);*/
-
-
-        //TransportRateBasis
-
-/*                'Per Ton'
-        'Per Load'
-        'Unknown'
-        ''
-        NULL*/
-
-        TransportRateBasis::create([
-            'name' => 'Unallocated',
-        ]);
-
-        TransportRateBasis::create([
-            'name' => 'Per Ton',
-        ]);
-
-        TransportRateBasis::create([
-            'name' => 'Per Load',
-        ]);
-
-
-        //Billing Units
-
-    /*    'Tons'
-        '30KG Bags'
-        '35KG Bags'
-        '25KG Bags'
-        '40KG Bags'*/
-
-
-/*            '1','25KG Bags','25'
-    '2','Tons','1000'
-    '3','25KG Bags','25'
-    '5','30KG Bags','30'
-    '6','35KG Bags','35'
-    '7','50KG Bags','50'
-    '8','40KG Bags','40'*/
-
-
-        BillingUnits::create([
-            'name' => 'Unallocated',
-            'kgs'=>0
-        ]);
-
-        BillingUnits::create([
-            'name' => 'Tons',
-            'kgs'=>1000
-        ]);
-
-        BillingUnits::create([
-            'name' => '25KG Bags',
-            'kgs'=>25
-        ]);
-
-        BillingUnits::create([
-            'name' => '30KG Bags',
-            'kgs'=>30
-        ]);
-
-        BillingUnits::create([
-            'name' => '35KG Bags',
-            'kgs'=>35
-        ]);
-
-        BillingUnits::create([
-            'name' => '40KG Bags',
-            'kgs'=>40
-        ]);
-
-        BillingUnits::create([
-            'name' => '50KG Bags',
-            'kgs'=>50
-        ]);
-
-        //Packaging
-
-        Packaging::create([
-            'old_id' => 0,
-            'name' => 'Unallocated',
-        ]);
-
-        Packaging::create([
-            'old_id' => 1,
-            'name' => '25KG Bags',
-        ]);
-        Packaging::create([
-            'old_id' => 2,
-            'name' => '30KG Bags',
-        ]);
-        Packaging::create([
-            'old_id' => 3,
-            'name' => '35KG Bags',
-        ]);
-        Packaging::create([
-            'old_id' => 4,
-            'name' => 'Bales (Small Pack)',
-        ]);
-        Packaging::create([
-            'old_id' => 5,
-            'name' => '4 Wire Bales (Big Pack)',
-        ]);
-        Packaging::create([
-            'old_id' => 6,
-            'name' => '6 Wire Bales (Big Pack)',
-        ]);
-        Packaging::create([
-            'old_id' => 7,
-            'name' => 'Bulk',
-        ]);
-        Packaging::create([
-            'old_id' => 8,
-            'name' => '50KG Bags',
-        ]);
-        Packaging::create([
-            'old_id' => 9,
-            'name' => '40KG Bags',
-        ]);
-
-        //Product sources
-
-        ProductSource::create([
-            'name' => 'Unallocated',
-        ]);
-
-        ProductSource::create([
-            'name' => 'Other',
-        ]);
-
-        ProductSource::create([
-            'name' => 'Mill',
-        ]);
-
-        ProductSource::create([
-            'name' => 'Farm',
-        ]);
-
-        ProductSource::create([
-            'name' => 'Import',
-        ]);
-
-        ProductSource::create([
-            'name' => 'Warehouse',
-        ]);
-
-        ProductSource::create([
-            'name' => 'Silo',
-        ]);
-
-        //Vehicle type
-
-        VehicleType::create([
-            'name' => 'Unallocated',
-        ]);
-
-        VehicleType::create([
-            'name' => 'Flatbed',
-        ]);
-
-        VehicleType::create([
-            'name' => 'Taut Liner',
-        ]);
-
-        VehicleType::create([
-            'name' => 'Tri-Axle',
-        ]);
-
-        VehicleType::create([
-            'name' => 'Dropside link',
-        ]);
-
-        VehicleType::create([
-            'name' => 'Walking Floor',
-        ]);
-
-        //regular vehicle
-
-        RegularVehicle::create([
-            'id' => 1,
-            'vehicle_type_id'=>1,
-            'reg_no' => 'N/A',
-            'comment'=>'Unallocated vehicle.'
-        ]);
-
-        //regular driver
-
-        RegularDriver::create([
-            'id' => 1,
-            'first_name'=>'Unallocated',
-            'last_name'=>'Unallocated',
-        ]);
-
-
-        //Loading Time
-
-        LoadingHourOption::create([
-            'name' => '00:00',
-        ]);
-        LoadingHourOption::create([
-            'name' => '01:00',
-        ]);
-        LoadingHourOption::create([
-            'name' => '02:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '03:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '04:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '05:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '06:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '07:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '08:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '09:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '10:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '11:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '12:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '13:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '14:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '15:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '16:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '17:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '18:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '19:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '20:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '21:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '22:00',
-        ]);
-
-        LoadingHourOption::create([
-            'name' => '23:00',
-        ]);
-
-        //Confirmation type
-
-        ConfirmationTypes::create([
-            'name' => 'Unallocated',
-        ]);
-
-        ConfirmationTypes::create([
-            'name' => 'Fax',
-        ]);
-
-        ConfirmationTypes::create([
-            'name' => 'Telephone',
-        ]);
-
-        ConfirmationTypes::create([
-            'name' => 'Email',
-        ]);
-
-        //unallocated,  Fax, Telephone, Email
-
-        //Contract types
-
-        //Unallocated
-        //'PC'
-        //'SC'
-        //'MQ'
-
-
-
-        ContractType::create([
-            'name' => 'Unallocated',
-        ]);
-
-        ContractType::create([
-            'name' => 'PC',
-        ]);
-
-        ContractType::create([
-            'name' => 'SC',
-        ]);
-
-        ContractType::create([
-            'name' => 'MQ',
-        ]);
-
-        //Status entity
-        //transport
-        //mill
-        //driver
-        //quality
-
-        StatusEntity::create([
-            'entity' => 'unallocated',
-        ]);
-
-        StatusEntity::create([
-            'entity' => 'transport',
-        ]);
-
-        StatusEntity::create([
-            'entity' => 'mill',
-        ]);
-
-        StatusEntity::create([
-            'entity' => 'driver',
-        ]);
-
-        StatusEntity::create([
-            'entity' => 'quality',
-        ]);
-
-        StatusEntity::create([
-            'entity' => 'general',
-        ]);
-
-        //Status types
-        //transport_delayed,
-        //transport_breakdown,
-        //transport_cancelled,
-        //transport_loadslipped,
-        //transport_overweight_control,
-        //transport_driver,
-        //mill_slow,
-        //mill_breakdown,
-        //mill_stopped_demandside,
-        //quality_wet,
-        //quality_moisture_content,
-        //quality_contamination,
-        //quality_grade_specification,
-        //quality_visual,
-        //general_variance_detected
-
-        StatusType::create([
-            'type' => 'unallocated',
-        ]);
-
-        StatusType::create([
-            'type' => 'delayed',
-        ]);
-
-        StatusType::create([
-            'type' => 'breakdown',
-        ]);
-
-        StatusType::create([
-            'type' => 'cancelled',
-        ]);
-
-        StatusType::create([
-            'type' => 'load_slipped',
-        ]);
-
-        StatusType::create([
-            'type' => 'driver',
-        ]);
-
-        StatusType::create([
-            'type' => 'overweight_control',
-        ]);
-
-
-        StatusType::create([
-            'type' => 'slow',
-        ]);
-
-
-        StatusType::create([
-            'type' => 'stopped_demand_side',
-        ]);
-
-        StatusType::create([
-            'type' => 'wet',
-        ]);
-
-        StatusType::create([
-            'type' => 'moisture_content',
-        ]);
-
-        StatusType::create([
-            'type' => 'contamination',
-        ]);
-
-        StatusType::create([
-            'type' => 'grade_specification',
-        ]);
-
-        StatusType::create([
-            'type' => 'visual',
-        ]);
-
-        StatusType::create([
-            'type' => 'variance_detected',
-        ]);
-
-        //invoice status
-     /*
-    1 unallocated
-    2 'Closed'
-      3  'In Process'
-       4 'Cancelled'
-       5 'Requires Immediate Attention'
-       6 'Requires Attention'
-       7 'Contracted Client'
-       8 'Customer Required'*/
-
-        InvoiceStatus::create([
-            'name' => 'Unallocated',
-        ]);
-
-        InvoiceStatus::create([
-            'name' => 'Closed',
-        ]);
-
-        InvoiceStatus::create([
-            'name' => 'In Process',
-        ]);
-
-        InvoiceStatus::create([
-            'name' => 'Cancelled',
-        ]);
-
-        InvoiceStatus::create([
-            'name' => 'Requires Immediate Attention',
-        ]);
-
-        InvoiceStatus::create([
-            'name' => 'Requires Attention',
-        ]);
-
-        InvoiceStatus::create([
-            'name' => 'Contracted Client',
-        ]);
-
-        InvoiceStatus::create([
-            'name' => 'Customer Required',
-        ]);
-
-
-        //custom report
-
-        CustomReport::create([
-            'created_by_id'=>1,
-            'name' => 'Demo Report',
-            'comment' => 'Demo Report to test',
-        ]);
-
-
-      //['id','old_id','old_deal_ticket','a_mq','contract_type_id','contract_no','supplier_id','customer_id','customer_id_2','customer_id_3','customer_id_4','customer_id_5','transporter_id','product_id','include_in_calculations','transport_date_earliest','transport_date_latest','delivery_notes', 'product_notes','customer_notes','suppliers_notes','traders_notes','transport_notes','pricing_notes','process_notes','document_notes','transaction_notes', 'traders_notes_supplier','traders_notes_customer','traders_notes_transport','is_transaction_done','created_at','is_split_load'];
-
-        CustomReportModel::create([
-            'created_by_id'=>1,
-            'report_id'=>1,
-            'class_name' => 'App\Models\TransportTransaction',
-            'attribute_name'=>'id'
-        ]);
-
-        CustomReportModel::create([
-            'created_by_id'=>1,
-            'report_id'=>1,
-            'class_name' => 'App\Models\TransportTransaction',
-            'attribute_name'=>'old_id'
-        ]);
-
-        CustomReportModel::create([
-            'created_by_id'=>1,
-            'report_id'=>1,
-            'class_name' => 'App\Models\TransportTransaction',
-            'attribute_name'=>'old_deal_ticket'
-        ]);
-
-        CustomReportModel::create([
-            'created_by_id'=>1,
-            'report_id'=>1,
-            'class_name' => 'App\Models\TransportTransaction',
-            'attribute_name'=>'a_mq'
-        ]);
-
-        CustomReportModel::create([
-            'created_by_id'=>1,
-            'report_id'=>1,
-            'class_name' => 'App\Models\TransportTransaction',
-            'attribute_name'=>'contract_type_id'
-        ]);
-
-
+            'role'           => 'FinancialDirectorRole',
+        ]);
+
+        // ─── TransLinkTypes ───────────────────────────────────────────────────────
+
+        TransLinkType::firstOrCreate(['name' => 'sc_to_pc']);
+        TransLinkType::firstOrCreate(['name' => 'pc_to_sc']);
+        TransLinkType::firstOrCreate(['name' => 'mq_to_pc']);
+        TransLinkType::firstOrCreate(['name' => 'mq_to_sc']);
+        TransLinkType::firstOrCreate(['name' => 'pc_to_pc']);
+
+        // ─── Address Types ────────────────────────────────────────────────────────
+
+        // delivery=1, physical=2, postal=3, collection=4
+        AddressType::firstOrCreate(['type' => 'Delivery']);
+        AddressType::firstOrCreate(['type' => 'Physical']);
+        AddressType::firstOrCreate(['type' => 'Postal']);
+        AddressType::firstOrCreate(['type' => 'Collection']);
+
+        // ─── Customer Ratings ─────────────────────────────────────────────────────
+
+        foreach (['A', 'B', 'C', 'D', 'E', 'F'] as $rating) {
+            CustomerRating::firstOrCreate(['value' => $rating]);
+        }
+
+        // ─── Invoice Basis ────────────────────────────────────────────────────────
+
+        InvoiceBasis::firstOrCreate(['value' => 'Upload Weight']);
+        InvoiceBasis::firstOrCreate(['value' => 'Offload Weight']);
+
+        // ─── Contact Types ────────────────────────────────────────────────────────
+
+        ContactType::firstOrCreate(['type' => 'Telephone']);
+        ContactType::firstOrCreate(['type' => 'Cellphone']);
+        ContactType::firstOrCreate(['type' => 'Fax number']);
+        ContactType::firstOrCreate(['type' => 'Email']);
+
+        // ─── Terms of Payment ─────────────────────────────────────────────────────
+
+        TermsOfPaymentBasis::firstOrCreate(['value' => 'Days from Invoice Date']);
+        TermsOfPaymentBasis::firstOrCreate(['value' => 'Days from Statement']);
+
+        TermsOfPayment::firstOrCreate(['value' => 'C.O.D'],         ['days' => 0]);
+        TermsOfPayment::firstOrCreate(['value' => 'Unallocated'],   ['days' => 0]);
+        TermsOfPayment::firstOrCreate(['value' => '3 Days'],        ['days' => 3]);
+        TermsOfPayment::firstOrCreate(['value' => '7 Days'],        ['days' => 7]);
+        TermsOfPayment::firstOrCreate(['value' => '14 Days'],       ['days' => 14]);
+        TermsOfPayment::firstOrCreate(['value' => '30 Days'],       ['days' => 30]);
+        TermsOfPayment::firstOrCreate(['value' => '60 Days'],       ['days' => 60]);
+        TermsOfPayment::firstOrCreate(['value' => '90 Days'],       ['days' => 90]);
+        TermsOfPayment::firstOrCreate(['value' => 'F.C.A'],         ['days' => 0]);
+        TermsOfPayment::firstOrCreate(['value' => 'Prepaid'],       ['days' => 0]);
+
+        // ─── Unallocated Entity Placeholders ─────────────────────────────────────
+
+        $customer_parent = CustomerParent::firstOrCreate(
+            ['id' => 1],
+            [
+                'last_legal_name'          => 'Unallocated',
+                'terms_of_payment_id'      => 1,
+                'invoice_basis_id'         => 1,
+                'terms_of_payment_basis_id'=> 1,
+                'days_overdue_allowed_id'  => 1,
+                'customer_rating_id'       => 1,
+            ]
+        );
+
+        $customer_parent_2 = CustomerParent::firstOrCreate(
+            ['id' => 2],
+            [
+                'last_legal_name'          => 'Split Parent',
+                'terms_of_payment_id'      => 1,
+                'invoice_basis_id'         => 1,
+                'terms_of_payment_basis_id'=> 2,
+                'days_overdue_allowed_id'  => 1,
+                'customer_rating_id'       => 1,
+            ]
+        );
+
+        Address::firstOrCreate(
+            ['poly_address_id' => $customer_parent_2->id, 'poly_address_type' => 'App\\Models\\CustomerParent'],
+            [
+                'line_1'           => 'Split Address',
+                'line_2'           => 'See split customer',
+                'line_3'           => '',
+                'country'          => 'none',
+                'code'             => 1234,
+                'address_type_id'  => 1,
+                'is_primary'       => 1,
+                'longitude'        => 0,
+                'latitude'         => 0,
+                'directions'       => 'Address per split customer',
+            ]
+        );
+
+        Supplier::firstOrCreate(
+            ['id' => 1],
+            ['last_legal_name' => 'Unallocated', 'terms_of_payment_id' => 1]
+        );
+
+        Transporter::firstOrCreate(
+            ['id' => 1],
+            ['last_legal_name' => 'Unallocated', 'terms_of_payment_id' => 1]
+        );
+
+        Customer::firstOrCreate(
+            ['id' => 1],
+            [
+                'last_legal_name'          => 'Unallocated',
+                'terms_of_payment_id'      => 1,
+                'invoice_basis_id'         => 1,
+                'terms_of_payment_basis_id'=> 1,
+                'days_overdue_allowed_id'  => 1,
+                'customer_rating_id'       => 1,
+                'customer_parent_id'       => $customer_parent->id,
+            ]
+        );
+
+        // ─── Transport Rate Basis ─────────────────────────────────────────────────
+
+        TransportRateBasis::firstOrCreate(['name' => 'Unallocated']);
+        TransportRateBasis::firstOrCreate(['name' => 'Per Ton']);
+        TransportRateBasis::firstOrCreate(['name' => 'Per Load']);
+
+        // ─── Billing Units ────────────────────────────────────────────────────────
+
+        BillingUnits::firstOrCreate(['name' => 'Unallocated'], ['kgs' => 0]);
+        BillingUnits::firstOrCreate(['name' => 'Tons'],        ['kgs' => 1000]);
+        BillingUnits::firstOrCreate(['name' => '25KG Bags'],   ['kgs' => 25]);
+        BillingUnits::firstOrCreate(['name' => '30KG Bags'],   ['kgs' => 30]);
+        BillingUnits::firstOrCreate(['name' => '35KG Bags'],   ['kgs' => 35]);
+        BillingUnits::firstOrCreate(['name' => '40KG Bags'],   ['kgs' => 40]);
+        BillingUnits::firstOrCreate(['name' => '50KG Bags'],   ['kgs' => 50]);
+
+        // ─── Packaging ────────────────────────────────────────────────────────────
+
+        Packaging::firstOrCreate(['name' => 'Unallocated'],           ['old_id' => 0]);
+        Packaging::firstOrCreate(['name' => '25KG Bags'],             ['old_id' => 1]);
+        Packaging::firstOrCreate(['name' => '30KG Bags'],             ['old_id' => 2]);
+        Packaging::firstOrCreate(['name' => '35KG Bags'],             ['old_id' => 3]);
+        Packaging::firstOrCreate(['name' => 'Bales (Small Pack)'],    ['old_id' => 4]);
+        Packaging::firstOrCreate(['name' => '4 Wire Bales (Big Pack)'],['old_id' => 5]);
+        Packaging::firstOrCreate(['name' => '6 Wire Bales (Big Pack)'],['old_id' => 6]);
+        Packaging::firstOrCreate(['name' => 'Bulk'],                  ['old_id' => 7]);
+        Packaging::firstOrCreate(['name' => '50KG Bags'],             ['old_id' => 8]);
+        Packaging::firstOrCreate(['name' => '40KG Bags'],             ['old_id' => 9]);
+
+        // ─── Product Sources ──────────────────────────────────────────────────────
+
+        ProductSource::firstOrCreate(['name' => 'Unallocated']);
+        ProductSource::firstOrCreate(['name' => 'Other']);
+        ProductSource::firstOrCreate(['name' => 'Mill']);
+        ProductSource::firstOrCreate(['name' => 'Farm']);
+        ProductSource::firstOrCreate(['name' => 'Import']);
+        ProductSource::firstOrCreate(['name' => 'Warehouse']);
+        ProductSource::firstOrCreate(['name' => 'Silo']);
+
+        // ─── Vehicle Types ────────────────────────────────────────────────────────
+
+        VehicleType::firstOrCreate(['name' => 'Unallocated']);
+        VehicleType::firstOrCreate(['name' => 'Flatbed']);
+        VehicleType::firstOrCreate(['name' => 'Taut Liner']);
+        VehicleType::firstOrCreate(['name' => 'Tri-Axle']);
+        VehicleType::firstOrCreate(['name' => 'Dropside link']);
+        VehicleType::firstOrCreate(['name' => 'Walking Floor']);
+
+        // ─── Regular Vehicle & Driver (Unallocated placeholders) ─────────────────
+
+        RegularVehicle::firstOrCreate(
+            ['id' => 1],
+            ['vehicle_type_id' => 1, 'reg_no' => 'N/A', 'comment' => 'Unallocated vehicle.']
+        );
+
+        RegularDriver::firstOrCreate(
+            ['id' => 1],
+            ['first_name' => 'Unallocated', 'last_name' => 'Unallocated']
+        );
+
+        // ─── Loading Hour Options ─────────────────────────────────────────────────
+
+        foreach (range(0, 23) as $hour) {
+            LoadingHourOption::firstOrCreate(['name' => sprintf('%02d:00', $hour)]);
+        }
+
+        // ─── Confirmation Types ───────────────────────────────────────────────────
+
+        ConfirmationTypes::firstOrCreate(['name' => 'Unallocated']);
+        ConfirmationTypes::firstOrCreate(['name' => 'Fax']);
+        ConfirmationTypes::firstOrCreate(['name' => 'Telephone']);
+        ConfirmationTypes::firstOrCreate(['name' => 'Email']);
+
+        // ─── Contract Types ───────────────────────────────────────────────────────
+
+        ContractType::firstOrCreate(['name' => 'Unallocated']);
+        ContractType::firstOrCreate(['name' => 'PC']);
+        ContractType::firstOrCreate(['name' => 'SC']);
+        ContractType::firstOrCreate(['name' => 'MQ']);
+
+        // ─── Status Entities ──────────────────────────────────────────────────────
+
+        StatusEntity::firstOrCreate(['entity' => 'unallocated']);
+        StatusEntity::firstOrCreate(['entity' => 'transport']);
+        StatusEntity::firstOrCreate(['entity' => 'mill']);
+        StatusEntity::firstOrCreate(['entity' => 'driver']);
+        StatusEntity::firstOrCreate(['entity' => 'quality']);
+        StatusEntity::firstOrCreate(['entity' => 'general']);
+
+        // ─── Status Types ─────────────────────────────────────────────────────────
+
+        StatusType::firstOrCreate(['type' => 'unallocated']);
+        StatusType::firstOrCreate(['type' => 'delayed']);
+        StatusType::firstOrCreate(['type' => 'breakdown']);
+        StatusType::firstOrCreate(['type' => 'cancelled']);
+        StatusType::firstOrCreate(['type' => 'load_slipped']);
+        StatusType::firstOrCreate(['type' => 'driver']);
+        StatusType::firstOrCreate(['type' => 'overweight_control']);
+        StatusType::firstOrCreate(['type' => 'slow']);
+        StatusType::firstOrCreate(['type' => 'stopped_demand_side']);
+        StatusType::firstOrCreate(['type' => 'wet']);
+        StatusType::firstOrCreate(['type' => 'moisture_content']);
+        StatusType::firstOrCreate(['type' => 'contamination']);
+        StatusType::firstOrCreate(['type' => 'grade_specification']);
+        StatusType::firstOrCreate(['type' => 'visual']);
+        StatusType::firstOrCreate(['type' => 'variance_detected']);
+
+        // ─── Invoice Statuses ─────────────────────────────────────────────────────
+
+        InvoiceStatus::firstOrCreate(['name' => 'Unallocated']);
+        InvoiceStatus::firstOrCreate(['name' => 'Closed']);
+        InvoiceStatus::firstOrCreate(['name' => 'In Process']);
+        InvoiceStatus::firstOrCreate(['name' => 'Cancelled']);
+        InvoiceStatus::firstOrCreate(['name' => 'Requires Immediate Attention']);
+        InvoiceStatus::firstOrCreate(['name' => 'Requires Attention']);
+        InvoiceStatus::firstOrCreate(['name' => 'Contracted Client']);
+        InvoiceStatus::firstOrCreate(['name' => 'Customer Required']);
+
+        // ─── Custom Report ────────────────────────────────────────────────────────
+
+        $demoReport = CustomReport::firstOrCreate(
+            ['name' => 'Demo Report'],
+            ['created_by_id' => 1, 'comment' => 'Demo Report to test']
+        );
+
+        $reportModels = [
+            ['class_name' => 'App\Models\TransportTransaction', 'attribute_name' => 'id'],
+            ['class_name' => 'App\Models\TransportTransaction', 'attribute_name' => 'old_id'],
+            ['class_name' => 'App\Models\TransportTransaction', 'attribute_name' => 'old_deal_ticket'],
+            ['class_name' => 'App\Models\TransportTransaction', 'attribute_name' => 'a_mq'],
+            ['class_name' => 'App\Models\TransportTransaction', 'attribute_name' => 'contract_type_id'],
+        ];
+
+        foreach ($reportModels as $model) {
+            CustomReportModel::firstOrCreate(
+                ['report_id' => $demoReport->id, 'class_name' => $model['class_name'], 'attribute_name' => $model['attribute_name']],
+                ['created_by_id' => 1]
+            );
+        }
     }
 }
