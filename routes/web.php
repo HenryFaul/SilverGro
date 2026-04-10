@@ -427,7 +427,6 @@ Route::middleware([
     // Roles management
     Route::get('/roles', [RoleController::class, 'index'])->middleware('auth')->name('roles.index');
     Route::put('/roles/{role}', [RoleController::class, 'update'])->middleware('auth')->name('roles.update');
-    Route::put('/roles/{role}/permission', [RoleController::class, 'togglePermission'])->middleware('auth')->name('roles.permission.toggle');
 
 
 
