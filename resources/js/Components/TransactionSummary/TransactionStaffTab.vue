@@ -25,8 +25,8 @@
             <div
               v-for="(user_comm, index) in selectedTransaction.assigned_user_comm"
               :key="user_comm.id">
-              <div class="ml-5 border-solid p-1 m-1 rounded shadow-xl">
-                <div class="px-2 sm:px-0">
+              <div class="ml-5 border border-gray-200 p-4 m-3 rounded-lg shadow-md bg-white">
+                <div class="px-2 pb-2 sm:px-0">
                   <h3 class="text-base font-semibold leading-2 text-indigo-400">
                     User Comm {{ index + 1 }}
                   </h3>
@@ -34,11 +34,11 @@
                     Reference {{ user_comm.id }}
                   </h3>
                 </div>
-                <div class="mt-1 border-t border-gray-100">
+                <div class="mt-2 border-t border-gray-100">
                   <dl class="divide-y divide-gray-100">
-                    <div class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
-                        assigned_user_supplier_id
+                        Supplier User
                       </dt>
                       <dd
                         class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
@@ -47,9 +47,9 @@
                       </dd>
                     </div>
 
-                    <div class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
-                        assigned_user_customer_id
+                        Customer User
                       </dt>
                       <dd
                         class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
@@ -58,9 +58,9 @@
                       </dd>
                     </div>
 
-                    <div class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
-                        supplier_comm
+                        Supplier Commission
                       </dt>
                       <dd
                         class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
@@ -68,9 +68,9 @@
                       </dd>
                     </div>
 
-                    <div class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <div class="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
-                        customer_comm
+                        Customer Commission
                       </dt>
                       <dd
                         class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
@@ -80,7 +80,7 @@
                   </dl>
                 </div>
 
-                <div class="mt-1 col-span-4">
+                <div class="mt-3 col-span-4">
                   <div v-if="viewAssignedCommModal">
                     <assigned-comm-modal
                       :all_staff="allStaff"
