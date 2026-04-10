@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="font-bold text-indigo-500">Staff Commission allocation</div>
+    <div class="font-bold text-indigo-500">Staff allocation</div>
     <div class="">
       <form class="">
         <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-6">
