@@ -55,13 +55,13 @@
     localMin.value      = rule.min_trade_value;
     localMax.value      = rule.max_trade_value;
     localIsActive.value = Boolean(rule.is_active);
-    localRoles.value    = (rule.PolyRuleRoles ?? []).map((r) => r.role);
+    localRoles.value    = (rule.poly_rule_roles ?? []).map((r) => r.role);
   }
 
   function syncFromOpp(opp) {
     localName.value     = opp.name;
     localIsActive.value = Boolean(opp.is_active);
-    localRoles.value    = (opp.PolyRuleRoles ?? []).map((r) => r.role);
+    localRoles.value    = (opp.poly_rule_roles ?? []).map((r) => r.role);
   }
 
   function resetNew() {
@@ -88,13 +88,13 @@
       if (Number(localMin.value) !== Number(r.min_trade_value)) return true;
       if (Number(localMax.value) !== Number(r.max_trade_value)) return true;
       if (localIsActive.value !== Boolean(r.is_active)) return true;
-      return rolesChanged(r.PolyRuleRoles);
+      return rolesChanged(r.poly_rule_roles);
     }
     if (selectedType.value === 'trade_rule_opp' && selectedOpp.value) {
       const o = selectedOpp.value;
       if (localName.value !== o.name) return true;
       if (localIsActive.value !== Boolean(o.is_active)) return true;
-      return rolesChanged(o.PolyRuleRoles);
+      return rolesChanged(o.poly_rule_roles);
     }
     return false;
   });
@@ -302,12 +302,12 @@
                   </p>
                   <div class="flex flex-wrap gap-1">
                     <span
-                      v-for="rr in (rule.PolyRuleRoles ?? [])"
+                      v-for="rr in (rule.poly_rule_roles ?? [])"
                       :key="rr.id"
                       :class="roleBadge(rr.role)">
                       {{ rr.role }}
                     </span>
-                    <span v-if="!(rule.PolyRuleRoles ?? []).length" class="text-xs text-red-400">No approvers set</span>
+                    <span v-if="!(rule.poly_rule_roles ?? []).length" class="text-xs text-red-400">No approvers set</span>
                   </div>
                 </li>
 
@@ -344,12 +344,12 @@
                   <p class="text-xs text-gray-400 italic leading-tight">{{ triggerFor(opp) }}</p>
                   <div class="flex flex-wrap gap-1">
                     <span
-                      v-for="rr in (opp.PolyRuleRoles ?? [])"
+                      v-for="rr in (opp.poly_rule_roles ?? [])"
                       :key="rr.id"
                       :class="roleBadge(rr.role)">
                       {{ rr.role }}
                     </span>
-                    <span v-if="!(opp.PolyRuleRoles ?? []).length" class="text-xs text-red-400">No approvers set</span>
+                    <span v-if="!(opp.poly_rule_roles ?? []).length" class="text-xs text-red-400">No approvers set</span>
                   </div>
                 </li>
               </ul>
