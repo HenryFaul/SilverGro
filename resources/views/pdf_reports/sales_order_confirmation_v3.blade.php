@@ -296,9 +296,9 @@
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Cost per unit</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Price per unit</td>
                             <td class="table_sections table_row_value">
-                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_unit,2), 2, '.', ' ')}}
+                                R {{number_format(round($transport_trans->TransportFinance->selling_price_per_unit,2), 2, '.', ' ')}}
                             </td>
 
                             <td class="table_sections table_row_heading" style="width: 20%;">Tons</td>
@@ -309,13 +309,13 @@
                         </tr>
 
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Total Cost</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Total Selling Price</td>
                             <td class="table_sections table_row_value">
-                                R {{number_format(round($transport_trans->TransportFinance->cost_price,2), 2, '.', ' ')}}</td>
-                            <td class="table_sections table_row_heading" style="width: 20%;">Cost Price / Metric Ton
+                                R {{number_format(round($transport_trans->TransportFinance->selling_price,2), 2, '.', ' ')}}</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Selling Price / Metric Ton
                             </td>
                             <td class="table_sections table_row_value">
-                                R {{number_format(round($transport_trans->TransportFinance->cost_price_per_ton,2), 2, '.', ' ')}}</td>
+                                R {{number_format(round($transport_trans->TransportFinance->selling_price_per_ton,2), 2, '.', ' ')}}</td>
                         </tr>
 
                         <tr class="table_sections">
@@ -357,26 +357,26 @@
                     <table class="table_sections" style="width:100%;">
                         <tbody>
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading">Collection address</td>
+                            <td class="table_sections table_row_heading">Delivery address</td>
                             <td class="table_sections table_row_value" colspan="3">
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
+                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
 
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_2)
+                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->line_2}}</span>
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
                                 @endif
 
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_3)
+                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->line_3}}</span>
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
                                 @endif
 
-                                @if($transport_trans->TransportLoad->CollectionAddress->country)
-                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->country)
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
                                 @endif
 
-                                @if($transport_trans->TransportLoad->CollectionAddress->code)
-                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
+                                @if($transport_trans->TransportLoad->DeliveryAddress->code)
+                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
                                 @endif
 
 

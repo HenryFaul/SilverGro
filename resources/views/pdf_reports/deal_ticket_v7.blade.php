@@ -509,7 +509,7 @@
                             <td class="table_sections table_row_heading" style="width: 25%;">Transporter Notes</td>
                             <td class="table_sections table_row_value"
                                 colspan="3" style="border: 1px solid black;">
-                                {!!nl2br($transport_trans->transporter_notes)!!}
+                                {!!nl2br($transport_trans->transport_notes)!!}
                             </td>
 
                         </tr>
@@ -606,7 +606,7 @@
                             <td class="table_sections table_row_heading" style="width:50%;">Total Supplier Cost</td>
                             <td class="table_sections table_row_value"
                                 style="background-color: #62FD473F">
-                                R {{number_format(round($transport_trans->TransportFinance->total_cost_price,2), 2, '.', ' ')}}</td>
+                                R {{number_format(round($transport_trans->TransportFinance->cost_price,2), 2, '.', ' ')}}</td>
                         </tr>
 
                         </tbody>

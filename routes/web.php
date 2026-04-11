@@ -396,6 +396,9 @@ Route::middleware([
     //SalesOrder Confirmation Split
     Route::get('/pdf_report/sales_order_confirmation_view_split/{id}/{client_id}', [SalesOrderController::class, 'viewConfirmationPDFSplit'])->middleware('auth')->name('pdf_report.sales_order_confirmation_view_split');
 
+    //SalesOrder Confirmation Individual (single-load view for a split load member)
+    Route::get('/pdf_report/sales_order_confirmation_view_individual/{id}', [SalesOrderController::class, 'viewConfirmationPDFIndividual'])->middleware('auth')->name('pdf_report.sales_order_confirmation_view_individual');
+
     //PurchaseOrder
     Route::get('/pdf_report/purchase_order_view/{id}', [PurchaseOrderController::class, 'viewPDF'])->middleware('auth')->name('pdf_report.purchase_order_view');
     Route::post('/purchase_order/activate', [PurchaseOrderController::class, 'activate'])->middleware('auth')->name('purchase_order.activate');

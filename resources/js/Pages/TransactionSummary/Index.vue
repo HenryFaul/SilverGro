@@ -187,6 +187,7 @@
 
   // isLoading now comes from useTransactionFilters composable
   let isUpdating = ref(false);
+  const selectedSplitMqId = ref(null);
 
   // selectedTabId and selectTab now come from useTransactionTabs composable
 
@@ -2593,6 +2594,7 @@
                       :filtered-billing-units-outgoing="filteredBillingUnitsOutgoing"
                       :filtered-package-incoming="filteredPackageIncoming"
                       :filtered-package-outgoing="filteredPackageOutgoing"
+                      :loading-hour-options="loading_hour_options"
                       :selected-transaction="selected_transaction" />
                   </div>
 
@@ -4258,6 +4260,33 @@
                                     props.selected_transaction.id
                                   "
                                   class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                  target="_blank">
+                                  View
+                                </a>
+                              </dd>
+                            </div>
+
+                            <div
+                              v-if="props.selected_transaction.is_split_load && linked_trans_split"
+                              class="flex flex-col gap-y-2 py-3">
+                              <dt class="text-gray-500">Individual Split</dt>
+                              <dd class="flex items-center gap-x-2">
+                                <select
+                                  v-model="selectedSplitMqId"
+                                  class="block rounded-md border-0 py-1.5 pl-3 pr-8 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 text-sm">
+                                  <option :value="null" disabled>Select MQ...</option>
+                                  <option
+                                    v-for="n in linked_trans_split"
+                                    :key="n.transport_transaction.id"
+                                    :value="n.transport_transaction.id">
+                                    {{ n.transport_transaction.a_mq ? 'MQ ' + n.transport_transaction.a_mq : 'ID ' + n.transport_transaction.id }}
+                                    — {{ n.transport_transaction.customer?.last_legal_name }}
+                                  </option>
+                                </select>
+                                <a
+                                  v-if="selectedSplitMqId"
+                                  :href="'/pdf_report/sales_order_confirmation_view_individual/' + selectedSplitMqId"
+                                  class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                   target="_blank">
                                   View
                                 </a>

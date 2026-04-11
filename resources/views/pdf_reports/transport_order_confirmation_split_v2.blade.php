@@ -278,6 +278,15 @@
                                 </td>
                             </tr>
 
+                            @if($transport_trans->transport_notes)
+                            <tr class="table_sections">
+                                <td class="table_sections table_row_heading" style="width: 25%;">Transporter Notes</td>
+                                <td class="table_sections table_row_value" colspan="3">
+                                    {!!nl2br(e($transport_trans->transport_notes))!!}
+                                </td>
+                            </tr>
+                            @endif
+
                             <tr class="table_sections">
                                 <td class="table_sections table_row_heading" style="width: 25%;">Supplier:</td>
                                 <td class="table_sections table_row_value" colspan="3">
@@ -517,6 +526,43 @@
 
                                 </tbody>
 
+                            </table>
+                        </div>
+
+                        @php
+                            $hasBagged = str_contains(strtolower($transport_trans->product->name), 'bagged');
+                            $hasChop = str_contains(strtolower($transport_trans->product->name), 'chop');
+                            $hasImport = str_contains(strtolower($transport_trans->TransportLoad->ProductSource->name), 'import');
+                            $specialNotes = [];
+                            if ($hasBagged) {
+                                $specialNotes[] = 'Customer to check for broken or wet bags and make comments with qualities on delivery documentation, and bring this to the transporters attention.';
+                                $specialNotes[] = 'If any bags are broken or goods defective, kindly contact Silvergro Feed & Grain immediately.';
+                                $specialNotes[] = 'Driver and Customer to do a bag count and sign for goods on the transporters delivery documentation / Proof of Delivery (POD).';
+                            }
+                            if ($hasBagged && $hasChop) {
+                                $specialNotes[] = 'Customer to use with 7 days of delivery.';
+                            }
+                            if ($hasImport) {
+                                $specialNotes[] = 'In the event that goods described in this contract are to be delivered out of an African territory, such as Malawi, Zimbabwe, Zambia or Mozambique, no warranty is given in regard to delivery or delivery time. It is hereby agreed that there can be no claim for late, or non delivery by the Seller.';
+                            }
+                        @endphp
+
+                        <div style="margin-top: 2px; margin-bottom: 2px;" class="table_row_heading">Special notes:
+                        </div>
+                        <div>
+                            <table class="table_sections" style="width:100%; border: 1px solid black;">
+                                <tbody>
+                                @forelse($specialNotes as $i => $note)
+                                    <tr class="table_sections">
+                                        <td style="border: 1px solid black; width: 5%;" class="table_sections table_row_heading">{{ $i + 1 }}.</td>
+                                        <td style="border: 1px solid black;" class="table_sections table_row_value" colspan="3">{{ $note }}</td>
+                                    </tr>
+                                @empty
+                                    <tr class="table_sections">
+                                        <td style="border: 1px solid black;" class="table_sections table_row_value" colspan="4">No Special Notes</td>
+                                    </tr>
+                                @endforelse
+                                </tbody>
                             </table>
                         </div>
 
@@ -1060,57 +1106,6 @@
 
                             </div>
                         </div>
-                        <li class="section_heading" style="margin-top: 4px; margin-bottom: 2px;">Special Notes</li>
-                        <div class="table_row_value">
-
-                            <div class="table_row_value">
-                                <div class="table_row_value">
-                                    <ol class="indented-list">
-                                        @if($transport_trans->transport_notes)
-                                            <li>
-                                                <strong>Transport Notes:</strong> {{$transport_trans->transport_notes}}
-                                            </li>
-                                        @endif
-                                        @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))
-                                            <li>
-                                                Customer to check for broken or wet bags and make comments with
-                                                qualities on delivery documentation, and bring this to the transporters
-                                                attention.
-                                            </li>
-                                            <li>
-                                                If any bags are broken or goods defective, kindly contact Silvergro Feed
-                                                & Grain immediately.
-
-                                            </li>
-                                            <li>
-                                                Driver and Customer to do a bag count and sign for goods on the
-                                                transporters delivery documentation / Proof of Delivery (POD).
-                                            </li>
-
-                                        @endif
-
-                                        @if(str_contains(strtolower($transport_trans->product->name), 'bagged') && str_contains(strtolower($transport_trans->product->name), 'chop'))
-                                            <li>
-                                                Customer to use with 7 days of delivery.
-                                            </li>
-                                        @endif
-
-                                        @if(str_contains(strtolower($transport_trans->TransportLoad->ProductSource->name), 'import'))
-                                            <li>
-                                                In the event that goods described in this contract are to be delivered
-                                                out of an African territory, such as Malawi, Zimbabwe, Zambia or
-                                                Mozambique, no warranty is given in regard to delivery or delivery time.
-                                                It is hereby agreed that there can be no claim for late, or non delivery
-                                                by the Seller.
-
-                                            </li>
-                                        @endif
-                                    </ol>
-                                </div>
-
-                            </div>
-                        </div>
-
                         <p class="section_heading" style="margin-top: 4px; margin-bottom: 2px;">Prepared for Silvergro
                             Feed & Grain by {{$user_name}} at {{$now}}
                             <span></span></p>

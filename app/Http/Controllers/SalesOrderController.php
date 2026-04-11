@@ -153,6 +153,55 @@ class SalesOrderController extends Controller
 
     }
 
+    public function viewConfirmationPDFIndividual(Request $request, $id): Response
+    {
+        $pdfSettings = PdfSetting::getActive();
+        $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
+
+        $transport_trans = TransportTransaction::where('id', $id)
+            ->with('ContractType')->with('Transporter')
+            ->with('Supplier', fn($query) => $query->with('TermsOfPayment'))
+            ->with('Customer', fn($query) => $query->with('InvoiceBasis')->with('TermsOfPaymentBasis')->with('TermsOfPayment'))
+            ->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
+            ->with('TransportLoad', fn($query) => $query->with('ProductSource')->with('PackagingOutgoing')->with('CollectionAddress')->with('DeliveryAddress')->with('BillingUnitsOutgoing')->with('ConfirmedByType'))
+            ->with('DealTicket')
+            ->with('TransportJob', fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo'))
+            ->with('TransportFinance', fn($query) => $query->with('TransportRateBasis'))
+            ->first();
+
+        abort_if(is_null($transport_trans), 404, 'Transaction #'.$id.' not found.');
+
+        $deal_ticket = $transport_trans->DealTicket;
+        $sales_order = $transport_trans->SalesOrder;
+        $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
+
+        $rules_with_approvals = $deal_ticket->getAppliedRules();
+        $user_name = Auth::user()->name;
+        $now = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
+        $app_version = env("APP_VERSION_REP", "1");
+
+        $data = [
+            'logo' => $logo,
+            'pdfSettings' => $pdfSettings,
+            'final_sales_order' => false,
+            'transport_trans' => $transport_trans,
+            'deal_ticket' => $deal_ticket,
+            'sales_order' => $sales_order,
+            'purchase_order' => $purchase_order,
+            'rules_with_approvals' => $rules_with_approvals,
+            'user_name' => $user_name,
+            'now' => $now,
+            'app_version' => $app_version,
+            'split_data' => null,
+        ];
+
+        // Always use the standard portrait single-load template regardless of is_split_load
+        $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_v3', $data);
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream();
+    }
+
     public function viewConfirmationPDFSplit(Request $request, $id,$client_id): Response
     {
 
