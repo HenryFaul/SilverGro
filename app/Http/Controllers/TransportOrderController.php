@@ -57,13 +57,35 @@ class TransportOrderController extends Controller
                         $query->with([
                             'Customer',
                             'Supplier',
-                            'Transporter',
+                            'Transporter' => function ($query) {
+                                $query->with(['TermsOfPayment', 'contactable.numberable', 'contactable.emailable']);
+                            },
                             'Product',
-                            'TransportFinance',
+                            'TransportFinance' => function ($query) {
+                                $query->with('TransportRateBasis');
+                            },
                             'TransportLoad' => function ($query) {
-                                $query->with(['BillingUnitsIncoming', 'BillingUnitsOutgoing']);
-                            }
-                        ])->orderBy('sl_global_id', 'desc');  // Ordering by sl_global_id
+                                $query->with([
+                                    'BillingUnitsIncoming',
+                                    'BillingUnitsOutgoing',
+                                    'PackagingIncoming',
+                                    'PackagingOutgoing',
+                                    'CollectionAddress',
+                                    'DeliveryAddress',
+                                    'ProductSource',
+                                ]);
+                            },
+                            'TransportJob' => function ($query) {
+                                $query->with([
+                                    'TransportDriverVehicle.Vehicle.VehicleType',
+                                    'TransportDriverVehicle.Driver',
+                                    'LoadingHoursFrom',
+                                    'LoadingHoursTo',
+                                    'OffloadingHoursFrom',
+                                    'OffloadingHoursTo',
+                                ]);
+                            },
+                        ])->orderBy('sl_global_id', 'desc');
                     }])
                     ->get();
             }

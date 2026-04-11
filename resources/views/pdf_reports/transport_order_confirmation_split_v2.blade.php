@@ -571,7 +571,19 @@
                     @if(isset($split_data))
 
                         <div>
-                            @foreach ($split_data['linked_trans_split'] as $deal)
+                            @php
+                                // Primary first, then children; deduplicate by transaction ID
+                                $seen_ids = [];
+                                $sorted_splits = $split_data['linked_trans_split']
+                                    ->sortByDesc(fn($d) => $d->TransportTransaction->is_split_load_primary)
+                                    ->values();
+                            @endphp
+                            @foreach ($sorted_splits as $deal)
+                                @php
+                                    $deal_id = $deal->TransportTransaction->id;
+                                    if (in_array($deal_id, $seen_ids)) continue;
+                                    $seen_ids[] = $deal_id;
+                                @endphp
 
                                 <div class="page-break"></div>
 
@@ -584,7 +596,11 @@
                                                     <td></td>
                                                     <td style="float: right; text-align: right; font-size: 12px;">
                                                         <b><span>Transport Order Confirmation:</span>
-                                                            <span>{{$transport_trans->a_mq}}</span>
+                                                            @if($deal->TransportTransaction->a_mq)
+                                                                <span>MQ{{$deal->TransportTransaction->a_mq}}</span>
+                                                            @else
+                                                                <span>{{$deal->TransportTransaction->id}}</span>
+                                                            @endif
                                                         </b>
                                                     </td>
 
@@ -614,7 +630,7 @@
                                                                 style="width:25%;">Transporter
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                colspan="3">{{$transport_trans->Transporter->last_legal_name}}</td>
+                                                                colspan="3">{{$deal->TransportTransaction->Transporter->last_legal_name}}</td>
                                                         </tr>
                                                         <tr class="table_sections">
                                                             <td class="table_sections table_row_heading"
@@ -645,10 +661,10 @@
                                                                 style="width: 25%;">Att
                                                             </td>
                                                             <td class="table_sections table_row_value" colspan="3">
-                                                                @if($transport_trans->Transporter->contactable=="[]")
+                                                                @if($deal->TransportTransaction->Transporter->contactable=="[]")
                                                                     <span>No contact loaded</span>
                                                                 @else
-                                                                    @foreach($transport_trans->Transporter->contactable as $contact)
+                                                                    @foreach($deal->TransportTransaction->Transporter->contactable as $contact)
                                                                         <div>
                                                                             <span>{{$contact->first_name}}</span>
                                                                             <span>{{$contact->last_legal_name}}</span>
@@ -692,36 +708,36 @@
                                                                 style="width: 25%;">Date Earliest
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                style="width: 25%; white-space: nowrap;">{{ $transport_trans->transport_date_earliest ? $transport_trans->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
+                                                                style="width: 25%; white-space: nowrap;">{{ $deal->TransportTransaction->transport_date_earliest ? $deal->TransportTransaction->transport_date_earliest->format('D d/M/Y') : 'No date Selected' }}</td>
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Date Latest
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                style="width: 25%; white-space: nowrap;">{{$transport_trans->transport_date_latest->format('D d/M/Y')}}</td>
+                                                                style="width: 25%; white-space: nowrap;">{{$deal->TransportTransaction->transport_date_latest->format('D d/M/Y')}}</td>
                                                         </tr>
                                                         <tr class="table_sections">
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">No. Of Loads
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                style="width: 25%;">{{$transport_trans->TransportJob->number_loads}}</td>
+                                                                style="width: 25%;">{{$deal->TransportTransaction->TransportJob->number_loads}}</td>
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Vehicle Type
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Vehicle->VehicleType->name}}</td>
+                                                                style="width: 25%;">{{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->Vehicle->VehicleType->name}}</td>
                                                         </tr>
                                                         <tr class="table_sections">
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Vehicle Reg
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Vehicle->reg_no}}</td>
+                                                                style="width: 25%;">{{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->Vehicle->reg_no}}</td>
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Driver
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->first_name}} {{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->last_name}}</td>
+                                                                style="width: 25%;">{{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->Driver->first_name}} {{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->Driver->last_name}}</td>
                                                         </tr>
                                                         <tr class="table_sections">
                                                             <td class="table_sections table_row_heading"
@@ -729,8 +745,8 @@
                                                             </td>
                                                             <td class="table_sections table_row_value"
                                                                 style="width: 25%;">
-                                                                @if($transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_1)
-                                                                    #1 {{$transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_1}}
+                                                                @if($deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->trailer_reg_1)
+                                                                    #1 {{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->trailer_reg_1}}
                                                                 @endif
                                                             </td>
                                                             <td class="table_sections table_row_heading"
@@ -738,8 +754,8 @@
                                                             </td>
                                                             <td class="table_sections table_row_value"
                                                                 style="width: 25%;">
-                                                                @if($transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_2)
-                                                                    #2 {{$transport_trans->TransportJob->TransportDriverVehicle[0]->trailer_reg_2}}
+                                                                @if($deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->trailer_reg_2)
+                                                                    #2 {{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->trailer_reg_2}}
                                                                 @endif
                                                             </td>
                                                         </tr>
@@ -748,12 +764,12 @@
                                                                 style="width: 25%;">Driver Cell
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->cell_no}}</td>
+                                                                style="width: 25%;">{{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->Driver->cell_no}}</td>
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Driver Comment
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                style="width: 25%;">{{$transport_trans->TransportJob->TransportDriverVehicle[0]->Driver->comment}}</td>
+                                                                style="width: 25%;">{{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->Driver->comment}}</td>
                                                         </tr>
 
 
@@ -771,11 +787,11 @@
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Product
                                                             </td>
-                                                            <td class="table_sections table_row_value">{{$transport_trans->product->name}}</td>
+                                                            <td class="table_sections table_row_value">{{$deal->TransportTransaction->product->name}}</td>
                                                             <td class="table_sections table_row_heading">Weight planned
                                                                 (tons)
                                                             </td>
-                                                            <td class="table_sections table_row_value">{{$transport_trans->TransportFinance->weight_ton_incoming}}</td>
+                                                            <td class="table_sections table_row_value">{{$deal->TransportTransaction->TransportFinance->weight_ton_incoming}}</td>
                                                         </tr>
 
                                                         <tr class="table_sections">
@@ -783,12 +799,12 @@
                                                                 style="width: 25%;">Package Incoming
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportLoad->PackagingIncoming->name}}
+                                                                {{$deal->TransportTransaction->TransportLoad->PackagingIncoming->name}}
                                                             </td>
                                                             <td class="table_sections table_row_heading">Package
                                                                 Outgoing
                                                             </td>
-                                                            <td class="table_sections table_row_value">{{$transport_trans->TransportLoad->PackagingOutgoing->name}}</td>
+                                                            <td class="table_sections table_row_value">{{$deal->TransportTransaction->TransportLoad->PackagingOutgoing->name}}</td>
                                                         </tr>
 
                                                         <tr class="table_sections">
@@ -797,14 +813,14 @@
                                                             </td>
                                                             <td class="table_sections table_row_value"
                                                                 style="background-color: #62FD473F">
-                                                                {{$transport_trans->TransportFinance->TransportRateBasis->name}}
+                                                                {{$deal->TransportTransaction->TransportFinance->TransportRateBasis->name}}
                                                             </td>
                                                         </tr>
 
                                                         <tr class="table_sections">
                                                             <td class="table_sections table_row_heading">Rate / Ton</td>
                                                             <td class="table_sections table_row_value">
-                                                                R {{number_format(round($transport_trans->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}
+                                                                R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_rate_per_ton,2), 2, '.', ' ')}}
                                                             </td>
                                                         </tr>
 
@@ -813,7 +829,7 @@
                                                                 style="width: 25%;">Rate per load
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                R {{number_format(round($transport_trans->TransportFinance->transport_cost,2), 2, '.', ' ')}}
+                                                                R {{number_format(round($deal->TransportTransaction->TransportFinance->transport_cost,2), 2, '.', ' ')}}
                                                             </td>
                                                         </tr>
 
@@ -822,13 +838,13 @@
                                                                 style="width: 25%;">Load Insurance / Ton
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                R {{number_format(round($transport_trans->TransportFinance->load_insurance_per_ton,2), 2, '.', ' ')}}
+                                                                R {{number_format(round($deal->TransportTransaction->TransportFinance->load_insurance_per_ton,2), 2, '.', ' ')}}
                                                             </td>
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Terms of payment
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->Transporter->TermsOfPayment->value}}
+                                                                {{$deal->TransportTransaction->Transporter->TermsOfPayment->value}}
                                                             </td>
                                                         </tr>
 
@@ -845,7 +861,7 @@
                                                                 style="width: 25%;">Supplier name
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                style="width: 25%;">{{$transport_trans->Supplier->last_legal_name}}</td>
+                                                                style="width: 25%;">{{$deal->TransportTransaction->Supplier->last_legal_name}}</td>
                                                         </tr>
 
                                                         <tr class="table_sections">
@@ -853,21 +869,21 @@
                                                                 style="width: 25%;">Collection Address
                                                             </td>
                                                             <td class="table_sections table_row_value" colspan="3">
-                                                                {{$transport_trans->TransportLoad->CollectionAddress->line_1}}
-                                                                @if($transport_trans->TransportLoad->CollectionAddress->line_2)
-                                                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
+                                                                {{$deal->TransportTransaction->TransportLoad->CollectionAddress->line_1}}
+                                                                @if($deal->TransportTransaction->TransportLoad->CollectionAddress->line_2)
+                                                                    {{$deal->TransportTransaction->TransportLoad->CollectionAddress->line_2}}
                                                                 @endif
 
-                                                                @if($transport_trans->TransportLoad->CollectionAddress->line_3)
-                                                                    {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
+                                                                @if($deal->TransportTransaction->TransportLoad->CollectionAddress->line_3)
+                                                                    {{$deal->TransportTransaction->TransportLoad->CollectionAddress->line_3}}
                                                                 @endif
 
-                                                                @if($transport_trans->TransportLoad->CollectionAddress->country)
-                                                                    {{$transport_trans->TransportLoad->CollectionAddress->country}}
+                                                                @if($deal->TransportTransaction->TransportLoad->CollectionAddress->country)
+                                                                    {{$deal->TransportTransaction->TransportLoad->CollectionAddress->country}}
                                                                 @endif
 
-                                                                @if($transport_trans->TransportLoad->CollectionAddress->code)
-                                                                    {{$transport_trans->TransportLoad->CollectionAddress->code}}
+                                                                @if($deal->TransportTransaction->TransportLoad->CollectionAddress->code)
+                                                                    {{$deal->TransportTransaction->TransportLoad->CollectionAddress->code}}
                                                                 @endif
 
                                                             </td>
@@ -880,7 +896,7 @@
                                                             </td>
 
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportJob->supplier_loading_number}}
+                                                                {{$deal->TransportTransaction->TransportJob->supplier_loading_number}}
                                                             </td>
                                                         </tr>
 
@@ -889,7 +905,7 @@
                                                                 style="width: 25%;">Loading hours from
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportJob->LoadingHoursFrom->name}}
+                                                                {{$deal->TransportTransaction->TransportJob->LoadingHoursFrom->name}}
                                                                 HRS
                                                             </td>
 
@@ -897,7 +913,7 @@
                                                                 style="width: 25%;">Loading hours to
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportJob->LoadingHoursTo->name}}
+                                                                {{$deal->TransportTransaction->TransportJob->LoadingHoursTo->name}}
                                                                 HRS
                                                             </td>
                                                         </tr>
@@ -907,7 +923,7 @@
                                                                 style="width: 25%;">Supplier contact:
                                                             </td>
                                                             <td class="table_sections table_row_value" colspan="3">
-                                                                <span>{{$transport_trans->TransportJob->loading_contact}} {{$transport_trans->TransportJob->loading_contact_no}}</span>
+                                                                <span>{{$deal->TransportTransaction->TransportJob->loading_contact}} {{$deal->TransportTransaction->TransportJob->loading_contact_no}}</span>
                                                             </td>
                                                         </tr>
 
@@ -916,7 +932,7 @@
                                                                 style="width: 25%;">Loading instructions
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                colspan="3">{{$transport_trans->TransportJob->loading_instructions}}</td>
+                                                                colspan="3">{{$deal->TransportTransaction->TransportJob->loading_instructions}}</td>
                                                         </tr>
 
 
@@ -941,22 +957,22 @@
                                                                 style="width: 25%;">Delivery Address
                                                             </td>
                                                             <td class="table_sections table_row_value" colspan="3">
-                                                                {{$transport_trans->TransportLoad->DeliveryAddress->line_1}}
+                                                                {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->line_1}}
 
-                                                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2)
-                                                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_2}}
+                                                                @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->line_2)
+                                                                    {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->line_2}}
                                                                 @endif
 
-                                                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3)
-                                                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_3}}
+                                                                @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->line_3)
+                                                                    {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->line_3}}
                                                                 @endif
 
-                                                                @if($transport_trans->TransportLoad->DeliveryAddress->country)
-                                                                    {{$transport_trans->TransportLoad->DeliveryAddress->country}}
+                                                                @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->country)
+                                                                    {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->country}}
                                                                 @endif
 
-                                                                @if($transport_trans->TransportLoad->DeliveryAddress->code)
-                                                                    {{$transport_trans->TransportLoad->DeliveryAddress->code}}
+                                                                @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->code)
+                                                                    {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->code}}
                                                                 @endif
 
                                                             </td>
@@ -968,14 +984,14 @@
                                                                 style="width: 25%;">Customer order number
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportJob->customer_order_number}}
+                                                                {{$deal->TransportTransaction->TransportJob->customer_order_number}}
                                                             </td>
 
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Customer offloading number
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number}}
+                                                                {{$deal->TransportTransaction->TransportJob->TransportDriverVehicle[0]->driver_vehicle_loading_number}}
                                                             </td>
                                                         </tr>
 
@@ -984,14 +1000,14 @@
                                                                 style="width: 25%;">Offloading hours from
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportJob->OffloadingHoursFrom->name}}
+                                                                {{$deal->TransportTransaction->TransportJob->OffloadingHoursFrom->name}}
                                                                 HRS
                                                             </td>
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Offloading hours from
                                                             </td>
                                                             <td class="table_sections table_row_value">
-                                                                {{$transport_trans->TransportJob->OffloadingHoursTo->name}}
+                                                                {{$deal->TransportTransaction->TransportJob->OffloadingHoursTo->name}}
                                                                 HRS
                                                             </td>
                                                         </tr>
@@ -1003,7 +1019,7 @@
                                                                 style="width: 25%;">Customer contact:
                                                             </td>
                                                             <td class="table_sections table_row_value" colspan="3">
-                                                                <span>{{$transport_trans->TransportJob->offloading_contact}} {{$transport_trans->TransportJob->offloading_contact_no}}</span>
+                                                                <span>{{$deal->TransportTransaction->TransportJob->offloading_contact}} {{$deal->TransportTransaction->TransportJob->offloading_contact_no}}</span>
                                                             </td>
                                                         </tr>
 
@@ -1013,7 +1029,7 @@
                                                                 style="width: 25%;">Offloading instructions
                                                             </td>
                                                             <td class="table_sections table_row_value"
-                                                                colspan="3">{{$transport_trans->TransportJob->offloading_instructions}}</td>
+                                                                colspan="3">{{$deal->TransportTransaction->TransportJob->offloading_instructions}}</td>
                                                         </tr>
 
 
