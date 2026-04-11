@@ -729,10 +729,6 @@ defineProps({
                           Staff Comm
                         </DropdownLink>
 
-                        <DropdownLink :href="route('notifications.index')">
-                          Notifications
-                        </DropdownLink>
-
                         <DropdownLink :href="route('pdf-settings.index')">
                           PDF Settings
                         </DropdownLink>
@@ -791,6 +787,10 @@ defineProps({
 
                         <DropdownLink :href="route('transport_transaction.index')">
                           Report Exporter
+                        </DropdownLink>
+
+                        <DropdownLink :href="route('notifications.index')">
+                          Notifications
                         </DropdownLink>
 
                         <div class="border-t border-gray-100" />

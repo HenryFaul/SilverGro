@@ -165,7 +165,7 @@ Route::middleware([
 
     //Notifications
 
-    Route::resource('notifications', NotificationController::class)->middleware(['auth', 'admin'])
+    Route::resource('notifications', NotificationController::class)->middleware('auth')
         ->only(['index']);
 
     //Home Overview
