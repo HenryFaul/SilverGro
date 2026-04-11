@@ -2,22 +2,14 @@
   import InputError from '@/Components/InputError.vue';
   import TextInput from '@/Components/TextInput.vue';
   import AreaInput from '@/Components/AreaInput.vue';
-  import { computed, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
+  import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
   import { useForm } from '@inertiajs/vue3';
-  import { Loader } from '@googlemaps/js-api-loader';
+  import { getGoogleMapsApiKey, loadGoogleMaps } from '@/lib/googleMapsLoader.js';
   import SecondaryButton from '@/Components/SecondaryButton.vue';
   import DialogModal from '@/Components/DialogModal.vue';
 
-  let loader = new Loader({
-    apiKey: 'AIzaSyCU7oXqXRqWWvhjsTEvYvWv1EXT-hJydcg',
-    libraries: ['places'],
-  });
-
-  let isGoogleApi = ref(true);
-  let autocomplete = ref();
-  let addressApi = ref();
-
-  const query = ref('');
+  const autocompleteInputRef = ref(null);
+  let placesAutocompleteInstance = null;
 
   const emit = defineEmits(['close', 'address-created']);
 
@@ -45,105 +37,123 @@
   };
 
   let getAddress = () => {
-    if (autocomplete != null) {
-      addressApi = autocomplete.getPlace();
-      if (addressApi) {
-        for (const component of addressApi.address_components) {
-          const componentType = component.types[0];
+    if (placesAutocompleteInstance == null) {
+      return;
+    }
+    const addressApi = placesAutocompleteInstance.getPlace();
+    if (!addressApi?.address_components) {
+      return;
+    }
+    for (const component of addressApi.address_components) {
+      const componentType = component.types[0];
 
-          switch (componentType) {
-            case 'street_number': {
-              form.line_1 = component.long_name;
+      switch (componentType) {
+        case 'street_number': {
+          form.line_1 = component.long_name;
 
-              break;
-            }
-
-            case 'route': {
-              form.line_1 += component.long_name;
-
-              break;
-            }
-
-            case 'postal_code': {
-              form.code += component.long_name;
-
-              break;
-            }
-
-            case 'postal_code_suffix': {
-              form.code += component.long_name;
-              break;
-            }
-            case 'sublocality_level_1':
-              form.line_2 += component.long_name;
-              break;
-            case 'locality':
-              form.line_3 += component.long_name;
-              break;
-            case 'administrative_area_level_1': {
-              break;
-            }
-            case 'country':
-              form.country += component.long_name;
-
-              break;
-          }
+          break;
         }
 
-        if (addressApi.geometry.location) {
-          form.latitude = addressApi.geometry.location.lat();
-          form.longitude = addressApi.geometry.location.lng();
+        case 'route': {
+          form.line_1 += component.long_name;
+
+          break;
         }
+
+        case 'postal_code': {
+          form.code += component.long_name;
+
+          break;
+        }
+
+        case 'postal_code_suffix': {
+          form.code += component.long_name;
+          break;
+        }
+        case 'sublocality_level_1':
+          form.line_2 += component.long_name;
+          break;
+        case 'locality':
+          form.line_3 += component.long_name;
+          break;
+        case 'administrative_area_level_1': {
+          break;
+        }
+        case 'country':
+          form.country += component.long_name;
+
+          break;
       }
-    } else {
+    }
+
+    if (addressApi.geometry?.location) {
+      form.latitude = addressApi.geometry.location.lat();
+      form.longitude = addressApi.geometry.location.lng();
     }
   };
 
-  onBeforeMount(async () => {});
-
-  onUnmounted(async () => {
-    if (autocomplete) {
-      isGoogleApi.value = false;
-      google.maps.event.clearInstanceListeners(autocomplete);
+  function teardownAutocomplete() {
+    if (placesAutocompleteInstance && window.google?.maps?.event) {
+      window.google.maps.event.clearInstanceListeners(placesAutocompleteInstance);
     }
-  });
+    placesAutocompleteInstance = null;
+  }
 
-  onMounted(async () => {
-    if (loader) {
-      loader
-        .load()
-        .then((google) => {
-          isGoogleApi.value = true;
-
-          autocomplete = new google.maps.places.Autocomplete(
-            document.getElementById('autocomplete_id'),
-            {
-              fields: ['address_components', 'geometry'],
-              types: ['address'],
-            }
-          );
-
-          autocomplete.setComponentRestrictions({
-            // restrict the country
-            country: ['za'],
-          });
-
-          google.maps.event.addListener(autocomplete, 'place_changed', () => {
-            clearValues();
-            getAddress();
-          });
-        })
-        .catch((e) => {
-          // do something
-          isGoogleApi.value = false;
-          alert('error');
-          console.log(e);
-        });
+  async function setupAutocomplete() {
+    if (!getGoogleMapsApiKey() || !props.show) {
+      return;
     }
+
+    await nextTick();
+    let el = autocompleteInputRef.value;
+    if (!el) {
+      await new Promise((r) => setTimeout(r, 100));
+      el = autocompleteInputRef.value;
+    }
+    if (!el) {
+      return;
+    }
+
+    teardownAutocomplete();
+
+    try {
+      const google = await loadGoogleMaps();
+      placesAutocompleteInstance = new google.maps.places.Autocomplete(el, {
+        fields: ['address_components', 'geometry'],
+        types: ['address'],
+      });
+
+      placesAutocompleteInstance.setComponentRestrictions({
+        country: ['za'],
+      });
+
+      google.maps.event.addListener(placesAutocompleteInstance, 'place_changed', () => {
+        clearValues();
+        getAddress();
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  watch(
+    () => props.show,
+    (open) => {
+      if (open) {
+        setupAutocomplete();
+      } else {
+        teardownAutocomplete();
+      }
+    },
+    { immediate: true }
+  );
+
+  onUnmounted(() => {
+    teardownAutocomplete();
   });
 
   const form = useForm({
-    address: null,
+    address: '',
     address_type_id: props.address == null ? 1 : props.address.address_type_id,
     line_1: props.address == null ? '' : props.address.line_1,
     line_2: props.address == null ? '' : props.address.line_2,
@@ -228,13 +238,14 @@
               </div>
 
               <div class="ml-3">
-                <TextInput
-                  class="mt-5 bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                  id="autocomplete_id"
-                  name="autocomplete_id"
+                <input
+                  ref="autocompleteInputRef"
+                  v-model="form.address"
                   type="text"
+                  name="autocomplete_search"
+                  autocomplete="off"
                   placeholder="Search address..."
-                  v-model="form.address" />
+                  class="mt-5 bg-gray-200 border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" />
               </div>
 
               <div :class="borderClass">
@@ -401,3 +412,10 @@
     </dialog-modal>
   </div>
 </template>
+
+<style>
+  /* Places suggestions are appended to body; sit above Inertia modal (z-50) */
+  .pac-container {
+    z-index: 10050 !important;
+  }
+</style>

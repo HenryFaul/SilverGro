@@ -29,6 +29,6 @@ class AssignedUserComm extends Model
 
     public function TransportTransaction(): BelongsTo
     {
-        return $this->belongsTo(TransportTransaction::class);
+        return $this->belongsTo(TransportTransaction::class, 'transport_trans_id');
     }
 }

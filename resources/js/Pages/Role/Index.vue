@@ -187,11 +187,11 @@
               <div v-else class="flex-1 flex flex-col">
 
                 <!-- Header bar -->
-                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50">
                   <div class="flex items-center gap-x-3">
                     <span
-                      :class="[colorFor(selectedRole.id).badge, 'inline-flex items-center rounded-md px-2.5 py-1 text-sm font-semibold ring-1 ring-inset']">
-                      <span :class="[colorFor(selectedRole.id).dot, 'mr-2 h-2 w-2 rounded-full']" />
+                      :class="[colorFor(selectedRole.id).badge, 'inline-flex items-center rounded-lg px-4 py-2 text-base font-semibold ring-1 ring-inset']">
+                      <span :class="[colorFor(selectedRole.id).dot, 'mr-2.5 h-2.5 w-2.5 rounded-full flex-shrink-0']" />
                       {{ selectedRole.name }}
                     </span>
                     <span

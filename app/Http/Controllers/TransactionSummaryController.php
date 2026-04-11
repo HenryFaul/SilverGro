@@ -86,6 +86,7 @@ class TransactionSummaryController extends Controller
             ->with('TransportFinance')->with('Transporter', fn($query) => $query->with('contactable', fn($query) => $query->with('numberable')->with('emailable')))
             ->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))->with('AssignedUserComm', fn($query) => $query->with('AssignedUserSupplier')->with('AssignedUserCustomer'))
             ->with('TransportJob', fn($query) => $query->with('OffloadingHoursFrom')->with('OffloadingHoursTo')
+                ->with('LoadingHoursFrom')->with('LoadingHoursTo')
                 ->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle', fn($query) => $query->with('VehicleType'))))->first();
 
 

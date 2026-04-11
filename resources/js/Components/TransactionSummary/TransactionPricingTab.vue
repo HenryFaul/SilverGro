@@ -179,6 +179,16 @@
               </SwitchGroup>
             </dd>
           </div>
+
+          <TransportAddressRouteDistance
+            :collection-address="combinedForm.collection_address_id"
+            :delivery-address="combinedForm.delivery_address_id"
+            :loading-hour-options="loadingHourOptions"
+            :loading-hours-from-id="combinedForm.loading_hours_from_id"
+            :loading-hours-to-id="combinedForm.loading_hours_to_id"
+            :offloading-hours-from-id="combinedForm.offloading_hours_from_id"
+            :offloading-hours-to-id="combinedForm.offloading_hours_to_id"
+            :transport-date-earliest="combinedForm.transport_date_earliest" />
         </dl>
       </li>
 
@@ -562,6 +572,7 @@
   import { Switch, SwitchGroup } from '@headlessui/vue';
   import TransactionPackagingSelect from './TransactionPackagingSelect.vue';
   import TransactionBillingUnitsSelect from './TransactionBillingUnitsSelect.vue';
+  import TransportAddressRouteDistance from './TransportAddressRouteDistance.vue';
   import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
 
   const props = defineProps({
@@ -590,6 +601,10 @@
       required: true,
     },
     filteredBillingUnitsOutgoing: {
+      type: Array,
+      required: true,
+    },
+    loadingHourOptions: {
       type: Array,
       required: true,
     },

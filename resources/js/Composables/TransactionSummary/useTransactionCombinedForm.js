@@ -106,9 +106,13 @@ export function useTransactionCombinedForm(props) {
       props.selected_transaction.transport_load.billing_units_outgoing_id
     ),
 
-    // Addresses
-    collection_address_id:
-      props.selected_transaction.transport_load.collection_address_id,
+    // Addresses (resolve collection from supplier addressable like updateSelectValues)
+    collection_address_id: props.all_suppliers
+      .find((element) => element.id === props.selected_transaction.supplier_id)
+      ?.addressable?.find(
+        (element) =>
+          element.id === props.selected_transaction.transport_load.collection_address_id
+      ),
     delivery_address_id: findDeliveryAddress(
       props.selected_transaction.customer_id,
       props.selected_transaction.transport_load.delivery_address_id

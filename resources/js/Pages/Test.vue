@@ -8,18 +8,15 @@
   import { onMounted, onUnmounted, reactive, ref, onBeforeMount, computed } from 'vue';
   import { useForm } from '@inertiajs/vue3';
   import DangerButton from '@/Components/DangerButton.vue';
-  import { Loader } from '@googlemaps/js-api-loader';
+  import { getGoogleMapsApiKey, loadGoogleMaps } from '@/lib/googleMapsLoader.js';
   import SecondaryButton from '@/Components/SecondaryButton.vue';
   import DialogModal from '@/Components/DialogModal.vue';
 
-  let isGoogleApi = ref(true);
+  let isGoogleApi = ref(false);
   let autocomplete = ref();
   let addressApi = ref();
 
-  const loader = new Loader({
-    apiKey: 'AIzaSyAvFQCBzN_0f4PMWZosics0sBV_J9vvH1g',
-    libraries: ['places'],
-  });
+  const mapsApiKey = getGoogleMapsApiKey();
 
   let clearValues = () => {
     form.line_1 = '';
@@ -87,8 +84,10 @@
   };
 
   onBeforeMount(async () => {
-    loader
-      .load()
+    if (!mapsApiKey) {
+      return;
+    }
+    loadGoogleMaps()
       .then((google) => {
         isGoogleApi.value = true;
         autocomplete = new google.maps.places.Autocomplete(
@@ -117,8 +116,8 @@
   });
 
   onUnmounted(async () => {
-    if (autocomplete) {
-      google.maps.event.clearInstanceListeners(autocomplete);
+    if (autocomplete && window.google?.maps?.event) {
+      window.google.maps.event.clearInstanceListeners(autocomplete);
     }
   });
 
