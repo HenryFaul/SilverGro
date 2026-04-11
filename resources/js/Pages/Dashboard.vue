@@ -2,7 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
-    month: Date,
+    month: String,
     planned_tons_in: Number,
     planned_tons_out: Number,
     weight_uploaded: Number,

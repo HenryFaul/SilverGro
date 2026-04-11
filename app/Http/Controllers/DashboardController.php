@@ -20,7 +20,7 @@ DashboardController extends Controller
 
         $this->doSummary();
         $today_date = Carbon::now();
-        $month = $today_date->toDate();
+        $month = $today_date->monthName;
         $filters['date'] = $today_date->toDateString();
 
         $planned_tons_in = 0;
