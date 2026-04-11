@@ -52,13 +52,13 @@
     localMin.value      = rule.min_trade_value;
     localMax.value      = rule.max_trade_value;
     localIsActive.value = Boolean(rule.is_active);
-    localRoles.value    = rule.PolyRuleRoles.map((r) => r.role);
+    localRoles.value    = (rule.PolyRuleRoles ?? []).map((r) => r.role);
   }
 
   function syncFromOpp(opp) {
     localName.value     = opp.name;
     localIsActive.value = Boolean(opp.is_active);
-    localRoles.value    = opp.PolyRuleRoles.map((r) => r.role);
+    localRoles.value    = (opp.PolyRuleRoles ?? []).map((r) => r.role);
   }
 
   function resetNew() {
@@ -98,7 +98,7 @@
 
   function rolesChanged(serverRoles) {
     const local  = [...localRoles.value].sort().join(',');
-    const server = serverRoles.map((r) => r.role).sort().join(',');
+    const server = (serverRoles ?? []).map((r) => r.role).sort().join(',');
     return local !== server;
   }
 
@@ -266,12 +266,12 @@
                   </p>
                   <div class="flex flex-wrap gap-1">
                     <span
-                      v-for="rr in rule.PolyRuleRoles"
+                      v-for="rr in (rule.PolyRuleRoles ?? [])"
                       :key="rr.id"
                       :class="roleBadge(rr.role)">
                       {{ rr.role }}
                     </span>
-                    <span v-if="rule.PolyRuleRoles.length === 0" class="text-xs text-red-400">No approvers set</span>
+                    <span v-if="!(rule.PolyRuleRoles ?? []).length" class="text-xs text-red-400">No approvers set</span>
                   </div>
                 </li>
 
@@ -308,12 +308,12 @@
                   <p class="text-xs text-gray-400 italic leading-tight">{{ triggerFor(opp) }}</p>
                   <div class="flex flex-wrap gap-1">
                     <span
-                      v-for="rr in opp.PolyRuleRoles"
+                      v-for="rr in (opp.PolyRuleRoles ?? [])"
                       :key="rr.id"
                       :class="roleBadge(rr.role)">
                       {{ rr.role }}
                     </span>
-                    <span v-if="opp.PolyRuleRoles.length === 0" class="text-xs text-red-400">No approvers set</span>
+                    <span v-if="!(opp.PolyRuleRoles ?? []).length" class="text-xs text-red-400">No approvers set</span>
                   </div>
                 </li>
               </ul>
