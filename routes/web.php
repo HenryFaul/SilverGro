@@ -28,6 +28,8 @@ use App\Http\Controllers\RegularDriverController;
 use App\Http\Controllers\RegularVehicleController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleModifyController;
+use App\Http\Controllers\TradeRuleController;
+use App\Http\Controllers\TradeRuleOppController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\ScOverviewController;
 use App\Http\Controllers\StaffController;
@@ -427,6 +429,13 @@ Route::middleware([
     // Roles management
     Route::get('/roles', [RoleController::class, 'index'])->middleware('auth')->name('roles.index');
     Route::put('/roles/{role}', [RoleController::class, 'update'])->middleware('auth')->name('roles.update');
+
+    // Trade Rules management
+    Route::get('/trade_rules', [TradeRuleController::class, 'index'])->middleware('auth')->name('trade_rules.index');
+    Route::post('/trade_rules', [TradeRuleController::class, 'store'])->middleware('auth')->name('trade_rules.store');
+    Route::put('/trade_rules/{tradeRule}', [TradeRuleController::class, 'update'])->middleware('auth')->name('trade_rules.update');
+    Route::delete('/trade_rules/{tradeRule}', [TradeRuleController::class, 'destroy'])->middleware('auth')->name('trade_rules.destroy');
+    Route::put('/trade_rule_opps/{tradeRuleOpp}', [TradeRuleOppController::class, 'update'])->middleware('auth')->name('trade_rule_opps.update');
 
 
 

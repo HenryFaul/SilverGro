@@ -75,7 +75,7 @@ defineProps({
   });
 
   const classesAdmin = computed(() => {
-    return route().current('staff.*') || route().current('roles.*')
+    return route().current('staff.*') || route().current('roles.*') || route().current('trade_rules.*')
       ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm focus:outline-none focus:border-indigo-700 transition'
       : 'font-semibold text-black text-sm';
   });
@@ -739,6 +739,10 @@ defineProps({
 
                         <DropdownLink :href="route('roles.index')">
                           Roles
+                        </DropdownLink>
+
+                        <DropdownLink :href="route('trade_rules.index')">
+                          Trade Rules
                         </DropdownLink>
 
                         <div class="border-t border-gray-100" />

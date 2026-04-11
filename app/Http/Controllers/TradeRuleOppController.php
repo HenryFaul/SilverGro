@@ -4,62 +4,36 @@ namespace App\Http\Controllers;
 
 use App\Models\TradeRuleOpp;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TradeRuleOppController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(TradeRuleOpp $tradeRuleOpp)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TradeRuleOpp $tradeRuleOpp)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, TradeRuleOpp $tradeRuleOpp)
     {
-        //
-    }
+        if (!auth()->user()->can('manage_users')) {
+            return to_route('no_permission');
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(TradeRuleOpp $tradeRuleOpp)
-    {
-        //
+        $request->validate([
+            'name'      => ['required', 'string', Rule::unique('trade_rule_opps', 'name')->ignore($tradeRuleOpp->id)->whereNull('deleted_at')],
+            'is_active' => ['required', 'boolean'],
+            'roles'     => ['present', 'array'],
+            'roles.*'   => ['string', 'exists:roles,name'],
+        ]);
+
+        $tradeRuleOpp->update([
+            'name'      => $request->name,
+            'is_active' => $request->is_active,
+        ]);
+
+        $tradeRuleOpp->PolyRuleRoles()->delete();
+        foreach ($request->roles as $roleName) {
+            $tradeRuleOpp->PolyRuleRoles()->create(['role' => $roleName]);
+        }
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Operation Rule saved');
+
+        return redirect()->back();
     }
 }
