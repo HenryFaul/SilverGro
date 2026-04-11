@@ -141,7 +141,7 @@ class PurchaseOrderController extends Controller
 
         // Check if the load is split and set the orientation and view accordingly
         if ($transport_trans->is_split_load) {
-            $pdf = PDF::loadView('pdf_reports.purchase_order_confirmation_split_v3', $data);
+            $pdf = PDF::loadView('pdf_reports.purchase_order_confirmation_split_v4', $data);
             $pdf->setPaper('A4','landscape');
         } else {
             $pdf = PDF::loadView('pdf_reports.purchase_order_confirmation_v3',$data);
