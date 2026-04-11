@@ -1,7 +1,7 @@
 <script setup>
   import AppLayout from '@/Layouts/AppLayout.vue';
   import { computed, ref, watch } from 'vue';
-  import { router, usePage } from '@inertiajs/vue3';
+  import { router, useForm, usePage } from '@inertiajs/vue3';
 
   const props = defineProps({
     trade_rules: Array,
@@ -44,8 +44,11 @@
   const localMax      = ref(0);
   const localIsActive = ref(true);
   const localRoles    = ref([]);
-  const isSaving      = ref(false);
   const isDeleting    = ref(false);
+
+  // useForm for server error binding
+  const form = useForm({});
+  const isSaving = computed(() => form.processing);
 
   function syncFromRule(rule) {
     localName.value     = rule.name;
@@ -147,34 +150,67 @@
     else           localRoles.value.push(name);
   }
 
+  // ─── Client-side pre-validation ──────────────────────────────────────────
+  const clientErrors = computed(() => {
+    const errs = {};
+    if (selectedType.value !== 'trade_rule' && selectedType.value !== 'new') return errs;
+    const min = Number(localMin.value);
+    const max = Number(localMax.value);
+    if (!localName.value.trim()) errs.name = 'Rule name is required.';
+    if (isNaN(min) || min < 0) errs.min_trade_value = 'Minimum must be 0 or greater.';
+    if (isNaN(max) || max <= 0) errs.max_trade_value = 'Maximum must be greater than 0.';
+    else if (max <= min) errs.max_trade_value = 'Maximum must be greater than the minimum.';
+    if (localRoles.value.length === 0) errs.roles = 'Select at least one approver role.';
+    return errs;
+  });
+
+  // Check for range overlap against existing rules (client-side, approximate)
+  const overlapWarning = computed(() => {
+    if (selectedType.value !== 'trade_rule' && selectedType.value !== 'new') return null;
+    const min = Number(localMin.value);
+    const max = Number(localMax.value);
+    if (isNaN(min) || isNaN(max) || max <= min) return null;
+    const conflict = props.trade_rules.find((r) => {
+      if (selectedType.value === 'trade_rule' && r.id === selectedId.value) return false;
+      return Number(r.min_trade_value) < max && Number(r.max_trade_value) > min;
+    });
+    if (!conflict) return null;
+    return `Range overlaps with "${conflict.name}" (${formatZAR(conflict.min_trade_value)} – ${formatZAR(conflict.max_trade_value)}).`;
+  });
+
+  // Server errors from Inertia
+  const serverErrors = computed(() => form.errors);
+
+  // Combined: prefer server errors (post-submit) over client errors (pre-submit)
+  const errors = computed(() => ({ ...clientErrors.value, ...serverErrors.value }));
+  const hasBlockingErrors = computed(() =>
+    Object.keys(clientErrors.value).length > 0 || overlapWarning.value !== null
+  );
+
   // ─── Save / Delete ───────────────────────────────────────────────────────
   function save() {
-    if (isSaving.value) return;
-    isSaving.value = true;
+    if (form.processing) return;
+    form.clearErrors();
 
-    const onFinish  = () => { isSaving.value = false; };
-    const opts      = { preserveScroll: true, only: ['trade_rules', 'trade_rule_opps'], onFinish };
+    const payload = {
+      name:      localName.value,
+      is_active: localIsActive.value,
+      roles:     localRoles.value,
+    };
+    const opts = { preserveScroll: true, only: ['trade_rules', 'trade_rule_opps'] };
 
     if (selectedType.value === 'new') {
-      router.post(
-        route('trade_rules.store'),
-        { name: localName.value, min_trade_value: localMin.value, max_trade_value: localMax.value,
-          is_active: localIsActive.value, roles: localRoles.value },
-        { ...opts, onSuccess: () => { selectedType.value = null; selectedId.value = null; } }
-      );
+      form.transform(() => ({ ...payload, min_trade_value: localMin.value, max_trade_value: localMax.value }))
+          .post(route('trade_rules.store'), {
+            ...opts,
+            onSuccess: () => { selectedType.value = null; selectedId.value = null; form.reset(); },
+          });
     } else if (selectedType.value === 'trade_rule') {
-      router.put(
-        route('trade_rules.update', selectedId.value),
-        { name: localName.value, min_trade_value: localMin.value, max_trade_value: localMax.value,
-          is_active: localIsActive.value, roles: localRoles.value },
-        { ...opts, onSuccess: () => { if (selectedRule.value) syncFromRule(selectedRule.value); } }
-      );
+      form.transform(() => ({ ...payload, min_trade_value: localMin.value, max_trade_value: localMax.value }))
+          .put(route('trade_rules.update', selectedId.value), opts);
     } else if (selectedType.value === 'trade_rule_opp') {
-      router.put(
-        route('trade_rule_opps.update', selectedId.value),
-        { name: localName.value, is_active: localIsActive.value, roles: localRoles.value },
-        { ...opts, onSuccess: () => { if (selectedOpp.value) syncFromOpp(selectedOpp.value); } }
-      );
+      form.transform(() => payload)
+          .put(route('trade_rule_opps.update', selectedId.value), opts);
     }
   }
 
@@ -397,7 +433,9 @@
                           :disabled="!can_manage"
                           type="text"
                           placeholder="e.g. R0 to R199,999.00"
-                          class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500" />
+                          :class="errors.name ? 'border-red-300 ring-red-300' : 'border-gray-300'"
+                          class="block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500" />
+                        <p v-if="errors.name" class="mt-1 text-xs text-red-600">{{ errors.name }}</p>
                       </div>
 
                       <!-- Min / Max (TradeRule only) -->
@@ -410,8 +448,10 @@
                             type="number"
                             min="0"
                             step="1"
-                            class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500" />
+                            :class="errors.min_trade_value ? 'border-red-300 ring-red-300' : 'border-gray-300'"
+                            class="block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500" />
                           <p class="mt-1 text-xs text-gray-400">{{ formatZAR(localMin) }}</p>
+                          <p v-if="errors.min_trade_value" class="mt-1 text-xs text-red-600">{{ errors.min_trade_value }}</p>
                         </div>
 
                         <div>
@@ -422,8 +462,20 @@
                             type="number"
                             min="0"
                             step="1"
-                            class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500" />
+                            :class="errors.max_trade_value ? 'border-red-300 ring-red-300' : 'border-gray-300'"
+                            class="block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500" />
                           <p class="mt-1 text-xs text-gray-400">{{ formatZAR(localMax) }}</p>
+                          <p v-if="errors.max_trade_value" class="mt-1 text-xs text-red-600">{{ errors.max_trade_value }}</p>
+                        </div>
+
+                        <!-- Overlap warning (client-side preview) -->
+                        <div
+                          v-if="overlapWarning"
+                          class="sm:col-span-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 flex gap-x-3">
+                          <svg class="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                          </svg>
+                          <p class="text-sm text-red-700">{{ overlapWarning }}</p>
                         </div>
                       </template>
 
@@ -463,7 +515,9 @@
                       All selected roles must approve the deal ticket before it is considered approved.
                     </p>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div
+                      :class="errors.roles ? 'ring-1 ring-red-300 rounded-lg p-1' : ''"
+                      class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <label
                         v-for="r in all_roles"
                         :key="r.id"
@@ -483,6 +537,7 @@
                         </span>
                       </label>
                     </div>
+                    <p v-if="errors.roles" class="mt-2 text-xs text-red-600">{{ errors.roles }}</p>
                   </div>
 
                 </div>
@@ -511,8 +566,8 @@
                     </button>
                     <button
                       @click="save"
-                      :disabled="!isDirty || isSaving"
-                      :class="isDirty && !isSaving ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-300 cursor-not-allowed'"
+                      :disabled="!isDirty || isSaving || hasBlockingErrors"
+                      :class="isDirty && !isSaving && !hasBlockingErrors ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-300 cursor-not-allowed'"
                       class="inline-flex items-center gap-x-2 rounded-md px-4 py-2 text-sm font-semibold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed transition">
                       <svg v-if="isSaving" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />

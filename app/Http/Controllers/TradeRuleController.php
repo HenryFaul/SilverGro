@@ -31,12 +31,16 @@ class TradeRuleController extends Controller
 
         $request->validate([
             'name'            => ['required', 'string', 'unique:trade_rules,name'],
-            'min_trade_value' => ['required', 'numeric', 'min:0', 'unique:trade_rules,min_trade_value'],
-            'max_trade_value' => ['required', 'numeric', 'gt:min_trade_value', 'unique:trade_rules,max_trade_value'],
+            'min_trade_value' => ['required', 'numeric', 'min:0'],
+            'max_trade_value' => ['required', 'numeric', 'gt:min_trade_value'],
             'is_active'       => ['required', 'boolean'],
-            'roles'           => ['present', 'array'],
+            'roles'           => ['present', 'array', 'min:1'],
             'roles.*'         => ['string', 'exists:roles,name'],
+        ], [
+            'roles.min' => 'At least one approver role is required.',
         ]);
+
+        $this->validateNoOverlap($request->min_trade_value, $request->max_trade_value);
 
         $rule = TradeRule::create([
             'name'            => $request->name,
@@ -63,12 +67,16 @@ class TradeRuleController extends Controller
 
         $request->validate([
             'name'            => ['required', 'string', Rule::unique('trade_rules', 'name')->ignore($tradeRule->id)->whereNull('deleted_at')],
-            'min_trade_value' => ['required', 'numeric', 'min:0', Rule::unique('trade_rules', 'min_trade_value')->ignore($tradeRule->id)->whereNull('deleted_at')],
-            'max_trade_value' => ['required', 'numeric', 'gt:min_trade_value', Rule::unique('trade_rules', 'max_trade_value')->ignore($tradeRule->id)->whereNull('deleted_at')],
+            'min_trade_value' => ['required', 'numeric', 'min:0'],
+            'max_trade_value' => ['required', 'numeric', 'gt:min_trade_value'],
             'is_active'       => ['required', 'boolean'],
-            'roles'           => ['present', 'array'],
+            'roles'           => ['present', 'array', 'min:1'],
             'roles.*'         => ['string', 'exists:roles,name'],
+        ], [
+            'roles.min' => 'At least one approver role is required.',
         ]);
+
+        $this->validateNoOverlap($request->min_trade_value, $request->max_trade_value, $tradeRule->id);
 
         $tradeRule->update([
             'name'            => $request->name,
@@ -101,5 +109,38 @@ class TradeRuleController extends Controller
         $request->session()->flash('flash.banner', 'Trade Rule deleted');
 
         return redirect()->back();
+    }
+
+    /**
+     * Abort with a validation error if [min, max] overlaps any existing trade rule range.
+     * Excludes $ignoreId (used on update to ignore the rule being edited).
+     */
+    private function validateNoOverlap(float $min, float $max, ?int $ignoreId = null): void
+    {
+        $query = TradeRule::whereNull('deleted_at')
+            ->where('min_trade_value', '<', $max)   // existing starts before new ends
+            ->where('max_trade_value', '>', $min);  // existing ends after new starts
+
+        if ($ignoreId !== null) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        $overlapping = $query->first();
+
+        if ($overlapping) {
+            $formatter = fn($v) => 'R ' . number_format($v, 0, '.', ' ');
+            $msg = sprintf(
+                'This range (%s – %s) overlaps with the existing rule "%s" (%s – %s). Ranges must not overlap.',
+                $formatter($min),
+                $formatter($max),
+                $overlapping->name,
+                $formatter($overlapping->min_trade_value),
+                $formatter($overlapping->max_trade_value)
+            );
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'min_trade_value' => $msg,
+                'max_trade_value' => $msg,
+            ]);
+        }
     }
 }
