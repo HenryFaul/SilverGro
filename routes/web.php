@@ -114,14 +114,14 @@ Route::middleware([
     Route::post('/import', [DataImportController::class, 'import'])->middleware('auth')->name('import.process');
 
     //PDF Settings
-    Route::get('/pdf-settings', [PdfSettingController::class, 'index'])->middleware('auth')->name('pdf-settings.index');
-    Route::post('/pdf-settings', [PdfSettingController::class, 'update'])->middleware('auth')->name('pdf-settings.update');
-    Route::post('/pdf-settings/reset-logo', [PdfSettingController::class, 'resetLogo'])->middleware('auth')->name('pdf-settings.reset-logo');
+    Route::get('/pdf-settings', [PdfSettingController::class, 'index'])->middleware(['auth', 'admin'])->name('pdf-settings.index');
+    Route::post('/pdf-settings', [PdfSettingController::class, 'update'])->middleware(['auth', 'admin'])->name('pdf-settings.update');
+    Route::post('/pdf-settings/reset-logo', [PdfSettingController::class, 'resetLogo'])->middleware(['auth', 'admin'])->name('pdf-settings.reset-logo');
 
     //Modify User roles
 
-    Route::post('/roles/modify', [RoleModifyController::class, 'store'])->middleware('auth')->name('roles.modify.store');
-    Route::put('/roles/modify', [RoleModifyController::class, 'destroy'])->middleware('auth')->name('roles.modify.destroy');
+    Route::post('/roles/modify', [RoleModifyController::class, 'store'])->middleware(['auth', 'admin'])->name('roles.modify.store');
+    Route::put('/roles/modify', [RoleModifyController::class, 'destroy'])->middleware(['auth', 'admin'])->name('roles.modify.destroy');
 
 
     //Planning
@@ -165,7 +165,7 @@ Route::middleware([
 
     //Notifications
 
-    Route::resource('notifications', NotificationController::class)->middleware('auth')
+    Route::resource('notifications', NotificationController::class)->middleware(['auth', 'admin'])
         ->only(['index']);
 
     //Home Overview
@@ -299,7 +299,7 @@ Route::middleware([
 
     //Staff
 
-    Route::resource('staff', StaffController::class)->middleware('auth')
+    Route::resource('staff', StaffController::class)->middleware(['auth', 'admin'])
         ->only(['index', 'show','store','update']);
 
     //Staff Link
@@ -423,19 +423,19 @@ Route::middleware([
 
     //Staff comm
 
-    Route::get('/staff_comm', [StaffController::class, 'staffComm'])->middleware('auth')->name('staff.comm');
-    Route::get('/staff_comm/export', [StaffController::class, 'staffCommExport'])->middleware('auth')->name('staff.comm.export');
+    Route::get('/staff_comm', [StaffController::class, 'staffComm'])->middleware(['auth', 'admin'])->name('staff.comm');
+    Route::get('/staff_comm/export', [StaffController::class, 'staffCommExport'])->middleware(['auth', 'admin'])->name('staff.comm.export');
 
     // Roles management
-    Route::get('/roles', [RoleController::class, 'index'])->middleware('auth')->name('roles.index');
-    Route::put('/roles/{role}', [RoleController::class, 'update'])->middleware('auth')->name('roles.update');
+    Route::get('/roles', [RoleController::class, 'index'])->middleware(['auth', 'admin'])->name('roles.index');
+    Route::put('/roles/{role}', [RoleController::class, 'update'])->middleware(['auth', 'admin'])->name('roles.update');
 
     // Trade Rules management
-    Route::get('/trade_rules', [TradeRuleController::class, 'index'])->middleware('auth')->name('trade_rules.index');
-    Route::post('/trade_rules', [TradeRuleController::class, 'store'])->middleware('auth')->name('trade_rules.store');
-    Route::put('/trade_rules/{tradeRule}', [TradeRuleController::class, 'update'])->middleware('auth')->name('trade_rules.update');
-    Route::delete('/trade_rules/{tradeRule}', [TradeRuleController::class, 'destroy'])->middleware('auth')->name('trade_rules.destroy');
-    Route::put('/trade_rule_opps/{tradeRuleOpp}', [TradeRuleOppController::class, 'update'])->middleware('auth')->name('trade_rule_opps.update');
+    Route::get('/trade_rules', [TradeRuleController::class, 'index'])->middleware(['auth', 'admin'])->name('trade_rules.index');
+    Route::post('/trade_rules', [TradeRuleController::class, 'store'])->middleware(['auth', 'admin'])->name('trade_rules.store');
+    Route::put('/trade_rules/{tradeRule}', [TradeRuleController::class, 'update'])->middleware(['auth', 'admin'])->name('trade_rules.update');
+    Route::delete('/trade_rules/{tradeRule}', [TradeRuleController::class, 'destroy'])->middleware(['auth', 'admin'])->name('trade_rules.destroy');
+    Route::put('/trade_rule_opps/{tradeRuleOpp}', [TradeRuleOppController::class, 'update'])->middleware(['auth', 'admin'])->name('trade_rule_opps.update');
 
 
 
