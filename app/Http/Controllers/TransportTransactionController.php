@@ -242,8 +242,8 @@ class TransportTransactionController extends Controller
             'is_active' => false
         ]);
 
-        $unallocated_vehicle_id = RegularVehicle::where('reg_no', 'N/A')->value('id') ?? 1;
-        $unallocated_driver_id = RegularDriver::where('first_name', 'Unallocated')->value('id') ?? 1;
+        $unallocated_vehicle_id = RegularVehicle::firstOrCreate(['reg_no' => 'N/A'], ['vehicle_type_id' => 1])->id;
+        $unallocated_driver_id = RegularDriver::firstOrCreate(['first_name' => 'Unallocated'], ['last_name' => 'Unallocated', 'is_active' => true])->id;
 
         $transport_driver_vehicle = TransportDriverVehicle::create(
             [
@@ -416,8 +416,8 @@ class TransportTransactionController extends Controller
             'status_id' => $transport_invoice_details_to_clone->status_id,
         ]);
 
-        $unallocated_vehicle_id_clone = RegularVehicle::where('reg_no', 'N/A')->value('id') ?? 1;
-        $unallocated_driver_id_clone = RegularDriver::where('first_name', 'Unallocated')->value('id') ?? 1;
+        $unallocated_vehicle_id_clone = RegularVehicle::firstOrCreate(['reg_no' => 'N/A'], ['vehicle_type_id' => 1])->id;
+        $unallocated_driver_id_clone = RegularDriver::firstOrCreate(['first_name' => 'Unallocated'], ['last_name' => 'Unallocated', 'is_active' => true])->id;
 
         $transport_driver_vehicle = TransportDriverVehicle::create(
             [

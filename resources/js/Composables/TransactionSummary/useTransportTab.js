@@ -24,13 +24,8 @@ export function useTransportTab(props, combined_Form) {
         return true;
       }
 
-      // Include vehicles with no transporter (available to be assigned)
-      if (!vehicle.transporter) {
-        return true;
-      }
-
-      // Include vehicles associated with the selected transporter
-      return vehicle.transporter.id === transporterId;
+      // Only include vehicles associated with the selected transporter
+      return vehicle.transporter && vehicle.transporter.id === transporterId;
     }).sort((a, b) => {
       // Always show Unallocated (N/A) first
       if (a.reg_no === 'N/A' || a.reg_no === 'n/a') return -1;
