@@ -12,11 +12,13 @@ export function useFilteredList(items, searchField) {
   const query = ref('');
 
   const filteredItems = computed(() => {
+    const itemsArray = unref(items);
+
     if (query.value === '') {
-      return items;
+      return itemsArray;
     }
 
-    return items.filter((item) => {
+    return itemsArray.filter((item) => {
       const fieldValue = item[searchField];
       if (!fieldValue) return false;
 
