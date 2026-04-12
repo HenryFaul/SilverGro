@@ -783,6 +783,7 @@ class TransportTransactionController extends Controller
 
         $oldSupplierId = $transportTransaction->supplier_id;
         $oldCustomerId = $transportTransaction->customer_id;
+        $isSplitLoad = (bool) $request->is_split_load;
 
         $is_updated = $transportTransaction->update(
             [
@@ -831,7 +832,7 @@ class TransportTransactionController extends Controller
         }
 
 
-        if (!$transportTransaction->is_split_load) {
+        if (!$isSplitLoad) {
             $newSupplierId = $request->supplier_id['id'];
             $newCustomerId = $request->customer_id['id'];
             $this->removeStaleCommUsers($transportTransaction->id, $oldSupplierId, $newSupplierId, $oldCustomerId, $newCustomerId);
