@@ -257,7 +257,9 @@ class TransportTransactionController extends Controller
         );
 
 
-        $this->syncDefaultCommUsers($transport_trans->id, $request->supplier_id['id'], $request->customer_id['id']);
+        if (!$transport_trans->is_split_load) {
+            $this->syncDefaultCommUsers($transport_trans->id, $request->supplier_id['id'], $request->customer_id['id']);
+        }
 
         $request->session()->flash('flash.bannerStyle', 'success');
         $request->session()->flash('flash.banner', 'Created:' . $transport_trans->id);
@@ -829,10 +831,12 @@ class TransportTransactionController extends Controller
         }
 
 
-        $newSupplierId = $request->supplier_id['id'];
-        $newCustomerId = $request->is_split_load ? 2 : $request->customer_id['id'];
-        $this->removeStaleCommUsers($transportTransaction->id, $oldSupplierId, $newSupplierId, $oldCustomerId, $newCustomerId);
-        $this->syncDefaultCommUsers($transportTransaction->id, $newSupplierId, $newCustomerId);
+        if (!$transportTransaction->is_split_load) {
+            $newSupplierId = $request->supplier_id['id'];
+            $newCustomerId = $request->customer_id['id'];
+            $this->removeStaleCommUsers($transportTransaction->id, $oldSupplierId, $newSupplierId, $oldCustomerId, $newCustomerId);
+            $this->syncDefaultCommUsers($transportTransaction->id, $newSupplierId, $newCustomerId);
+        }
 
         if ($update_related_models == 1) {
             $transport_finance = ($transportTransaction->TransportFinance);
