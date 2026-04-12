@@ -2085,14 +2085,18 @@ class TransportTransactionController extends Controller
     {
         $financeId = TransportFinance::where('transport_trans_id', $transactionId)->value('id');
         if (!$financeId) {
+            \Log::warning("syncDefaultCommUsers: no TransportFinance for trans #{$transactionId}");
             return;
         }
 
         $supplierIds = Supplier::find($supplierId)?->staff->pluck('id')->toArray() ?? [];
         $customerIds = Customer::find($customerId)?->staff->pluck('id')->toArray() ?? [];
 
+        \Log::info("syncDefaultCommUsers: trans #{$transactionId} supplier #{$supplierId} staff=" . json_encode($supplierIds) . " customer #{$customerId} staff=" . json_encode($customerIds));
+
         // Both sides must have at least one staff member — can't create a valid pair otherwise
         if (empty($supplierIds) || empty($customerIds)) {
+            \Log::warning("syncDefaultCommUsers: skipping — one or both sides have no staff linked");
             return;
         }
 
