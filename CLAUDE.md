@@ -22,6 +22,7 @@ Full context in `AI/` directory:
 6. **Actual vs Planned financials** — Always update both sets when touching financial calculations.
 7. **Currency:** South African Rand (ZAR). Format: `R 1 234 567.89` (space thousands separator).
 8. **Transaction IDs start at 13000** — set in migration, not auto-increment from 1.
+9. **Transaction Summary saves go to `TransactionSummaryController`, not `TransportTransactionController`** — `TransportTransactionController::update()` is never called from the UI. Any logic that must run on save must live in `TransactionSummaryController::update()` or be extracted to a public static method on the relevant model (see `.ai/COMMON_PATTERNS.md`). Split load trades use `customer_id = 2` (Unallocated) — capture `$isSplitLoad` before calling `->update()` and guard comm sync on it.
 
 ---
 

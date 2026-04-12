@@ -13,6 +13,47 @@ This document contains reusable code patterns frequently used in the SilverGro a
 
 ---
 
+## ⚠️ Critical Architecture Gotcha: Dual Transaction Controllers
+
+The Transaction Summary page (`/transaction_summary`) uses **`TransactionSummaryController`**, NOT `TransportTransactionController`, for all create/update operations from the UI.
+
+| Action | Controller |
+|--------|-----------|
+| Create new trade (from list page) | `TransportTransactionController::store()` |
+| Update trade (from Transaction Summary page) | `TransactionSummaryController::update()` |
+
+**`TransportTransactionController::update()` is never called from the main UI.**
+
+### Consequence
+Any business logic added to `TransportTransactionController::update()` will **not run** when a user saves a trade from the transaction summary page. Logic that must run on every save must be in **both** controllers, or extracted to a shared location.
+
+### Pattern: Shared logic lives on the model
+Cross-controller business logic (e.g. `AssignedUserComm::syncDefaultCommUsers`) is implemented as **public static methods on the relevant Eloquent model** so both controllers can call it:
+
+```php
+// In AssignedUserComm model
+public static function syncDefaultCommUsers(int $transactionId, int $supplierId, int $customerId): void { ... }
+public static function removeStaleCommUsers(int $transactionId, ...): void { ... }
+
+// Called from BOTH controllers after update:
+if (!$isSplitLoad) {
+    AssignedUserComm::removeStaleCommUsers($transactionId, $oldSuppId, $newSuppId, $oldCustId, $newCustId);
+    AssignedUserComm::syncDefaultCommUsers($transactionId, $newSuppId, $newCustId);
+}
+```
+
+### Split Load Guard
+For split load trades (`is_split_load_primary || is_split_load_member`), skip comm sync entirely — the primary transaction uses `customer_id = 2` (Unallocated) which would incorrectly mark real customer staff as stale. Capture the flag **before** calling `->update()` since the model instance is mutated during the call:
+
+```php
+$isSplitLoad = (bool) ($request->is_split_load_primary || $request->is_split_load_member);
+$transportTransaction->update([...]);
+// Safe to use $isSplitLoad here — model instance already mutated
+if (!$isSplitLoad) { ... }
+```
+
+---
+
 ## Laravel Backend Patterns
 
 ### Standard Controller Index (with search, filters, pagination)
