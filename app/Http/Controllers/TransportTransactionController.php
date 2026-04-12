@@ -258,7 +258,7 @@ class TransportTransactionController extends Controller
 
 
         if (!$transport_trans->is_split_load) {
-            $this->syncDefaultCommUsers($transport_trans->id, $request->supplier_id['id'], $request->customer_id['id']);
+            AssignedUserComm::syncDefaultCommUsers($transport_trans->id, $request->supplier_id['id'], $request->customer_id['id']);
         }
 
         $request->session()->flash('flash.bannerStyle', 'success');
@@ -835,8 +835,8 @@ class TransportTransactionController extends Controller
         if (!$isSplitLoad) {
             $newSupplierId = $request->supplier_id['id'];
             $newCustomerId = $request->customer_id['id'];
-            $this->removeStaleCommUsers($transportTransaction->id, $oldSupplierId, $newSupplierId, $oldCustomerId, $newCustomerId);
-            $this->syncDefaultCommUsers($transportTransaction->id, $newSupplierId, $newCustomerId);
+            AssignedUserComm::removeStaleCommUsers($transportTransaction->id, $oldSupplierId, $newSupplierId, $oldCustomerId, $newCustomerId);
+            AssignedUserComm::syncDefaultCommUsers($transportTransaction->id, $newSupplierId, $newCustomerId);
         }
 
         if ($update_related_models == 1) {
@@ -2081,81 +2081,4 @@ class TransportTransactionController extends Controller
         return Storage::download('/reports/excel/' . $file_name);
     }
 
-    /**
-     * Auto-populate AssignedUserComm records from the linked staff of the
-     * given supplier and customer. Zips the two lists (shorter side repeats
-     * its last entry). Skips pairs that already exist.
-     */
-    private function syncDefaultCommUsers(int $transactionId, int $supplierId, int $customerId): void
-    {
-        $financeId = TransportFinance::where('transport_trans_id', $transactionId)->value('id');
-        if (!$financeId) {
-            \Log::warning("syncDefaultCommUsers: no TransportFinance for trans #{$transactionId}");
-            return;
-        }
-
-        $supplierIds = Supplier::find($supplierId)?->staff->pluck('id')->toArray() ?? [];
-        $customerIds = Customer::find($customerId)?->staff->pluck('id')->toArray() ?? [];
-
-        \Log::info("syncDefaultCommUsers: trans #{$transactionId} supplier #{$supplierId} staff=" . json_encode($supplierIds) . " customer #{$customerId} staff=" . json_encode($customerIds));
-
-        // Both sides must have at least one staff member — can't create a valid pair otherwise
-        if (empty($supplierIds) || empty($customerIds)) {
-            \Log::warning("syncDefaultCommUsers: skipping — one or both sides have no staff linked");
-            return;
-        }
-
-        $maxCount = max(count($supplierIds), count($customerIds));
-
-        for ($i = 0; $i < $maxCount; $i++) {
-            $suppId = $supplierIds[$i] ?? $supplierIds[array_key_last($supplierIds)];
-            $custId = $customerIds[$i] ?? $customerIds[array_key_last($customerIds)];
-
-            $exists = AssignedUserComm::where('transport_trans_id', $transactionId)
-                ->where('assigned_user_supplier_id', $suppId)
-                ->where('assigned_user_customer_id', $custId)
-                ->exists();
-
-            if (!$exists) {
-                AssignedUserComm::create([
-                    'transport_trans_id'        => $transactionId,
-                    'transport_finance_id'      => $financeId,
-                    'assigned_user_supplier_id' => $suppId,
-                    'assigned_user_customer_id' => $custId,
-                    'supplier_comm'             => 0,
-                    'customer_comm'             => 0,
-                ]);
-            }
-        }
-    }
-
-    /**
-     * Remove AssignedUserComm records whose staff is no longer linked to the
-     * new supplier or customer after a change. Only removes records where the
-     * staff was linked to the OLD entity but not the new one.
-     */
-    private function removeStaleCommUsers(int $transactionId, int $oldSupplierId, int $newSupplierId, int $oldCustomerId, int $newCustomerId): void
-    {
-        if ($oldSupplierId !== $newSupplierId) {
-            $oldIds = Supplier::find($oldSupplierId)?->staff->pluck('id')->toArray() ?? [];
-            $newIds = Supplier::find($newSupplierId)?->staff->pluck('id')->toArray() ?? [];
-            $stale  = array_diff($oldIds, $newIds);
-            if (!empty($stale)) {
-                AssignedUserComm::where('transport_trans_id', $transactionId)
-                    ->whereIn('assigned_user_supplier_id', $stale)
-                    ->delete();
-            }
-        }
-
-        if ($oldCustomerId !== $newCustomerId) {
-            $oldIds = Customer::find($oldCustomerId)?->staff->pluck('id')->toArray() ?? [];
-            $newIds = Customer::find($newCustomerId)?->staff->pluck('id')->toArray() ?? [];
-            $stale  = array_diff($oldIds, $newIds);
-            if (!empty($stale)) {
-                AssignedUserComm::where('transport_trans_id', $transactionId)
-                    ->whereIn('assigned_user_customer_id', $stale)
-                    ->delete();
-            }
-        }
-    }
 }

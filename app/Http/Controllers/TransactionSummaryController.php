@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AssignedUserComm;
 use App\Models\BillingUnits;
 use App\Models\ConfirmationTypes;
 use App\Models\ContractType;
@@ -367,6 +368,9 @@ class TransactionSummaryController extends Controller
 
         $transportTransaction = TransportTransaction::find($request->transport_trans_id);
 
+        $oldSupplierId = $transportTransaction->supplier_id;
+        $oldCustomerId = $transportTransaction->customer_id;
+        $isSplitLoad = (bool) ($request->is_split_load_primary || $request->is_split_load_member);
 
         $is_updated = $transportTransaction->update(
             [
@@ -401,6 +405,11 @@ class TransactionSummaryController extends Controller
                 'is_split_load_member' => $request->is_split_load_member,
             ]
         );
+
+        if (!$isSplitLoad) {
+            AssignedUserComm::removeStaleCommUsers($transportTransaction->id, $oldSupplierId, $request->supplier_id['id'], $oldCustomerId, $request->customer_id['id']);
+            AssignedUserComm::syncDefaultCommUsers($transportTransaction->id, $request->supplier_id['id'], $request->customer_id['id']);
+        }
 
         if (!$request->is_split_load_primary) {
 
