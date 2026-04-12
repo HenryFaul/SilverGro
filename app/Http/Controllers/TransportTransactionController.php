@@ -2091,15 +2091,16 @@ class TransportTransactionController extends Controller
         $supplierIds = Supplier::find($supplierId)?->staff->pluck('id')->toArray() ?? [];
         $customerIds = Customer::find($customerId)?->staff->pluck('id')->toArray() ?? [];
 
-        if (empty($supplierIds) && empty($customerIds)) {
+        // Both sides must have at least one staff member — can't create a valid pair otherwise
+        if (empty($supplierIds) || empty($customerIds)) {
             return;
         }
 
-        $maxCount = max(count($supplierIds) ?: 1, count($customerIds) ?: 1);
+        $maxCount = max(count($supplierIds), count($customerIds));
 
         for ($i = 0; $i < $maxCount; $i++) {
-            $suppId = $supplierIds[$i] ?? ($supplierIds ? $supplierIds[array_key_last($supplierIds)] : 1);
-            $custId = $customerIds[$i] ?? ($customerIds ? $customerIds[array_key_last($customerIds)] : 1);
+            $suppId = $supplierIds[$i] ?? $supplierIds[array_key_last($supplierIds)];
+            $custId = $customerIds[$i] ?? $customerIds[array_key_last($customerIds)];
 
             $exists = AssignedUserComm::where('transport_trans_id', $transactionId)
                 ->where('assigned_user_supplier_id', $suppId)
