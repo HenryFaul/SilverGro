@@ -589,7 +589,9 @@ class DatabaseSeeder extends Seeder
         InvoiceStatus::firstOrCreate(['name' => 'Contracted Client']);
         InvoiceStatus::firstOrCreate(['name' => 'Customer Required']);
 
-        // ─── Custom Report ────────────────────────────────────────────────────────
+        // ─── Custom Reports ───────────────────────────────────────────────────────
+
+        $this->call(CustomReportFlatViewSeeder::class);
 
         $demoReport = CustomReport::firstOrCreate(
             ['name' => 'Demo Report'],
