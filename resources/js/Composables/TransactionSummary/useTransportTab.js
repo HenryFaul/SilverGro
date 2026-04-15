@@ -48,13 +48,8 @@ export function useTransportTab(props, combined_Form) {
         return true;
       }
 
-      // Include drivers with no transporter (available to be assigned)
-      if (!driver.transporter) {
-        return true;
-      }
-
-      // Include drivers associated with the selected transporter
-      return driver.transporter.id === transporterId;
+      // Only include drivers associated with the selected transporter
+      return driver.transporter && driver.transporter.id === transporterId;
     });
   });
 

@@ -123,8 +123,7 @@ class TransactionSummaryController extends Controller
         $loading_hour_options = LoadingHourOption::all();
 
         // Get all drivers with their associated transporter information
-        $all_drivers = RegularDriver::all()->map(function ($driver) {
-            // Get the most recent transporter for this driver
+        $all_drivers = RegularDriver::where('is_active', 1)->get()->map(function ($driver) {
             $lastDriverVehicle = TransportDriverVehicle::where('regular_driver_id', $driver->id)
                 ->whereNotNull('transport_trans_id')
                 ->with('TransportTransaction.Transporter:id,first_name,last_legal_name')
