@@ -65,30 +65,29 @@ class RegularVehicleController extends Controller
             ->with(['TransportDriverVehicles.Driver', 'TransportDriverVehicles' => function($query) {
                 $query->select('regular_vehicle_id', 'transport_trans_id')
                     ->distinct();
-            }])
+            }, 'Transporter:id,first_name,last_legal_name', 'Driver:id,first_name,last_name'])
             ->paginate($paginate)
             ->withQueryString();
 
         // Get transporters and last driver for each vehicle
         $regular_vehicles->getCollection()->transform(function ($vehicle) {
+            // Transporters from transaction history
             $transporterIds = TransportTransaction::whereHas('TransportDriverVehicle', function($query) use ($vehicle) {
                 $query->where('regular_vehicle_id', $vehicle->id);
-            })->pluck('transporter_id')->unique();
+            })->pluck('transporter_id')->unique()->values();
 
             $historyTransporters = Transporter::whereIn('id', $transporterIds)
                 ->select('id', 'first_name', 'last_legal_name')
                 ->get();
 
-            // Fall back to direct transporter_id when no transaction history exists
-            if ($historyTransporters->isEmpty() && $vehicle->transporter_id) {
-                $directTransporter = Transporter::select('id', 'first_name', 'last_legal_name')
-                    ->find($vehicle->transporter_id);
-                $vehicle->transporters = $directTransporter ? collect([$directTransporter]) : collect();
+            // Merge directly linked transporter (deduplicated)
+            if ($vehicle->transporter_id && !$transporterIds->contains($vehicle->transporter_id)) {
+                $vehicle->transporters = $historyTransporters->push($vehicle->Transporter)->filter();
             } else {
                 $vehicle->transporters = $historyTransporters;
             }
 
-            // Get the last driver from transaction history, fall back to direct link
+            // Last driver from transaction history, fall back to directly linked driver
             $lastDriverVehicle = TransportDriverVehicle::where('regular_vehicle_id', $vehicle->id)
                 ->whereNotNull('regular_driver_id')
                 ->with('Driver:id,first_name,last_name')
@@ -256,11 +255,11 @@ class RegularVehicleController extends Controller
             ->select('id', 'first_name', 'last_legal_name')
             ->get();
 
-        // Fall back to direct transporter_id when no transaction history exists
-        if ($historyTransporters->isEmpty() && $regularVehicle->transporter_id) {
+        // Merge directly linked transporter (deduplicated)
+        if ($regularVehicle->transporter_id && !$transporterIds->contains($regularVehicle->transporter_id)) {
             $directTransporter = Transporter::select('id', 'first_name', 'last_legal_name')
                 ->find($regularVehicle->transporter_id);
-            $transporters = $directTransporter ? collect([$directTransporter]) : collect();
+            $transporters = $historyTransporters->push($directTransporter)->filter();
         } else {
             $transporters = $historyTransporters;
         }
