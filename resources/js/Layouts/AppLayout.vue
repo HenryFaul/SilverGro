@@ -74,6 +74,8 @@ defineProps({
       : 'font-semibold text-black text-sm';
   });
 
+  const isAdmin = computed(() => usePage().props.roles_permissions.roles?.includes('Admin') ?? false);
+
   const classesAdmin = computed(() => {
     return route().current('staff.*') || route().current('roles.*') || route().current('trade_rules.*')
       ? 'border-b-2 border-indigo-400 font-semibold text-black text-sm focus:outline-none focus:border-indigo-700 transition'
@@ -692,7 +694,9 @@ defineProps({
                 </div>
 
                 <!-- Admin Dropdown -->
-                <div class="ml-3 relative">
+                <div
+                  v-if="isAdmin"
+                  class="ml-3 relative">
                   <div :class="classesAdmin">
                     <Dropdown
                       align="right"
