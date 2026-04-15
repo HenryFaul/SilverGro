@@ -86,18 +86,29 @@ class RegularVehicleController extends Controller
                 $query->where('regular_vehicle_id', $vehicle->id);
             })->pluck('transporter_id')->unique();
 
-            $vehicle->transporters = Transporter::whereIn('id', $transporterIds)
+            $historyTransporters = Transporter::whereIn('id', $transporterIds)
                 ->select('id', 'first_name', 'last_legal_name')
                 ->get();
 
-            // Get the last driver associated with this vehicle based on actual transport activity
+            // Fall back to direct transporter_id when no transaction history exists
+            if ($historyTransporters->isEmpty() && $vehicle->transporter_id) {
+                $directTransporter = Transporter::select('id', 'first_name', 'last_legal_name')
+                    ->find($vehicle->transporter_id);
+                $vehicle->transporters = $directTransporter ? collect([$directTransporter]) : collect();
+            } else {
+                $vehicle->transporters = $historyTransporters;
+            }
+
+            // Get the last driver from transaction history, fall back to direct link
             $lastDriverVehicle = TransportDriverVehicle::where('regular_vehicle_id', $vehicle->id)
                 ->whereNotNull('regular_driver_id')
                 ->with('Driver:id,first_name,last_name')
                 ->orderByRaw('COALESCE(date_delivered, date_onroad, date_loaded, date_scheduled, created_at) DESC')
                 ->first();
 
-            $vehicle->last_driver = $lastDriverVehicle ? $lastDriverVehicle->Driver : null;
+            $vehicle->last_driver = $lastDriverVehicle
+                ? $lastDriverVehicle->Driver
+                : ($vehicle->regular_driver_id ? $vehicle->Driver : null);
 
             return $vehicle;
         });
@@ -172,9 +183,11 @@ class RegularVehicleController extends Controller
 
         // No similar vehicle found, create new one
         $vehicle = RegularVehicle::create([
-            'reg_no' => $request->reg_no,
-            'comment' => $request->comment,
-            'vehicle_type_id'=>$request->vehicle_type_id
+            'reg_no'              => $request->reg_no,
+            'comment'             => $request->comment,
+            'vehicle_type_id'     => $request->vehicle_type_id,
+            'transporter_id'      => $request->transporter_id ?: null,
+            'regular_driver_id'   => $request->regular_driver_id ?: null,
         ]);
 
         if ($vehicle->exists()) {
@@ -250,18 +263,29 @@ class RegularVehicleController extends Controller
             $query->where('regular_vehicle_id', $regularVehicle->id);
         })->pluck('transporter_id')->unique();
 
-        $transporters = Transporter::whereIn('id', $transporterIds)
+        $historyTransporters = Transporter::whereIn('id', $transporterIds)
             ->select('id', 'first_name', 'last_legal_name')
             ->get();
 
-        // Get the last driver associated with this vehicle based on actual transport activity
+        // Fall back to direct transporter_id when no transaction history exists
+        if ($historyTransporters->isEmpty() && $regularVehicle->transporter_id) {
+            $directTransporter = Transporter::select('id', 'first_name', 'last_legal_name')
+                ->find($regularVehicle->transporter_id);
+            $transporters = $directTransporter ? collect([$directTransporter]) : collect();
+        } else {
+            $transporters = $historyTransporters;
+        }
+
+        // Get the last driver from transaction history, fall back to direct link
         $lastDriverVehicle = TransportDriverVehicle::where('regular_vehicle_id', $regularVehicle->id)
             ->whereNotNull('regular_driver_id')
             ->with('Driver:id,first_name,last_name')
             ->orderByRaw('COALESCE(date_delivered, date_onroad, date_loaded, date_scheduled, created_at) DESC')
             ->first();
 
-        $lastDriver = $lastDriverVehicle ? $lastDriverVehicle->Driver : null;
+        $lastDriver = $lastDriverVehicle
+            ? $lastDriverVehicle->Driver
+            : ($regularVehicle->regular_driver_id ? $regularVehicle->Driver : null);
 
         return inertia(
             'Vehicle/Show',

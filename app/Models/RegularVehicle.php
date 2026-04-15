@@ -16,11 +16,21 @@ class RegularVehicle extends Model
 
     use SoftDeletes;
 
-    public $fillable = ['vehicle_type_id','reg_no','comment','is_active'];
+    public $fillable = ['vehicle_type_id','reg_no','comment','is_active','transporter_id','regular_driver_id'];
 
     public function VehicleType(): BelongsTo
     {
         return $this->belongsTo(VehicleType::class,'vehicle_type_id');
+    }
+
+    public function Transporter(): BelongsTo
+    {
+        return $this->belongsTo(Transporter::class, 'transporter_id');
+    }
+
+    public function Driver(): BelongsTo
+    {
+        return $this->belongsTo(RegularDriver::class, 'regular_driver_id');
     }
 
     public function TransportDriverVehicles(): HasMany

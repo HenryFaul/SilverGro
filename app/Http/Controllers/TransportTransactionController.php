@@ -493,16 +493,17 @@ class TransportTransactionController extends Controller
         });
 
         // Get all vehicles with their associated transporter information
-        $all_vehicles = RegularVehicle::with('VehicleType')->get()->map(function ($vehicle) {
+        $all_vehicles = RegularVehicle::with(['VehicleType', 'Transporter'])->get()->map(function ($vehicle) {
             $lastDriverVehicle = TransportDriverVehicle::where('regular_vehicle_id', $vehicle->id)
                 ->whereNotNull('transport_trans_id')
                 ->with('TransportTransaction.Transporter:id,first_name,last_legal_name')
                 ->orderByRaw('COALESCE(date_delivered, date_onroad, date_loaded, date_scheduled, created_at) DESC')
                 ->first();
 
-            $vehicle->transporter = $lastDriverVehicle && $lastDriverVehicle->TransportTransaction
+            // Fall back to direct transporter_id when no transaction history exists
+            $vehicle->transporter = ($lastDriverVehicle && $lastDriverVehicle->TransportTransaction)
                 ? $lastDriverVehicle->TransportTransaction->Transporter
-                : null;
+                : $vehicle->Transporter;
 
             return $vehicle;
         });
@@ -612,16 +613,17 @@ class TransportTransactionController extends Controller
         });
 
         // Get all vehicles with their associated transporter information
-        $all_vehicles = RegularVehicle::with('VehicleType')->get()->map(function ($vehicle) {
+        $all_vehicles = RegularVehicle::with(['VehicleType', 'Transporter'])->get()->map(function ($vehicle) {
             $lastDriverVehicle = TransportDriverVehicle::where('regular_vehicle_id', $vehicle->id)
                 ->whereNotNull('transport_trans_id')
                 ->with('TransportTransaction.Transporter:id,first_name,last_legal_name')
                 ->orderByRaw('COALESCE(date_delivered, date_onroad, date_loaded, date_scheduled, created_at) DESC')
                 ->first();
 
-            $vehicle->transporter = $lastDriverVehicle && $lastDriverVehicle->TransportTransaction
+            // Fall back to direct transporter_id when no transaction history exists
+            $vehicle->transporter = ($lastDriverVehicle && $lastDriverVehicle->TransportTransaction)
                 ? $lastDriverVehicle->TransportTransaction->Transporter
-                : null;
+                : $vehicle->Transporter;
 
             return $vehicle;
         });
