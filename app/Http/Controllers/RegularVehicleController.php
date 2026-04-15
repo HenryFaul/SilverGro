@@ -65,7 +65,7 @@ class RegularVehicleController extends Controller
             ->with(['TransportDriverVehicles.Driver', 'TransportDriverVehicles' => function($query) {
                 $query->select('regular_vehicle_id', 'transport_trans_id')
                     ->distinct();
-            }, 'Transporter:id,first_name,last_legal_name', 'Driver:id,first_name,last_name'])
+            }, 'Transporter:id,first_name,last_legal_name'])
             ->paginate($paginate)
             ->withQueryString();
 
@@ -96,7 +96,9 @@ class RegularVehicleController extends Controller
 
             $vehicle->last_driver = $lastDriverVehicle
                 ? $lastDriverVehicle->Driver
-                : ($vehicle->regular_driver_id ? $vehicle->Driver : null);
+                : ($vehicle->regular_driver_id
+                    ? RegularDriver::select('id', 'first_name', 'last_name')->find($vehicle->regular_driver_id)
+                    : null);
 
             return $vehicle;
         });
