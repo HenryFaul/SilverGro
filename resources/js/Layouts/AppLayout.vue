@@ -74,7 +74,7 @@ defineProps({
       : 'font-semibold text-black text-sm';
   });
 
-  const isAdmin = computed(() => usePage().props.roles_permissions.roles?.includes('Admin') ?? false);
+  const isAdmin = computed(() => usePage().props.roles_permissions.roles?.includes('AdminRole') ?? false);
 
   const classesAdmin = computed(() => {
     return route().current('staff.*') || route().current('roles.*') || route().current('trade_rules.*')
