@@ -124,15 +124,9 @@ class TransactionSummaryController extends Controller
 
         // Get all drivers with their associated transporter information
         $all_drivers = RegularDriver::where('is_active', 1)->get()->map(function ($driver) {
-            $lastDriverVehicle = TransportDriverVehicle::where('regular_driver_id', $driver->id)
-                ->whereNotNull('transport_trans_id')
-                ->with('TransportTransaction.Transporter:id,first_name,last_legal_name')
-                ->orderByRaw('COALESCE(date_delivered, date_onroad, date_loaded, date_scheduled, created_at) DESC')
-                ->first();
-
-            $driver->transporter = $lastDriverVehicle && $lastDriverVehicle->TransportTransaction
-                ? $lastDriverVehicle->TransportTransaction->Transporter
-                : null;
+            $driver->transporter_ids = TransportTransaction::whereHas('TransportDriverVehicle', function ($q) use ($driver) {
+                $q->where('regular_driver_id', $driver->id);
+            })->pluck('transporter_id')->unique()->values()->toArray();
 
             return $driver;
         });

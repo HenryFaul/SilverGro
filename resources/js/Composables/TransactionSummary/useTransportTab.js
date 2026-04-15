@@ -48,8 +48,8 @@ export function useTransportTab(props, combined_Form) {
         return true;
       }
 
-      // Only include drivers associated with the selected transporter
-      return driver.transporter && driver.transporter.id === transporterId;
+      // Include drivers linked to the selected transporter via any past trade
+      return driver.transporter_ids && driver.transporter_ids.includes(transporterId);
     });
   });
 
