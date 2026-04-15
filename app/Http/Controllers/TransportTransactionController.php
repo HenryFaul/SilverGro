@@ -478,7 +478,8 @@ class TransportTransactionController extends Controller
         $loading_hour_options = LoadingHourOption::all();
 
         // Get all drivers with their associated transporter information
-        // Combines transaction history with directly linked transporter_id (set on driver creation)
+        // Combines: (1) transaction history, (2) direct transporter_id on driver,
+        // (3) transporter_id from vehicles where this driver is the default driver
         $all_drivers = RegularDriver::where('is_active', 1)->get()->map(function ($driver) {
             $historyIds = TransportTransaction::whereHas('TransportDriverVehicle', function ($q) use ($driver) {
                 $q->where('regular_driver_id', $driver->id);
@@ -486,6 +487,17 @@ class TransportTransactionController extends Controller
 
             if ($driver->transporter_id && !in_array($driver->transporter_id, $historyIds)) {
                 $historyIds[] = $driver->transporter_id;
+            }
+
+            // Also include transporters from vehicles that have this driver set as their default driver
+            $vehicleTransporterIds = RegularVehicle::where('regular_driver_id', $driver->id)
+                ->whereNotNull('transporter_id')
+                ->pluck('transporter_id')
+                ->toArray();
+            foreach ($vehicleTransporterIds as $id) {
+                if (!in_array($id, $historyIds)) {
+                    $historyIds[] = $id;
+                }
             }
 
             $driver->transporter_ids = $historyIds;
@@ -599,7 +611,8 @@ class TransportTransactionController extends Controller
         $loading_hour_options = LoadingHourOption::all();
 
         // Get all drivers with their associated transporter information
-        // Combines transaction history with directly linked transporter_id (set on driver creation)
+        // Combines: (1) transaction history, (2) direct transporter_id on driver,
+        // (3) transporter_id from vehicles where this driver is the default driver
         $all_drivers = RegularDriver::where('is_active', 1)->get()->map(function ($driver) {
             $historyIds = TransportTransaction::whereHas('TransportDriverVehicle', function ($q) use ($driver) {
                 $q->where('regular_driver_id', $driver->id);
@@ -607,6 +620,17 @@ class TransportTransactionController extends Controller
 
             if ($driver->transporter_id && !in_array($driver->transporter_id, $historyIds)) {
                 $historyIds[] = $driver->transporter_id;
+            }
+
+            // Also include transporters from vehicles that have this driver set as their default driver
+            $vehicleTransporterIds = RegularVehicle::where('regular_driver_id', $driver->id)
+                ->whereNotNull('transporter_id')
+                ->pluck('transporter_id')
+                ->toArray();
+            foreach ($vehicleTransporterIds as $id) {
+                if (!in_array($id, $historyIds)) {
+                    $historyIds[] = $id;
+                }
             }
 
             $driver->transporter_ids = $historyIds;
