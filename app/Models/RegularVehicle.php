@@ -18,6 +18,8 @@ class RegularVehicle extends Model
 
     public $fillable = ['vehicle_type_id','reg_no','comment','is_active','transporter_id','regular_driver_id'];
 
+    protected $appends = ['transporters'];
+
     public function VehicleType(): BelongsTo
     {
         return $this->belongsTo(VehicleType::class,'vehicle_type_id');
