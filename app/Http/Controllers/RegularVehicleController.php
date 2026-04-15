@@ -36,18 +36,7 @@ class RegularVehicleController extends Controller
      */
     public function getDriversForTransporter(Transporter $transporter)
     {
-        // Get unique driver IDs that have worked for this transporter
-        $driverIds = TransportTransaction::where('transporter_id', $transporter->id)
-            ->whereHas('TransportDriverVehicle')
-            ->with('TransportDriverVehicle')
-            ->get()
-            ->pluck('TransportDriverVehicle')
-            ->flatten()
-            ->pluck('regular_driver_id')
-            ->unique();
-
-        $drivers = RegularDriver::whereIn('id', $driverIds)
-            ->where('is_active', 1)
+        $drivers = RegularDriver::where('is_active', 1)
             ->select('id', 'first_name', 'last_name')
             ->orderBy('first_name')
             ->get();
