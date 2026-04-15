@@ -123,10 +123,17 @@ class TransactionSummaryController extends Controller
         $loading_hour_options = LoadingHourOption::all();
 
         // Get all drivers with their associated transporter information
+        // Combines transaction history with directly linked transporter_id (set on driver creation)
         $all_drivers = RegularDriver::where('is_active', 1)->get()->map(function ($driver) {
-            $driver->transporter_ids = TransportTransaction::whereHas('TransportDriverVehicle', function ($q) use ($driver) {
+            $historyIds = TransportTransaction::whereHas('TransportDriverVehicle', function ($q) use ($driver) {
                 $q->where('regular_driver_id', $driver->id);
             })->pluck('transporter_id')->unique()->values()->toArray();
+
+            if ($driver->transporter_id && !in_array($driver->transporter_id, $historyIds)) {
+                $historyIds[] = $driver->transporter_id;
+            }
+
+            $driver->transporter_ids = $historyIds;
 
             return $driver;
         });

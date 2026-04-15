@@ -133,10 +133,11 @@ class RegularDriverController extends Controller
 
         // No similar driver found, create new one
         $driver = RegularDriver::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'comment'=>$request->comment,
-            'cell_no'=>$request->cell_no
+            'first_name'     => $request->first_name,
+            'last_name'      => $request->last_name,
+            'comment'        => $request->comment,
+            'cell_no'        => $request->cell_no,
+            'transporter_id' => $request->transporter_id ?: null,
         ]);
 
         if ($driver->exists()) {

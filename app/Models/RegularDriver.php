@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -14,7 +15,12 @@ class RegularDriver extends Model
 
     use SoftDeletes;
 
-    public $fillable = ['first_name','last_name','cell_no','comment','is_active'];
+    public $fillable = ['first_name','last_name','cell_no','comment','is_active','transporter_id'];
+
+    public function Transporter(): BelongsTo
+    {
+        return $this->belongsTo(Transporter::class, 'transporter_id');
+    }
 
     public function TransportDriverVehicles(): HasMany
     {
