@@ -69,26 +69,8 @@ class RegularVehicleController extends Controller
             ->paginate($paginate)
             ->withQueryString();
 
-        // Get transporters and last driver for each vehicle
+        // Append last_driver to each vehicle (transporters handled by model accessor)
         $regular_vehicles->getCollection()->transform(function ($vehicle) {
-            // Transporters from transaction history
-            $transporterIds = TransportTransaction::whereHas('TransportDriverVehicle', function($query) use ($vehicle) {
-                $query->where('regular_vehicle_id', $vehicle->id);
-            })->pluck('transporter_id')->unique()->values();
-
-            $historyTransporters = Transporter::whereIn('id', $transporterIds)
-                ->select('id', 'first_name', 'last_legal_name')
-                ->get();
-
-            // Merge directly linked transporter (deduplicated)
-            if ($vehicle->transporter_id && !$transporterIds->contains($vehicle->transporter_id)) {
-                $direct = Transporter::select('id', 'first_name', 'last_legal_name')->find($vehicle->transporter_id);
-                $vehicle->transporters = $historyTransporters->when($direct, fn($c) => $c->push($direct));
-            } else {
-                $vehicle->transporters = $historyTransporters;
-            }
-
-            // Last driver from transaction history, fall back to directly linked driver
             $lastDriverVehicle = TransportDriverVehicle::where('regular_vehicle_id', $vehicle->id)
                 ->whereNotNull('regular_driver_id')
                 ->with('Driver:id,first_name,last_name')
@@ -249,25 +231,7 @@ class RegularVehicleController extends Controller
 
         $vehicle_types = VehicleType::all();
 
-        // Get transporters for this vehicle
-        $transporterIds = TransportTransaction::whereHas('TransportDriverVehicle', function($query) use ($regularVehicle) {
-            $query->where('regular_vehicle_id', $regularVehicle->id);
-        })->pluck('transporter_id')->unique();
-
-        $historyTransporters = Transporter::whereIn('id', $transporterIds)
-            ->select('id', 'first_name', 'last_legal_name')
-            ->get();
-
-        // Merge directly linked transporter (deduplicated)
-        if ($regularVehicle->transporter_id && !$transporterIds->contains($regularVehicle->transporter_id)) {
-            $directTransporter = Transporter::select('id', 'first_name', 'last_legal_name')
-                ->find($regularVehicle->transporter_id);
-            $transporters = $historyTransporters->push($directTransporter)->filter();
-        } else {
-            $transporters = $historyTransporters;
-        }
-
-        // Get the last driver from transaction history, fall back to direct link
+        // Last driver: transaction history first, then directly linked
         $lastDriverVehicle = TransportDriverVehicle::where('regular_vehicle_id', $regularVehicle->id)
             ->whereNotNull('regular_driver_id')
             ->with('Driver:id,first_name,last_name')
@@ -276,15 +240,17 @@ class RegularVehicleController extends Controller
 
         $lastDriver = $lastDriverVehicle
             ? $lastDriverVehicle->Driver
-            : ($regularVehicle->regular_driver_id ? $regularVehicle->Driver : null);
+            : ($regularVehicle->regular_driver_id
+                ? RegularDriver::select('id', 'first_name', 'last_name')->find($regularVehicle->regular_driver_id)
+                : null);
 
         return inertia(
             'Vehicle/Show',
             [
-                'vehicle' => $regularVehicle,
-                'vehicle_types'=>$vehicle_types,
-                'transporters' => $transporters,
-                'last_driver' => $lastDriver
+                'vehicle'       => $regularVehicle,
+                'vehicle_types' => $vehicle_types,
+                'transporters'  => $regularVehicle->transporters, // uses model accessor
+                'last_driver'   => $lastDriver,
             ]
         );
     }

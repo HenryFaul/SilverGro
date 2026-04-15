@@ -39,15 +39,28 @@ class RegularVehicle extends Model
     }
 
     /**
-     * Get all unique transporters associated with this vehicle through transport transactions
+     * Get all unique transporters for this vehicle — combines transaction history
+     * with the directly linked transporter_id (set on standalone vehicle creation).
      */
     public function getTransportersAttribute()
     {
-        return Transporter::whereIn('id',
-            TransportTransaction::whereHas('TransportDriverVehicle', function($query) {
-                $query->where('regular_vehicle_id', $this->id);
-            })->pluck('transporter_id')
-        )->get();
+        $historyIds = TransportTransaction::whereHas('TransportDriverVehicle', function ($query) {
+            $query->where('regular_vehicle_id', $this->id);
+        })->pluck('transporter_id')->unique();
+
+        $transporters = Transporter::whereIn('id', $historyIds)
+            ->select('id', 'first_name', 'last_legal_name')
+            ->get();
+
+        if ($this->transporter_id && !$historyIds->contains($this->transporter_id)) {
+            $direct = Transporter::select('id', 'first_name', 'last_legal_name')
+                ->find($this->transporter_id);
+            if ($direct) {
+                $transporters->push($direct);
+            }
+        }
+
+        return $transporters;
     }
 
     public function scopeFilter(Builder $query, array $filters): Builder
