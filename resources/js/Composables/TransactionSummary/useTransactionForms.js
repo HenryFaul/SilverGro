@@ -39,24 +39,17 @@ export function useTransactionForms() {
             const message = flash.banner;
 
             if (window.swal) {
-              window
-                .swal({
-                  title: isExisting ? 'Existing Driver Linked' : 'Driver Created',
-                  text: message + '\n\nDriver has been linked to this transaction.',
-                  icon:
-                    style === 'info'
-                      ? 'info'
-                      : style === 'success'
-                        ? 'success'
-                        : 'warning',
-                  button: 'OK',
-                })
-                .then(() => {
-                  window.location.reload();
-                });
-            } else {
-              // No swal available, reload immediately
-              window.location.reload();
+              window.swal({
+                title: isExisting ? 'Existing Driver Linked' : 'Driver Created',
+                text: message + '\n\nDriver has been linked to this transaction.',
+                icon:
+                  style === 'info'
+                    ? 'info'
+                    : style === 'success'
+                      ? 'success'
+                      : 'warning',
+                button: 'OK',
+              });
             }
           } else {
             // No flash message, reload immediately
@@ -116,24 +109,17 @@ export function useTransactionForms() {
             const vehicleId = flash.vehicle_id;
 
             if (window.swal) {
-              window
-                .swal({
-                  title: isExisting ? 'Existing Vehicle Linked' : 'Vehicle Created',
-                  text: message + '\n\nVehicle has been linked to this transaction.',
-                  icon:
-                    style === 'info'
-                      ? 'info'
-                      : style === 'success'
-                        ? 'success'
-                        : 'warning',
-                  button: 'OK',
-                })
-                .then(() => {
-                  window.location.reload();
-                });
-            } else {
-              // No swal available, reload immediately
-              window.location.reload();
+              window.swal({
+                title: isExisting ? 'Existing Vehicle Linked' : 'Vehicle Created',
+                text: message + '\n\nVehicle has been linked to this transaction.',
+                icon:
+                  style === 'info'
+                    ? 'info'
+                    : style === 'success'
+                      ? 'success'
+                      : 'warning',
+                button: 'OK',
+              });
             }
           } else {
             // No flash message, reload immediately
