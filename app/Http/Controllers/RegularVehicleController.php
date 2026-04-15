@@ -65,7 +65,7 @@ class RegularVehicleController extends Controller
             ->with(['TransportDriverVehicles.Driver', 'TransportDriverVehicles' => function($query) {
                 $query->select('regular_vehicle_id', 'transport_trans_id')
                     ->distinct();
-            }, 'Transporter:id,first_name,last_legal_name'])
+            }])
             ->paginate($paginate)
             ->withQueryString();
 
@@ -82,7 +82,8 @@ class RegularVehicleController extends Controller
 
             // Merge directly linked transporter (deduplicated)
             if ($vehicle->transporter_id && !$transporterIds->contains($vehicle->transporter_id)) {
-                $vehicle->transporters = $historyTransporters->push($vehicle->Transporter)->filter();
+                $direct = Transporter::select('id', 'first_name', 'last_legal_name')->find($vehicle->transporter_id);
+                $vehicle->transporters = $historyTransporters->when($direct, fn($c) => $c->push($direct));
             } else {
                 $vehicle->transporters = $historyTransporters;
             }
