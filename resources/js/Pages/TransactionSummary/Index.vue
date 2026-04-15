@@ -142,8 +142,11 @@
   });
 
   // tabs and tab selection moved to composable for cleaner code
+  const isAdmin = computed(() => usePage().props.roles_permissions.roles?.includes('AdminRole') ?? false);
+
   const { tabs, selectedTabId, selectTab } = useTransactionTabs(
-    computed(() => props.selected_transaction.is_split_load)
+    computed(() => props.selected_transaction.is_split_load),
+    isAdmin
   );
 
   // Tab-specific query filters moved to composables for cleaner code

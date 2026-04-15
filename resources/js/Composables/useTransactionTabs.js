@@ -1,11 +1,12 @@
 // filepath: /Users/henryfaul/Software/SilverGro/resources/js/Composables/useTransactionTabs.js
-import { computed, ref } from 'vue';
+import { computed, ref, unref } from 'vue';
 
 /**
  * Encapsulate the tabs state and selection logic for Transaction Summary detail tabs.
- * Pass a ref/computed boolean indicating whether the transaction is a split load.
+ * @param {Ref<boolean>} isSplitRef - whether the transaction is a split load
+ * @param {Ref<boolean>|boolean} isAdminRef - whether the current user has AdminRole
  */
-export function useTransactionTabs(isSplitRef) {
+export function useTransactionTabs(isSplitRef, isAdminRef) {
   // Tab definitions
   const tabsSplit = [
     { id: 0, name: 'Supplier', current: true },
@@ -36,7 +37,11 @@ export function useTransactionTabs(isSplitRef) {
     { id: 12, name: 'Staff allocation', current: false },
   ];
 
-  const tabs = computed(() => (isSplitRef?.value ? tabsSplit : tabsNonSplit));
+  const tabs = computed(() => {
+    const base = isSplitRef?.value ? tabsSplit : tabsNonSplit;
+    if (unref(isAdminRef)) return base;
+    return base.filter((t) => t.id !== 12);
+  });
 
   const selectedTabId = ref(0);
   const selectTab = (id) => {
