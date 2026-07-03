@@ -55,16 +55,13 @@ variable "container_cpu" {
 }
 
 variable "container_memory" {
-  description = "Fargate task memory in MiB."
+  description = "Fargate task memory in MiB (per task). Valid with 0.5 vCPU: 1024-4096."
   type        = number
-  default     = 1024
+  default     = 2048
 }
 
-variable "desired_count" {
-  description = "Number of ECS tasks to run for the web service."
-  type        = number
-  default     = 1
-}
+# Baseline/maximum task counts are controlled by min_tasks/max_tasks in
+# autoscaling.tf (Application Auto Scaling manages the service's desired count).
 
 # ─── Database (RDS MySQL) ─────────────────────────────────────────────────────
 variable "db_engine_version" {

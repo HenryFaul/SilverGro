@@ -7,9 +7,14 @@ environment   = "staging"
 deployment_id = "silver_26" # applied as a `Deployment` tag on every resource
 
 # Container sizing
-container_cpu    = 512
-container_memory = 1024
-desired_count    = 1
+container_cpu    = 512  # 0.5 vCPU per task
+container_memory = 2048 # 2 GB per task
+
+# Horizontal autoscaling (Application Auto Scaling)
+min_tasks             = 2  # always-on baseline (HA across AZs)
+max_tasks             = 6  # ceiling under load
+cpu_target_percent    = 60 # scale out above this avg CPU
+memory_target_percent = 70 # scale out above this avg memory
 
 # Database
 db_instance_class    = "db.t4g.micro"
