@@ -115,17 +115,46 @@ Uploads go to S3 (`FILESYSTEM_DISK=s3`). The bucket is **private by default**.
 
 Decide before going live.
 
-## Adding a custom domain + HTTPS (later)
+## Adding a custom domain + HTTPS
 
-1. Request/validate an ACM certificate in **af-south-1** for your domain.
-2. In `alb.tf`: add a port-443 `aws_lb_listener` (protocol HTTPS + `certificate_arn`)
-   forwarding to the existing target group; change the port-80 listener to redirect
-   to HTTPS; add 443 ingress in the ALB security group.
-3. Point your DNS (Route 53 alias or CNAME) at the ALB DNS name.
-4. Set `app_url_override = "https://your-domain"` and `terraform apply`, then
-   `./scripts/deploy.sh` to bake the new `APP_URL`.
+The HTTPS wiring is already in [`acm_https.tf`](acm_https.tf) — inert until you set
+`domain_name`. DNS is at an external registrar, so it's a two-phase apply:
 
-`TrustProxies` is already configured to trust the ALB, so HTTPS detection works.
+**Phase 1 — request the certificate**
+
+```bash
+# in terraform/terraform.tfvars
+domain_name = "app.yourdomain.co.za"
+```
+```bash
+terraform apply
+terraform output acm_validation_records   # add these CNAMEs at your registrar
+```
+Wait until the certificate shows **Issued** in the ACM console (af-south-1).
+
+**Phase 2 — turn on HTTPS**
+
+```bash
+# in terraform/terraform.tfvars
+enable_https = true
+```
+```bash
+terraform apply
+```
+This adds the 443 listener with the cert, redirects 80 → 443, and sets
+`APP_URL=https://<domain>`. Finally, point your domain at the ALB:
+
+```
+CNAME  app.yourdomain.co.za  →  <alb_dns_name output>
+```
+(or an ALIAS/ANAME at the apex). `TrustProxies` already trusts the ALB, so Laravel
+detects HTTPS correctly. Note: an app redeploy isn't required — `terraform apply`
+updates the running task's `APP_URL` env on the next deployment; run the workflow
+(or `deploy.sh`) if you want it applied immediately.
+
+> **Why not HTTPS on the ELB domain?** A public CA (incl. ACM) will only issue a
+> cert for a domain you control. The `*.elb.amazonaws.com` name belongs to AWS, so
+> it can't get a trusted cert — a custom domain is required.
 
 ## Operations
 

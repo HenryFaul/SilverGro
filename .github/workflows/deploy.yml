@@ -5,6 +5,11 @@ name: Deploy to ECS
 on:
   push:
     branches: [master]
+    # Infra/docs-only changes don't need an app rebuild + redeploy.
+    paths-ignore:
+      - 'terraform/**'
+      - 'scripts/**'
+      - '**.md'
   workflow_dispatch: {} # allow manual runs from the Actions tab
 
 concurrency:

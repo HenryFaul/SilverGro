@@ -1,5 +1,7 @@
 locals {
-  app_url = var.app_url_override != "" ? var.app_url_override : "http://${aws_lb.main.dns_name}"
+  app_url = local.https_enabled ? "https://${var.domain_name}" : (
+    var.app_url_override != "" ? var.app_url_override : "http://${aws_lb.main.dns_name}"
+  )
 
   # Non-sensitive environment variables passed to the container.
   container_environment = [
