@@ -70,7 +70,10 @@ resource "aws_ecs_task_definition" "app" {
 
   runtime_platform {
     operating_system_family = "LINUX"
-    cpu_architecture        = "X86_64"
+    # ARM64/Graviton on Fargate: ~20% cheaper and better price/performance,
+    # consistent with the Graviton (t4g) RDS instance. The image is built for
+    # linux/arm64 in CI (native ARM64 GitHub runner) and by deploy.sh.
+    cpu_architecture = "ARM64"
   }
 
   container_definitions = jsonencode([

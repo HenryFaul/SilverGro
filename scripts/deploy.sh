@@ -34,9 +34,10 @@ SUBNETS="$(terraform -chdir="${TF_DIR}" output -json private_subnet_ids | tr -d 
 echo "    region=${REGION} cluster=${CLUSTER} service=${SERVICE}"
 
 # ─── 1. Build ────────────────────────────────────────────────────────────────
-echo "==> Building image (linux/amd64) ${ECR_URL}:${IMAGE_TAG}"
+# Target Fargate runs on ARM64/Graviton. This is a native build on Apple Silicon.
+echo "==> Building image (linux/arm64) ${ECR_URL}:${IMAGE_TAG}"
 docker build \
-  --platform linux/amd64 \
+  --platform linux/arm64 \
   -f "${REPO_ROOT}/Dockerfile.production" \
   --build-arg VITE_GOOGLE_MAPS_API_KEY="${VITE_GOOGLE_MAPS_API_KEY:-}" \
   -t "${ECR_URL}:${IMAGE_TAG}" \
