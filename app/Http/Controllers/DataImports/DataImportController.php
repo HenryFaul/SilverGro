@@ -128,8 +128,11 @@ class DataImportController extends Controller
             'mime' => $uploadedFile->getMimeType(),
         ]);
 
-        // Store the file temporarily
-        $filePath = $uploadedFile->store('temp');
+        // Store the file temporarily on the LOCAL disk. The default filesystem
+        // disk is S3 in production, but the import reads the file back via an
+        // absolute local path (storage_path) and hands it to Excel::import, so
+        // the temp file must live on local disk, not S3.
+        $filePath = $uploadedFile->store('temp', 'local');
         $fullPath = storage_path('app/' . $filePath);
 
         if (!file_exists($fullPath)) {
