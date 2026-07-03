@@ -1,0 +1,16 @@
+# Local Terraform state contains secrets (DB password, APP_KEY) in plaintext —
+# never commit it. Move to a remote backend (S3) for team use.
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.tfstate.lock.info
+
+# Local variable files may hold sensitive values
+terraform.tfvars
+*.auto.tfvars
+
+crash.log
+crash.*.log
+
+# Keep: .terraform.lock.hcl (dependency lock) and *.tf / *.example files
+!.terraform.lock.hcl

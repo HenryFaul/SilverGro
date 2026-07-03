@@ -1,0 +1,38 @@
+# Copy to terraform.tfvars and adjust. All values shown are the defaults.
+
+aws_region    = "af-south-1"
+aws_profile   = "SilverGro_AWS"
+project       = "silvergro"
+environment   = "staging"
+deployment_id = "silver_26" # applied as a `Deployment` tag on every resource
+
+# Container sizing
+container_cpu    = 512
+container_memory = 1024
+desired_count    = 1
+
+# Database
+db_instance_class    = "db.t4g.micro"
+db_allocated_storage = 20
+db_multi_az          = false
+
+# Media bucket. Set to true ONLY if you accept that uploaded files become
+# publicly readable via their direct S3 URL (needed for mediaLibrary getUrl()).
+media_bucket_public = false
+
+# App
+app_env   = "production"
+app_debug = false
+# Leave app_url_override empty to use the ALB DNS name. Set to your https URL
+# once a custom domain + ACM certificate are configured.
+# app_url_override = "https://app.example.com"
+
+# Mail (optional — defaults to the 'log' mailer that writes to CloudWatch)
+# mail_mailer       = "smtp"
+# mail_host         = "email-smtp.af-south-1.amazonaws.com"
+# mail_port         = "587"
+# mail_username     = "AKIA..."
+# mail_password     = "..."
+# mail_encryption   = "tls"
+# mail_from_address = "no-reply@yourdomain.com"
+# mail_from_name    = "SilverGro"

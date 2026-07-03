@@ -1,0 +1,122 @@
+# syntax=docker/dockerfile:1
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SilverGro production image (single container: nginx + php-fpm via supervisor)
+# Built for AWS ECS Fargate. Assets and PHP dependencies are baked in — no
+# runtime bind mounts, no runtime `composer install` / `npm install`.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Stage 1: PHP dependencies (composer) ─────────────────────────────────────
+# Runs first because the front-end build imports JS shipped inside a Composer
+# package (tightenco/ziggy → resources/js/app.js), so vendor/ must exist before
+# `npm run build`.
+FROM php:8.2-fpm AS vendor
+
+# Extensions needed for composer platform-requirement checks (phpspreadsheet
+# requires ext-gd/ext-exif, etc.) and to boot Laravel for package discovery.
+RUN apt-get update && apt-get install -y \
+        git unzip libzip-dev libicu-dev \
+        libpng-dev libjpeg62-turbo-dev libfreetype6-dev libonig-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install bcmath intl zip pdo_mysql gd exif mbstring \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Cache the dependency layer on composer.json/lock only
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader \
+    --prefer-dist --no-interaction --no-progress
+
+# Full source, then finalise the optimized autoloader + package discovery.
+# No .env is present at build time (runtime env comes from ECS), so package
+# discovery is best-effort — it self-heals on first boot / config:cache if skipped.
+COPY . .
+# Remove any stale dev-built cache that may have slipped into the context, then
+# regenerate a clean production autoloader + package manifest.
+RUN rm -f bootstrap/cache/*.php \
+    && composer dump-autoload --optimize --no-dev --classmap-authoritative \
+    && php artisan package:discover --ansi || true
+
+
+# ── Stage 2: build front-end assets (Vite) ───────────────────────────────────
+FROM node:20-alpine AS frontend
+
+WORKDIR /app
+
+# VITE_ vars are compiled into the JS bundle at build time (not read at runtime),
+# so they must be supplied here as build args. VITE_ values are inherently public
+# (shipped to the browser) — the docker "secrets in ARG/ENV" warning is expected.
+ARG VITE_GOOGLE_MAPS_API_KEY=""
+ENV VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY}
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Source + composer vendor (Ziggy et al.) needed for the build
+COPY . .
+COPY --from=vendor /var/www/html/vendor ./vendor
+# Produces public/build (client) and bootstrap/ssr (ssr bundle, unused at runtime)
+RUN npm run build
+
+
+# ── Stage 3: final runtime image ─────────────────────────────────────────────
+FROM php:8.2-fpm AS runtime
+
+# System deps + nginx + supervisor
+RUN apt-get update && apt-get install -y \
+    nginx \
+    supervisor \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libicu-dev \
+    zip \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# PHP extensions required by Laravel + packages
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo_mysql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        zip \
+        dom \
+        xml \
+        intl \
+        opcache
+
+WORKDIR /var/www/html
+
+# Application code + composer deps from the vendor stage, built assets from frontend
+COPY --from=vendor /var/www/html /var/www/html
+COPY --from=frontend /app/public/build /var/www/html/public/build
+
+# Container configuration
+COPY docker/production/php.ini /usr/local/etc/php/conf.d/silvergro.ini
+COPY docker/production/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY docker/production/nginx.conf /etc/nginx/nginx.conf
+COPY docker/production/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/production/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/production/entrypoint.sh /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
+# Writable framework dirs (logs go to stderr; cache/sessions are file/db-backed)
+RUN mkdir -p storage/framework/cache storage/framework/sessions \
+        storage/framework/views storage/logs bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+EXPOSE 80
+
+ENTRYPOINT ["entrypoint"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

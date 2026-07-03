@@ -10,9 +10,13 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * Behind the AWS ALB the app receives traffic only from the load balancer
+     * (locked down at the security-group level), so trusting all proxies is safe
+     * and is required for correct X-Forwarded-Proto/Host handling (HTTPS, redirects).
+     *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.

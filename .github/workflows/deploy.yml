@@ -1,0 +1,103 @@
+name: Deploy to ECS
+
+# Build the production image, push to ECR, run migrations, and roll out the
+# ECS service — on every push to master. Auth is keyless via GitHub OIDC.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+concurrency:
+  group: deploy-ecs
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: af-south-1
+  AWS_ROLE_ARN: arn:aws:iam::547639878366:role/silvergro-staging-gha-deploy
+  ECR_REPOSITORY: silvergro-staging
+  ECS_CLUSTER: silvergro-staging
+  ECS_SERVICE: silvergro-staging
+  TASK_FAMILY: silvergro-staging
+
+permissions:
+  id-token: write   # required to request the OIDC token
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.production
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          tags: |
+            ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+            ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          build-args: |
+            VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run database migrations (one-off Fargate task)
+        run: |
+          set -euo pipefail
+          SG=$(aws ec2 describe-security-groups \
+            --filters "Name=tag:Name,Values=${ECS_CLUSTER}-ecs-sg" \
+            --query 'SecurityGroups[0].GroupId' --output text)
+          SUBNETS=$(aws ec2 describe-subnets \
+            --filters "Name=tag:Name,Values=${ECS_CLUSTER}-public-*" \
+            --query 'Subnets[].SubnetId' --output text | tr '\t' ',')
+          echo "subnets=$SUBNETS sg=$SG"
+
+          NETCFG="awsvpcConfiguration={subnets=[$SUBNETS],securityGroups=[$SG],assignPublicIp=ENABLED}"
+          OVERRIDES='{"containerOverrides":[{"name":"app","command":["php","artisan","migrate","--force"]}]}'
+
+          TASK_ARN=$(aws ecs run-task \
+            --cluster "$ECS_CLUSTER" \
+            --launch-type FARGATE \
+            --task-definition "$TASK_FAMILY" \
+            --network-configuration "$NETCFG" \
+            --overrides "$OVERRIDES" \
+            --started-by "gha-${GITHUB_SHA::7}" \
+            --query 'tasks[0].taskArn' --output text)
+          echo "migration task: $TASK_ARN"
+
+          aws ecs wait tasks-stopped --cluster "$ECS_CLUSTER" --tasks "$TASK_ARN"
+          CODE=$(aws ecs describe-tasks --cluster "$ECS_CLUSTER" --tasks "$TASK_ARN" \
+            --query 'tasks[0].containers[0].exitCode' --output text)
+          if [ "$CODE" != "0" ]; then
+            echo "::error::Migration task exited with code $CODE"; exit 1
+          fi
+          echo "migrations OK"
+
+      - name: Roll out the service
+        run: |
+          set -euo pipefail
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE" \
+            --force-new-deployment >/dev/null
+          echo "waiting for service to stabilize..."
+          aws ecs wait services-stable --cluster "$ECS_CLUSTER" --services "$ECS_SERVICE"
+          echo "deployment complete"
