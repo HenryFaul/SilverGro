@@ -37,7 +37,7 @@ class PcScApprovalController extends Controller
                 $max_a_pc = TransportTransaction::max("a_pc");
 
                 if ($max_a_pc == null) {
-                    $max_a_pc = TransportTransaction::max("id");
+                    $max_a_pc = 20000; // fixed starting point (a_mq/a_pc/a_sc all start at 20000)
                 }
 
                 if (is_numeric($max_a_pc)) {
@@ -54,7 +54,7 @@ class PcScApprovalController extends Controller
                 $max_a_sc = TransportTransaction::max("a_sc");
 
                 if ($max_a_sc == null) {
-                    $max_a_sc = TransportTransaction::max("id");
+                    $max_a_sc = 20000; // fixed starting point (a_mq/a_pc/a_sc all start at 20000)
                 }
 
                 if (is_numeric($max_a_sc)) {

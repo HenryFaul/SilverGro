@@ -136,7 +136,7 @@ class TransportApprovalController extends Controller
                         $max_a_mq = TransportTransaction::max("a_mq");
 
                         if ($max_a_mq == null) {
-                            $max_a_mq = TransportTransaction::max("id");
+                            $max_a_mq = 20000; // fixed starting point (a_mq/a_pc/a_sc all start at 20000)
                         }
                         if (is_numeric($max_a_mq)) {
                             $transport_transaction->a_mq = ($max_a_mq + 1);
@@ -226,7 +226,7 @@ class TransportApprovalController extends Controller
                     $max_a_mq = TransportTransaction::max("a_mq");
 
                     if ($max_a_mq == null) {
-                        $max_a_mq = TransportTransaction::max("id");
+                        $max_a_mq = 20000; // fixed starting point (a_mq/a_pc/a_sc all start at 20000)
                     }
 
                     if (is_numeric($max_a_mq)) {

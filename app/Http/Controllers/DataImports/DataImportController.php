@@ -251,6 +251,18 @@ class DataImportController extends Controller
 
                 break;
 
+                case "raw trans 5.csv":
+
+                    $count_before = TransportTransaction::all()->count();
+
+                    Excel::import(new NewTransaction(), $fullPath);
+
+                    $count_after = TransportTransaction::all()->count();
+
+                    $message = "New trans Count before: ".$count_before." trans after: ".$count_after;
+
+                    break;
+
             default:
                 $message = "No acceptable file name found. Uploaded file: " . $file_name;
         }

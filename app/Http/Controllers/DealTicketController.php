@@ -540,6 +540,13 @@ class DealTicketController extends Controller
             ['is_active' => $request->is_active]);
 
 
+        // NOTE: This a_mq-generation flow is NOT USED and is redundant.
+        // The deal_ticket.update route is only called by updateDealTicket() in
+        // Transaction/Show.vue, which is defined but never wired to any UI event.
+        // Even if reached, this block is a no-op: it assigns to the non-existent
+        // ->max_a_mq property instead of ->a_mq, so nothing is persisted.
+        // All real approved-MQ (a_mq) numbering happens in
+        // TransportApprovalController::approve()/activate().
         if ($dealTicket->is_active) {
 
             $transport_transaction = $dealTicket->TransportTransaction;
