@@ -133,19 +133,19 @@ import { truncateText } from '@/Composables/useTextFormatters';
             class="w-3 h-3"
             name="arrow-split" />
           <span
-            v-if="transaction.a_mq"
+            v-if="transaction.a_mq || (transaction.contract_type?.name === 'MQ' && transaction.old_deal_ticket)"
             class="font-bold">
-            (MQ:{{ transaction.a_mq }})
+            (MQ:{{ transaction.a_mq ?? transaction.old_deal_ticket }})
           </span>
           <span
-            v-if="transaction.a_pc"
+            v-if="transaction.a_pc || (transaction.contract_type?.name === 'PC' && transaction.contract_no)"
             class="font-bold">
-            (PC:{{ transaction.a_pc }})
+            (PC:{{ transaction.a_pc ?? transaction.contract_no }})
           </span>
           <span
-            v-if="transaction.a_sc"
+            v-if="transaction.a_sc || (transaction.contract_type?.name === 'SC' && transaction.contract_no)"
             class="font-bold">
-            (SC:{{ transaction.a_sc }})
+            (SC:{{ transaction.a_sc ?? transaction.contract_no }})
           </span>
           (ID: {{ transaction.id }})
         </span>
@@ -154,19 +154,19 @@ import { truncateText } from '@/Composables/useTextFormatters';
         v-else
         class="font-light text-sm italic">
         <span
-          v-if="transaction.a_mq"
+          v-if="transaction.a_mq || (transaction.contract_type?.name === 'MQ' && transaction.old_deal_ticket)"
           class="font-bold">
-          (MQ:{{ transaction.a_mq }})
+          (MQ:{{ transaction.a_mq ?? transaction.old_deal_ticket }})
         </span>
         <span
-          v-if="transaction.a_pc"
+          v-if="transaction.a_pc || (transaction.contract_type?.name === 'PC' && transaction.contract_no)"
           class="font-bold">
-          (PC:{{ transaction.a_pc }})
+          (PC:{{ transaction.a_pc ?? transaction.contract_no }})
         </span>
         <span
-          v-if="transaction.a_sc"
+          v-if="transaction.a_sc || (transaction.contract_type?.name === 'SC' && transaction.contract_no)"
           class="font-bold">
-          (SC:{{ transaction.a_sc }})
+          (SC:{{ transaction.a_sc ?? transaction.contract_no }})
         </span>
         (ID:{{ transaction.id }})
       </div>
