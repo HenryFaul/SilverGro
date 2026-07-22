@@ -52,6 +52,15 @@ export function useTransactionFilters(props, updateSelectValuesCallback) {
     filterForm.get(route('transaction_summary.index'), {
       preserveState: true,
       preserveScroll: true,
+      // Partial reload: only the trade/list data changes when filtering or after a save.
+      // Reference lists (all_customers, all_suppliers, all_drivers, etc.) are already loaded
+      // and rarely change, so we exclude them to avoid re-running their (expensive, N+1) queries.
+      only: [
+        'transactions', 'selected_transaction', 'filters', 'start_date', 'end_date',
+        'deal_ticket', 'transport_order', 'purchase_order', 'sales_order', 'rules_with_approvals',
+        'linked_trans_sc', 'linked_trans_pc', 'linked_trans_other',
+        'linked_trans_split', 'primary_linked_trans_split', 'split_totals', 'model_activity',
+      ],
       onFinish: (visit) => {
         if (updateSelectValuesCallback) {
           updateSelectValuesCallback();

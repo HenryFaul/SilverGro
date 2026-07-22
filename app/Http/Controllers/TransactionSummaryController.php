@@ -108,24 +108,24 @@ class TransactionSummaryController extends Controller
         $start_date = (Carbon::now()->tz('Africa/Johannesburg')->startOfMonth())->toDateString();
         $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
 
-        $customers = Customer::with('staff')->with('addressable')->with('contactable')->orderby('last_legal_name', 'asc')->get();
-        $customer_parents = CustomerParent::with('staff')->with('addressable')->with('contactable')->orderby('last_legal_name', 'asc')->get();
+        $customers = fn () => Customer::with('staff')->with('addressable')->with('contactable')->orderby('last_legal_name', 'asc')->get();
+        $customer_parents = fn () => CustomerParent::with('staff')->with('addressable')->with('contactable')->orderby('last_legal_name', 'asc')->get();
 
-        $suppliers = Supplier::with('addressable')->orderby('last_legal_name', 'asc')->get();
-        $transporters = Transporter::orderby('last_legal_name', 'asc')->get();
-        $contract_types = ContractType::all();
-        $products = Product::all();
-        $staff = Staff::all();
-        $confirmation_types = ConfirmationTypes::all();
-        $product_sources = ProductSource::all();
-        $packaging = Packaging::all();
-        $billing_units = BillingUnits::all();
-        $loading_hour_options = LoadingHourOption::all();
+        $suppliers = fn () => Supplier::with('addressable')->orderby('last_legal_name', 'asc')->get();
+        $transporters = fn () => Transporter::orderby('last_legal_name', 'asc')->get();
+        $contract_types = fn () => ContractType::all();
+        $products = fn () => Product::all();
+        $staff = fn () => Staff::all();
+        $confirmation_types = fn () => ConfirmationTypes::all();
+        $product_sources = fn () => ProductSource::all();
+        $packaging = fn () => Packaging::all();
+        $billing_units = fn () => BillingUnits::all();
+        $loading_hour_options = fn () => LoadingHourOption::all();
 
         // Get all drivers with their associated transporter information
         // Combines: (1) transaction history, (2) direct transporter_id on driver,
         // (3) transporter_id from vehicles where this driver is the default driver
-        $all_drivers = RegularDriver::where('is_active', 1)->get()->map(function ($driver) {
+        $all_drivers = fn () => RegularDriver::where('is_active', 1)->get()->map(function ($driver) {
             $historyIds = TransportTransaction::whereHas('TransportDriverVehicle', function ($q) use ($driver) {
                 $q->where('regular_driver_id', $driver->id);
             })->pluck('transporter_id')->unique()->values()->toArray();
@@ -152,7 +152,7 @@ class TransactionSummaryController extends Controller
 
 
         // Get all vehicles with their associated transporter information
-        $all_vehicles = RegularVehicle::with('VehicleType')->get()->map(function ($vehicle) {
+        $all_vehicles = fn () => RegularVehicle::with('VehicleType')->get()->map(function ($vehicle) {
             $historyIds = TransportTransaction::whereHas('TransportDriverVehicle', function ($q) use ($vehicle) {
                 $q->where('regular_vehicle_id', $vehicle->id);
             })->pluck('transporter_id')->unique()->values()->toArray();
@@ -167,13 +167,13 @@ class TransactionSummaryController extends Controller
             return $vehicle;
         });
 
-        $all_transport_rates = TransportRateBasis::all();
-        $all_status_entities = StatusEntity::all();
-        $all_status_types = StatusType::all();
-        $all_invoice_statuses = InvoiceStatus::all();
+        $all_transport_rates = fn () => TransportRateBasis::all();
+        $all_status_entities = fn () => StatusEntity::all();
+        $all_status_types = fn () => StatusType::all();
+        $all_invoice_statuses = fn () => InvoiceStatus::all();
 
-        $all_terms_of_payments = TermsOfPayment::all();
-        $all_vehicle_types = VehicleType::all();
+        $all_terms_of_payments = fn () => TermsOfPayment::all();
+        $all_vehicle_types = fn () => VehicleType::all();
 
 
         $linked_trans = null;
