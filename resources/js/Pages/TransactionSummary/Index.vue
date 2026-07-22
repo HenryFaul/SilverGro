@@ -566,19 +566,19 @@
 
                     <div>
                       <div
-                        v-if="selected_transaction.a_mq"
+                        v-if="selected_transaction.a_mq || (selected_transaction.contract_type?.name === 'MQ' && selected_transaction.old_deal_ticket)"
                         class="py-2 inline-flex text-xl font-bold text-black">
-                        MQ{{ selected_transaction.a_mq }}
+                        MQ{{ selected_transaction.a_mq ?? selected_transaction.old_deal_ticket }}
                       </div>
                       <div
-                        v-if="selected_transaction.a_pc"
+                        v-if="selected_transaction.a_pc || (selected_transaction.contract_type?.name === 'PC' && selected_transaction.contract_no)"
                         class="py-2 inline-flex text-xl font-bold text-black">
-                        PC{{ selected_transaction.a_pc }}
+                        PC{{ selected_transaction.a_pc ?? selected_transaction.contract_no }}
                       </div>
                       <div
-                        v-if="selected_transaction.a_sc"
+                        v-if="selected_transaction.a_sc || (selected_transaction.contract_type?.name === 'SC' && selected_transaction.contract_no)"
                         class="py-2 inline-flex text-xl font-bold text-black">
-                        SC{{ selected_transaction.a_sc }}
+                        SC{{ selected_transaction.a_sc ?? selected_transaction.contract_no }}
                       </div>
                       <div class="py-3 ml-2 inline-flex text-sm font-light text-gray-900">
                         (ID:{{ selected_transaction.id }})
