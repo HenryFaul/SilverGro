@@ -365,6 +365,14 @@
       route('transaction_summary.update', props.selected_transaction.id),
       {
         preserveScroll: true,
+        preserveState: true,
+        // Partial reload: refresh only the edited trade + list, not the (expensive) reference lists.
+        only: [
+          'transactions', 'selected_transaction', 'filters', 'start_date', 'end_date',
+          'deal_ticket', 'transport_order', 'purchase_order', 'sales_order', 'rules_with_approvals',
+          'linked_trans_sc', 'linked_trans_pc', 'linked_trans_other',
+          'linked_trans_split', 'primary_linked_trans_split', 'split_totals', 'model_activity',
+        ],
         onSuccess: () => {
           Swal.fire(usePage().props.jetstream.flash?.banner || '');
 
