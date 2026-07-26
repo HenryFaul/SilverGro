@@ -18,7 +18,11 @@ class RegularVehicle extends Model
 
     public $fillable = ['vehicle_type_id','reg_no','comment','is_active','transporter_id','regular_driver_id'];
 
-    protected $appends = ['transporters'];
+    // NOTE: 'transporters' deliberately NOT auto-appended — its accessor runs an EXISTS
+    // subquery on transport_transactions per serialization, causing an N+1 wherever a
+    // vehicle is serialized in bulk (e.g. the trade-summary list via TransportJob →
+    // TransportDriverVehicle → Vehicle). Appended explicitly on the Vehicle index/show.
+    protected $appends = [];
 
     public function VehicleType(): BelongsTo
     {

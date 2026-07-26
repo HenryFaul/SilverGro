@@ -83,6 +83,10 @@ class RegularVehicleController extends Controller
                     ? RegularDriver::select('id', 'first_name', 'last_name')->find($vehicle->regular_driver_id)
                     : null);
 
+            // 'transporters' no longer auto-appended (see RegularVehicle note); this index
+            // view displays it, so append it here — bounded to the paginated page.
+            $vehicle->append('transporters');
+
             return $vehicle;
         });
 
