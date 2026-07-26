@@ -24,9 +24,12 @@ class Customer extends Model
     public $fillable = ['id','first_name','customer_parent_id','last_legal_name','nickname','title','id_reg_no','is_active','terms_of_payment_basis_id','terms_of_payment_id','invoice_basis_id','customer_rating_id','is_vat_exempt','is_vat_cert_received',
         'credit_limit','credit_limit_hard','comment','days_overdue_allowed_id'];
 
-    protected $appends = [
-        'trades_count'
-    ];
+    // NOTE: 'trades_count' deliberately NOT in $appends. Its accessor runs a COUNT(*)
+    // on transport_transactions per serialization; auto-appending it caused thousands
+    // of N+1 COUNT queries whenever a Customer was serialized (e.g. the trade-summary
+    // list embeds a customer per row → ~8s page loads). Appended explicitly only on the
+    // Customer index/detail views where it is actually displayed.
+    protected $appends = [];
 
     protected function tradesCount(): Attribute
     {
