@@ -30,6 +30,10 @@ class TransporterController extends Controller
             ->paginate($paginate)
             ->withQueryString();
 
+        // trades_count is no longer auto-appended (see Transporter model note); append it
+        // here where the index view displays it — bounded to the paginated page.
+        $customers->getCollection()->each->append('trades_count');
+
         return inertia(
             'Transporter/Index',
             [

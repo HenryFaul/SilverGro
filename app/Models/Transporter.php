@@ -22,9 +22,11 @@ class Transporter extends Model
 
 
 
-    protected $appends = [
-        'trades_count'
-    ];
+    // NOTE: 'trades_count' deliberately NOT in $appends — its accessor runs a COUNT(*)
+    // per serialization, which caused ~3,000 N+1 COUNT queries (~8s) on the trade-summary
+    // page where transporters are serialized throughout the tree. Appended explicitly on
+    // the Transporter index view where it is displayed.
+    protected $appends = [];
 
     public function addressable(): MorphMany
     {
