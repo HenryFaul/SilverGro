@@ -30,20 +30,37 @@
   let contractLinkModalProps = ref(null);
   let contractLinkModalPropsSc = ref(null);
 
+  // Contract reference shown/searched: the number the user actually knows —
+  // the new approval number (a_pc / a_sc, 20 000-series) for contracts created in
+  // this system, otherwise the legacy contract number. Falls back to the row id.
+  const contractRef = (contract) =>
+    contract.a_pc ?? contract.a_sc ?? contract.contract_no ?? contract.id;
+
+  // Match on any identifier the user might type (new number, legacy number, id).
+  // Previously this filtered on `contract.id >= query`, which searched the internal
+  // row id — so newly created (>20 000) contracts could not be found by their number.
+  const matchesContract = (contract, query) => {
+    const q = String(query).trim().toLowerCase();
+    if (q === '') return true;
+    return [contract.a_pc, contract.a_sc, contract.contract_no, contract.old_id, contract.id]
+      .filter((v) => v !== null && v !== undefined)
+      .some((v) => String(v).toLowerCase().includes(q));
+  };
+
   const filteredPc = computed(() =>
     pcQuery.value === ''
       ? contractLinkModalProps.value['transport_trans']
-      : contractLinkModalProps.value['transport_trans'].filter((contract) => {
-          return contract.id >= pcQuery.value;
-        })
+      : contractLinkModalProps.value['transport_trans'].filter((contract) =>
+          matchesContract(contract, pcQuery.value)
+        )
   );
 
   const filteredSc = computed(() =>
     scQuery.value === ''
       ? contractLinkModalPropsSc.value['transport_trans']
-      : contractLinkModalPropsSc.value['transport_trans'].filter((contract) => {
-          return contract.id >= scQuery.value;
-        })
+      : contractLinkModalPropsSc.value['transport_trans'].filter((contract) =>
+          matchesContract(contract, scQuery.value)
+        )
   );
 
   const getComponentProps = () => {
@@ -176,7 +193,7 @@
                                 active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                               ]">
                               <span :class="['', selected && 'font-semibold']">
-                                PC:{{ contract.id }} (Old PC:{{ contract.old_id }})
+                                PC:{{ contractRef(contract) }} (ID:{{ contract.id }})
                                 {{ contract.customer.last_legal_name }}
                                 {{ contract.supplier.last_legal_name }}
                                 {{ contract.product.name }}
@@ -323,7 +340,7 @@
                                 active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                               ]">
                               <span :class="['', selected && 'font-semibold']">
-                                SC:{{ contract.id }} (Old SC:{{ contract.old_id }})
+                                SC:{{ contractRef(contract) }} (ID:{{ contract.id }})
                                 {{ contract.customer.last_legal_name }}
                                 {{ contract.supplier.last_legal_name }}
                                 {{ contract.product.name }}
