@@ -535,24 +535,42 @@ class TransportTransactionController extends Controller
 
     }
 
+    /**
+     * Only the columns the contract-link / split-link modals actually render.
+     * Selecting these keeps the picker payload small — it was ~1.7-2 MB per modal
+     * open, which is what made linking a trade to a PC/SC feel slow / hang.
+     */
+    private const CONTRACT_PICKER_COLUMNS = [
+        'id', 'a_pc', 'a_sc', 'contract_no', 'old_id', 'transport_date_earliest',
+        'contract_type_id', 'customer_id', 'supplier_id', 'product_id',
+    ];
+
+    private const CONTRACT_PICKER_RELATIONS = [
+        'Product:id,name',
+        'Customer:id,last_legal_name',
+        'Supplier:id,last_legal_name',
+        'TransportLoad:id,transport_trans_id,no_units_incoming',
+    ];
+
+    private function contractPicker(int $contractTypeId): array
+    {
+        $transport_trans = TransportTransaction::where('contract_type_id', $contractTypeId)
+            ->select(self::CONTRACT_PICKER_COLUMNS)
+            ->with(self::CONTRACT_PICKER_RELATIONS)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return array("transport_trans" => $transport_trans, "contract_types" => ContractType::all());
+    }
+
     public function getPcs(): array
     {
-        $transport_trans = TransportTransaction::where('contract_type_id', 2)->with('Product')->with('TransportLoad')->with('Customer')->with('Supplier')
-            ->orderBy('id', 'desc')->get();
-        $contract_types = ContractType::all();
-
-        return array("transport_trans" => $transport_trans, "contract_types" => $contract_types);
-
+        return $this->contractPicker(2);
     }
 
     public function getScs(): array
     {
-        $transport_trans = TransportTransaction::where('contract_type_id', 3)->with('Product')->with('TransportLoad')->with('Customer')->with('Supplier')
-            ->orderBy('id', 'desc')->get();
-        $contract_types = ContractType::all();
-
-        return array("transport_trans" => $transport_trans, "contract_types" => $contract_types);
-
+        return $this->contractPicker(3);
     }
 
     #[ArrayShape(["transport_trans" => "mixed", "contract_types" => "mixed"])] public function getPrimarySplit(): array
