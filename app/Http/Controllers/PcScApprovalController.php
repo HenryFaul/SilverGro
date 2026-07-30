@@ -40,6 +40,10 @@ class PcScApprovalController extends Controller
                     $max_a_pc = 20000; // fixed starting point (a_mq/a_pc/a_sc all start at 20000)
                 }
 
+                // Floor at 20000: legacy PC numbers also live in this column, so the
+                // next in-system number must always continue from the 20000-series.
+                $max_a_pc = max(20000, (int) $max_a_pc);
+
                 if (is_numeric($max_a_pc)) {
                     $transport_trans->a_pc = ($max_a_pc + 1);
                     $transport_trans->save();
@@ -56,6 +60,10 @@ class PcScApprovalController extends Controller
                 if ($max_a_sc == null) {
                     $max_a_sc = 20000; // fixed starting point (a_mq/a_pc/a_sc all start at 20000)
                 }
+
+                // Floor at 20000: legacy SC numbers also live in this column, so the
+                // next in-system number must always continue from the 20000-series.
+                $max_a_sc = max(20000, (int) $max_a_sc);
 
                 if (is_numeric($max_a_sc)) {
                     $transport_trans->a_sc = ($max_a_sc + 1);
