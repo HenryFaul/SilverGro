@@ -138,6 +138,10 @@ class TransportApprovalController extends Controller
                         if ($max_a_mq == null) {
                             $max_a_mq = 20000; // fixed starting point (a_mq/a_pc/a_sc all start at 20000)
                         }
+                        // Floor at 20000: legacy MQ numbers also live in this column, so the
+                        // next in-system number must always continue from the 20000-series.
+                        $max_a_mq = max(20000, (int) $max_a_mq);
+
                         if (is_numeric($max_a_mq)) {
                             $transport_transaction->a_mq = ($max_a_mq + 1);
                             $transport_transaction->save();
@@ -228,6 +232,10 @@ class TransportApprovalController extends Controller
                     if ($max_a_mq == null) {
                         $max_a_mq = 20000; // fixed starting point (a_mq/a_pc/a_sc all start at 20000)
                     }
+
+                    // Floor at 20000: legacy MQ numbers also live in this column, so the
+                    // next in-system number must always continue from the 20000-series.
+                    $max_a_mq = max(20000, (int) $max_a_mq);
 
                     if (is_numeric($max_a_mq)) {
                         $transport_transaction->a_mq = ($max_a_mq + 1);
