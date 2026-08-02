@@ -47,35 +47,36 @@
       .some((v) => String(v).toLowerCase().includes(q));
   };
 
-  const filteredPc = computed(() =>
-    pcQuery.value === ''
-      ? contractLinkModalProps.value['transport_trans']
-      : contractLinkModalProps.value['transport_trans'].filter((contract) =>
-          matchesContract(contract, pcQuery.value)
-        )
-  );
+  // Null-safe: only the picker for this modal's link type is fetched, so the other
+  // ref stays null.
+  const filteredPc = computed(() => {
+    const list = contractLinkModalProps.value?.['transport_trans'] ?? [];
+    return pcQuery.value === ''
+      ? list
+      : list.filter((contract) => matchesContract(contract, pcQuery.value));
+  });
 
-  const filteredSc = computed(() =>
-    scQuery.value === ''
-      ? contractLinkModalPropsSc.value['transport_trans']
-      : contractLinkModalPropsSc.value['transport_trans'].filter((contract) =>
-          matchesContract(contract, scQuery.value)
-        )
-  );
+  const filteredSc = computed(() => {
+    const list = contractLinkModalPropsSc.value?.['transport_trans'] ?? [];
+    return scQuery.value === ''
+      ? list
+      : list.filter((contract) => matchesContract(contract, scQuery.value));
+  });
 
+  // Only fetch the picker this modal actually uses (link_type_id 3 = PC, 4 = SC).
+  // Fetching both doubled the load for every open, which is a large part of why
+  // linking a contract felt slow.
   const getComponentProps = () => {
-    //props.trade_slide_over
+    if (props.link_type_id === 4) {
+      return axios.get(route('props.contract_link_sc_modal')).then((res) => {
+        contractLinkModalPropsSc.value = res.data;
+        form.to_link_id_sc = res.data['transport_trans'][0];
+      });
+    }
 
-    //props.all_products.find(element => element.id === props.transaction.product_id)
-
-    axios.get(route('props.contract_link_modal')).then((res) => {
+    return axios.get(route('props.contract_link_modal')).then((res) => {
       contractLinkModalProps.value = res.data;
       form.to_link_id = res.data['transport_trans'][0];
-    });
-
-    axios.get(route('props.contract_link_sc_modal')).then((res) => {
-      contractLinkModalPropsSc.value = res.data;
-      form.to_link_id_sc = res.data['transport_trans'][0];
     });
   };
 
@@ -96,14 +97,33 @@
     link_type_id: props.link_type_id,
   });
 
+  const linkError = ref('');
+
   const createTransLink = () => {
+    linkError.value = '';
     form.post(route('trans_link.store'), {
       preserveScroll: true,
+      preserveState: true,
+      // Partial reload: linking only changes the trade and its linked-contract lists.
+      // Previously this re-rendered the whole trade-summary page, which is why linking
+      // felt slow / looked like it had hung.
+      only: [
+        'selected_transaction',
+        'transactions',
+        'linked_trans_pc',
+        'linked_trans_sc',
+        'linked_trans_other',
+      ],
       onSuccess: () => {
         close();
       },
-      onError: (e) => {
-        console.log(e);
+      onError: (errors) => {
+        // Surface the reason instead of hiding it in the console — a silent failure here
+        // is indistinguishable from "the system won't let me change the contract".
+        linkError.value =
+          Object.values(errors ?? {}).flat().join('\n') ||
+          'Could not link the contract. Please try again or contact support.';
+        console.error('trans_link.store failed', errors);
       },
     });
   };
@@ -456,10 +476,17 @@
 
       <template #footer>
         <div>
+          <p
+            v-if="linkError"
+            class="mb-2 whitespace-pre-line text-sm font-semibold text-red-600">
+            {{ linkError }}
+          </p>
+
           <SecondaryButton
             class="bg-red-400"
+            :disabled="form.processing"
             @click="createTransLink">
-            Create
+            {{ form.processing ? 'Linking…' : 'Create' }}
           </SecondaryButton>
         </div>
 
