@@ -146,8 +146,11 @@
       @close="close">
       <template #content>
         <div>
+          <!-- Only the picker for THIS modal's link type is fetched (PR #8), so gate on
+               that one alone. Requiring both left the other null and the modal stuck on
+               "Loading..." forever — the reported hang. -->
           <div
-            v-if="contractLinkModalProps != null && contractLinkModalPropsSc != null"
+            v-if="link_type_id === 4 ? contractLinkModalPropsSc != null : contractLinkModalProps != null"
             class="">
             <form class="w-full">
               <!--                            'transport_trans_id','transport_job_id','regular_driver_id','regular_vehicle_id','weighbridge_upload_weight','weighbridge_offload_weight',
