@@ -297,7 +297,9 @@
   import { Link } from '@inertiajs/vue3';
   import SecondaryButton from '@/Components/SecondaryButton.vue';
   import ContractLinkModal from '@/Components/UI/ContractLinkModal.vue';
-  import ContractLinkModalSc from '@/Components/UI/ContractLinkModalSc.vue';
+  // ContractLinkModalSc.vue does not exist; the shared ContractLinkModal handles
+  // SC via :link_type_id="4". Aliased so this file cannot break the build.
+  import ContractLinkModalSc from '@/Components/UI/ContractLinkModal.vue';
   import { formatNiceNumber } from '@/Composables/useNumberFormatters.js';
 
   const NiceNumber = formatNiceNumber;

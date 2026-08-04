@@ -47,20 +47,46 @@
       .some((v) => String(v).toLowerCase().includes(q));
   };
 
+  // Cap how many options are rendered at once. The full lists are ~580 PCs and ~690 SCs;
+  // rendering every one as a reactive Combobox option (and re-rendering the lot on each
+  // keystroke) is what made the picker sluggish and could lock the browser up on the
+  // larger SC list. Anything beyond the cap is reachable by typing to narrow the search.
+  const MAX_OPTIONS = 100;
+
+  // Newest/highest contract number first — the row id ordering the list used to arrive in
+  // is meaningless to a user looking for a contract number.
+  const byContractNumberDesc = (a, b) => {
+    const na = Number(contractRef(a)) || 0;
+    const nb = Number(contractRef(b)) || 0;
+    return nb - na;
+  };
+
   // Null-safe: only the picker for this modal's link type is fetched, so the other
   // ref stays null.
-  const filteredPc = computed(() => {
-    const list = contractLinkModalProps.value?.['transport_trans'] ?? [];
-    return pcQuery.value === ''
-      ? list
-      : list.filter((contract) => matchesContract(contract, pcQuery.value));
-  });
+  const buildOptions = (source, query) => {
+    const list = source?.['transport_trans'] ?? [];
+    const matched =
+      query === '' ? list : list.filter((contract) => matchesContract(contract, query));
+    return [...matched].sort(byContractNumberDesc).slice(0, MAX_OPTIONS);
+  };
 
-  const filteredSc = computed(() => {
-    const list = contractLinkModalPropsSc.value?.['transport_trans'] ?? [];
-    return scQuery.value === ''
-      ? list
-      : list.filter((contract) => matchesContract(contract, scQuery.value));
+  const filteredPc = computed(() =>
+    buildOptions(contractLinkModalProps.value, pcQuery.value)
+  );
+
+  const filteredSc = computed(() =>
+    buildOptions(contractLinkModalPropsSc.value, scQuery.value)
+  );
+
+  // Total matches before the cap, so we can tell the user when results are truncated.
+  const totalMatches = computed(() => {
+    const source =
+      props.link_type_id === 4 ? contractLinkModalPropsSc.value : contractLinkModalProps.value;
+    const query = props.link_type_id === 4 ? scQuery.value : pcQuery.value;
+    const list = source?.['transport_trans'] ?? [];
+    return query === ''
+      ? list.length
+      : list.filter((contract) => matchesContract(contract, query)).length;
   });
 
   // Only fetch the picker this modal actually uses (link_type_id 3 = PC, 4 = SC).
@@ -174,6 +200,13 @@
                 Other
               </div>
 
+              <p
+                v-if="totalMatches > 100"
+                class="mb-2 text-xs italic text-gray-500">
+                Showing the 100 most recent of {{ totalMatches }} contracts — type a
+                contract number to narrow the list.
+              </p>
+
               <div :class="borderClass">
                 <div class="mt-3"></div>
 
@@ -251,7 +284,7 @@
                           </p>
                         </div>
                         <div class="mt-6 border-t border-gray-100">
-                          <dl class="divide-y divide-gray-100">
+                          <dl v-if="form.to_link_id" class="divide-y divide-gray-100">
                             <div
                               v-if="link_type_id === 4"
                               class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
@@ -398,7 +431,7 @@
                           </p>
                         </div>
                         <div class="mt-6 border-t border-gray-100">
-                          <dl class="divide-y divide-gray-100">
+                          <dl v-if="form.to_link_id_sc" class="divide-y divide-gray-100">
                             <div
                               class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                               <dt class="text-sm font-medium leading-6 text-gray-900">
@@ -430,7 +463,7 @@
                               <dd
                                 class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                 {{ form.to_link_id_sc.id }} (old
-                                {{ form.to_link_id.old_id }})
+                                {{ form.to_link_id_sc.old_id }})
                               </dd>
                             </div>
                             <div
