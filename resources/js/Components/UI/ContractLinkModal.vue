@@ -284,7 +284,7 @@
                           </p>
                         </div>
                         <div class="mt-6 border-t border-gray-100">
-                          <dl class="divide-y divide-gray-100">
+                          <dl v-if="form.to_link_id" class="divide-y divide-gray-100">
                             <div
                               v-if="link_type_id === 4"
                               class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
@@ -431,7 +431,7 @@
                           </p>
                         </div>
                         <div class="mt-6 border-t border-gray-100">
-                          <dl class="divide-y divide-gray-100">
+                          <dl v-if="form.to_link_id_sc" class="divide-y divide-gray-100">
                             <div
                               class="px-4 py-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                               <dt class="text-sm font-medium leading-6 text-gray-900">
@@ -463,7 +463,7 @@
                               <dd
                                 class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                 {{ form.to_link_id_sc.id }} (old
-                                {{ form.to_link_id.old_id }})
+                                {{ form.to_link_id_sc.old_id }})
                               </dd>
                             </div>
                             <div
