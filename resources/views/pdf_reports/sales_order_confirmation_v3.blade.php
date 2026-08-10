@@ -352,7 +352,7 @@
                     </table>
                 </div>
                 <br>
-                <li class="section_heading">Collection and Transport</li>
+                <li class="section_heading">Delivery and Transport</li>
                 <div>
                     <table class="table_sections" style="width:100%;">
                         <tbody>
@@ -550,10 +550,10 @@
                     </td>
                 </tr>
                 <tr style="margin-top: 4px;">
-                    <td class=" table_row_heading">Transporter Signature</td>
+                    <td class=" table_row_heading">Customer Signature</td>
                     <td class=" table_row_heading"></td>
                     <td class=" table_row_heading"></td>
-                    <td class=" table_row_heading">Transporter Name</td>
+                    <td class=" table_row_heading">Customer Name</td>
                 </tr>
 
                 </tbody>

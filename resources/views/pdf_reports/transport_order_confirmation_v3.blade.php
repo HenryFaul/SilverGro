@@ -160,11 +160,18 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 12px;">
-                        <b><span>Transport Order Confirmation:</span>
+                        <b><span>Transport Order Confirmation:</span> <span>MQ</span>
                             <span>{{$transport_trans->a_mq}}</span>
                         </b>
                     </td>
 
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td style="float: right; text-align: right; font-size: 11px;">
+                        <span>Created at: {{ $now }}</span>
+                    </td>
                 </tr>
 
                 <tr>
