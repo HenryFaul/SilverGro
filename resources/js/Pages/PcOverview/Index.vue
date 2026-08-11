@@ -299,24 +299,30 @@
     showDetails.value === true ? (showDetails.value = false) : (showDetails.value = true);
   };
 
+  // Tons Outstanding = contract tons less the tons ACTUALLY delivered.
+  // This previously subtracted each linked trade's *planned* tonnage
+  // (weight_ton_outgoing), so a fully-planned contract always read 0.00 even when the
+  // delivered weight differed. It now uses the actual delivered weight, the same figure
+  // shown in "Tons Del". A negative result is intentional and means over-delivery.
   let weightRemaining = () => {
-    let pc_weight = 0;
-    let mq_weight = 0;
+    let contract_weight = 0;
+    let delivered_weight = 0;
 
     if (props.linked_trans_other != null) {
       for (let linked of props.linked_trans_other) {
-        if (linked.transport_transaction.transport_finance.weight_ton_outgoing != null) {
-          mq_weight += linked.transport_transaction.transport_finance.weight_ton_outgoing;
+        const actual =
+          linked.transport_transaction.transport_finance.weight_ton_outgoing_actual;
+        if (actual != null) {
+          delivered_weight += actual;
         }
       }
     }
 
-    //props.selected_transaction.transport_load.no_units_incoming
     if (props.selected_transaction.transport_finance.weight_ton_outgoing != null) {
-      pc_weight = props.selected_transaction.transport_finance.weight_ton_outgoing;
+      contract_weight = props.selected_transaction.transport_finance.weight_ton_outgoing;
     }
 
-    return (pc_weight - mq_weight).toFixed(2);
+    return (contract_weight - delivered_weight).toFixed(2);
   };
 
   let weightDelivered = () => {
@@ -388,7 +394,7 @@
     <template #header>
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         <div v-if="selected_transaction != null">
-          PC Overview: PC:{{ selected_transaction.id }}
+          PC Overview: ID:{{ selected_transaction.id }}
           <span
             v-if="selected_transaction.a_pc"
             class="ml-2 font-bold text-indigo-600">
