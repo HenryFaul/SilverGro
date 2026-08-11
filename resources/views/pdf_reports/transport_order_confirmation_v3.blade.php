@@ -471,6 +471,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Customer name
                             </td>
+                            <td class="table_sections table_row_value" colspan="3">{{ $transport_trans->Customer?->last_legal_name }}</td>
                         </tr>
 
 
@@ -616,6 +617,11 @@
                                 @if($transport_trans->transport_notes)
                                     <li>
                                         <strong>Transport Notes:</strong> {{$transport_trans->transport_notes}}
+                                    </li>
+                                @endif
+                                @if($transport_trans->traders_notes_transport)
+                                    <li>
+                                        <strong>Transport Notes:</strong> {!! nl2br(e($transport_trans->traders_notes_transport)) !!}
                                     </li>
                                 @endif
                                 @if(str_contains(strtolower($transport_trans->product->name), 'bagged'))

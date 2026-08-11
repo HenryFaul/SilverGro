@@ -489,9 +489,14 @@
                 </div>
 
 
-                @if(str_contains(strtolower($transport_trans->product->name), 'lucerne') || str_contains(strtolower($transport_trans->product->name), 'bagged'))
+                @php($special_notes_text = trim((string) ($transport_trans->traders_notes_customer ?? '')))
+                @if($special_notes_text !== '' || str_contains(strtolower($transport_trans->product->name), 'lucerne') || str_contains(strtolower($transport_trans->product->name), 'bagged'))
                     <br>
                     <li class="section_heading">Special Notes</li>
+                @endif
+
+                @if($special_notes_text !== '')
+                    <div class="table_row_value">{!! nl2br(e($special_notes_text)) !!}</div>
                 @endif
 
                 @if(str_contains(strtolower($transport_trans->product->name), 'lucerne'))
