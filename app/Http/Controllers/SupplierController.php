@@ -29,6 +29,7 @@ class SupplierController extends Controller
         $paginate = $request['show'] ?? 10;
 
         $suppliers = Supplier::with('TermsOfPayment')->filter($filters)
+            ->orderBy('last_legal_name')
             ->paginate($paginate)
             ->withQueryString();
 

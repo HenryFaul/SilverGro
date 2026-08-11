@@ -118,6 +118,7 @@ class CustomerController extends Controller
         $paginate = $request['show'] ?? 10;
 
         $customers = Customer::with('CustomerRating')->filter($filters)
+            ->orderBy('last_legal_name')
             ->paginate($paginate)
             ->withQueryString();
 

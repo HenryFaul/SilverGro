@@ -66,8 +66,11 @@
     transport_rate_basis_id: 1,
   });
 
-  const format = () => {
-    const _date = new Date();
+  // Formats the date the user actually selected. This previously ignored its argument
+  // and always rebuilt "today", so any date the user picked still displayed as the
+  // current date — which made the field look like it was locked to today.
+  const format = (selectedDate) => {
+    const _date = selectedDate ? new Date(selectedDate) : new Date();
     const day = _date.getDate();
     const month = _date
       .toLocaleString('en', { month: 'long', timeZone: 'Africa/Johannesburg' })
