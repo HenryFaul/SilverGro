@@ -4260,7 +4260,7 @@
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
           <div class="m-2 p-2">
             <div class="">
-              <div class="text-lg mb-2 text-indigo-400">Assigned Commission</div>
+              <div class="text-lg mb-2 text-indigo-400">Assigned Contribution</div>
 
               <form class="mt-5">
                 <div class="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -4270,7 +4270,7 @@
                     <SecondaryButton
                       @click="viewAssignedNewComm"
                       class="m-6">
-                      Add Comm User (+)
+                      Add Contribution User (+)
                     </SecondaryButton>
 
                     <div v-if="viewAssignedCommNewModal">
@@ -4292,7 +4292,7 @@
                         <div class="px-4 sm:px-0">
                           <h3
                             class="text-base font-semibold mt-2 leading-7 text-indigo-400">
-                            User Comm {{ index + 1 }}
+                            User Contribution {{ index + 1 }}
                           </h3>
                           <h3
                             class="text-base font-semibold leading-7 text-sm text-gray-400">

@@ -206,7 +206,7 @@ class StaffController extends Controller
         $commissions = $this->fetchCommissions($filters);
 
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet()->setTitle('Staff Commissions');
+        $sheet = $spreadsheet->getActiveSheet()->setTitle('Staff Contribution');
 
         $titleStyle = ['font' => ['bold' => true, 'size' => 14]];
         $headerStyle = [
@@ -215,7 +215,7 @@ class StaffController extends Controller
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
         ];
 
-        $sheet->setCellValue('A1', 'Staff Commissions Report (Approved trades only)');
+        $sheet->setCellValue('A1', 'Staff Contribution Report (Approved trades only)');
         $sheet->mergeCells('A1:D1');
         $sheet->getStyle('A1')->applyFromArray($titleStyle);
 
@@ -233,9 +233,9 @@ class StaffController extends Controller
         }
 
         $sheet->setCellValue('A4', 'Staff Name');
-        $sheet->setCellValue('B4', 'Supplier Commission (ZAR)');
-        $sheet->setCellValue('C4', 'Customer Commission (ZAR)');
-        $sheet->setCellValue('D4', 'Total Commission (ZAR)');
+        $sheet->setCellValue('B4', 'Supplier GP (ZAR)');
+        $sheet->setCellValue('C4', 'Customer GP (ZAR)');
+        $sheet->setCellValue('D4', 'Total GP (ZAR)');
         $sheet->getStyle('A4:D4')->applyFromArray($headerStyle);
 
         $sheet->getColumnDimension('A')->setWidth(25);
@@ -263,7 +263,7 @@ class StaffController extends Controller
         $sheet->getStyle('A' . $row . ':D' . $row)->applyFromArray(['font' => ['bold' => true]]);
         $sheet->getStyle('B' . $row . ':D' . $row)->getNumberFormat()->setFormatCode($currencyFormat);
 
-        $filename = 'staff_commissions_' . now()->format('Y-m-d') . '.xlsx';
+        $filename = 'staff_contribution_' . now()->format('Y-m-d') . '.xlsx';
 
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);

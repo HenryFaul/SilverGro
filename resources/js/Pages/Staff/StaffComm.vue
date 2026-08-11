@@ -57,9 +57,9 @@
 </script>
 
 <template>
-  <AppLayout title="Staff Commissions">
+  <AppLayout title="Staff Contribution">
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Staff Comm</h2>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Staff Contribution</h2>
     </template>
 
     <div class="py-4">
@@ -120,7 +120,7 @@
 
           <!-- Table -->
           <h1 class="text-xl font-bold mb-3">
-            Staff Commissions (Approved trades only)
+            Staff Contribution (Approved trades only)
           </h1>
 
           <table class="min-w-full border-separate border-spacing-0" v-if="can_see">
@@ -130,10 +130,10 @@
                   Staff Name
                 </th>
                 <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-right text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
-                  Supplier Commission
+                  Supplier GP
                 </th>
                 <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-right text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
-                  Customer Commission
+                  Customer GP
                 </th>
                 <th class="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-right text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
                   Total
@@ -168,7 +168,7 @@
               </tr>
 
               <tr v-if="!commissions.length">
-                <td colspan="4" class="py-6 text-center text-gray-500 text-sm">No commission records found.</td>
+                <td colspan="4" class="py-6 text-center text-gray-500 text-sm">No contribution records found.</td>
               </tr>
             </tbody>
           </table>
