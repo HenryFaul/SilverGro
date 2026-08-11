@@ -760,8 +760,26 @@
                                     method="get"
                                     target="_blank">
                                     <span v-if="trans.a_mq">MQ{{ trans.a_mq }}</span>
+                                    <span
+                                      v-else-if="trans.contract_type?.name === 'PC' && trans.a_pc"
+                                      class="underline">
+                                      PC:{{ trans.a_pc }}
+                                    </span>
+                                    <span
+                                      v-else-if="trans.contract_type?.name === 'SC' && trans.a_sc"
+                                      class="underline">
+                                      SC:{{ trans.a_sc }}
+                                    </span>
                                     <span v-else>ID:{{ trans.id }}</span>
                                   </Link>
+                                </div>
+                                <div
+                                  v-if="
+                                    (trans.contract_type?.name === 'PC' && trans.a_pc) ||
+                                    (trans.contract_type?.name === 'SC' && trans.a_sc)
+                                  "
+                                  class="font-light text-gray-600">
+                                  ID:{{ trans.id }}
                                 </div>
                                 <div
                                   v-if="trans.old_id"

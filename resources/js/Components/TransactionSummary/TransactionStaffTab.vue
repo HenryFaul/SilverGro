@@ -8,7 +8,7 @@
             <SecondaryButton
               class=""
               @click="$emit('view-assigned-new-comm')">
-              Add Comm User (+)
+              Add Contribution User (+)
             </SecondaryButton>
             <div v-if="viewAssignedCommNewModal">
               <assigned-comm-modal
@@ -28,7 +28,7 @@
               <div class="ml-5 border border-gray-200 p-6 mb-5 rounded-lg shadow-md bg-white">
                 <div class="px-2 pt-3 pb-3 sm:px-0">
                   <h3 class="text-base font-semibold leading-2 text-indigo-400">
-                    User Comm {{ index + 1 }}
+                    User Contribution {{ index + 1 }}
                   </h3>
                   <h3 class="text-base font-semibold leading-2 text-sm text-gray-400">
                     Reference {{ user_comm.id }}
@@ -60,7 +60,7 @@
 
                     <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
-                        Supplier Commission
+                        Supplier GP
                       </dt>
                       <dd
                         class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
@@ -70,7 +70,7 @@
 
                     <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt class="text-sm font-medium leading-6 text-gray-900">
-                        Customer Commission
+                        Customer GP
                       </dt>
                       <dd
                         class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">

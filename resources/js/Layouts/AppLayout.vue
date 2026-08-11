@@ -730,7 +730,7 @@ defineProps({
                         <DropdownLink :href="route('staff.index')">Staff</DropdownLink>
 
                         <DropdownLink :href="route('staff.comm')">
-                          Staff Comm
+                          Staff Contribution
                         </DropdownLink>
 
                         <DropdownLink :href="route('pdf-settings.index')">

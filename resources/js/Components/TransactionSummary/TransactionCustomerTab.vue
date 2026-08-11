@@ -113,7 +113,7 @@
           <dt class="text-gray-500">SC Linked</dt>
           <dd class="flex items-start gap-x-2">
             <div v-if="filteredLinkedContractsSc[0]">
-              <div>SC:{{ filteredLinkedContractsSc[0].transport_trans_id }}</div>
+              <div>ID:{{ filteredLinkedContractsSc[0].transport_trans_id }}</div>
               <div
                 v-if="filteredLinkedContractsSc[0].transport_transaction_pc.a_sc"
                 class="font-medium text-indigo-600">

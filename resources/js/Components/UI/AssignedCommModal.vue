@@ -106,7 +106,7 @@
                             'supplier_comm','customer_comm','notes'-->
 
               <div :class="borderClass">
-                <div class="text-lg mb-2 text-indigo-400">Assigned User Commission</div>
+                <div class="text-lg mb-2 text-indigo-400">Assigned User Contribution</div>
 
                 <div class="mt-3">
                   <label class="block text-sm font-medium leading-6 text-gray-900">

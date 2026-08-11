@@ -4007,7 +4007,7 @@
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
-                            Purchase Order
+                            Purchase Contract Ticket
                           </div>
                           <div class="text-sm font-medium leading-6 text-gray-900">
                             <span>Approved PC:</span>
@@ -4095,7 +4095,11 @@
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
-                            Purchase Order Confirmation
+                            {{
+                              selected_transaction.contract_type_id === 2
+                                ? 'Purchase Contract Document'
+                                : 'Purchase Order Confirmation'
+                            }}
                           </div>
                         </div>
 
@@ -4127,7 +4131,7 @@
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
-                            Sales Order
+                            Sales Contract Ticket
                           </div>
                           <div class="text-sm font-medium leading-6 text-gray-900">
                             <span>Approved SC:</span>
@@ -4212,7 +4216,11 @@
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
-                            Sales Order Confirmation
+                            {{
+                              selected_transaction.contract_type_id === 3
+                                ? 'Sales Contract Document'
+                                : 'Sales Order Confirmation'
+                            }}
                           </div>
                         </div>
 
@@ -4285,7 +4293,7 @@
                               <SecondaryButton
                                 class=""
                                 @click="viewAssignedNewComm">
-                                Add Comm User (+)
+                                Add Contribution User (+)
                               </SecondaryButton>
                               <div v-if="viewAssignedCommNewModal">
                                 <assigned-comm-modal
@@ -4310,7 +4318,7 @@
                                   <div class="px-2 pt-3 pb-3 sm:px-0">
                                     <h3
                                       class="text-base font-semibold leading-2 text-indigo-400">
-                                      User Comm
+                                      User Contribution
                                       {{ index + 1 }}
                                     </h3>
                                     <h3

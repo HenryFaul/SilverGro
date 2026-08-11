@@ -71,13 +71,24 @@ export function useTransactionComputed(props, combinedForm) {
     )
   );
 
-  // Get display title (MQ number or ID)
+  // Get display title (approved contract number + ID, or ID alone when not approved)
   const getTitle = computed(() => {
-    if (props.selected_transaction.a_mq != null) {
-      return 'MQ' + props.selected_transaction.a_mq;
+    const trans = props.selected_transaction;
+    const type = trans.contract_type?.name;
+
+    let contractNo = null;
+    if (type === 'PC') {
+      contractNo = trans.a_pc ?? trans.contract_no;
+      if (contractNo != null) contractNo = 'PC' + contractNo;
+    } else if (type === 'SC') {
+      contractNo = trans.a_sc ?? trans.contract_no;
+      if (contractNo != null) contractNo = 'SC' + contractNo;
     } else {
-      return 'ID:' + props.selected_transaction.id;
+      const mqNo = trans.a_mq ?? trans.old_deal_ticket;
+      if (mqNo != null) contractNo = 'MQ' + mqNo;
     }
+
+    return contractNo != null ? contractNo + ' (ID:' + trans.id + ')' : 'ID:' + trans.id;
   });
 
   return {
