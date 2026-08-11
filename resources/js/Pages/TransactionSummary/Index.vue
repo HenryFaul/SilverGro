@@ -3105,10 +3105,10 @@
                           </div>
                           <div v-else>
                             <p class="text-red-400 font-bold">
-                              Purchase order Not Active
+                              Purchase Contract Ticket not active
                             </p>
                             <div class="flex justify-between gap-x-4 py-3">
-                              <dt class="text-gray-500">Activate Purchase Order</dt>
+                              <dt class="text-gray-500">Activate Purchase Contract Ticket</dt>
                               <dd class="flex items-start gap-x-2">
                                 <SecondaryButton @click="activatePurchaseOrder">
                                   Activate
@@ -3154,9 +3154,9 @@
                             </div>
                           </div>
                           <div v-else>
-                            <p class="text-red-400 font-bold">Sales order Not Active</p>
+                            <p class="text-red-400 font-bold">Sales Contract Ticket not active</p>
                             <div class="flex justify-between gap-x-4 py-3">
-                              <dt class="text-gray-500">Activate Sales Order</dt>
+                              <dt class="text-gray-500">Activate Sales Contract Ticket</dt>
                               <dd class="flex items-start gap-x-2">
                                 <SecondaryButton @click="activateSalesOrder">
                                   Activate
@@ -4073,10 +4073,10 @@
 
                           <div v-else>
                             <p class="text-red-400 font-bold">
-                              Purchase order Not Active
+                              Purchase Contract Ticket not active
                             </p>
                             <div class="flex justify-between gap-x-4 py-3">
-                              <dt class="text-gray-500">Activate Purchase Order</dt>
+                              <dt class="text-gray-500">Activate Purchase Contract Ticket</dt>
                               <dd class="flex items-start gap-x-2">
                                 <SecondaryButton @click="activatePurchaseOrder">
                                   Activate
@@ -4122,7 +4122,7 @@
                             </div>
                           </div>
 
-                          <div v-else>Sales order Not Active</div>
+                          <div v-else>{{ selected_transaction.contract_type_id === 2 ? 'Purchase Contract Document not active' : 'Purchase Order Confirmation not active' }}</div>
                         </dl>
                       </li>
                       <li
@@ -4195,9 +4195,9 @@
                           </div>
 
                           <div v-else>
-                            <p class="text-red-400 font-bold">Sales order Not Active</p>
+                            <p class="text-red-400 font-bold">Sales Contract Ticket not active</p>
                             <div class="flex justify-between gap-x-4 py-3">
-                              <dt class="text-gray-500">Activate Sales Order</dt>
+                              <dt class="text-gray-500">Activate Sales Contract Ticket</dt>
                               <dd class="flex items-start gap-x-2">
                                 <SecondaryButton @click="activateSalesOrder">
                                   Activate
@@ -4270,7 +4270,7 @@
                             </div>
                           </div>
 
-                          <div v-else>Sales order Not Active</div>
+                          <div v-else>{{ selected_transaction.contract_type_id === 3 ? 'Sales Contract Document not active' : 'Sales Order Confirmation not active' }}</div>
                         </dl>
                       </li>
                     </ul>
