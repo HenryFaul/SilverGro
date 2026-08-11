@@ -169,6 +169,13 @@
 
                 <tr>
                     <td></td>
+                    <td style="float: right; text-align: right; font-size: 11px;">
+                        <span>Created at: {{ $now }}</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td></td>
                     <td style="float: right; text-align: right; font-size: 12px">
                         @if($final_purchase_order)
                             <span>Final Version</span>
@@ -540,10 +547,10 @@
                     </td>
                 </tr>
                 <tr style="margin-top: 4px;">
-                    <td class=" table_row_heading">Transporter Signature</td>
+                    <td class=" table_row_heading">Supplier Signature</td>
                     <td class=" table_row_heading"></td>
                     <td class=" table_row_heading"></td>
-                    <td class=" table_row_heading">Transporter Name</td>
+                    <td class=" table_row_heading">Supplier Name</td>
                 </tr>
 
                 </tbody>

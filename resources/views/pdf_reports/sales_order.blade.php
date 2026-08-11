@@ -150,10 +150,17 @@
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 20px;">
                         <b><span>Sales Contract:</span> <span>SC</span>
-                            <span>{{$transport_trans->a_mq}}</span>
+                            <span>{{$transport_trans->a_sc}}</span>
                         </b>
                     </td>
 
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td style="float: right; text-align: right; font-size: 11px;">
+                        <span>Created at: {{ $now }}</span>
+                    </td>
                 </tr>
 
                 <tr>
