@@ -3330,63 +3330,13 @@
                           <div class="flex justify-between gap-x-4 py-1">
                             <dt class="text-gray-500">Contract type</dt>
                             <dd class="flex items-start gap-x-2">
-                              <div>
-                                <Combobox
-                                  v-model="combined_Form.contract_type_id"
-                                  as="div">
-                                  <div class="relative mt-2">
-                                    <ComboboxInput
-                                      :display-value="(type) => type?.name"
-                                      class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                      @change="contractTypeQuery = $event.target.value" />
-                                    <ComboboxButton
-                                      class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                      <ChevronUpDownIcon
-                                        aria-hidden="true"
-                                        class="h-5 w-5 text-gray-400" />
-                                    </ComboboxButton>
-
-                                    <ComboboxOptions
-                                      v-if="filteredContractTypes.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                      <ComboboxOption
-                                        v-for="type in filteredContractTypes"
-                                        :key="type.id"
-                                        v-slot="{ active, selected }"
-                                        :value="type"
-                                        as="template">
-                                        <ul>
-                                          <li
-                                            :class="[
-                                              'relative cursor-default select-none py-2 pl-3 pr-9',
-                                              active
-                                                ? 'bg-indigo-600 text-white'
-                                                : 'text-gray-900',
-                                            ]">
-                                            <span
-                                              :class="[
-                                                'block truncate',
-                                                selected && 'font-semibold',
-                                              ]">
-                                              {{ type.name }}
-                                            </span>
-                                            <span
-                                              v-if="selected"
-                                              :class="[
-                                                'absolute inset-y-0 right-0 flex items-center pr-4',
-                                                active ? 'text-white' : 'text-indigo-600',
-                                              ]">
-                                              <CheckIcon
-                                                aria-hidden="true"
-                                                class="h-5 w-5" />
-                                            </span>
-                                          </li>
-                                        </ul>
-                                      </ComboboxOption>
-                                    </ComboboxOptions>
-                                  </div>
-                                </Combobox>
-                              </div>
+                              <!-- Read-only. The contract type is fixed when the trade is created
+                                   (via ADD +). Changing it afterwards re-numbers the trade across the
+                                   MQ / PC / SC series and corrupts the numbering, so the selector has
+                                   been removed. -->
+                              <span class="mt-2 font-semibold text-gray-900">
+                                {{ selected_transaction.contract_type?.name }}
+                              </span>
                             </dd>
                           </div>
 

@@ -27,6 +27,7 @@ class TransporterController extends Controller
         $paginate = $request['show'] ?? 10;
 
         $customers = Transporter::with('TermsOfPayment')->filter($filters)
+            ->orderBy('last_legal_name')
             ->paginate($paginate)
             ->withQueryString();
 
