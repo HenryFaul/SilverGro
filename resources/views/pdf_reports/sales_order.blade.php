@@ -149,7 +149,7 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 20px;">
-                        <b><span>Sales Contract:</span> <span>SC</span>
+                        <b><span>Sales Contract Ticket:</span> <span>SC</span>
                             <span>{{$transport_trans->a_sc}}</span>
                         </b>
                     </td>
@@ -226,22 +226,23 @@
                                 colspan="3">{{$transport_trans->Customer->last_legal_name}}</td>
                         </tr>
                         <tr class="table_sections">
-                            <td class="table_sections table_row_heading" style="width: 20%;">Collection Address</td>
+                            <td class="table_sections table_row_heading" style="width: 20%;">Commercial Address</td>
                             <td class="table_sections table_row_value">
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
-                                <br>
-                                <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
-                                </span>
-                                <br>
-                                <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
-                                </span>
-                                <br>
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
-                                <br>
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
-
+                                @php($commercial_address = optional($transport_trans->Customer)->addressablePhysical)
+                                @php($commercial_address = (is_countable($commercial_address) && count($commercial_address)) ? $commercial_address[0] : null)
+                                @if(!$commercial_address)
+                                    <span>No physical address loaded...</span>
+                                @else
+                                    <span>{{$commercial_address->line_1}}</span>
+                                    <br>
+                                    <span>{{$commercial_address->line_2}}</span>
+                                    <br>
+                                    <span>{{$commercial_address->line_3}}</span>
+                                    <br>
+                                    <span>{{$commercial_address->country}}</span>
+                                    <br>
+                                    <span>{{$commercial_address->code}}</span>
+                                @endif
                             </td>
                             <td class="table_sections table_row_heading">Delivery Address</td>
                             <td class="table_sections table_row_value">
