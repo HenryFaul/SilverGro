@@ -924,6 +924,7 @@
                                     as="div">
                                     <div class="relative mt-2">
                                       <ComboboxInput
+                                    @focus="$event.target.select()"
                                         :display-value="(address) => address?.line_1"
                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="
@@ -1106,6 +1107,7 @@
                                     as="div">
                                     <div class="relative mt-2">
                                       <ComboboxInput
+                                    @focus="$event.target.select()"
                                         :display-value="(address) => address?.line_1"
                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="
@@ -1288,6 +1290,7 @@
                                     as="div">
                                     <div class="relative mt-2">
                                       <ComboboxInput
+                                    @focus="$event.target.select()"
                                         :display-value="(address) => address?.line_1"
                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="
@@ -1470,6 +1473,7 @@
                                     as="div">
                                     <div class="relative mt-2">
                                       <ComboboxInput
+                                    @focus="$event.target.select()"
                                         :display-value="(address) => address?.line_1"
                                         class="w-48 rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="
@@ -1695,6 +1699,7 @@
                                   as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
+                                    @focus="$event.target.select()"
                                       :display-value="
                                         (transporter) => transporter?.last_legal_name
                                       "
@@ -1816,6 +1821,7 @@
                                   as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
+                                    @focus="$event.target.select()"
                                       :display-value="
                                         (driver) => {
                                           if (!driver) return '';
@@ -2021,6 +2027,7 @@
                                   as="div">
                                   <div class="relative mt-2">
                                     <ComboboxInput
+                                    @focus="$event.target.select()"
                                       :display-value="
                                         (vehicle) => {
                                           if (!vehicle) return '';

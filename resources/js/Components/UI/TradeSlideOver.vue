@@ -317,6 +317,7 @@
                                 v-model="form.contract_type_id">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    @focus="$event.target.select()"
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="contractTypeQuery = $event.target.value"
                                     :display-value="(type) => type?.name" />
@@ -393,6 +394,7 @@
                                 v-model="form.customer_id">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    @focus="$event.target.select()"
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="customerQuery = $event.target.value"
                                     :display-value="
@@ -472,6 +474,7 @@
                                 v-model="form.supplier_id">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    @focus="$event.target.select()"
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="supplierQuery = $event.target.value"
                                     :display-value="
@@ -551,6 +554,7 @@
                                 v-model="form.transporter_id">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    @focus="$event.target.select()"
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="transporterQuery = $event.target.value"
                                     :display-value="
@@ -629,6 +633,7 @@
                                 v-model="form.product_id">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    @focus="$event.target.select()"
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="productQuery = $event.target.value"
                                     :display-value="(product) => product?.name" />
@@ -706,6 +711,7 @@
                                 v-model="form.billing_units_id">
                                 <div class="relative mt-2">
                                   <ComboboxInput
+                                    @focus="$event.target.select()"
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="
                                       billingUnitsIncomingQuery = $event.target.value
