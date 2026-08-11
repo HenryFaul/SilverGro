@@ -949,6 +949,9 @@
                                                             <td class="table_sections table_row_heading"
                                                                 style="width: 25%;">Customer name
                                                             </td>
+                                                            <td class="table_sections table_row_value" colspan="3">
+                                                                {{ optional($deal->TransportTransaction->Customer)->last_legal_name }}
+                                                            </td>
                                                         </tr>
 
 
