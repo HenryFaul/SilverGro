@@ -876,7 +876,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Supplier Notes</td>
                             <td class="table_sections table_row_value"
-                                colspan="3">{{$transport_trans->supplier_notes}}</td>
+                                colspan="3">{{$transport_trans->suppliers_notes}}</td>
 
                         </tr>
 

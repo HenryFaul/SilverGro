@@ -201,7 +201,7 @@ class TransportOrderController extends Controller
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
         $user_name = Auth::user()->name;
-        $now = (Carbon::now()->tz('Africa/Johannesburg'))->toDateTimeLocalString();
+        $now = (Carbon::now()->tz('Africa/Johannesburg'))->toDayDateTimeString();
         $app_version = env("APP_VERSION_REP", "1");
 
         // Get business address for Transporter — try in order of preference:

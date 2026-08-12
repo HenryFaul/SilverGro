@@ -160,11 +160,24 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 12px;">
-                        <b><span>Sales Order Confirmation:</span> <span>MQ</span>
-                            <span>{{$transport_trans->a_mq}}</span>
+                        <b>
+                            @if($transport_trans->contract_type_id == 3)
+                                <span>Sales Contract:</span> <span>SC</span>
+                                <span>{{$transport_trans->a_sc ?? $transport_trans->contract_no}}</span>
+                            @else
+                                <span>Sales Order Confirmation:</span> <span>MQ</span>
+                                <span>{{$transport_trans->a_mq}}</span>
+                            @endif
                         </b>
                     </td>
 
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td style="float: right; text-align: right; font-size: 11px;">
+                        <span>Created at: {{ $now }}</span>
+                    </td>
                 </tr>
 
                 <tr>

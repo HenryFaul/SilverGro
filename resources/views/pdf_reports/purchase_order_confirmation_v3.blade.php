@@ -160,8 +160,14 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 12px;">
-                        <b><span>Purchase Order Confirmation:</span> <span>MQ</span>
-                            <span>{{$transport_trans->a_mq}}</span>
+                        <b>
+                            @if($transport_trans->contract_type_id == 2)
+                                <span>Purchase Contract:</span> <span>PC</span>
+                                <span>{{$transport_trans->a_pc ?? $transport_trans->contract_no}}</span>
+                            @else
+                                <span>Purchase Order Confirmation:</span> <span>MQ</span>
+                                <span>{{$transport_trans->a_mq}}</span>
+                            @endif
                         </b>
                     </td>
 
