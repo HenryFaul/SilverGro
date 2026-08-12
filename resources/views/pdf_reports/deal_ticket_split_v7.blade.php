@@ -556,7 +556,7 @@
                             @foreach($split_data['linked_trans_split'] as $note_deal)
                             <tr>
                                 <td class="table_sections_bordered table_row_value">MQ{{$note_deal->TransportTransaction->a_mq}}</td>
-                                <td class="table_sections_bordered table_row_value">{!! nl2br($note_deal->TransportTransaction->supplier_notes) !!}</td>
+                                <td class="table_sections_bordered table_row_value">{!! nl2br($note_deal->TransportTransaction->suppliers_notes) !!}</td>
                             </tr>
                             @endforeach
                             </tbody>
