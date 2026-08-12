@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <title>Purchase Order Confirmation</title>
+    <title>{{ $transport_trans->contract_type_id == 2 ? 'Purchase Contract' : 'Purchase Order Confirmation' }}</title>
     <style>
         @page {
             margin: 100px 50px 80px 50px; /* Adjusted bottom margin for footer */
@@ -271,7 +271,7 @@
                     </table>
 
                     <p class="table_row_value">
-                        Herewith our confirmation of the <strong>PURCHASE ORDER</strong> for the following product,
+                        Herewith our confirmation of the <strong>{{ $transport_trans->contract_type_id == 2 ? 'PURCHASE CONTRACT' : 'PURCHASE ORDER' }}</strong> for the following product,
                         including the specific terms and
                         conditions of this order. This document is a confirmation of our telephone order.
                     </p>
@@ -484,7 +484,7 @@
                 <br>
 
                 <div class="table_row_value">
-                    The seller accepts the conditions as set out in this "PURCHASE ORDER", unless changes are
+                    The seller accepts the conditions as set out in this "{{ $transport_trans->contract_type_id == 2 ? 'PURCHASE CONTRACT' : 'PURCHASE ORDER' }}", unless changes are
                     presented in writing within 24 hours after receiving
                     this document, for acceptance by the seller. Please sign this document and email a scanned copy
                     to documents@silvergro.co.za. If the buyer
