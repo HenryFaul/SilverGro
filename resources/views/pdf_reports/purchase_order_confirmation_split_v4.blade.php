@@ -431,11 +431,11 @@
                     <tr class="table_sections">
                         <td class="table_sections table_row_heading">Collection Address</td>
                         <td class="table_sections table_row_value" colspan="3">
-                            <span>{{$primary->TransportLoad->CollectionAddress->line_1}}</span>
-                            @if($primary->TransportLoad->CollectionAddress->line_2), <span>{{$primary->TransportLoad->CollectionAddress->line_2}}</span>@endif
-                            @if($primary->TransportLoad->CollectionAddress->line_3), <span>{{$primary->TransportLoad->CollectionAddress->line_3}}</span>@endif
-                            @if($primary->TransportLoad->CollectionAddress->country), <span>{{$primary->TransportLoad->CollectionAddress->country}}</span>@endif
-                            @if($primary->TransportLoad->CollectionAddress->code), <span>{{$primary->TransportLoad->CollectionAddress->code}}</span>@endif
+                            <span>{{optional(optional($primary->TransportLoad)->CollectionAddress)->line_1}}</span>
+                            @if(optional(optional($primary->TransportLoad)->CollectionAddress)->line_2), <span>{{optional(optional($primary->TransportLoad)->CollectionAddress)->line_2}}</span>@endif
+                            @if(optional(optional($primary->TransportLoad)->CollectionAddress)->line_3), <span>{{optional(optional($primary->TransportLoad)->CollectionAddress)->line_3}}</span>@endif
+                            @if(optional(optional($primary->TransportLoad)->CollectionAddress)->country), <span>{{optional(optional($primary->TransportLoad)->CollectionAddress)->country}}</span>@endif
+                            @if(optional(optional($primary->TransportLoad)->CollectionAddress)->code), <span>{{optional(optional($primary->TransportLoad)->CollectionAddress)->code}}</span>@endif
                         </td>
                     </tr>
                     </tbody>

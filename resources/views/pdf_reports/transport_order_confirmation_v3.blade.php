@@ -400,21 +400,21 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Collection Address</td>
                             <td class="table_sections table_row_value" colspan="3">
-                                {{$transport_trans->TransportLoad->CollectionAddress->line_1}}
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_2)
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
+                                {{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_1}}
+                                @if(optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_2)
+                                    {{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_2}}
                                 @endif
 
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_3)
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
+                                @if(optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_3)
+                                    {{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_3}}
                                 @endif
 
-                                @if($transport_trans->TransportLoad->CollectionAddress->country)
-                                    {{$transport_trans->TransportLoad->CollectionAddress->country}}
+                                @if(optional(optional($transport_trans->TransportLoad)->CollectionAddress)->country)
+                                    {{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->country}}
                                 @endif
 
-                                @if($transport_trans->TransportLoad->CollectionAddress->code)
-                                    {{$transport_trans->TransportLoad->CollectionAddress->code}}
+                                @if(optional(optional($transport_trans->TransportLoad)->CollectionAddress)->code)
+                                    {{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->code}}
                                 @endif
 
                             </td>
@@ -478,22 +478,22 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Delivery Address</td>
                             <td class="table_sections table_row_value" colspan="3">
-                                {{$transport_trans->TransportLoad->DeliveryAddress->line_1}}
+                                {{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_1}}
 
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2)
-                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_2}}
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_2)
+                                    {{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_2}}
                                 @endif
 
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3)
-                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_3}}
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_3)
+                                    {{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_3}}
                                 @endif
 
-                                @if($transport_trans->TransportLoad->DeliveryAddress->country)
-                                    {{$transport_trans->TransportLoad->DeliveryAddress->country}}
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->country)
+                                    {{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->country}}
                                 @endif
 
-                                @if($transport_trans->TransportLoad->DeliveryAddress->code)
-                                    {{$transport_trans->TransportLoad->DeliveryAddress->code}}
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->code)
+                                    {{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->code}}
                                 @endif
 
                             </td>
