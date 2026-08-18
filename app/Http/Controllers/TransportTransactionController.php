@@ -1048,6 +1048,21 @@ class TransportTransactionController extends Controller
         );
     }
 
+
+    /**
+     * PhpSpreadsheet rejects sheet titles containing * : / \ ? [ ] and any title
+     * over 31 characters, which made "Download Excel" 500 for reports named
+     * naturally (e.g. "Trades 01/08 - 31/08", "Q3: margins"). Sanitise instead.
+     */
+    private function safeSheetTitle(?string $name): string
+    {
+        $clean = str_replace(['*', ':', '/', '\\', '?', '[', ']'], '-', (string) $name);
+        $clean = trim(preg_replace('/\s+/', ' ', $clean));
+        $clean = mb_substr($clean, 0, 31);
+
+        return $clean === '' ? 'Report' : $clean;
+    }
+
     public function makeExcelDynamic($transactions, $custom_report_id): ?Spreadsheet
     {
 
@@ -1116,7 +1131,7 @@ class TransportTransactionController extends Controller
 
 
             $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet()->setTitle($custom_report->name);
+            $sheet = $spreadsheet->getActiveSheet()->setTitle($this->safeSheetTitle($custom_report->name));
 
             $styleArray = array(
                 'font' => array(
@@ -1888,7 +1903,7 @@ class TransportTransactionController extends Controller
             ]);
 
             $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet()->setTitle(substr($custom_report->name, 0, 31));
+            $sheet = $spreadsheet->getActiveSheet()->setTitle($this->safeSheetTitle($custom_report->name));
 
             $styleArray1 = [
                 'borders' => [
