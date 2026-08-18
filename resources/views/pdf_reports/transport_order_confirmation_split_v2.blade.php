@@ -869,21 +869,21 @@
                                                                 style="width: 25%;">Collection Address
                                                             </td>
                                                             <td class="table_sections table_row_value" colspan="3">
-                                                                {{$deal->TransportTransaction->TransportLoad->CollectionAddress->line_1}}
-                                                                @if($deal->TransportTransaction->TransportLoad->CollectionAddress->line_2)
-                                                                    {{$deal->TransportTransaction->TransportLoad->CollectionAddress->line_2}}
+                                                                {{optional(optional($deal->TransportTransaction->TransportLoad)->CollectionAddress)->line_1}}
+                                                                @if(optional(optional($deal->TransportTransaction->TransportLoad)->CollectionAddress)->line_2)
+                                                                    {{optional(optional($deal->TransportTransaction->TransportLoad)->CollectionAddress)->line_2}}
                                                                 @endif
 
-                                                                @if($deal->TransportTransaction->TransportLoad->CollectionAddress->line_3)
-                                                                    {{$deal->TransportTransaction->TransportLoad->CollectionAddress->line_3}}
+                                                                @if(optional(optional($deal->TransportTransaction->TransportLoad)->CollectionAddress)->line_3)
+                                                                    {{optional(optional($deal->TransportTransaction->TransportLoad)->CollectionAddress)->line_3}}
                                                                 @endif
 
-                                                                @if($deal->TransportTransaction->TransportLoad->CollectionAddress->country)
-                                                                    {{$deal->TransportTransaction->TransportLoad->CollectionAddress->country}}
+                                                                @if(optional(optional($deal->TransportTransaction->TransportLoad)->CollectionAddress)->country)
+                                                                    {{optional(optional($deal->TransportTransaction->TransportLoad)->CollectionAddress)->country}}
                                                                 @endif
 
-                                                                @if($deal->TransportTransaction->TransportLoad->CollectionAddress->code)
-                                                                    {{$deal->TransportTransaction->TransportLoad->CollectionAddress->code}}
+                                                                @if(optional(optional($deal->TransportTransaction->TransportLoad)->CollectionAddress)->code)
+                                                                    {{optional(optional($deal->TransportTransaction->TransportLoad)->CollectionAddress)->code}}
                                                                 @endif
 
                                                             </td>
@@ -960,22 +960,22 @@
                                                                 style="width: 25%;">Delivery Address
                                                             </td>
                                                             <td class="table_sections table_row_value" colspan="3">
-                                                                {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->line_1}}
+                                                                {{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_1}}
 
-                                                                @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->line_2)
-                                                                    {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->line_2}}
+                                                                @if(optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_2)
+                                                                    {{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_2}}
                                                                 @endif
 
-                                                                @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->line_3)
-                                                                    {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->line_3}}
+                                                                @if(optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_3)
+                                                                    {{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_3}}
                                                                 @endif
 
-                                                                @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->country)
-                                                                    {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->country}}
+                                                                @if(optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->country)
+                                                                    {{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->country}}
                                                                 @endif
 
-                                                                @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->code)
-                                                                    {{$deal->TransportTransaction->TransportLoad->DeliveryAddress->code}}
+                                                                @if(optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->code)
+                                                                    {{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->code}}
                                                                 @endif
 
                                                             </td>

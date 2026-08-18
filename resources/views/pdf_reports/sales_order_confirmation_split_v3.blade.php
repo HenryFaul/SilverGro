@@ -284,7 +284,7 @@
                                             Address
                                         </td>
                                         <td class="table_sections table_row_value" colspan="3">
-                                            @if($deal->TransportTransaction->Customer->addressablePhysical == "[]")
+                                            @if(!is_countable(optional($deal->TransportTransaction->Customer)->addressablePhysical) || count(optional($deal->TransportTransaction->Customer)->addressablePhysical) === 0)
                                                 <span>No physical address loaded...</span>
                                             @else
                                                 <span>{{$deal->TransportTransaction->Customer->addressablePhysical[0]->line_1}}</span>
@@ -459,22 +459,22 @@
                                     <tr class="table_sections">
                                         <td class="table_sections table_row_heading">Delivery Address</td>
                                         <td class="table_sections table_row_value" colspan="3">
-                                            <span>{{$deal->TransportTransaction->TransportLoad->DeliveryAddress->line_1}}</span>
-                                            @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->line_2)
+                                            <span>{{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_1}}</span>
+                                            @if(optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_2)
                                                 ,
-                                                <span>{{$deal->TransportTransaction->TransportLoad->DeliveryAddress->line_2}}</span>
+                                                <span>{{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_2}}</span>
                                             @endif
-                                            @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->line_3)
+                                            @if(optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_3)
                                                 ,
-                                                <span>{{$deal->TransportTransaction->TransportLoad->DeliveryAddress->line_3}}</span>
+                                                <span>{{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->line_3}}</span>
                                             @endif
-                                            @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->country)
+                                            @if(optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->country)
                                                 ,
-                                                <span>{{$deal->TransportTransaction->TransportLoad->DeliveryAddress->country}}</span>
+                                                <span>{{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->country}}</span>
                                             @endif
-                                            @if($deal->TransportTransaction->TransportLoad->DeliveryAddress->code)
+                                            @if(optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->code)
                                                 ,
-                                                <span>{{$deal->TransportTransaction->TransportLoad->DeliveryAddress->code}}</span>
+                                                <span>{{optional(optional($deal->TransportTransaction->TransportLoad)->DeliveryAddress)->code}}</span>
                                             @endif
                                         </td>
                                     </tr>

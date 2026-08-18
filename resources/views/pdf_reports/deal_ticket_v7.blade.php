@@ -230,7 +230,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Business Address</td>
                             <td class="table_sections table_row_value" colspan="3">
-                                @if($transport_trans->Customer->addressablePhysical == "[]")
+                                @if(!is_countable(optional($transport_trans->Customer)->addressablePhysical) || count(optional($transport_trans->Customer)->addressablePhysical) === 0)
                                     <span>No physical address loaded...</span>
                                 @else
                                     <span>{{$transport_trans->Customer->addressablePhysical[0]->line_1}}</span>
@@ -258,22 +258,22 @@
                             <td class="table_sections table_row_heading">Delivery Address</td>
                             <td class="table_sections table_row_value" colspan="3">
 
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2)
+                                <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_1}}</span>
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_2)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_2}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3)
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_3)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_3}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->country)
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->country)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->country}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->DeliveryAddress->code)
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->code)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->code}}</span>
                                 @endif
 
                             </td>
@@ -535,25 +535,25 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Collection Address</td>
                             <td class="table_sections table_row_value" colspan="3">
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_2)
+                                <span>{{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_1}}</span>
+                                @if(optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_2)
                                     ,
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
+                                    {{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_2}}
                                     </span>
                                 @endif
-                                @if($transport_trans->TransportLoad->CollectionAddress->line_3)
+                                @if(optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_3)
                                     ,
                                     <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
+                                    {{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_3}}
                                 </span>
                                 @endif
-                                @if($transport_trans->TransportLoad->CollectionAddress->country)
+                                @if(optional(optional($transport_trans->TransportLoad)->CollectionAddress)->country)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->country}}</span>
                                 @endif
-                                @if($transport_trans->TransportLoad->CollectionAddress->code)
+                                @if(optional(optional($transport_trans->TransportLoad)->CollectionAddress)->code)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->code}}</span>
                                 @endif
 
                             </td>

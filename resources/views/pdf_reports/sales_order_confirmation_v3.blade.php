@@ -208,7 +208,7 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Business Address</td>
                             <td class="table_sections table_row_value" colspan="3">
-                                @if($transport_trans->Customer->addressablePhysical == "[]")
+                                @if(!is_countable(optional($transport_trans->Customer)->addressablePhysical) || count(optional($transport_trans->Customer)->addressablePhysical) === 0)
                                     <span>No physical address loaded...</span>
                                 @else
                                     <span>{{$transport_trans->Customer->addressablePhysical[0]->line_1}}</span>
@@ -372,24 +372,24 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading">Delivery address</td>
                             <td class="table_sections table_row_value" colspan="3">
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
+                                <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_1}}</span>
 
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_2)
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_2)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_2}}</span>
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_2}}</span>
                                 @endif
 
-                                @if($transport_trans->TransportLoad->DeliveryAddress->line_3)
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_3)
                                     ,
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_3}}</span>
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_3}}</span>
                                 @endif
 
-                                @if($transport_trans->TransportLoad->DeliveryAddress->country)
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->country)
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->country}}</span>
                                 @endif
 
-                                @if($transport_trans->TransportLoad->DeliveryAddress->code)
-                                    <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                                @if(optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->code)
+                                    <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->code}}</span>
                                 @endif
 
 

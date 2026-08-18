@@ -243,19 +243,19 @@
                             </td>
                             <td class="table_sections table_row_heading">Delivery Address</td>
                             <td class="table_sections table_row_value">
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->line_1}}</span>
+                                <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_1}}</span>
                                 <br>
                                 <span>
-                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_2}}
+                                    {{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_2}}
                                 </span>
                                 <br>
                                 <span>
-                                    {{$transport_trans->TransportLoad->DeliveryAddress->line_3}}
+                                    {{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->line_3}}
                                 </span>
                                 <br>
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->country}}</span>
+                                <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->country}}</span>
                                 <br>
-                                <span>{{$transport_trans->TransportLoad->DeliveryAddress->code}}</span>
+                                <span>{{optional(optional($transport_trans->TransportLoad)->DeliveryAddress)->code}}</span>
                             </td>
                         </tr>
                         <tr class="table_sections">
@@ -408,19 +408,19 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 20%;">Collection Address</td>
                             <td class="table_sections table_row_value">
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->line_1}}</span>
+                                <span>{{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_1}}</span>
                                 <br>
                                 <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_2}}
+                                    {{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_2}}
                                 </span>
                                 <br>
                                 <span>
-                                    {{$transport_trans->TransportLoad->CollectionAddress->line_3}}
+                                    {{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->line_3}}
                                 </span>
                                 <br>
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->country}}</span>
+                                <span>{{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->country}}</span>
                                 <br>
-                                <span>{{$transport_trans->TransportLoad->CollectionAddress->code}}</span>
+                                <span>{{optional(optional($transport_trans->TransportLoad)->CollectionAddress)->code}}</span>
 
                             </td>
                             <td class="table_sections table_row_heading">Cost Price / Metric Ton</td>
