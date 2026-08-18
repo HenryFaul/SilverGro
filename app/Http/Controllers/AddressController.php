@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
+use App\Models\TransportLoad;
 use App\Rules\StaffAssignRule;
 use Illuminate\Http\Request;
 
@@ -127,6 +128,22 @@ class AddressController extends Controller
      */
     public function destroy(Request $request,Address $address)
     {
+        // Trades reference addresses by id. Deleting one that is still in use
+        // orphans every trade pointing at it, which blanks the address on their
+        // documents (and used to 500 the PDF outright). Refuse instead.
+        $inUse = TransportLoad::where('delivery_address_id', $address->id)
+            ->orWhere('collection_address_id', $address->id)
+            ->count();
+
+        if ($inUse > 0) {
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner',
+                'This address cannot be deleted: it is used by ' . $inUse . ' trade' . ($inUse == 1 ? '' : 's') .
+                '. Edit it instead, or remove it from those trades first.');
+
+            return redirect()->back();
+        }
+
         $address->delete();
         $request->session()->flash('flash.bannerStyle', 'success');
         $request->session()->flash('flash.banner', 'Address deleted');
