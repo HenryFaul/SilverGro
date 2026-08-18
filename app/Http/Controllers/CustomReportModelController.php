@@ -88,8 +88,14 @@ class CustomReportModelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CustomReportModel $customReportModel)
+    public function destroy(Request $request, CustomReportModel $customReportModel)
     {
-        //
+        $attribute = $customReportModel->attribute_name;
+        $customReportModel->delete();
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Field "' . $attribute . '" removed from the report');
+
+        return redirect()->back();
     }
 }

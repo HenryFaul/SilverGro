@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\CustomerParent;
 use App\Models\CustomReport;
+use App\Models\CustomReportModel;
 use App\Models\DealTicket;
 use App\Models\Product;
 use App\Models\RegularDriver;
@@ -169,8 +170,25 @@ class CustomReportController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CustomReport $customReport)
+    public function destroy(Request $request, CustomReport $customReport)
     {
-        //
+        // Keep at least one report so the exporter always has something to select.
+        if (CustomReport::count() <= 1) {
+            $request->session()->flash('flash.bannerStyle', 'danger');
+            $request->session()->flash('flash.banner', 'This is the only report - create another before deleting this one.');
+
+            return redirect()->back();
+        }
+
+        $name = $customReport->name;
+
+        // Remove the report's field selections with it, otherwise they are orphaned.
+        CustomReportModel::where('report_id', $customReport->id)->delete();
+        $customReport->delete();
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Report "' . $name . '" deleted');
+
+        return redirect()->back();
     }
 }

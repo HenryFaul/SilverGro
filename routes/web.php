@@ -176,12 +176,12 @@ Route::middleware([
     //CustomReport
 
     Route::resource('custom_report', CustomReportController::class)->middleware('auth')
-        ->only(['index','store']);
+        ->only(['index','store','destroy']);
 
     //Custom Report Model
 
     Route::resource('custom_report_model', CustomReportModelController::class)->middleware('auth')
-        ->only(['store']);
+        ->only(['store','destroy']);
 
     // Test route for flat view
     Route::get('/test-flat-view', function() {

@@ -37,7 +37,8 @@
     class_name: null,
     attribute_name: null,
     comment: null,
-    report_id: 1,
+    // don't hard-code id 1 - it may have been deleted
+    report_id: props.custom_reports?.length ? props.custom_reports[0].id : null,
   });
 
   const createReport = () => {
@@ -62,6 +63,25 @@
         console.log(e);
       },
     });
+  };
+
+  const deleteReport = () => {
+    const report = filterAttributes.value[0];
+    if (!report) return;
+    if (!confirm(`Delete the report "${report.name}"? Its selected fields are removed with it.`)) return;
+    router.delete(route('custom_report.destroy', report.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+        // fall back to whichever report still exists
+        const remaining = props.custom_reports.filter((r) => r.id !== report.id);
+        customReportModelForm.report_id = remaining.length ? remaining[0].id : null;
+      },
+    });
+  };
+
+  const deleteAttribute = (model) => {
+    if (!confirm(`Remove "${model.attribute_name}" from this report?`)) return;
+    router.delete(route('custom_report_model.destroy', model.id), { preserveScroll: true });
   };
 
   const FilterAttributes = () => {
@@ -193,6 +213,14 @@
                   <InputError
                     class="mt-2"
                     :message="customReportModelForm.errors.report_id" />
+
+                  <button
+                    v-if="filterAttributes.length"
+                    type="button"
+                    @click="deleteReport"
+                    class="mt-2 inline-flex justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500">
+                    Delete this report
+                  </button>
                 </div>
                 <div v-else>null</div>
               </div>
@@ -250,11 +278,23 @@
             <div class="text-lg mb-2 text-indigo-400">Attributes linked to report</div>
 
             <div class="m-3 p-3">
-              <ul class="list-disc">
+              <ul v-if="filterAttributes.length">
                 <li
                   v-for="n in filterAttributes[0].custom_report_models"
-                  :key="n">
-                  {{ n.attribute_name }}
+                  :key="n.id"
+                  class="flex items-center justify-between border-b border-gray-100 py-1">
+                  <span>{{ n.attribute_name }}</span>
+                  <button
+                    type="button"
+                    @click="deleteAttribute(n)"
+                    class="ml-4 text-sm font-semibold text-red-600 hover:text-red-500">
+                    Remove
+                  </button>
+                </li>
+                <li
+                  v-if="!filterAttributes[0].custom_report_models.length"
+                  class="py-1 text-sm text-gray-500">
+                  No fields selected yet.
                 </li>
               </ul>
             </div>

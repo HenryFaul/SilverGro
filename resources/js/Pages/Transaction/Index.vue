@@ -76,7 +76,8 @@ const format = () => {
     end_date: props.filters.end_date ?? null,
     contract_type_id: props.filters.contract_type_id ?? null,
     id: props.filters.id ?? null,
-    custom_report_id: 1,
+    // don't hard-code id 1 - it may have been deleted
+    custom_report_id: props.custom_reports?.length ? props.custom_reports[0].id : null,
   });
 
   let curClient = ref(null);
