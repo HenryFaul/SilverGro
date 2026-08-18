@@ -94,11 +94,31 @@ class TransportFinance extends Model
             }
         }
 
-        $selling_price = $transport_Load->no_units_outgoing * $transport_Finance->selling_price_per_unit;
-        $sp_div = ($transport_Load->BillingUnitsOutgoing->kgs) == 1000 ? 1 : ($transport_Load->BillingUnitsOutgoing->kgs) / 1000;
+        // The customer's invoice basis decides WHICH weight the sale is priced on:
+        //   Upload Weight  -> tons in
+        //   Offload Weight -> tons out
+        // Previously the selling price total was always taken off the outgoing
+        // side regardless of basis, so for an Upload Weight customer a load that
+        // lost weight in transit was invoiced on the delivered tons instead of
+        // the collected tons. The basis was already honoured for the per-ton
+        // figures below; it just never reached the totals.
+        $sell_on_offload = $customer_invoice_basis && $customer_invoice_basis->value === 'Offload Weight';
 
-        if ($transport_Finance->selling_price_per_unit > 0 && $transport_Load->BillingUnitsOutgoing->kgs > 0) {
-            $selling_price_actual = ($actual_tons_out / $sp_div * $transport_Finance->selling_price_per_unit);
+        $sell_units_planned = $sell_on_offload
+            ? $transport_Load->no_units_outgoing
+            : $transport_Load->no_units_incoming;
+
+        $sell_billing_units = $sell_on_offload
+            ? $transport_Load->BillingUnitsOutgoing
+            : $transport_Load->BillingUnitsIncoming;
+
+        $selling_price = $sell_units_planned * $transport_Finance->selling_price_per_unit;
+        $sp_div = ($sell_billing_units->kgs) == 1000 ? 1 : ($sell_billing_units->kgs) / 1000;
+
+        $actual_tons_sold = $sell_on_offload ? $actual_tons_out : $actual_tons_in;
+
+        if ($transport_Finance->selling_price_per_unit > 0 && $sell_billing_units->kgs > 0) {
+            $selling_price_actual = ($actual_tons_sold / $sp_div * $transport_Finance->selling_price_per_unit);
         } else {
             $selling_price_actual = 0;
         }
@@ -129,8 +149,8 @@ class TransportFinance extends Model
         //weight_ton_outgoing = no_units_outgoing * (billing_units_outgoing_id -> kgs) /1000
         $weight_ton_outgoing = $no_units_outgoing_total * ($billing_units_outgoing_id->kgs) / 1000;
 
-        // Determine which weight to use based on customer invoice basis
-        $use_offload_weight = $customer_invoice_basis && $customer_invoice_basis->value === 'Offload Weight';
+        // Same basis drives the per-ton divisors (reuse the flag so they cannot diverge)
+        $use_offload_weight = $sell_on_offload;
         $weight_for_calculation = $use_offload_weight ? $weight_ton_outgoing : $weight_ton_incoming;
         $actual_weight_for_calculation = $use_offload_weight ? $actual_tons_out : $actual_tons_in;
 
