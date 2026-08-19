@@ -79,8 +79,14 @@ class NumberContactDetailController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(NumberContactDetail $numberContactDetail)
+    public function destroy(Request $request, NumberContactDetail $numberContactDetail)
     {
-        //
+        $value = $numberContactDetail->value;
+        $numberContactDetail->delete();
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Phone number ' . ($value ? '"' . $value . '" ' : '') . 'removed');
+
+        return redirect()->back();
     }
 }
