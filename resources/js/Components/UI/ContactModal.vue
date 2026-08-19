@@ -48,7 +48,7 @@
 
   const deleteContact = () => {
     if (confirm('Sure you want to delete?')) {
-      form.delete(route('address.destroy', props.address.id), {
+      form.delete(route('contact.destroy', props.contact.id), {
         preserveScroll: true,
         onSuccess: () => {
           close();
@@ -58,7 +58,7 @@
   };
 
   const updateContact = () => {
-    form.put(route('address.update', props.address.id), {
+    form.put(route('contact.update', props.contact.id), {
       preserveScroll: true,
       onSuccess: () => {
         close();
@@ -264,7 +264,7 @@
       </template>
 
       <template #footer>
-        <div v-if="props.address == null">
+        <div v-if="props.contact == null">
           <SecondaryButton
             class="bg-red-400"
             @click="createContact()">

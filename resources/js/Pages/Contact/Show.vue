@@ -81,6 +81,25 @@
   const relatedClassContact = ref('App\\Models\\Contact');
 
   const roles_permissions = computed(() => usePage().props.roles_permissions);
+  const deleteEmail = (detail) => {
+    if (!confirm(`Remove the email address "${detail.value}" from this contact?`)) return;
+    router.delete(route('email_contact_detail.destroy', detail.id), { preserveScroll: true });
+  };
+
+  const deleteNumber = (detail) => {
+    if (!confirm(`Remove the number "${detail.value}" from this contact?`)) return;
+    router.delete(route('number_contact_detail.destroy', detail.id), { preserveScroll: true });
+  };
+
+  const deleteContact = () => {
+    const who = `${props.contact.first_name ?? ''} ${props.contact.last_legal_name ?? ''}`.trim();
+    if (!confirm(`Delete the contact "${who}"? Their phone numbers and email addresses are removed with them.`)) return;
+    router.delete(route('contact.destroy', props.contact.id), {
+      preserveScroll: true,
+      onSuccess: () => window.history.back(),
+    });
+  };
+
   const can_update_contact = computed(() =>
     usePage().props.roles_permissions.permissions.includes('update_contact')
   );
@@ -500,6 +519,13 @@
                     class="m-1">
                     Save
                   </SecondaryButton>
+
+                  <SecondaryButton
+                    v-if="can_update_contact"
+                    @click="deleteContact"
+                    class="m-1 bg-red-400">
+                    Delete contact
+                  </SecondaryButton>
                 </div>
               </form>
             </div>
@@ -565,7 +591,12 @@
                         <div v-if="n.comment">({{ n.comment }})</div>
                       </div>
                       <div class="basis-1/4">
-                        <SecondaryButton class="m-1">Delete</SecondaryButton>
+                        <SecondaryButton
+                          v-if="can_update_contact"
+                          class="m-1"
+                          @click="deleteEmail(n)">
+                          Delete
+                        </SecondaryButton>
                       </div>
                     </div>
                   </li>
@@ -603,7 +634,12 @@
                         <div v-if="n.comment">({{ n.comment }})</div>
                       </div>
                       <div class="basis-1/4">
-                        <SecondaryButton class="m-1">Delete</SecondaryButton>
+                        <SecondaryButton
+                          v-if="can_update_contact"
+                          class="m-1"
+                          @click="deleteNumber(n)">
+                          Delete
+                        </SecondaryButton>
                       </div>
                     </div>
                   </li>

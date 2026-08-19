@@ -78,8 +78,14 @@ class EmailContactDetailController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EmailContactDetail $emailContactDetail)
+    public function destroy(Request $request, EmailContactDetail $emailContactDetail)
     {
-        //
+        $value = $emailContactDetail->value;
+        $emailContactDetail->delete();
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Email address ' . ($value ? '"' . $value . '" ' : '') . 'removed');
+
+        return redirect()->back();
     }
 }

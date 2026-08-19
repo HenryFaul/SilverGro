@@ -366,16 +366,16 @@ Route::middleware([
     //Contact
 
     Route::resource('contact', ContactController::class)->middleware('auth')
-        ->only(['index', 'store', 'update', 'show']);
+        ->only(['index', 'store', 'update', 'show', 'destroy']);
 
     //Number detail
 
     Route::resource('number_contact_detail', NumberContactDetailController::class)->middleware('auth')
-        ->only(['store', 'update', 'show']);
+        ->only(['store', 'update', 'show', 'destroy']);
 
     //Email detail
     Route::resource('email_contact_detail', EmailContactDetailController::class)->middleware('auth')
-        ->only(['store', 'update', 'show']);
+        ->only(['store', 'update', 'show', 'destroy']);
 
     //PDF Reports
     //DealTicket

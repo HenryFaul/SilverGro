@@ -177,8 +177,20 @@ class ContactController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Contact $contact)
+    public function destroy(Request $request, Contact $contact)
     {
-        //
+        // Nothing in the system references a contact - trades, documents and
+        // invoices don't point at them - so removing one is safe. Its phone
+        // numbers and email addresses go with it rather than being orphaned.
+        $name = trim($contact->first_name . ' ' . $contact->last_legal_name);
+
+        $contact->emailable()->delete();
+        $contact->numberable()->delete();
+        $contact->delete();
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Contact ' . ($name !== '' ? '"' . $name . '" ' : '') . 'deleted');
+
+        return redirect()->back();
     }
 }
