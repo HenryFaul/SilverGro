@@ -418,6 +418,19 @@ class TransactionSummaryController extends Controller
             ]
         );
 
+        // Keep the invoice's customer in step with the trade's.
+        // Debtors Standing groups invoices by transport_invoices.customer_id but
+        // renders the name off the trade's customer, so if these drift apart an
+        // invoice files under one debtor and displays another's name. The two
+        // other update paths (TransportTransactionController@update and
+        // @updatePlayers) already do this; this one did not, which is why
+        // changing the customer from the Trades screen misallocated the debtor.
+        $transport_invoice = $transportTransaction->TransportInvoice;
+        if ($transport_invoice) {
+            $transport_invoice->customer_id = $isSplitLoad ? 2 : $request->customer_id['id'];
+            $transport_invoice->save();
+        }
+
         if (!$isSplitLoad) {
             AssignedUserComm::removeStaleCommUsers($transportTransaction->id, $oldSupplierId, $request->supplier_id['id'], $oldCustomerId, $request->customer_id['id']);
             AssignedUserComm::syncDefaultCommUsers($transportTransaction->id, $request->supplier_id['id'], $request->customer_id['id']);
