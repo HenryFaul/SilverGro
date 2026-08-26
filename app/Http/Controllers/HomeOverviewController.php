@@ -29,7 +29,12 @@ class HomeOverviewController extends Controller
             'contract_type_id',
             'id',
             'selected_trans_id',
-            'old_id'
+            'old_id',
+            // these three were missing, so the MQ / PC / SC search boxes on this
+            // screen sent their values and the controller discarded them
+            'a_mq',
+            'a_pc',
+            'a_sc'
         ]);
 
         //$filters['contract_type_id'] = 4;

@@ -67,6 +67,9 @@ class TransactionSummaryController extends Controller
             ->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))
             ->with('TransportJob', fn($query) => $query->with('TransportDriverVehicle', fn($query) => $query->with('Vehicle')))
+            // The REG# column reads transaction.transport_driver_vehicle directly, not the
+            // copy nested under TransportJob, so without this it was always "N/A".
+            ->with('TransportDriverVehicle', fn($query) => $query->with('Vehicle'))
             ->index($filters)
             ->orderBy('transport_date_earliest', 'desc')
             ->paginate($paginate)
@@ -78,8 +81,8 @@ class TransactionSummaryController extends Controller
         $selected_trans_id = $request['selected_trans_id'] ?? $first_transaction_id;
 
         $transportTransaction = TransportTransaction::where('id', $selected_trans_id)->with('ContractType')->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
-            ->with('TransportLoad')->with('DealTicket')->with('Supplier', fn($query) => $query->with('TermsOfPayment')->with('contactable', fn($query) => $query->with('numberable')->with('emailable')))
-            ->with('Customer', fn($query) => $query->with('contactable', fn($query) => $query->with('numberable')->with('emailable'))->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
+            ->with('TransportLoad')->with('DealTicket')->with('Supplier', fn($query) => $query->with('addressable')->with('TermsOfPayment')->with('contactable', fn($query) => $query->with('numberable')->with('emailable')))
+            ->with('Customer', fn($query) => $query->with('addressable')->with('contactable', fn($query) => $query->with('numberable')->with('emailable'))->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_2', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_3', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_4', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
