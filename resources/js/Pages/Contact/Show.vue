@@ -62,25 +62,43 @@
   const viewEmailContactDetailModal = ref(false);
 
   const viewNumberContactDetail = () => {
+    editingNumber.value = null;
     viewNumberContactDetailModal.value = true;
   };
 
   const viewEmailContactDetail = () => {
+    editingEmail.value = null;
     viewEmailContactDetailModal.value = true;
   };
 
   const closeNumberContactDetailModal = () => {
     viewNumberContactDetailModal.value = false;
+    editingNumber.value = null;
   };
 
   const closeEmailDetailModal = () => {
     viewEmailContactDetailModal.value = false;
+    editingEmail.value = null;
   };
 
   const relatedClass = ref('App\\Models\\Customer');
   const relatedClassContact = ref('App\\Models\\Contact');
 
   const roles_permissions = computed(() => usePage().props.roles_permissions);
+  // which detail row the modal is editing (null = create a new one)
+  const editingNumber = ref(null);
+  const editingEmail = ref(null);
+
+  const editNumberDetail = (detail) => {
+    editingNumber.value = detail;
+    viewNumberContactDetailModal.value = true;
+  };
+
+  const editEmailDetail = (detail) => {
+    editingEmail.value = detail;
+    viewEmailContactDetailModal.value = true;
+  };
+
   const deleteEmail = (detail) => {
     if (!confirm(`Remove the email address "${detail.value}" from this contact?`)) return;
     router.delete(route('email_contact_detail.destroy', detail.id), { preserveScroll: true });
@@ -536,6 +554,7 @@
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
           <div class="m-2 ml-4 p-2">
             <number-contact-detail-modal
+              :detail="editingNumber"
               :related_id="contact.id"
               :contact_type="contact_type"
               :related_class="relatedClassContact"
@@ -543,6 +562,7 @@
               @close="closeNumberContactDetailModal" />
 
             <email-contact-detail-modal
+              :detail="editingEmail"
               :related_id="contact.id"
               :contact_type="contact_type"
               :related_class="relatedClassContact"
@@ -594,6 +614,12 @@
                         <SecondaryButton
                           v-if="can_update_contact"
                           class="m-1"
+                          @click="editEmailDetail(n)">
+                          Edit
+                        </SecondaryButton>
+                        <SecondaryButton
+                          v-if="can_update_contact"
+                          class="m-1"
                           @click="deleteEmail(n)">
                           Delete
                         </SecondaryButton>
@@ -634,6 +660,12 @@
                         <div v-if="n.comment">({{ n.comment }})</div>
                       </div>
                       <div class="basis-1/4">
+                        <SecondaryButton
+                          v-if="can_update_contact"
+                          class="m-1"
+                          @click="editNumberDetail(n)">
+                          Edit
+                        </SecondaryButton>
                         <SecondaryButton
                           v-if="can_update_contact"
                           class="m-1"

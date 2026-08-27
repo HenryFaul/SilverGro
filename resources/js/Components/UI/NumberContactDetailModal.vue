@@ -2,7 +2,7 @@
   import InputError from '@/Components/InputError.vue';
   import TextInput from '@/Components/TextInput.vue';
   import AreaInput from '@/Components/AreaInput.vue';
-  import { computed, inject, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
+  import { computed, inject, onBeforeMount, onMounted, onUnmounted, ref, watch } from 'vue';
   import { useForm } from '@inertiajs/vue3';
   import SecondaryButton from '@/Components/SecondaryButton.vue';
   import DialogModal from '@/Components/DialogModal.vue';
@@ -19,6 +19,8 @@
     contact_type: Object,
     related_id: Number,
     related_class: String,
+    // when supplied the modal edits that number instead of creating a new one
+    detail: { type: Object, default: null },
     show: false,
     closeable: true,
   });
@@ -40,11 +42,29 @@
   const form = useForm({
     related_id: props.related_id,
     related_class: props.related_class,
-    contact_detail_type_id: 1,
-    number: null,
-    comment: null,
-    country_code: '+27',
+    contact_detail_type_id: props.detail?.contact_detail_type_id ?? 1,
+    number: props.detail?.value ?? null,
+    comment: props.detail?.comment ?? null,
+    country_code: props.detail?.country_code ?? '+27',
   });
+
+  // keep the form in step when the parent swaps which number is being edited
+  watch(
+    () => props.detail,
+    (d) => {
+      form.contact_detail_type_id = d?.contact_detail_type_id ?? 1;
+      form.number = d?.value ?? null;
+      form.comment = d?.comment ?? null;
+      form.country_code = d?.country_code ?? '+27';
+    }
+  );
+
+  const updateContactDetail = () => {
+    form.put(route('number_contact_detail.update', props.detail.id), {
+      preserveScroll: true,
+      onSuccess: () => close(),
+    });
+  };
 
   const deleteContact = () => {
     if (confirm('Sure you want to delete?')) {
@@ -196,7 +216,7 @@
       </template>
 
       <template #footer>
-        <div v-if="true">
+        <div v-if="props.detail == null">
           <SecondaryButton
             class="bg-red-400"
             @click="createContactDetail">
@@ -205,13 +225,8 @@
         </div>
         <div v-else>
           <SecondaryButton
-            class="bg-red-400"
-            @click="">
-            Delete
-          </SecondaryButton>
-          <SecondaryButton
-            class="ml-1 bg-green-400"
-            @click="">
+            class="bg-green-400"
+            @click="updateContactDetail">
             Save
           </SecondaryButton>
         </div>
