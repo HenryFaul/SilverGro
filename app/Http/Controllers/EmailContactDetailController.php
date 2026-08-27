@@ -72,7 +72,22 @@ class EmailContactDetailController extends Controller
      */
     public function update(Request $request, EmailContactDetail $emailContactDetail)
     {
-        //
+        $request->validate([
+            'email' => ['required', 'email'],
+            'comment' => ['nullable', 'string'],
+            'contact_detail_type_id' => ['required', 'integer'],
+        ]);
+
+        $emailContactDetail->update([
+            'value' => $request['email'],
+            'comment' => $request['comment'],
+            'contact_detail_type_id' => $request['contact_detail_type_id'],
+        ]);
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Email address updated');
+
+        return redirect()->back();
     }
 
     /**

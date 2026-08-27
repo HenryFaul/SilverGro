@@ -73,7 +73,24 @@ class NumberContactDetailController extends Controller
      */
     public function update(Request $request, NumberContactDetail $numberContactDetail)
     {
-        //
+        $request->validate([
+            'number' => ['required', 'numeric', 'digits:10'],
+            'comment' => ['nullable', 'string'],
+            'country_code' => ['required', 'string'],
+            'contact_detail_type_id' => ['required', 'integer'],
+        ]);
+
+        $numberContactDetail->update([
+            'value' => $request['number'],
+            'comment' => $request['comment'],
+            'country_code' => $request['country_code'],
+            'contact_detail_type_id' => $request['contact_detail_type_id'],
+        ]);
+
+        $request->session()->flash('flash.bannerStyle', 'success');
+        $request->session()->flash('flash.banner', 'Number updated');
+
+        return redirect()->back();
     }
 
     /**
