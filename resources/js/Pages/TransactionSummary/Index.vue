@@ -940,7 +940,7 @@
                                       <div v-if="filteredDeliveryAddress2 != null">
                                         <ComboboxOptions
                                           v-if="filteredDeliveryAddress2.length > 0"
-                                          class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                          class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                           <ComboboxOption
                                             v-for="address in filteredDeliveryAddress2"
                                             :key="address.id"
@@ -1123,7 +1123,7 @@
                                       <div v-if="filteredDeliveryAddress3 != null">
                                         <ComboboxOptions
                                           v-if="filteredDeliveryAddress3.length > 0"
-                                          class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                          class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                           <ComboboxOption
                                             v-for="address in filteredDeliveryAddress3"
                                             :key="address.id"
@@ -1306,7 +1306,7 @@
                                       <div v-if="filteredDeliveryAddress4 != null">
                                         <ComboboxOptions
                                           v-if="filteredDeliveryAddress4.length > 0"
-                                          class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                          class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                           <ComboboxOption
                                             v-for="address in filteredDeliveryAddress4"
                                             :key="address.id"
@@ -1489,7 +1489,7 @@
                                       <div v-if="filteredDeliveryAddress5 != null">
                                         <ComboboxOptions
                                           v-if="filteredDeliveryAddress5.length > 0"
-                                          class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                          class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                           <ComboboxOption
                                             v-for="address in filteredDeliveryAddress5"
                                             :key="address.id"
@@ -1714,7 +1714,7 @@
 
                                     <ComboboxOptions
                                       v-if="filteredTransporters.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                      class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                       <ComboboxOption
                                         v-for="transporter in filteredTransporters"
                                         :key="transporter.id"
@@ -1850,7 +1850,7 @@
 
                                     <ComboboxOptions
                                       v-if="filteredSelectedDrivers.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                      class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                       <ComboboxOption
                                         v-for="driver in filteredSelectedDrivers"
                                         :key="driver.id"
@@ -2059,7 +2059,7 @@
 
                                     <ComboboxOptions
                                       v-if="filteredSelectedVehicles.length > 0"
-                                      class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                      class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                       <ComboboxOption
                                         v-for="vehicle in filteredSelectedVehicles"
                                         :key="vehicle.id"
