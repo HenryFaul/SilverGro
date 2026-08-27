@@ -946,7 +946,7 @@
 
                           <ComboboxOptions
                             v-if="filteredContractTypes.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="type in filteredContractTypes"
                               :key="type.id"
@@ -1009,7 +1009,7 @@
 
                           <ComboboxOptions
                             v-if="filteredProducts.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="product in filteredProducts"
                               :key="product"
@@ -1073,7 +1073,7 @@
 
                           <ComboboxOptions
                             v-if="filteredSuppliers.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="supplier in filteredSuppliers"
                               :key="supplier.id"
@@ -1137,7 +1137,7 @@
 
                           <ComboboxOptions
                             v-if="filteredCustomers.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="customer in filteredCustomers"
                               :key="customer.id"
@@ -1203,7 +1203,7 @@
 
                           <ComboboxOptions
                             v-if="filteredTransporters.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="transporter in filteredTransporters"
                               :key="transporter.id"
@@ -2177,7 +2177,7 @@
 
                           <ComboboxOptions
                             v-if="filteredConfirmationTypes.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="type in filteredConfirmationTypes"
                               :key="type.id"
@@ -2244,7 +2244,7 @@
 
                           <ComboboxOptions
                             v-if="filteredStaff.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="staff in filteredStaff"
                               :key="staff.id"
@@ -2309,7 +2309,7 @@
 
                           <ComboboxOptions
                             v-if="filteredProductSources.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="source in filteredProductSources"
                               :key="source.id"
@@ -2374,7 +2374,7 @@
 
                           <ComboboxOptions
                             v-if="filteredPackageIncoming.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="packaging in filteredPackageIncoming"
                               :key="packaging.id"
@@ -2441,7 +2441,7 @@
 
                           <ComboboxOptions
                             v-if="filteredPackageOutgoing.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="packaging in filteredPackageOutgoing"
                               :key="packaging.id"
@@ -2508,7 +2508,7 @@
 
                           <ComboboxOptions
                             v-if="filteredBillingUnitsIncoming.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="units in filteredBillingUnitsIncoming"
                               :key="units.id"
@@ -2575,7 +2575,7 @@
 
                           <ComboboxOptions
                             v-if="filteredBillingUnitsOutgoing.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="units in filteredBillingUnitsOutgoing"
                               :key="units.id"
@@ -2642,7 +2642,7 @@
 
                           <ComboboxOptions
                             v-if="filteredCollectionAddress.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="address in filteredCollectionAddress"
                               :key="address.id"
@@ -2836,7 +2836,7 @@
 
                           <ComboboxOptions
                             v-if="filteredDeliveryAddress.length > 0"
-                            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                             <ComboboxOption
                               v-for="address in filteredDeliveryAddress"
                               :key="address.id"

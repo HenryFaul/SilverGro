@@ -1,6 +1,7 @@
 <script setup>
   import AppLayout from '@/Layouts/AppLayout.vue';
   import { computed, inject, onBeforeMount, ref, watch } from 'vue';
+  import { truncateText } from '@/Composables/useTextFormatters';
   import { Link, useForm, usePage } from '@inertiajs/vue3';
   import { debounce } from 'lodash';
   import PaginationModified from '@/Components/UI/PaginationModified.vue';
@@ -703,13 +704,19 @@
                   </td>
 
                   <td :class="row_styler">
-                    {{ transaction.supplier.last_legal_name }}
+                    <span :title="transaction.supplier.last_legal_name">
+                      {{ truncateText(transaction.supplier.last_legal_name, 32) }}
+                    </span>
                   </td>
                   <td :class="row_styler">
-                    {{ transaction.customer.last_legal_name }}
+                    <span :title="transaction.customer.last_legal_name">
+                      {{ truncateText(transaction.customer.last_legal_name, 32) }}
+                    </span>
                   </td>
                   <td :class="row_styler">
-                    {{ transaction.transporter.last_legal_name }}
+                    <span :title="transaction.transporter.last_legal_name">
+                      {{ truncateText(transaction.transporter.last_legal_name, 32) }}
+                    </span>
                   </td>
 
                   <td :class="row_styler">

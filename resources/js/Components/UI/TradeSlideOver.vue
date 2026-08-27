@@ -330,7 +330,7 @@
 
                                   <ComboboxOptions
                                     v-if="filteredContractTypes.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     <ComboboxOption
                                       v-for="type in filteredContractTypes"
                                       :key="type.id"
@@ -409,7 +409,7 @@
 
                                   <ComboboxOptions
                                     v-if="filteredCustomers.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     <ComboboxOption
                                       v-for="customer in filteredCustomers"
                                       :key="customer.id"
@@ -489,7 +489,7 @@
 
                                   <ComboboxOptions
                                     v-if="filteredSuppliers.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     <ComboboxOption
                                       v-for="supplier in filteredSuppliers"
                                       :key="supplier.id"
@@ -569,7 +569,7 @@
 
                                   <ComboboxOptions
                                     v-if="filteredTransporters.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     <ComboboxOption
                                       v-for="transporter in filteredTransporters"
                                       :key="transporter.id"
@@ -646,7 +646,7 @@
 
                                   <ComboboxOptions
                                     v-if="filteredProducts.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     <ComboboxOption
                                       v-for="product in filteredProducts"
                                       :key="product"
@@ -726,7 +726,7 @@
 
                                   <ComboboxOptions
                                     v-if="filteredBillingUnitsIncoming.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    class="absolute z-10 mt-1 max-h-60 w-full min-w-max max-w-[36rem] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     <ComboboxOption
                                       v-for="units in filteredBillingUnitsIncoming"
                                       :key="units.id"

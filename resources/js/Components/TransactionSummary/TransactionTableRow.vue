@@ -218,17 +218,23 @@ import { truncateText } from '@/Composables/useTextFormatters';
 
     <!-- Supplier -->
     <td :class="cellClass">
-      {{ transaction.supplier?.last_legal_name || '' }}
+      <span :title="transaction.supplier?.last_legal_name || ''">
+        {{ truncateText(transaction.supplier?.last_legal_name, 32) }}
+      </span>
     </td>
 
     <!-- Customer -->
     <td :class="cellClass">
-      {{ transaction.customer?.last_legal_name || '' }}
+      <span :title="transaction.customer?.last_legal_name || ''">
+        {{ truncateText(transaction.customer?.last_legal_name, 32) }}
+      </span>
     </td>
 
     <!-- Transporter -->
     <td :class="cellClass">
-      {{ transaction.transporter?.last_legal_name || '' }}
+      <span :title="transaction.transporter?.last_legal_name || ''">
+        {{ truncateText(transaction.transporter?.last_legal_name, 32) }}
+      </span>
     </td>
 
     <!-- REG# (Vehicle Registration) -->

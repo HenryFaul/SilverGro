@@ -140,14 +140,15 @@ class SalesOrderController extends Controller
             'split_data'=>$split_data
         ];
 
-        // Check if the load is split and set the orientation and view accordingly
-        if ($transport_trans->is_split_load) {
-            $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_split_v3', $data);
-            $pdf->setPaper('A4', 'landscape');
-        } else {
-            $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_v3',$data);
-            $pdf->setPaper('A4', 'portrait');
-        }
+        // The Sales Order Confirmation is customer-facing, and a customer must not
+        // be able to tell their delivery came off a split load - they ordered a
+        // quantity and they receive it. The split template announces the split and
+        // lays the members out side by side, so it is never used here; every trade
+        // (primary or member) renders the ordinary single-load confirmation against
+        // its own quantities and price. $split_data is still passed for any
+        // internal use of the view.
+        $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_v3', $data);
+        $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream();
 
