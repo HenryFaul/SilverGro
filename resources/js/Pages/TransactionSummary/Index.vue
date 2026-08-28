@@ -4055,20 +4055,6 @@
                               </dd>
                             </div>
 
-                            <div class="flex justify-between gap-x-4 py-3">
-                              <dt class="text-gray-500">Working Document</dt>
-                              <dd class="flex items-start gap-x-2">
-                                <a
-                                  :href="
-                                    '/pdf_report/purchase_order_view/' +
-                                    props.selected_transaction.id
-                                  "
-                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  target="_blank">
-                                  View
-                                </a>
-                              </dd>
-                            </div>
                           </div>
 
                           <div v-else>
@@ -4083,6 +4069,25 @@
                                 </SecondaryButton>
                               </dd>
                             </div>
+                          </div>
+                          <div class="flex justify-between gap-x-4 py-3">
+                            <dt class="text-gray-500">Working Document</dt>
+                            <dd class="flex items-center gap-x-2">
+                              <span
+                                v-if="!purchase_order.is_active"
+                                class="text-xs italic text-gray-500">
+                                Not activated — preview only
+                              </span>
+                              <a
+                                :href="
+                                  '/pdf_report/purchase_order_view/' +
+                                  props.selected_transaction.id
+                                "
+                                class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                target="_blank">
+                                View
+                              </a>
+                            </dd>
                           </div>
                         </dl>
                       </li>
@@ -4105,10 +4110,15 @@
 
                         <dl
                           class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                          <div v-if="purchase_order.is_active">
+                          <div>
                             <div class="flex justify-between gap-x-4 py-3">
                               <dt class="text-gray-500">Working Document</dt>
-                              <dd class="flex items-start gap-x-2">
+                              <dd class="flex items-center gap-x-2">
+                                <span
+                                  v-if="!purchase_order.is_active"
+                                  class="text-xs italic text-gray-500">
+                                  Not activated — preview only
+                                </span>
                                 <a
                                   :href="
                                     '/pdf_report/purchase_order_confirmation_view/' +
@@ -4122,7 +4132,6 @@
                             </div>
                           </div>
 
-                          <div v-else>{{ selected_transaction.contract_type_id === 2 ? 'Purchase Contract Document not active' : 'Purchase Order Confirmation not active' }}</div>
                         </dl>
                       </li>
                       <li
@@ -4178,20 +4187,6 @@
                               </dd>
                             </div>
 
-                            <div class="flex justify-between gap-x-4 py-3">
-                              <dt class="text-gray-500">Working Document</dt>
-                              <dd class="flex items-start gap-x-2">
-                                <a
-                                  :href="
-                                    '/pdf_report/sales_order_view/' +
-                                    props.selected_transaction.id
-                                  "
-                                  class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                  target="_blank">
-                                  View
-                                </a>
-                              </dd>
-                            </div>
                           </div>
 
                           <div v-else>
@@ -4204,6 +4199,25 @@
                                 </SecondaryButton>
                               </dd>
                             </div>
+                          </div>
+                          <div class="flex justify-between gap-x-4 py-3">
+                            <dt class="text-gray-500">Working Document</dt>
+                            <dd class="flex items-center gap-x-2">
+                              <span
+                                v-if="!sales_order.is_active"
+                                class="text-xs italic text-gray-500">
+                                Not activated — preview only
+                              </span>
+                              <a
+                                :href="
+                                  '/pdf_report/sales_order_view/' +
+                                  props.selected_transaction.id
+                                "
+                                class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                target="_blank">
+                                View
+                              </a>
+                            </dd>
                           </div>
                         </dl>
                       </li>
@@ -4226,10 +4240,15 @@
 
                         <dl
                           class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                          <div v-if="sales_order.is_active">
+                          <div>
                             <div class="flex justify-between gap-x-4 py-3">
                               <dt class="text-gray-500">Working Document</dt>
-                              <dd class="flex items-start gap-x-2">
+                              <dd class="flex items-center gap-x-2">
+                                <span
+                                  v-if="!sales_order.is_active"
+                                  class="text-xs italic text-gray-500">
+                                  Not activated — preview only
+                                </span>
                                 <a
                                   :href="
                                     '/pdf_report/sales_order_confirmation_view/' +
@@ -4270,7 +4289,6 @@
                             </div>
                           </div>
 
-                          <div v-else>{{ selected_transaction.contract_type_id === 3 ? 'Sales Contract Document not active' : 'Sales Order Confirmation not active' }}</div>
                         </dl>
                       </li>
                     </ul>

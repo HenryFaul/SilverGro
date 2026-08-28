@@ -237,10 +237,10 @@
                 <tr class="table_sections">
                     <td class="table_sections table_row_heading" style="width:25%;">Att</td>
                     <td class="table_sections table_row_value" colspan="3">
-                        @if($primary->Supplier->contactable == "[]" || $primary->Supplier->contactable->isEmpty())
+                        @if($primary->Supplier->contactable->where('is_active', 1)->isEmpty())
                             <span>No contact loaded</span>
                         @else
-                            @foreach($primary->Supplier->contactable as $contact)
+                            @foreach($primary->Supplier->contactable->where('is_active', 1) as $contact)
                                 <div>
                                     <span>{{$contact->first_name}} {{$contact->last_legal_name}}</span>
                                     @if($contact->numberable != "[]" && $contact->numberable->isNotEmpty())
@@ -381,10 +381,10 @@
                     <tr class="table_sections">
                         <td class="table_sections table_row_heading" style="width:25%;">Att</td>
                         <td class="table_sections table_row_value" colspan="3">
-                            @if($primary->Supplier->contactable == "[]" || $primary->Supplier->contactable->isEmpty())
+                            @if($primary->Supplier->contactable->where('is_active', 1)->isEmpty())
                                 <span>No contact loaded</span>
                             @else
-                                @foreach($primary->Supplier->contactable as $contact)
+                                @foreach($primary->Supplier->contactable->where('is_active', 1) as $contact)
                                     <div>
                                         <span>{{$contact->first_name}} {{$contact->last_legal_name}}</span>
                                         @if($contact->numberable != "[]" && $contact->numberable->isNotEmpty())
