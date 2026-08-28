@@ -235,10 +235,10 @@
                         <tr class="table_sections">
                             <td class="table_sections table_row_heading" style="width: 25%;">Att</td>
                             <td class="table_sections table_row_value" colspan="3">
-                                @if($transport_trans->Customer->contactable=="[]")
+                                @if($transport_trans->Customer->contactable->where('is_active', 1)->isEmpty())
                                     <span>No contact loaded</span>
                                 @else
-                                    @foreach($transport_trans->Customer->contactable as $contact)
+                                    @foreach($transport_trans->Customer->contactable->where('is_active', 1) as $contact)
                                         <div>
                                             <span>{{$contact->first_name}}</span>
                                             <span>{{$contact->last_legal_name}}</span>
