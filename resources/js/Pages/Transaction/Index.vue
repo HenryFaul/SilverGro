@@ -40,8 +40,19 @@ const format = () => {
     contract_types: Object,
     download_url: String,
     custom_reports: Object,
+    report_preview: Object,
   });
   const roles_permissions = computed(() => usePage().props.roles_permissions);
+
+  // Re-fetch just the preview when a different report is picked, so the columns can be
+  // checked while the report is being built rather than only after downloading it.
+  const refreshPreview = () => {
+    router.get(
+      route('transport_transaction.index'),
+      { ...filterForm.data(), custom_report_id: filterForm.custom_report_id },
+      { preserveState: true, preserveScroll: true, replace: true, only: ['report_preview'] }
+    );
+  };
 
   // Watch for flash messages
   const page = usePage();
@@ -448,6 +459,7 @@ let sc = ref(true);
                   </label>
                   <select
                     v-model="filterForm.custom_report_id"
+                    @change="refreshPreview"
                     class="block w-64 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     <option
                       v-for="n in custom_reports"
@@ -623,7 +635,9 @@ let sc = ref(true);
             </div>
 
             <div>
-              <table class="min-w-full divide-y divide-gray-200">
+              <table
+                v-if="!report_preview"
+                class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-indigo-400 text-right">
                   <tr class="font-bold">
                     <th
@@ -707,6 +721,51 @@ let sc = ref(true);
                   </tr>
                 </tbody>
               </table>
+
+              <!-- Preview of the selected report: the exact columns the download will
+                   contain, so a report can be checked while it is being built. -->
+              <div
+                v-else
+                class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-indigo-400">
+                    <tr class="font-bold">
+                      <th
+                        v-for="(header, i) in report_preview.headers"
+                        :key="i"
+                        class="py-4 px-4 text-xs font-semibold tracking-wider text-left text-white uppercase whitespace-nowrap"
+                        scope="col">
+                        {{ header }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr
+                      v-for="(row, r) in report_preview.rows"
+                      :key="r"
+                      class="hover:bg-gray-100 text-sm">
+                      <td
+                        v-for="(cell, c) in row"
+                        :key="c"
+                        class="py-1 px-4 whitespace-nowrap">
+                        {{ cell }}
+                      </td>
+                    </tr>
+                    <tr v-if="!report_preview.rows.length">
+                      <td
+                        :colspan="report_preview.headers.length"
+                        class="py-6 text-center text-sm text-gray-500">
+                        This report has no fields selected yet.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p class="mt-2 px-1 text-xs italic text-gray-500">
+                  Showing the rows on this page. Download Excel exports every row matching
+                  the filters above.
+                </p>
+              </div>
+
 
               <div class="ml-3 mt-2">
                 {{
