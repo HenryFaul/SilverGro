@@ -1025,6 +1025,12 @@ class TransportTransactionController extends Controller
             ->paginate($paginate)
             ->withQueryString();
 
+        // Preview of the selected report, so the columns can be checked while the
+        // report is being built rather than only after downloading it. It is produced
+        // by running the export over the rows on screen and reading the sheet back,
+        // so the preview cannot drift from what the download will contain.
+        $report_preview = $this->buildReportPreview($request->custom_report_id, $transactions->getCollection());
+
         $start_date = (Carbon::now()->tz('Africa/Johannesburg')->startOfMonth())->toDateString();
         $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
         $contract_types = ContractType::all();
@@ -1042,10 +1048,57 @@ class TransportTransactionController extends Controller
                 'end_date' => $end_date,
                 'contract_types' => $contract_types,
                 'download_url' => null,
-                'custom_reports' => $custom_reports
+                'custom_reports' => $custom_reports,
+                'report_preview' => $report_preview
 
             ]
         );
+    }
+
+    /**
+     * Build an on-screen preview of a custom report for the rows currently listed.
+     *
+     * Rather than reimplement the field resolution (16 model branches, each with its
+     * own header prefix), this runs the very same export used for the download and
+     * reads the resulting sheet back as headers + rows. Preview and download are
+     * therefore guaranteed to agree.
+     */
+    private function buildReportPreview($custom_report_id, $transactions): ?array
+    {
+        if (!$custom_report_id || $transactions->isEmpty()) {
+            return null;
+        }
+
+        try {
+            $spreadsheet = $this->makeExcelDynamic($transactions, $custom_report_id);
+
+            if ($spreadsheet === null) {
+                return null;
+            }
+
+            $rows = $spreadsheet->getActiveSheet()->toArray(null, true, false, false);
+            $spreadsheet->disconnectWorksheets();
+
+            if (empty($rows)) {
+                return null;
+            }
+
+            $headers = array_shift($rows);
+
+            return [
+                'headers' => array_values($headers),
+                'rows' => array_values($rows),
+            ];
+        } catch (\Throwable $e) {
+            // A broken report definition must not take the whole screen down -
+            // fall back to the standard trade list.
+            Log::error('Report preview failed', [
+                'custom_report_id' => $custom_report_id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
 
