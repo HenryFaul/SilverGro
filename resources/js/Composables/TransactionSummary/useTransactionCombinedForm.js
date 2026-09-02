@@ -12,11 +12,34 @@ export function useTransactionCombinedForm(props) {
   // Helper to safely find array element
   const findById = (array, id) => array?.find((element) => element.id === id) || null;
 
-  // Helper to find addressable by customer
+  // Helper to find addressable by customer.
+  // The saved address is normally one of the customer's own, but where a trade was
+  // relinked to a different customer record the address can sit on the previous one.
+  // Falling back to the address the trade actually carries means the field shows what
+  // was saved instead of going blank, which reads as the selection having been lost.
   const findDeliveryAddress = (customerId, addressId) => {
-    if (!customerId || !addressId) return null;
+    if (!addressId) return null;
     const customer = findById(props.all_customers, customerId);
-    return customer?.addressable?.find((element) => element.id === addressId) || null;
+    const owned = customer?.addressable?.find((element) => element.id === addressId);
+    if (owned) return owned;
+
+    const load = props.selected_transaction.transport_load;
+    if (load?.delivery_address?.id === addressId) return load.delivery_address;
+
+    return null;
+  };
+
+  // Same fallback for the supplier's collection address.
+  const findCollectionAddress = (supplierId, addressId) => {
+    if (!addressId) return null;
+    const supplier = findById(props.all_suppliers, supplierId);
+    const owned = supplier?.addressable?.find((element) => element.id === addressId);
+    if (owned) return owned;
+
+    const load = props.selected_transaction.transport_load;
+    if (load?.collection_address?.id === addressId) return load.collection_address;
+
+    return null;
   };
 
   // Initialize the combined form with all transaction data
@@ -107,12 +130,10 @@ export function useTransactionCombinedForm(props) {
     ),
 
     // Addresses (resolve collection from supplier addressable like updateSelectValues)
-    collection_address_id: props.all_suppliers
-      .find((element) => element.id === props.selected_transaction.supplier_id)
-      ?.addressable?.find(
-        (element) =>
-          element.id === props.selected_transaction.transport_load.collection_address_id
-      ),
+    collection_address_id: findCollectionAddress(
+      props.selected_transaction.supplier_id,
+      props.selected_transaction.transport_load.collection_address_id
+    ),
     delivery_address_id: findDeliveryAddress(
       props.selected_transaction.customer_id,
       props.selected_transaction.transport_load.delivery_address_id
