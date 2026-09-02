@@ -35,6 +35,10 @@ class PurchaseOrderController extends Controller
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
+        // Generate Final stores the document and records its path; once that has
+        // happened the document is no longer a working draft.
+        $final_purchase_order = !empty($purchase_order?->report_path);
+
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
         $user_name = Auth::user()->name;

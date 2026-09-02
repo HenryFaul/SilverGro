@@ -1,3 +1,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Trade screen density and legibility.
+
+   Allan asked for tighter line spacing across the trade tabs, and for stronger,
+   larger labels - the two trade off against each other, so they are expressed as
+   variables rather than baked into ~115 individual elements. During a review
+   session these five values can be changed in one place (or live in the browser)
+   and the whole trade screen responds.
+   --------------------------------------------------------------------------- */
+:root {
+  --trade-row-py: 0.3rem;        /* was py-3 (0.75rem) - the loose spacing reported */
+  --trade-line-height: 1.35;     /* was leading-6 (1.5) */
+  --trade-font-size: 0.875rem;
+  --trade-label-weight: 600;
+  --trade-label-color: #111827;  /* labels were grey-500; darker per the contrast note */
+}
+
+.trade-tabs dl > div {
+  padding-top: var(--trade-row-py);
+  padding-bottom: var(--trade-row-py);
+}
+
+.trade-tabs dl {
+  font-size: var(--trade-font-size);
+  line-height: var(--trade-line-height);
+}
+
+/* dt is the field label in every one of these rows */
+.trade-tabs dl dt {
+  font-weight: var(--trade-label-weight);
+  color: var(--trade-label-color);
+}
