@@ -36,11 +36,12 @@ class TransportOrderController extends Controller
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
+        $transport_order = $transport_trans->TransportOrder?->load('ConfirmedByType');
+
         // Activation is what makes these documents final - there is no
         // "generate final" for them, so report_path is never written and
         // deriving the flag from it left every copy stamped as a draft.
         $final_transport_order = (bool) ($transport_order?->is_active);
-        $transport_order = $transport_trans->TransportOrder?->load('ConfirmedByType');
 
         //check if split load
 
