@@ -185,8 +185,26 @@
       onSuccess: () => {
         close();
       },
-      onError: (e) => {
-        console.log(e);
+      // Errors used to go to the console only, so a rejected save looked like the
+      // button doing nothing. Keep the modal open and let InputError show them.
+      onError: () => {},
+    });
+  };
+
+  const hideAddress = () => {
+    form.post(route('address.hide', props.address.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+        close();
+      },
+    });
+  };
+
+  const unhideAddress = () => {
+    form.post(route('address.unhide', props.address.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+        close();
       },
     });
   };
@@ -395,6 +413,18 @@
             class="bg-red-400"
             @click="deleteAddress()">
             Delete
+          </SecondaryButton>
+          <SecondaryButton
+            v-if="!props.address.is_hidden"
+            class="ml-1"
+            @click="hideAddress()">
+            Hide
+          </SecondaryButton>
+          <SecondaryButton
+            v-else
+            class="ml-1"
+            @click="unhideAddress()">
+            Restore
           </SecondaryButton>
           <SecondaryButton
             class="ml-1 bg-green-400"

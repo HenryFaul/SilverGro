@@ -1,8 +1,13 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
     month: String,
+    start_date: String,
+    end_date: String,
+    is_custom_period: Boolean,
     planned_tons_in: Number,
     planned_tons_out: Number,
     weight_uploaded: Number,
@@ -22,6 +27,28 @@ const props = defineProps({
     { id: 3, name: 'Uptime guarantee', value: '99.9%' },
     { id: 4, name: 'Paid out to creators', value: '$70M' },
   ];
+
+  // Seeded from the server so the boxes show the period actually being
+  // reported, whether that is a range somebody set or the default month.
+  const startDate = ref(props.start_date ?? '');
+  const endDate = ref(props.end_date ?? '');
+
+  const applyPeriod = () => {
+    router.get(
+      route('dashboard'),
+      { start_date: startDate.value || null, end_date: endDate.value || null },
+      { preserveScroll: true }
+    );
+  };
+
+  const resetPeriod = () => {
+    router.get(route('dashboard'), { reset_period: 1 }, { preserveScroll: true });
+  };
+
+  const prettyDate = (d) =>
+    d
+      ? new Date(d).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })
+      : '';
 
   let NiceNumber = (_number) => {
     let val = (_number / 1).toFixed(2).replace('.', '.');
@@ -47,6 +74,61 @@ const props = defineProps({
                       class="text-3xl font-bold tracking-tight text-indigo-500 sm:text-4xl">
                       Current Stats overview:
                     </h2>
+
+                    <p class="mt-2 text-sm text-gray-600">
+                      {{ prettyDate(start_date) }} to {{ prettyDate(end_date) }}
+                      <span
+                        v-if="!is_custom_period"
+                        class="text-gray-400">
+                        (this month)
+                      </span>
+                    </p>
+                  </div>
+
+                  <div
+                    class="mt-4 flex flex-wrap items-end justify-center gap-3 border-t border-gray-100 pt-4">
+                    <div>
+                      <label
+                        class="block text-xs font-medium text-gray-600"
+                        for="dash-start">
+                        Start
+                      </label>
+                      <input
+                        id="dash-start"
+                        v-model="startDate"
+                        class="mt-1 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        type="date"
+                        @keyup.enter="applyPeriod" />
+                    </div>
+
+                    <div>
+                      <label
+                        class="block text-xs font-medium text-gray-600"
+                        for="dash-end">
+                        End
+                      </label>
+                      <input
+                        id="dash-end"
+                        v-model="endDate"
+                        class="mt-1 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        type="date"
+                        @keyup.enter="applyPeriod" />
+                    </div>
+
+                    <button
+                      class="rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600"
+                      type="button"
+                      @click="applyPeriod">
+                      Apply
+                    </button>
+
+                    <button
+                      v-if="is_custom_period"
+                      class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+                      type="button"
+                      @click="resetPeriod">
+                      Reset to this month
+                    </button>
                   </div>
                 </div>
 

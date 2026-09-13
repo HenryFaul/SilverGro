@@ -21,7 +21,6 @@ class TransportOrderController extends Controller
     public function viewConfirmationPDF(Request $request, $id): Response
     {
 
-        $final_transport_order = false;
         // Get PDF settings
         $pdfSettings = PdfSetting::getActive();
         $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
@@ -37,9 +36,10 @@ class TransportOrderController extends Controller
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
-        // Generate Final stores the document and records its path; once that has
-        // happened the document is no longer a working draft.
-        $final_transport_order = !empty($transport_order?->report_path);
+        // Activation is what makes these documents final - there is no
+        // "generate final" for them, so report_path is never written and
+        // deriving the flag from it left every copy stamped as a draft.
+        $final_transport_order = (bool) ($transport_order?->is_active);
         $transport_order = $transport_trans->TransportOrder?->load('ConfirmedByType');
 
         //check if split load

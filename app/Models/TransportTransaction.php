@@ -256,6 +256,22 @@ class TransportTransaction extends Model
 
     }
 
+    /**
+     * Transport falling inside an explicit start/end range.
+     *
+     * The dashboard used scopeMonth with today's date, so the figures silently
+     * meant "this calendar month" with nothing on screen saying so. This lets a
+     * period be stated outright.
+     */
+    public function scopeDateRange(Builder $query, ?string $start, ?string $end): Builder
+    {
+        return $query
+            ->when($start, fn ($query, $value) =>
+                $query->whereDate('transport_date_earliest', '>=', Carbon::parse($value)->startOfDay()))
+            ->when($end, fn ($query, $value) =>
+                $query->whereDate('transport_date_earliest', '<=', Carbon::parse($value)->endOfDay()));
+    }
+
 
     public function getActivitylogOptions(): LogOptions
     {
