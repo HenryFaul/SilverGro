@@ -827,10 +827,18 @@
                                 </div>
                               </td>
                               <td class="px-2 py-1">
-                                {{ trans.supplier.last_legal_name }}
+                                <span
+                                  :title="trans.supplier.last_legal_name"
+                                  class="weekly-name">
+                                  {{ trans.supplier.last_legal_name }}
+                                </span>
                               </td>
                               <td class="px-2 py-1">
-                                {{ trans.customer.last_legal_name }}
+                                <span
+                                  :title="trans.customer.last_legal_name"
+                                  class="weekly-name">
+                                  {{ trans.customer.last_legal_name }}
+                                </span>
                               </td>
                               <td class="px-2 py-1">
                                 <div v-if="trans.transport_driver_vehicle">
