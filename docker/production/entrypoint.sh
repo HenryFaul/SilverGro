@@ -13,6 +13,12 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# The artisan commands above run as root and recreate directories under
+# storage/framework/cache, so they end up root-owned even though we chowned
+# above. Anything the app later writes to the file cache then fails with
+# "Permission denied" and returns a 500. Re-apply ownership afterwards.
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+
 # NOTE: migrations are intentionally NOT run here. They run as a dedicated
 # one-off ECS task (see scripts/deploy.sh) so concurrent tasks never race and
 # a bad migration can't crash-loop the web service.
