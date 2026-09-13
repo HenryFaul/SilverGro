@@ -81,7 +81,12 @@ class TransactionSummaryController extends Controller
         $selected_trans_id = $request['selected_trans_id'] ?? $first_transaction_id;
 
         $transportTransaction = TransportTransaction::where('id', $selected_trans_id)->with('ContractType')->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
-            ->with('TransportLoad')->with('DealTicket')->with('Supplier', fn($query) => $query->with('addressable')->with('TermsOfPayment')->with('contactable', fn($query) => $query->with('numberable')->with('emailable')))
+            // Send the trade's actual collection and delivery addresses, not just their ids.
+            // The screen resolves the selected address out of the party's own address list,
+            // which silently blanks the field whenever the stored address sits on a
+            // different party record - it then looks as though the selection was lost.
+            ->with('TransportLoad', fn($query) => $query->with('CollectionAddress')->with('DeliveryAddress'))
+            ->with('DealTicket')->with('Supplier', fn($query) => $query->with('addressable')->with('TermsOfPayment')->with('contactable', fn($query) => $query->with('numberable')->with('emailable')))
             ->with('Customer', fn($query) => $query->with('addressable')->with('contactable', fn($query) => $query->with('numberable')->with('emailable'))->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_2', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_3', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')

@@ -749,7 +749,9 @@
                   <span class="text-lg text-indigo-400">Loading...</span>
                 </div>
 
-                <div v-else>
+                <div
+                  v-else
+                  class="trade-tabs">
                   <div v-if="selectedTabId === 0">
                     <ul
                       class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8"
@@ -1682,7 +1684,7 @@
                     <ul
                       class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8"
                       role="list">
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
+                      <li class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -1799,7 +1801,7 @@
                         </dl>
                       </li>
 
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
+                      <li class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -2281,7 +2283,7 @@
                         </dl>
                       </li>
 
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
+                      <li class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -2459,7 +2461,7 @@
                         </dl>
                       </li>
 
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
+                      <li class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -2634,7 +2636,7 @@
                       role="list">
                       <li
                         v-if="selected_transaction.contract_type_id === 4"
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -2912,7 +2914,7 @@
                           selected_transaction.contract_type_id === 2 ||
                           selected_transaction.contract_type_id === 3
                         "
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -2975,7 +2977,7 @@
                         </dl>
                       </li>
 
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
+                      <li class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -3193,7 +3195,7 @@
                         </dl>
                       </li>
 
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
+                      <li class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -3373,7 +3375,7 @@
                         </dl>
                       </li>
 
-                      <li class="overflow-hidden rounded-xl border border-gray-200">
+                      <li class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -3503,7 +3505,7 @@
                       role="list">
                       <li
                         v-if="selected_transaction.contract_type_id === 4"
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -3672,7 +3674,7 @@
 
                       <li
                         v-if="selected_transaction.contract_type_id === 4"
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -3850,7 +3852,7 @@
                       role="list">
                       <li
                         v-if="selected_transaction.contract_type_id === 4"
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -3924,7 +3926,7 @@
                       </li>
                       <li
                         v-if="selected_transaction.contract_type_id === 4"
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -4003,7 +4005,7 @@
                       </li>
                       <li
                         v-if="selected_transaction.contract_type_id === 2"
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -4096,7 +4098,7 @@
                           selected_transaction.contract_type_id === 2 ||
                           selected_transaction.contract_type_id === 4
                         "
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -4136,7 +4138,7 @@
                       </li>
                       <li
                         v-if="selected_transaction.contract_type_id === 3"
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">
@@ -4226,7 +4228,7 @@
                           selected_transaction.contract_type_id === 3 ||
                           selected_transaction.contract_type_id === 4
                         "
-                        class="overflow-hidden rounded-xl border border-gray-200">
+                        class="rounded-xl border border-gray-200">
                         <div
                           class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
                           <div class="text-sm font-medium leading-6 text-gray-900">

@@ -33,6 +33,10 @@ class SalesOrderController extends Controller
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
+
+        // Generate Final stores the document and records its path; once that has
+        // happened the document is no longer a working draft.
+        $final_sales_order = !empty($sales_order?->report_path);
         //dd($purchase_order);
         //dd($sales_order);
 

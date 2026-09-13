@@ -29,6 +29,8 @@ class DealTicketController extends Controller
     public function viewPDF(Request $request, $id): Response
     {
 
+        // "Working Document Version" must disappear once Generate Final has produced
+        // a document - previously this was hardcoded false, so the banner never cleared.
         $final_deal_ticket = false;
         // Get PDF settings
         $pdfSettings = PdfSetting::getActive();
@@ -47,9 +49,14 @@ class DealTicketController extends Controller
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
-        if (!($deal_ticket->is_active)) {
-            abort(403);
-        }
+        // Generate Final stores the document and records its path; once that has
+        // happened the document is no longer a working draft.
+        $final_deal_ticket = !empty($deal_ticket?->report_path);
+
+        // Previewing is deliberately allowed before activation: documents must be
+        // checkable for completeness before approval, including by staff without
+        // approval rights. Sending and finalising remain gated elsewhere. This
+        // guard was returning 403 (a white screen) from the Process Control tab.
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
         $user_name = Auth::user()->name;

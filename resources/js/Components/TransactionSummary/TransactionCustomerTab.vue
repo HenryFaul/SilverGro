@@ -3,7 +3,7 @@
     class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-4 xl:gap-x-8"
     role="list">
     <!-- Customer Details Card -->
-    <li class="overflow-hidden rounded-xl border border-gray-200">
+    <li class="rounded-xl border border-gray-200">
       <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
         <div class="text-sm font-medium leading-6 text-gray-900">Customer details</div>
       </div>
@@ -163,7 +163,7 @@
     </li>
 
     <!-- Customer Account Details Card -->
-    <li class="overflow-hidden rounded-xl border border-gray-200">
+    <li class="rounded-xl border border-gray-200">
       <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
         <div class="text-sm font-medium leading-6 text-gray-900">
           Customer Account details
@@ -360,7 +360,7 @@
     </li>
 
     <!-- Product Details Card (Customer Tab View) -->
-    <li class="overflow-hidden rounded-xl border border-gray-200">
+    <li class="rounded-xl border border-gray-200">
       <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
         <div class="text-sm font-medium leading-6 text-gray-900">Product details</div>
       </div>
@@ -528,7 +528,7 @@
     </li>
 
     <!-- Customer Notes Card -->
-    <li class="overflow-hidden rounded-xl border border-gray-200">
+    <li class="rounded-xl border border-gray-200">
       <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
         <div class="text-sm font-medium leading-6 text-gray-900">Customer notes</div>
       </div>
