@@ -97,19 +97,23 @@ class AddressController extends Controller
 
         //['line_1','line_2','line_3','country','code','is_primary','longitude','latitude','directions','address_type_id','poly_address_type','poly_address_id'];
 
-        // line_1 and code are nullable on update but required on store. Plenty of
-        // addresses already in the book have no postal code, and the migration
-        // left a batch with an empty street line; making either one required here
-        // meant those rows could not be saved at all, so editing them appeared to
-        // be broken. New addresses still have to be entered properly.
+        // Editing an existing address has to work for every row already in the
+        // book, including the ones the migration left half-filled: 1,120 have no
+        // street line, 205 have no country and one has an over-length code. With
+        // those fields required, opening any of them and pressing Save failed
+        // validation - and because the modal only logged the error, it looked as
+        // though editing had been removed altogether.
+        //
+        // So the update rules describe what we can store, not what we would like
+        // to have been captured. Creating a new address still demands the lot.
         $address->update(
             $request->validate([
                 'address_type_id'=>['required', 'integer','exists:address_types,id'],
                 'line_1' => ['nullable', 'string'],
                 'line_2' => ['nullable', 'string'],
                 'line_3' => ['nullable', 'string'],
-                'country' => ['required', 'string'],
-                'code' => ['nullable', 'string', 'max:20'],
+                'country' => ['nullable', 'string'],
+                'code' => ['nullable', 'string', 'max:50'],
                 'longitude' => ['nullable', 'numeric'],
                 'latitude' => ['nullable', 'numeric'],
                 'directions' => ['nullable', 'string'],
