@@ -34,3 +34,26 @@
   font-weight: var(--trade-label-weight);
   color: var(--trade-label-color);
 }
+
+/* ---------------------------------------------------------------------------
+   Weekly View (pdf300.1) supplier / customer column widths.
+
+   These two cells hold full commercial names - "East Cape MUSHROOMS (PTY) LTD
+   T/A SNOCWAP MUSHROOMS" and the like - and in an auto-layout table each name
+   sizes its own column, so the pair pushed the costing columns off screen.
+   Cap them and ellipsise the overflow; the full name stays reachable on hover.
+
+   ch is used deliberately: Allan asked for "32 characters approx.", and ch
+   tracks the font, so the cap survives the font-size change he also asked for.
+   --------------------------------------------------------------------------- */
+:root {
+  --weekly-name-max: 32ch;
+}
+
+.weekly-name {
+  display: block;
+  max-width: var(--weekly-name-max);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
