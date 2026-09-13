@@ -89,13 +89,22 @@ class DebtorStandingController extends Controller
                         2
                     );
 
-                    if ($invoice_balance < 0) {
+                    if ($invoice_balance < 0 && $invoice_detail->invoice_amount > 0) {
                         // The customer has paid us more than the invoice. That credit
                         // is real money owed back to them, so it has to pull the
                         // balance down. Previously an overpaid invoice failed the
                         // "paid < amount" test, fell through to the settled branch and
                         // the credit was thrown away, which is why the CRM read higher
                         // than the accounting system by exactly the overpaid amount.
+                        //
+                        // The invoice_amount > 0 guard matters. One migrated row carries
+                        // a payment of R64,701.65 against an invoice of zero, on a
+                        // deactivated "OLD -" customer with no invoice number. That is an
+                        // unreconciled receipt, not a customer credit, and letting it
+                        // through would drop the debtors book by R64,701.65 the first
+                        // time anyone pressed Update - overshooting the accounting system
+                        // by far more than the R304.40 discrepancy being fixed. The three
+                        // genuine overpayments (R1,336.00 in total) are unaffected.
                         $counter++;
 
                         $invoice_detail->outstanding = $invoice_balance;
