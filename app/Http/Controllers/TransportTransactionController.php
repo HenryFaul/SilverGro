@@ -465,8 +465,8 @@ class TransportTransactionController extends Controller
 
     public function getProps(): array
     {
-        $customers = Customer::with('staff')->with('addressable')->with('contactable')->orderby('last_legal_name', 'asc')->get();
-        $suppliers = Supplier::with('addressable')->orderby('last_legal_name', 'asc')->get();
+        $customers = Customer::with('staff')->with(['addressable' => fn($q) => $q->visible()])->with('contactable')->orderby('last_legal_name', 'asc')->get();
+        $suppliers = Supplier::with(['addressable' => fn($q) => $q->visible()])->orderby('last_legal_name', 'asc')->get();
         $transporters = Transporter::orderby('last_legal_name', 'asc')->get();
         $contract_types = ContractType::all();
         $products = Product::all();
@@ -616,8 +616,8 @@ class TransportTransactionController extends Controller
         $deal_ticket->calculateRules();
         $rules_with_approvals = $deal_ticket->getAppliedRules();
 
-        $customers = Customer::with('staff')->with('addressable')->with('contactable')->orderby('last_legal_name', 'asc')->get();
-        $suppliers = Supplier::with('addressable')->orderby('last_legal_name', 'asc')->get();
+        $customers = Customer::with('staff')->with(['addressable' => fn($q) => $q->visible()])->with('contactable')->orderby('last_legal_name', 'asc')->get();
+        $suppliers = Supplier::with(['addressable' => fn($q) => $q->visible()])->orderby('last_legal_name', 'asc')->get();
         $transporters = Transporter::orderby('last_legal_name', 'asc')->get();
         $contract_types = ContractType::all();
         $products = Product::all();

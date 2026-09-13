@@ -361,6 +361,11 @@ Route::middleware([
     Route::resource('address', AddressController::class)->middleware('auth')
         ->only(['store', 'update', 'destroy']);
 
+    Route::post('/address/{address}/hide', [AddressController::class, 'hide'])
+        ->middleware('auth')->name('address.hide');
+    Route::post('/address/{address}/unhide', [AddressController::class, 'unhide'])
+        ->middleware('auth')->name('address.unhide');
+
 
 
     //Contact

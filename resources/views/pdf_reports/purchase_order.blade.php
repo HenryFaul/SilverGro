@@ -166,7 +166,7 @@
                 <tr>
                     <td></td>
                     <td style="float: right; text-align: right; font-size: 14px">
-                        @if($final_sales_order)
+                        @if($final_purchase_order)
                             <span>Final Version</span>
 
                         @else

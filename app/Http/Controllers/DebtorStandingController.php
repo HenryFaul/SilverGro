@@ -84,11 +84,30 @@ class DebtorStandingController extends Controller
 
                 // Only process contract type 4
                 if ($contract_type_id === 4) {
-                    // Treat as unpaid only if not flagged as paid AND amount not fully settled
-                    if (!$invoice_detail->is_invoice_paid && $invoice_detail->invoice_amount_paid < $invoice_detail->invoice_amount) {
+                    $invoice_balance = round(
+                        $invoice_detail->invoice_amount - $invoice_detail->invoice_amount_paid,
+                        2
+                    );
+
+                    if ($invoice_balance < 0) {
+                        // The customer has paid us more than the invoice. That credit
+                        // is real money owed back to them, so it has to pull the
+                        // balance down. Previously an overpaid invoice failed the
+                        // "paid < amount" test, fell through to the settled branch and
+                        // the credit was thrown away, which is why the CRM read higher
+                        // than the accounting system by exactly the overpaid amount.
                         $counter++;
 
-                        $invoice_balance = ($invoice_detail->invoice_amount - $invoice_detail->invoice_amount_paid);
+                        $invoice_detail->outstanding = $invoice_balance;
+                        $customer_total_outstanding += $invoice_balance;
+
+                        // A credit is money we owe them; it can never be overdue.
+                        $invoice_detail->overdue = 0;
+                        $invoice_detail->save();
+
+                    } elseif (!$invoice_detail->is_invoice_paid && $invoice_balance > 0) {
+                        $counter++;
+
                         $invoice_detail->outstanding = $invoice_balance;
                         $customer_total_outstanding += $invoice_balance;
 
@@ -107,7 +126,8 @@ class DebtorStandingController extends Controller
                         $invoice_detail->save();
 
                     } else {
-                        // Invoice is fully paid - reset outstanding and overdue
+                        // Settled: either the balance is nil, or it is flagged paid and
+                        // the residual is an allocation difference rather than a debt.
                         $invoice_detail->outstanding = 0;
                         $invoice_detail->overdue = 0;
                         $invoice_detail->save();
@@ -172,7 +192,10 @@ class DebtorStandingController extends Controller
             ->paginate($paginate)
             ->withQueryString();
 
-        $debtors_standings_totals = DebtorStanding::where('total_outstanding', '>',0)->get();
+        // '<> 0' rather than '> 0': a customer sitting in credit has a negative
+        // total, and excluding them would leave the grand total overstated by
+        // exactly the credit we just went to the trouble of recording.
+        $debtors_standings_totals = DebtorStanding::where('total_outstanding', '<>', 0)->get();
         $total_outstanding =0;
         $total_overdue=0;
 
@@ -204,7 +227,7 @@ class DebtorStandingController extends Controller
                     'TransportTransaction.Customer:id,last_legal_name'
                 ])
                 ->whereHas('TransportInvoiceDetails', function (Builder $query) {
-                    $query->where('outstanding', '>', 0)
+                    $query->where('outstanding', '<>', 0)
                           ->where('is_invoice_paid', false);
                 })
                 ->get();
@@ -292,7 +315,7 @@ class DebtorStandingController extends Controller
                 'TransportTransaction.Customer:id,last_legal_name'
             ])
             ->whereHas('TransportInvoiceDetails', function (Builder $query) {
-                $query->where('outstanding', '>', 0);
+                $query->where('outstanding', '<>', 0);
             })
             ->get();
 

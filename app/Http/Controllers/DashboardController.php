@@ -15,13 +15,44 @@ DashboardController extends Controller
 {
     //
 
-    public function index(MonthlyPcChart $chart)
+    public function index(MonthlyPcChart $chart, Request $request)
     {
 
         $this->doSummary();
         $today_date = Carbon::now();
         $month = $today_date->monthName;
         $filters['date'] = $today_date->toDateString();
+
+        // The period the figures cover.
+        //
+        // It used to be the current calendar month, hard-wired, with nothing on
+        // screen saying so - hence "what is the basis for this info set?". A range
+        // set here is remembered in the session, so it holds while the user moves
+        // around the system and stays put until they change it or press Reset,
+        // rather than snapping back to this month on every visit.
+        if ($request->has('reset_period')) {
+            $request->session()->forget(['dashboard_start_date', 'dashboard_end_date']);
+        } elseif ($request->filled('start_date') || $request->filled('end_date')) {
+            $request->validate([
+                'start_date' => ['nullable', 'date'],
+                'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            ], [
+                'end_date.after_or_equal' => 'The end date cannot be before the start date.',
+            ]);
+
+            $request->session()->put('dashboard_start_date', $request->input('start_date'));
+            $request->session()->put('dashboard_end_date', $request->input('end_date'));
+        }
+
+        $start_date = $request->session()->get('dashboard_start_date');
+        $end_date = $request->session()->get('dashboard_end_date');
+        $is_custom_period = $start_date !== null || $end_date !== null;
+
+        // No range chosen yet: keep the previous behaviour, but say so explicitly.
+        if (!$is_custom_period) {
+            $start_date = $today_date->copy()->startOfMonth()->toDateString();
+            $end_date = $today_date->copy()->endOfMonth()->toDateString();
+        }
 
         $planned_tons_in = 0;
         $planned_tons_out = 0;
@@ -34,7 +65,7 @@ DashboardController extends Controller
         $gp = 0;
         $gp_perc = 0;
 
-        $trans_data = TransportTransaction::where('include_in_calculations', '=', 1)->where('contract_type_id', '=', 4)->month($filters)->with('TransportFinance')->with('TransportDriverVehicle')->with('TransportJob')->with('Customer')->with('Transporter')->get();
+        $trans_data = TransportTransaction::where('include_in_calculations', '=', 1)->where('contract_type_id', '=', 4)->dateRange($start_date, $end_date)->with('TransportFinance')->with('TransportDriverVehicle')->with('TransportJob')->with('Customer')->with('Transporter')->get();
 
     /*    foreach ($trans_data as $trans) {
             $transport_finance = $trans->TransportFinance;
@@ -142,6 +173,9 @@ DashboardController extends Controller
             'Dashboard',
             [
                 'month'=>$month,
+                'start_date'=>$start_date,
+                'end_date'=>$end_date,
+                'is_custom_period'=>$is_custom_period,
                 'planned_tons_in'=> round($planned_tons_in,2),
                 'planned_tons_out'=> round($planned_tons_out,2),
                 'weight_uploaded'=> round($weight_uploaded,2),

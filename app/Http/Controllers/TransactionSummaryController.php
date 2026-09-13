@@ -86,8 +86,8 @@ class TransactionSummaryController extends Controller
             // which silently blanks the field whenever the stored address sits on a
             // different party record - it then looks as though the selection was lost.
             ->with('TransportLoad', fn($query) => $query->with('CollectionAddress')->with('DeliveryAddress'))
-            ->with('DealTicket')->with('Supplier', fn($query) => $query->with('addressable')->with('TermsOfPayment')->with('contactable', fn($query) => $query->with('numberable')->with('emailable')))
-            ->with('Customer', fn($query) => $query->with('addressable')->with('contactable', fn($query) => $query->with('numberable')->with('emailable'))->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
+            ->with('DealTicket')->with('Supplier', fn($query) => $query->with(['addressable' => fn($q) => $q->visible()])->with('TermsOfPayment')->with('contactable', fn($query) => $query->with('numberable')->with('emailable')))
+            ->with('Customer', fn($query) => $query->with(['addressable' => fn($q) => $q->visible()])->with('contactable', fn($query) => $query->with('numberable')->with('emailable'))->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_2', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_3', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
             ->with('Customer_4', fn($query) => $query->with('TermsOfPayment')->with('InvoiceBasis'))->with('Product')
@@ -116,10 +116,10 @@ class TransactionSummaryController extends Controller
         $start_date = (Carbon::now()->tz('Africa/Johannesburg')->startOfMonth())->toDateString();
         $end_date = (Carbon::now()->tz('Africa/Johannesburg'))->toDateString();
 
-        $customers = fn () => Customer::with('staff')->with('addressable')->with('contactable')->orderby('last_legal_name', 'asc')->get();
-        $customer_parents = fn () => CustomerParent::with('staff')->with('addressable')->with('contactable')->orderby('last_legal_name', 'asc')->get();
+        $customers = fn () => Customer::with('staff')->with(['addressable' => fn($q) => $q->visible()])->with('contactable')->orderby('last_legal_name', 'asc')->get();
+        $customer_parents = fn () => CustomerParent::with('staff')->with(['addressable' => fn($q) => $q->visible()])->with('contactable')->orderby('last_legal_name', 'asc')->get();
 
-        $suppliers = fn () => Supplier::with('addressable')->orderby('last_legal_name', 'asc')->get();
+        $suppliers = fn () => Supplier::with(['addressable' => fn($q) => $q->visible()])->orderby('last_legal_name', 'asc')->get();
         $transporters = fn () => Transporter::orderby('last_legal_name', 'asc')->get();
         $contract_types = fn () => ContractType::all();
         $products = fn () => Product::all();
@@ -517,25 +517,38 @@ class TransactionSummaryController extends Controller
 
         $transportLoad = $transportTransaction->TransportLoad;
 
-        // Handle collection_address_id - default to generic address (ID 1) if not provided or invalid
-        $collection_address_id = 1; // Default to generic address
-        if ($request->collection_address_id !== null) {
-            if (is_array($request->collection_address_id) && isset($request->collection_address_id['id'])) {
-                $collection_address_id = $request->collection_address_id['id'];
-            } elseif (is_numeric($request->collection_address_id)) {
-                $collection_address_id = $request->collection_address_id;
+        // Keep whatever the load already has when the request does not carry a
+        // usable address.
+        //
+        // These used to fall back to the generic address (ID 1) instead. Any save
+        // made while the dropdown could not resolve its current value - which is
+        // most of them, because the address often belongs to a different party
+        // record - therefore replaced a real address with "No Address Specified",
+        // silently, on every update. That is the "selection does not stick, the
+        // preparation work is lost" report: the address was not failing to save,
+        // it was being overwritten. Only reach for the generic address when there
+        // is genuinely nothing to preserve.
+        $resolveAddressId = function ($value, $current) {
+            if (is_array($value) && isset($value['id'])) {
+                return $value['id'];
             }
-        }
 
-        // Handle delivery_address_id - default to generic address (ID 1) if not provided or invalid
-        $delivery_address_id = 1; // Default to generic address
-        if ($request->delivery_address_id !== null) {
-            if (is_array($request->delivery_address_id) && isset($request->delivery_address_id['id'])) {
-                $delivery_address_id = $request->delivery_address_id['id'];
-            } elseif (is_numeric($request->delivery_address_id)) {
-                $delivery_address_id = $request->delivery_address_id;
+            if (is_numeric($value)) {
+                return $value;
             }
-        }
+
+            return $current ?: 1;
+        };
+
+        $collection_address_id = $resolveAddressId(
+            $request->collection_address_id,
+            $transportLoad->collection_address_id
+        );
+
+        $delivery_address_id = $resolveAddressId(
+            $request->delivery_address_id,
+            $transportLoad->delivery_address_id
+        );
 
         $is_updated = $transportLoad->update(
             [

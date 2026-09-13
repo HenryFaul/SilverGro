@@ -37,7 +37,10 @@ class DebtorStanding extends Model
 
         )->when(
             $filters['hasBalance'] ?? false,
-            fn ($query, $value) => $query->where('total_outstanding', '>',0)
+            // A customer in credit has a balance too - it is just on the other
+            // side. '> 0' hid them from the screen entirely, so nobody could see
+            // an overpayment had been recorded.
+            fn ($query, $value) => $query->where('total_outstanding', '<>', 0)
 
         )->when(
             $filters['field'] ?? false,

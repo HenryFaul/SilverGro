@@ -21,7 +21,6 @@ class PurchaseOrderController extends Controller
     public function viewPDF(Request $request, $id): Response
     {
 
-        $final_sales_order = false;
         // Get PDF settings
         $pdfSettings = PdfSetting::getActive();
         $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
@@ -35,9 +34,10 @@ class PurchaseOrderController extends Controller
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
 
-        // Generate Final stores the document and records its path; once that has
-        // happened the document is no longer a working draft.
-        $final_purchase_order = !empty($purchase_order?->report_path);
+        // Activation is what makes these documents final - there is no
+        // "generate final" for them, so report_path is never written and
+        // deriving the flag from it left every copy stamped as a draft.
+        $final_purchase_order = (bool) ($purchase_order?->is_active);
 
 
         $rules_with_approvals = $deal_ticket->getAppliedRules();
@@ -49,7 +49,7 @@ class PurchaseOrderController extends Controller
         $data = [
             'logo' => $logo,
             'pdfSettings' => $pdfSettings,
-            'final_sales_order'=>$final_sales_order,
+            'final_purchase_order'=>$final_purchase_order,
             'transport_trans'=>$transport_trans,
             'deal_ticket'=>$deal_ticket,
             'sales_order'=>$sales_order,
@@ -70,7 +70,6 @@ class PurchaseOrderController extends Controller
     public function viewConfirmationPDF(Request $request, $id): Response
     {
 
-        $final_purchase_order = false;
         // Get PDF settings
         $pdfSettings = PdfSetting::getActive();
         $logo = $pdfSettings ? $pdfSettings->logo_full_path : public_path('images/pdflogo.jpg');
@@ -85,6 +84,11 @@ class PurchaseOrderController extends Controller
         $deal_ticket = $transport_trans->DealTicket;
         $sales_order = $transport_trans->SalesOrder;
         $purchase_order = $transport_trans->PurchaseOrder?->load('ConfirmedByType');
+
+        // Activation is what makes these documents final - there is no
+        // "generate final" for them, so report_path is never written and
+        // deriving the flag from it left every copy stamped as a draft.
+        $final_purchase_order = (bool) ($purchase_order?->is_active);
 
         // Get split data if it's a split load
         $split_data = null;

@@ -8,6 +8,7 @@ import InputError from '@/Components/InputError.vue';
 import AreaInput from '@/Components/AreaInput.vue';
 import SectionBorder from '@/Components/SectionBorder.vue';
 import AddressModal from '@/Components/UI/AddressModal.vue';
+  import AddressList from '@/Components/UI/AddressList.vue';
 import ContactModal from '@/Components/UI/ContactModal.vue';
 import NumberContactDetailModal from '@/Components/UI/NumberContactDetailModal.vue';
 import EmailContactDetailModal from '@/Components/UI/EmailContactDetailModal.vue';
@@ -679,49 +680,9 @@ const swal = inject('$swal');
                         @close="closeModal" />
                     </div>
 
-                    <ul class="w-3/2">
-                      <li
-                        v-for="n in customer.addressable"
-                        :key="n.id"
-                        :value="n.id"
-                        class="w-full border-b-2 border-neutral-100 border-opacity-100 py-4 dark:border-opacity-50">
-                        <div class="flex row mt-1">
-                          <div class="flex-none w-1/6">
-                            <icon
-                              v-if="n.address_type_id === 1"
-                              class="mr-2 w-6 h-6 fill-green-200"
-                              name="truck" />
-                            <icon
-                              v-if="n.address_type_id === 2"
-                              class="mr-2 w-6 h-6 fill-green-200"
-                              name="house" />
-                            <icon
-                              v-if="n.address_type_id === 3"
-                              class="mr-2 w-6 h-6 fill-green-200"
-                              name="envelope" />
-                          </div>
-
-                          <div class="flex-auto w-3/6">
-                            {{ n.line_1 }} {{ n.line_2 }} {{ n.line_3 }}
-                            {{ n.country }}
-                            {{ n.code }}
-                          </div>
-                          <div class="flex-auto w-1/6">
-                            <icon
-                              v-if="n.is_primary === 1"
-                              class="mr-2 w-6 h-6 fill-green-200"
-                              name="tick-circle" />
-                          </div>
-                          <div class="flex-auto w-1/6">
-                            <SecondaryButton
-                              class="ml-2"
-                              @click="viewAddress(n)">
-                              View
-                            </SecondaryButton>
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
+                    <address-list
+                      :addresses="customer.addressable ?? []"
+                      @edit="viewAddress" />
                   </div>
                 </div>
               </form>
