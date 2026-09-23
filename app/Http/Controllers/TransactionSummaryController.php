@@ -528,16 +528,26 @@ class TransactionSummaryController extends Controller
         // preparation work is lost" report: the address was not failing to save,
         // it was being overwritten. Only reach for the generic address when there
         // is genuinely nothing to preserve.
+        //
+        // Address 1 is the "No Address Specified" placeholder. Nobody can pick it
+        // - it belongs to no party, so it never appears in a dropdown - but a
+        // screen that opened the trade while it still had no address holds it as
+        // the current value, and saving from that screen would write it back
+        // over a real address chosen since. So it may never replace a real one.
         $resolveAddressId = function ($value, $current) {
+            $id = null;
+
             if (is_array($value) && isset($value['id'])) {
-                return $value['id'];
+                $id = $value['id'];
+            } elseif (is_numeric($value)) {
+                $id = $value;
             }
 
-            if (is_numeric($value)) {
-                return $value;
+            if ($id === null || ((int) $id === 1 && $current > 1)) {
+                return $current ?: 1;
             }
 
-            return $current ?: 1;
+            return $id;
         };
 
         $collection_address_id = $resolveAddressId(

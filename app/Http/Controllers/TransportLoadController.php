@@ -147,25 +147,37 @@ class TransportLoadController extends Controller
 
         $no_units_outgoing_total=$request->no_units_outgoing+$request->no_units_outgoing_2+$request->no_units_outgoing_3+$request->no_units_outgoing_4;
 
-        // Handle collection_address_id - default to generic address (ID 1) if not provided or invalid
-        $collection_address_id = 1; // Default to generic address
-        if ($request->collection_address_id !== null) {
-            if (is_array($request->collection_address_id) && isset($request->collection_address_id['id'])) {
-                $collection_address_id = $request->collection_address_id['id'];
-            } elseif (is_numeric($request->collection_address_id)) {
-                $collection_address_id = $request->collection_address_id;
-            }
-        }
+        // Same rule as the Trades screen's update path: keep whatever the load
+        // already has unless the request carries a real address. This used to
+        // fall back to the generic address (ID 1), so any save from a screen
+        // whose dropdown was blank replaced a real address with "No Address
+        // Specified". And the placeholder itself may never replace a real
+        // address - nobody can pick it, only a stale screen can send it.
+        $resolveAddressId = function ($value, $current) {
+            $id = null;
 
-        // Handle delivery_address_id - default to generic address (ID 1) if not provided or invalid
-        $delivery_address_id = 1; // Default to generic address
-        if ($request->delivery_address_id !== null) {
-            if (is_array($request->delivery_address_id) && isset($request->delivery_address_id['id'])) {
-                $delivery_address_id = $request->delivery_address_id['id'];
-            } elseif (is_numeric($request->delivery_address_id)) {
-                $delivery_address_id = $request->delivery_address_id;
+            if (is_array($value) && isset($value['id'])) {
+                $id = $value['id'];
+            } elseif (is_numeric($value)) {
+                $id = $value;
             }
-        }
+
+            if ($id === null || ((int) $id === 1 && $current > 1)) {
+                return $current ?: 1;
+            }
+
+            return $id;
+        };
+
+        $collection_address_id = $resolveAddressId(
+            $request->collection_address_id,
+            $transportLoad->collection_address_id
+        );
+
+        $delivery_address_id = $resolveAddressId(
+            $request->delivery_address_id,
+            $transportLoad->delivery_address_id
+        );
 
         $is_updated = $transportLoad->update(
             [
