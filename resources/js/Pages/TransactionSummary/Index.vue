@@ -418,7 +418,7 @@
   };
 
   // Address clearing watchers for customers (prevents invalid addresses when customer changes)
-  useAddressClearing(combined_Form);
+  useAddressClearing(combined_Form, () => props.selected_transaction);
 
   // Order activation, send, and receive handlers now provided by useTransactionStatusForms composable
 
