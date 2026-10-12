@@ -435,7 +435,13 @@ class TransactionSummaryController extends Controller
         // changing the customer from the Trades screen misallocated the debtor.
         $transport_invoice = $transportTransaction->TransportInvoice;
         if ($transport_invoice) {
-            $transport_invoice->customer_id = $isSplitLoad ? 2 : $request->customer_id['id'];
+            // Always the trade's own customer, split load or not. A linked split
+            // (primary/member) is a separate MQ with a single customer of its own,
+            // and its invoice belongs to that customer's debtor account. This used
+            // to send split loads to customer 2 - the "Unallocated" placeholder on
+            // the machine the convention was written on - but no customer 2 exists
+            // here, so every save of a split load failed its foreign key and 500'd.
+            $transport_invoice->customer_id = $request->customer_id['id'];
             $transport_invoice->save();
         }
 
