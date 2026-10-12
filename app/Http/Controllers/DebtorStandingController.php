@@ -235,9 +235,15 @@ class DebtorStandingController extends Controller
                     'TransportTransaction:id,a_mq,customer_id',
                     'TransportTransaction.Customer:id,last_legal_name'
                 ])
+                // The same lines the standing totals: open balances on unpaid
+                // invoices, plus credits. An overpaid invoice is flagged paid, so
+                // filtering on is_invoice_paid alone counted its credit in the
+                // standing but left it out of this list - the two views disagreed
+                // by exactly the credit.
                 ->whereHas('TransportInvoiceDetails', function (Builder $query) {
-                    $query->where('outstanding', '<>', 0)
-                          ->where('is_invoice_paid', false);
+                    $query->where(function (Builder $q) {
+                        $q->where('outstanding', '>', 0)->where('is_invoice_paid', false);
+                    })->orWhere('outstanding', '<', 0);
                 })
                 ->get();
         }

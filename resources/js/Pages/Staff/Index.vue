@@ -205,7 +205,7 @@
                       </td>
 
                       <td class="py-4 px-6 whitespace-nowrap">
-                        <div v-if="staff.staff.is_active === 1">
+                        <div v-if="staff.staff?.is_active === 1">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
