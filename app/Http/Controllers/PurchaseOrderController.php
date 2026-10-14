@@ -63,7 +63,7 @@ class PurchaseOrderController extends Controller
         $pdf = PDF::loadView('pdf_reports.purchase_order',$data);
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->stream();
+        return $this->pdfResponse($request, $pdf, $transport_trans, 'Purchase Order', $transport_trans->Supplier?->last_legal_name);
 
     }
 
@@ -156,7 +156,7 @@ class PurchaseOrderController extends Controller
             $pdf->setPaper('A4', 'portrait');
         }
 
-        return $pdf->stream();
+        return $this->pdfResponse($request, $pdf, $transport_trans, 'Purchase Order Confirmation', $transport_trans->Supplier?->last_legal_name);
 
     }
 

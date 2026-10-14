@@ -64,7 +64,7 @@ class SalesOrderController extends Controller
         $pdf = PDF::loadView('pdf_reports.sales_order',$data);
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->stream();
+        return $this->pdfResponse($request, $pdf, $transport_trans, 'Sales Order', $transport_trans->Customer?->last_legal_name);
 
     }
 
@@ -158,7 +158,7 @@ class SalesOrderController extends Controller
         $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_v3', $data);
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->stream();
+        return $this->pdfResponse($request, $pdf, $transport_trans, 'Sales Order Confirmation', $transport_trans->Customer?->last_legal_name);
 
     }
 
@@ -213,7 +213,7 @@ class SalesOrderController extends Controller
         $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_v3', $data);
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->stream();
+        return $this->pdfResponse($request, $pdf, $transport_trans, 'Sales Order Confirmation', $transport_trans->Customer?->last_legal_name);
     }
 
     public function viewConfirmationPDFSplit(Request $request, $id,$client_id): Response
@@ -298,7 +298,7 @@ class SalesOrderController extends Controller
         $pdf = PDF::loadView('pdf_reports.sales_order_confirmation_split_v3',$data);
         $pdf->setPaper('A4', 'landscape');
 
-        return $pdf->stream();
+        return $this->pdfResponse($request, $pdf, $transport_trans, 'Sales Order Confirmation', \App\Models\Customer::find($client_id)?->last_legal_name);
 
     }
 

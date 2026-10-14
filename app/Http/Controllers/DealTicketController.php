@@ -229,7 +229,7 @@ class DealTicketController extends Controller
         $domPdfOptions->set("isPhpEnabled", true);
         $pdf->set_option('isPhpEnabled', true);
 
-        return $pdf->stream();
+        return $this->pdfResponse($request, $pdf, $transport_trans, 'Deal Ticket', $transport_trans->Customer?->last_legal_name);
 
     }
 

@@ -109,6 +109,53 @@ watch(
     showModel.value = false;
   };
 
+  // Debtor flag rules - the single source for both the flag shown on each row
+  // and the "How the flags work" legend, so the legend can never describe
+  // something other than what the screen actually does. Evaluated in order;
+  // the first rule that matches decides the flag.
+  //
+  // Note for whoever reviews these: overdue is only considered once the hard
+  // limit is exceeded. A customer inside the soft limit is green even if all of
+  // their balance is overdue.
+  const flagRules = [
+    {
+      key: 'green',
+      colour: 'fill-green-500',
+      label: 'Green',
+      tooltip: 'Within soft credit limit',
+      rule: 'Outstanding is at or below the soft credit limit. Overdue is not considered.',
+      test: (d) => d.customer.credit_limit >= d.total_outstanding,
+    },
+    {
+      key: 'red',
+      colour: 'fill-red-500',
+      label: 'Red',
+      tooltip: 'Hard credit limit exceeded and payments overdue',
+      rule: 'Outstanding is above the hard credit limit and something is overdue.',
+      test: (d) => d.customer.credit_limit_hard < d.total_outstanding && d.total_overdue > 0,
+    },
+    {
+      key: 'orange',
+      colour: 'fill-orange-500',
+      label: 'Orange',
+      tooltip: 'Hard credit limit exceeded',
+      rule: 'Outstanding is above the hard credit limit, nothing overdue.',
+      test: (d) => d.customer.credit_limit_hard < d.total_outstanding,
+    },
+    {
+      key: 'yellow',
+      colour: 'fill-yellow-500',
+      label: 'Yellow',
+      tooltip: 'Outstanding exceeds soft credit limit',
+      rule: 'Outstanding is above the soft limit but not above the hard limit. Overdue is not considered.',
+      test: (d) => d.customer.credit_limit < d.total_outstanding,
+    },
+  ];
+
+  const flagFor = (debtor) => flagRules.find((r) => r.test(debtor)) ?? null;
+
+  const showFlagRules = ref(false);
+
   let NiceNumber = (_number) => {
     let val = (_number / 1).toFixed(2).replace('.', '.');
     return 'R ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
@@ -251,6 +298,37 @@ watch(
                   <span>Last Updated:</span>
                   <span>{{ max_date }}</span>
                 </div>
+                <button
+                  class="ml-4 mt-1 text-sm text-indigo-500 underline hover:text-indigo-700"
+                  type="button"
+                  @click="showFlagRules = !showFlagRules">
+                  {{ showFlagRules ? 'Hide' : 'How the flags work' }}
+                </button>
+              </div>
+
+              <div
+                v-if="showFlagRules"
+                class="mt-3 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm">
+                <div class="mb-2 font-semibold text-gray-900">
+                  How the status flag is decided - checked in this order, first match wins
+                </div>
+                <ol class="space-y-2">
+                  <li
+                    v-for="(r, i) in flagRules"
+                    :key="r.key"
+                    class="flex items-start gap-2">
+                    <span class="w-4 text-gray-500">{{ i + 1 }}.</span>
+                    <flag-icon :class="['h-5 w-5 shrink-0', r.colour]" />
+                    <span>
+                      <span class="font-semibold">{{ r.label }}:</span>
+                      {{ r.rule }}
+                    </span>
+                  </li>
+                </ol>
+                <div class="mt-3 text-gray-600">
+                  Soft and hard credit limits are set per customer. Outstanding and overdue are as at
+                  the last Update.
+                </div>
               </div>
 
               <div class="flex col-span-6"></div>
@@ -325,35 +403,10 @@ watch(
                         </td>
 
                         <td class="border-b border-gray-200'">
-                          <!-- Green: within soft credit limit -->
                           <base-tooltip
-                            v-if="debtor.customer.credit_limit >= debtor.total_outstanding"
-                            content="All Payments Up to Date">
-                            <flag-icon class="h-5 w-5 fill-green-500" />
-                          </base-tooltip>
-
-                          <!-- Red: hard limit exceeded AND overdue exists -->
-                          <base-tooltip
-                            v-else-if="
-                              debtor.customer.credit_limit_hard < debtor.total_outstanding &&
-                              debtor.total_overdue > 0
-                            "
-                            content="Hard Credit Limit exceeded and payments overdue">
-                            <flag-icon class="h-5 w-5 fill-red-500" />
-                          </base-tooltip>
-
-                          <!-- Orange: hard limit exceeded, no overdue -->
-                          <base-tooltip
-                            v-else-if="debtor.customer.credit_limit_hard < debtor.total_outstanding"
-                            content="Hard Credit Limit exceeded">
-                            <flag-icon class="h-5 w-5 fill-orange-500" />
-                          </base-tooltip>
-
-                          <!-- Yellow: soft limit exceeded -->
-                          <base-tooltip
-                            v-else-if="debtor.customer.credit_limit < debtor.total_outstanding"
-                            content="Payment outstanding exceeds Credit Limit">
-                            <flag-icon class="h-5 w-5 fill-yellow-500" />
+                            v-if="flagFor(debtor)"
+                            :content="flagFor(debtor).tooltip">
+                            <flag-icon :class="['h-5 w-5', flagFor(debtor).colour]" />
                           </base-tooltip>
                         </td>
 
