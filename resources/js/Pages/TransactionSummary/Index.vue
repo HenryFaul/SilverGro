@@ -2904,6 +2904,13 @@
                               target="_blank">
                               View (working doc)
                             </a>
+                            <a
+                              :href="('/pdf_report/deal_ticket_view/' + props.selected_transaction.id) + '?download=1'"
+                              class="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                              title="Save as a named PDF, ready to attach to an email"
+                              download>
+                              Download
+                            </a>
                           </div>
                         </dl>
                       </li>
@@ -3881,6 +3888,13 @@
                                   target="_blank">
                                   View
                                 </a>
+                                <a
+                                  :href="('/pdf_report/deal_ticket_view/' + props.selected_transaction.id) + '?download=1'"
+                                  class="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                  title="Save as a named PDF, ready to attach to an email"
+                                  download>
+                                  Download
+                                </a>
                               </dd>
                             </div>
                             <div class="flex justify-between gap-x-4 py-3">
@@ -3983,6 +3997,13 @@
                                   class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                   target="_blank">
                                   View
+                                </a>
+                                <a
+                                  :href="('/pdf_report/transport_order_confirmation_view/' + props.selected_transaction.id) + '?download=1'"
+                                  class="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                  title="Save as a named PDF, ready to attach to an email"
+                                  download>
+                                  Download
                                 </a>
                               </dd>
                             </div>
@@ -4089,6 +4110,13 @@
                                 target="_blank">
                                 View
                               </a>
+                              <a
+                                :href="('/pdf_report/purchase_order_view/' + props.selected_transaction.id) + '?download=1'"
+                                class="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                title="Save as a named PDF, ready to attach to an email"
+                                download>
+                                Download
+                              </a>
                             </dd>
                           </div>
                         </dl>
@@ -4129,6 +4157,13 @@
                                   class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                   target="_blank">
                                   View
+                                </a>
+                                <a
+                                  :href="('/pdf_report/purchase_order_confirmation_view/' + props.selected_transaction.id) + '?download=1'"
+                                  class="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                  title="Save as a named PDF, ready to attach to an email"
+                                  download>
+                                  Download
                                 </a>
                               </dd>
                             </div>
@@ -4219,6 +4254,13 @@
                                 target="_blank">
                                 View
                               </a>
+                              <a
+                                :href="('/pdf_report/sales_order_view/' + props.selected_transaction.id) + '?download=1'"
+                                class="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                title="Save as a named PDF, ready to attach to an email"
+                                download>
+                                Download
+                              </a>
                             </dd>
                           </div>
                         </dl>
@@ -4260,6 +4302,13 @@
                                   target="_blank">
                                   View
                                 </a>
+                                <a
+                                  :href="('/pdf_report/sales_order_confirmation_view/' + props.selected_transaction.id) + '?download=1'"
+                                  class="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                  title="Save as a named PDF, ready to attach to an email"
+                                  download>
+                                  Download
+                                </a>
                               </dd>
                             </div>
 
@@ -4286,6 +4335,14 @@
                                   class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                   target="_blank">
                                   View
+                                </a>
+                                <a
+                                  v-if="selectedSplitMqId"
+                                  :href="'/pdf_report/sales_order_confirmation_view_individual/' + selectedSplitMqId + '?download=1'"
+                                  class="ml-2 inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                  title="Save as a named PDF, ready to attach to an email"
+                                  download>
+                                  Download
                                 </a>
                               </dd>
                             </div>

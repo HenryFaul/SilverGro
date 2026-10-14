@@ -252,7 +252,7 @@ class TransportOrderController extends Controller
             $pdf->setPaper('A4', 'portrait');
         }
 
-        return $pdf->stream();
+        return $this->pdfResponse($request, $pdf, $transport_trans, 'Transport Order', $transport_trans->Transporter?->last_legal_name);
 
     }
 
