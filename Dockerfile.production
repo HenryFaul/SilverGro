@@ -10,7 +10,12 @@
 # Runs first because the front-end build imports JS shipped inside a Composer
 # package (tightenco/ziggy → resources/js/app.js), so vendor/ must exist before
 # `npm run build`.
-FROM php:8.2-fpm AS vendor
+# PHP is pinned to an exact patch release on purpose. 8.2.35 fixes
+# CVE-2026-109618 and CVE-2026-109619 (critical remote code execution, PHP
+# core, Oct 2026). The floating php:8.2-fpm tag plus the GitHub Actions layer
+# cache could otherwise keep rebuilding on an older, vulnerable base. Bump this
+# deliberately when PHP publishes a security release.
+FROM php:8.2.35-fpm-trixie AS vendor
 
 # Extensions needed for composer platform-requirement checks (phpspreadsheet
 # requires ext-gd/ext-exif, etc.) and to boot Laravel for package discovery.
@@ -63,7 +68,7 @@ RUN npm run build
 
 
 # ── Stage 3: final runtime image ─────────────────────────────────────────────
-FROM php:8.2-fpm AS runtime
+FROM php:8.2.35-fpm-trixie AS runtime
 
 # System deps + nginx + supervisor
 RUN apt-get update && apt-get install -y \
