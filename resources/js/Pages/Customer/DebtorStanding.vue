@@ -114,41 +114,42 @@ watch(
   // something other than what the screen actually does. Evaluated in order;
   // the first rule that matches decides the flag.
   //
-  // Note for whoever reviews these: overdue is only considered once the hard
-  // limit is exceeded. A customer inside the soft limit is green even if all of
-  // their balance is overdue.
+  // "Late" = an unpaid invoice past invoice date + payment terms + the
+  // customer's days overdue allowed (total_late, worked out on Update). Agreed
+  // with Allan, Nov 2026: red and yellow use late, and a late invoice makes a
+  // customer yellow even inside the soft limit - so green is checked last.
   const flagRules = [
-    {
-      key: 'green',
-      colour: 'fill-green-500',
-      label: 'Green',
-      tooltip: 'Within soft credit limit',
-      rule: 'Outstanding is at or below the soft credit limit. Overdue is not considered.',
-      test: (d) => d.customer.credit_limit >= d.total_outstanding,
-    },
     {
       key: 'red',
       colour: 'fill-red-500',
       label: 'Red',
-      tooltip: 'Hard credit limit exceeded and payments overdue',
-      rule: 'Outstanding is above the hard credit limit and something is overdue.',
-      test: (d) => d.customer.credit_limit_hard < d.total_outstanding && d.total_overdue > 0,
+      tooltip: 'Over hard credit limit, with late payments',
+      rule: 'Outstanding is above the hard credit limit and at least one invoice is late.',
+      test: (d) => d.customer.credit_limit_hard < d.total_outstanding && d.total_late > 0,
     },
     {
       key: 'orange',
       colour: 'fill-orange-500',
       label: 'Orange',
-      tooltip: 'Hard credit limit exceeded',
-      rule: 'Outstanding is above the hard credit limit, nothing overdue.',
+      tooltip: 'Over hard credit limit',
+      rule: 'Outstanding is above the hard credit limit, nothing late.',
       test: (d) => d.customer.credit_limit_hard < d.total_outstanding,
     },
     {
       key: 'yellow',
       colour: 'fill-yellow-500',
       label: 'Yellow',
-      tooltip: 'Outstanding exceeds soft credit limit',
-      rule: 'Outstanding is above the soft limit but not above the hard limit. Overdue is not considered.',
-      test: (d) => d.customer.credit_limit < d.total_outstanding,
+      tooltip: 'Over soft credit limit, or a payment is late',
+      rule: 'Outstanding is above the soft credit limit, or at least one invoice is late.',
+      test: (d) => d.customer.credit_limit < d.total_outstanding || d.total_late > 0,
+    },
+    {
+      key: 'green',
+      colour: 'fill-green-500',
+      label: 'Green',
+      tooltip: 'Within soft credit limit, nothing late',
+      rule: 'Outstanding is at or below the soft credit limit and nothing is late.',
+      test: () => true,
     },
   ];
 
@@ -326,8 +327,11 @@ watch(
                   </li>
                 </ol>
                 <div class="mt-3 text-gray-600">
-                  Soft and hard credit limits are set per customer. Outstanding and overdue are as at
-                  the last Update.
+                  An invoice is <span class="font-semibold">late</span> once it is unpaid past its
+                  invoice date plus the customer's payment terms plus their days overdue allowed
+                  (for example 7-day terms with 3 days allowed: late from day 11). The Overdue column
+                  is the plain figure, past the due date with no allowance. Credit limits, terms and
+                  days overdue allowed are set per customer. Figures are as at the last Update.
                 </div>
               </div>
 

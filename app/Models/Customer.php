@@ -55,6 +55,12 @@ class Customer extends Model
         return $this->belongsTo(TermsOfPayment::class);
     }
 
+    /** Grace days before an unpaid invoice counts as late (stored as a terms option). */
+    public function DaysOverdueAllowed(): BelongsTo
+    {
+        return $this->belongsTo(TermsOfPayment::class, 'days_overdue_allowed_id');
+    }
+
     public function TermsOfPaymentBasis(): BelongsTo
     {
         return $this->belongsTo(TermsOfPaymentBasis::class);

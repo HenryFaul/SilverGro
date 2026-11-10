@@ -130,9 +130,6 @@ const props = defineProps({
     return total;
   };
 
-  const isPaymentOverdue = (invoice_details) => {
-    return invoice_details.overdue > 0;
-  };
 
   const toolTipGen = (Message, Truck) => {
     return Message + ' truck: ' + (Truck + 1) + '.';
@@ -182,13 +179,6 @@ const props = defineProps({
       });
     }
 
-    // Add payment overdue alert
-    if (
-      trans.transport_invoice_details &&
-      isPaymentOverdue(trans.transport_invoice_details)
-    ) {
-      the_list += '  payment_overdue.';
-    }
 
     // Add weighbridge variance alert
     if (
@@ -204,13 +194,6 @@ const props = defineProps({
   const hasAnyAlerts = (trans) => {
     // Check if there are any transport status alerts
     if (trans.transport_status && trans.transport_status.length > 0) {
-      return true;
-    }
-    // Check if payment is overdue
-    if (
-      trans.transport_invoice_details &&
-      isPaymentOverdue(trans.transport_invoice_details)
-    ) {
       return true;
     }
     // Check if there's a weighbridge variance
@@ -769,12 +752,8 @@ const props = defineProps({
                                         <button
                                           class="block w-10 h-10 ml-auto bg-blue-800 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800">
                                           <div
-                                            v-if="
-                                              isPaymentOverdue(
-                                                trans.transport_invoice_details
-                                              )
-                                            ">
-                                            <base-tooltip content="Payment overdue.">
+                                            v-if="trans.payment_late">
+                                            <base-tooltip content="Payment late: unpaid past payment terms + days overdue allowed.">
                                               <icon
                                                 class="mr-3 w-6 h-6 fill-red-500 animate-pulse"
                                                 name="dollar" />

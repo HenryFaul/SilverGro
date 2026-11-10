@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\DebtorStanding;
 use App\Models\TransportInvoice;
 use App\Models\TransportTransaction;
+use App\Support\PaymentLateness;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -31,6 +32,7 @@ class DebtorStandingController extends Controller
         $customers = Customer::with([
             'CustomerRating',
             'TermsOfPayment',
+            'DaysOverdueAllowed',
             'TermsOfPaymentBasis',
             'InvoiceBasis'
         ])->where('is_active', 1)->get();
@@ -43,6 +45,7 @@ class DebtorStandingController extends Controller
 
             $customer_total_outstanding = 0;
             $customer_total_overdue = 0;
+            $customer_total_late = 0;
 
             // Check if customer has required payment terms
             if (!$customer->TermsOfPayment) {
@@ -132,6 +135,12 @@ class DebtorStandingController extends Controller
                             $invoice_detail->overdue = 0;
                         }
 
+                        // Late = overdue beyond the customer's days overdue allowed.
+                        // This, not plain overdue, is what the debtor flags use.
+                        if (PaymentLateness::isLate($invoice_detail, $customer, $cur_date)) {
+                            $customer_total_late += $invoice_balance;
+                        }
+
                         $invoice_detail->save();
 
                     } else {
@@ -155,6 +164,7 @@ class DebtorStandingController extends Controller
 
             $debtor_standing->total_outstanding = round($customer_total_outstanding, 2);
             $debtor_standing->total_overdue = round($customer_total_overdue, 2);
+            $debtor_standing->total_late = round($customer_total_late, 2);
             $debtor_standing->updated_at = $cur_date->toDayDateTimeString();
 
             $debtor_standing->save();
