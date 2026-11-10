@@ -17,9 +17,6 @@ import { truncateText } from '@/Composables/useTextFormatters';
   };
 
   // Helper function to check if payment is overdue
-  const isPaymentOverdue = (invoice_details) => {
-    return invoice_details && invoice_details.overdue > 10;
-  };
 
   // Helper function to check if there's a weighbridge variance
   const hasWeighbridgeVariance = (driver_vehicles) => {
@@ -38,13 +35,6 @@ import { truncateText } from '@/Composables/useTextFormatters';
   const hasAnyAlerts = (trans) => {
     // Check if there are any transport status alerts
     if (trans.transport_status && trans.transport_status.length > 0) {
-      return true;
-    }
-    // Check if payment is overdue
-    if (
-      trans.transport_invoice_details &&
-      isPaymentOverdue(trans.transport_invoice_details)
-    ) {
       return true;
     }
     // Check if there's a weighbridge variance
@@ -70,13 +60,6 @@ import { truncateText } from '@/Composables/useTextFormatters';
       });
     }
 
-    // Add payment overdue alert
-    if (
-      trans.transport_invoice_details &&
-      isPaymentOverdue(trans.transport_invoice_details)
-    ) {
-      the_list += '  payment_overdue.';
-    }
 
     // Add weighbridge variance alert
     if (
@@ -181,17 +164,18 @@ import { truncateText } from '@/Composables/useTextFormatters';
     <!-- STATUS Column -->
     <td :class="cellClass">
       <div class="flex items-center gap-1">
+        <!-- Order agreed with Allan: excluded, C.O.D, operational alerts, payment late -->
+        <base-tooltip v-if="!transaction.include_in_calculations" content="Exclude from calculations.">
+          <icon class="w-4 h-4 fill-gray-500" name="info" />
+        </base-tooltip>
         <base-tooltip v-if="transaction.supplier?.terms_of_payment_id === 1" content="Supplier C.O.D account.">
           <icon class="w-5 h-5 fill-red-500" name="bell-solid" />
-        </base-tooltip>
-        <base-tooltip v-if="transaction.transport_invoice_details && isPaymentOverdue(transaction.transport_invoice_details)" content="Payment overdue.">
-          <icon class="w-4 h-4 fill-red-500" name="dollar" />
         </base-tooltip>
         <base-tooltip v-if="hasAnyAlerts(transaction)" :content="warningLister(transaction)">
           <icon class="w-4 h-4 animate-pulse fill-red-500" name="triangle" />
         </base-tooltip>
-        <base-tooltip v-if="!transaction.include_in_calculations" content="Exclude from calculations.">
-          <icon class="w-4 h-4 fill-gray-500" name="info" />
+        <base-tooltip v-if="transaction.payment_late" content="Payment late: unpaid past payment terms + days overdue allowed.">
+          <icon class="w-4 h-4 fill-red-500" name="dollar" />
         </base-tooltip>
       </div>
     </td>

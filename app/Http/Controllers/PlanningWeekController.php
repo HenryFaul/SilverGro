@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\OldTransaction;
 use App\Models\TransportDriverVehicle;
 use App\Models\TransportTransaction;
+use App\Support\PaymentLateness;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -33,12 +34,15 @@ class PlanningWeekController extends Controller
         $paginate = $request['show'] ?? 25;
 
 
-        $transport_trans = TransportTransaction::with('Customer')->with('Supplier')->with('Transporter')->with('ContractType')->with('Product')->with('DealTicket')
+        $transport_trans = TransportTransaction::with(PaymentLateness::eagerLoads())->with('Customer')->with('Supplier')->with('Transporter')->with('ContractType')->with('Product')->with('DealTicket')
             ->with('TransportFinance')->with('TransportLoad')->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle'))->with('TransportInvoiceDetails')->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))
             ->week($filters)
             ->orderBy('transport_date_earliest', 'asc')
             ->paginate($paginate)
             ->withQueryString();
+
+        // $ alert per trade: invoice unpaid past terms + days overdue allowed.
+        PaymentLateness::flagTrades($transport_trans->getCollection());
 
 
         $contract_types = ContractType::all();

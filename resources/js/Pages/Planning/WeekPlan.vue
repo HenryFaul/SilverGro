@@ -167,9 +167,6 @@
     return `${day}/${month}/${year}`;
   };
 
-  const isPaymentOverdue = (invoice_details) => {
-    return invoice_details.overdue > 0;
-  };
 
   const hasWeighbridgeVariance = (driver_vehicles) => {
     if (!driver_vehicles || driver_vehicles.length === 0) {
@@ -195,13 +192,6 @@
       });
     }
 
-    // Add payment overdue alert
-    if (
-      trans.transport_invoice_details &&
-      isPaymentOverdue(trans.transport_invoice_details)
-    ) {
-      the_list += '  payment_overdue.';
-    }
 
     // Add weighbridge variance alert
     if (
@@ -217,13 +207,6 @@
   const hasAnyAlerts = (trans) => {
     // Check if there are any transport status alerts
     if (trans.transport_status && trans.transport_status.length > 0) {
-      return true;
-    }
-    // Check if payment is overdue
-    if (
-      trans.transport_invoice_details &&
-      isPaymentOverdue(trans.transport_invoice_details)
-    ) {
       return true;
     }
     // Check if there's a weighbridge variance
@@ -708,28 +691,21 @@
                               :class="DayStyle(trans.transport_date_earliest)">
                               <td class="px-2 py-1">
                                 <div class="flex items-center gap-1">
+                                  <!-- Order agreed with Allan: excluded, C.O.D, operational alerts, payment late -->
+                                  <base-tooltip
+                                    v-if="!trans.include_in_calculations"
+                                    content="Exclude from calculations.">
+                                    <icon
+                                      class="w-3 h-3 fill-gray-500"
+                                      name="info" />
+                                  </base-tooltip>
+
                                   <base-tooltip
                                     v-if="trans.supplier.terms_of_payment_id == 1"
                                     content="Supplier C.O.D account.">
                                     <icon
                                       class="w-6 h-6 fill-red-500"
                                       name="bell-solid" />
-                                  </base-tooltip>
-
-                                  <base-tooltip
-                                    v-if="trans.transport_driver_vehicle.is_payment_overdue"
-                                    content="Payment overdue.">
-                                    <icon
-                                      class="w-3 h-3 fill-red-500"
-                                      name="dollar" />
-                                  </base-tooltip>
-
-                                  <base-tooltip
-                                    v-if="trans.transport_invoice_details && isPaymentOverdue(trans.transport_invoice_details)"
-                                    content="Invoice payment overdue.">
-                                    <icon
-                                      class="w-3 h-3 fill-orange-500"
-                                      name="dollar" />
                                   </base-tooltip>
 
                                   <base-tooltip
@@ -741,11 +717,11 @@
                                   </base-tooltip>
 
                                   <base-tooltip
-                                    v-if="!trans.include_in_calculations"
-                                    content="Exclude from calculations.">
+                                    v-if="trans.payment_late"
+                                    content="Payment late: unpaid past payment terms + days overdue allowed.">
                                     <icon
-                                      class="w-3 h-3 fill-gray-500"
-                                      name="info" />
+                                      class="w-3 h-3 fill-red-500"
+                                      name="dollar" />
                                   </base-tooltip>
                                 </div>
                               </td>

@@ -6,6 +6,7 @@ use App\Models\ContractType;
 use App\Models\Customer;
 use App\Models\OldTransaction;
 use App\Models\TransportTransaction;
+use App\Support\PaymentLateness;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -31,7 +32,7 @@ class PlanningDiaryController extends Controller
 
         $paginate = $request['show'] ?? 25;
 
-        $transport_trans = TransportTransaction::with('Customer')->with('Supplier')->with('Transporter')->with('ContractType')->with('Product')->with('DealTicket')->with('TransportInvoice')
+        $transport_trans = TransportTransaction::with(PaymentLateness::eagerLoads())->with('Customer')->with('Supplier')->with('Transporter')->with('ContractType')->with('Product')->with('DealTicket')->with('TransportInvoice')
             ->with('TransportFinance')->with('TransportLoad')->with('TransportInvoiceDetails')->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))
             ->with('TransportJob', fn($query) => $query->with('LoadingHoursFrom')->with('LoadingHoursTo')->with('OffloadingHoursFrom')->with('OffloadingHoursTo')->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle')))
             ->with('TransportLoad')->with('TransportDriverVehicle', fn($query) => $query->with('Driver')->with('Vehicle'))
@@ -39,6 +40,9 @@ class PlanningDiaryController extends Controller
             ->orderBy('transport_date_earliest', 'asc')
             ->paginate($paginate)
             ->withQueryString();
+
+        // $ alert per trade: invoice unpaid past terms + days overdue allowed.
+        PaymentLateness::flagTrades($transport_trans->getCollection());
 
         $contract_types = ContractType::all();
 

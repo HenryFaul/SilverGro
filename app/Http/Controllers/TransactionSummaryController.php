@@ -27,6 +27,7 @@ use App\Models\TransportDriverVehicle;
 use App\Models\Transporter;
 use App\Models\TransportRateBasis;
 use App\Models\TransportTransaction;
+use App\Support\PaymentLateness;
 use App\Models\VehicleType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -62,7 +63,7 @@ class TransactionSummaryController extends Controller
 
         $paginate = $request['show'] ?? 25;
 
-        $transactions = TransportTransaction::with('ContractType')->with('Customer')->with('Customer_2')->with('Customer_3')->with('Customer_4')->with('Supplier')->with('Transporter')->with('Product')->with('TransportFinance')
+        $transactions = TransportTransaction::with(PaymentLateness::eagerLoads())->with('ContractType')->with('Customer')->with('Customer_2')->with('Customer_3')->with('Customer_4')->with('Supplier')->with('Transporter')->with('Product')->with('TransportFinance')
             ->with('TransportLoad')->with('DealTicket')->with('PurchaseOrder')->with('SalesOrder')->with('TransportOrder')
             ->with('TransportInvoice', fn($query) => $query->with('TransportInvoiceDetails'))
             ->with('TransportStatus', fn($query) => $query->with('StatusEntity')->with('StatusType'))
@@ -74,6 +75,9 @@ class TransactionSummaryController extends Controller
             ->orderBy('transport_date_earliest', 'desc')
             ->paginate($paginate)
             ->withQueryString();
+
+        // $ alert per trade: invoice unpaid past terms + days overdue allowed.
+        PaymentLateness::flagTrades($transactions->getCollection());
 
         $first_transaction_id = TransportTransaction::with('ContractType')->with('Customer')->with('Customer_2')->with('Customer_3')->with('Customer_4')->with('Supplier')->with('Transporter')->with('Product')
             ->index($filters)->pluck('id')->last();
