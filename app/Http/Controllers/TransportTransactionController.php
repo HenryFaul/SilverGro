@@ -301,7 +301,9 @@ class TransportTransactionController extends Controller
             'transport_rate_basis_id' => $trans_to_clone->transport_rate_basis_id,
             'traders_notes' => $trans_to_clone->traders_notes,
             'old_id' => $trans_to_clone->old_id,
-            'include_in_calculations' => $trans_to_clone->include_in_calculations
+            // A clone is a draft until someone works on it: it must not count in
+            // the dashboard, weekly or GP figures until switched on deliberately.
+            'include_in_calculations' => false,
         ]);
 
         //Deal Ticket
@@ -321,8 +323,9 @@ class TransportTransactionController extends Controller
             'confirmed_by_id' => 1,
             'confirmed_by_type_id' => 1,
             'product_id' => $transport_load_to_clone->product_id,
-            'packaging_incoming_id' => 1,
-            'packaging_outgoing_id' => 1,
+            // Packaging is part of the deal being repeated, so it carries over.
+            'packaging_incoming_id' => $transport_load_to_clone->packaging_incoming_id ?? 1,
+            'packaging_outgoing_id' => $transport_load_to_clone->packaging_outgoing_id ?? 1,
             'product_source_id' => 1,
             'no_units_incoming' => $transport_load_to_clone->no_units_incoming,
             'billing_units_incoming_id' => $transport_load_to_clone->billing_units_incoming_id,
@@ -359,17 +362,19 @@ class TransportTransactionController extends Controller
             'transport_trans_id' => $transport_trans->id,
             'transport_load_id' => $transport_load->id,
             'transport_rate_basis_id' => $transport_finance_to_clone->transport_rate_basis_id,
-            'cost_price_per_unit' => 0,
+            // The three pricing inputs carry over (the rest is recalculated from
+            // them by calculateFields below). Weights and actuals start at zero.
+            'cost_price_per_unit' => $transport_finance_to_clone->cost_price_per_unit ?? 0,
             'cost_price_per_ton' => 0,
             'total_cost_price' => 0,
             'cost_price' => 0,
             'selling_price' => 0,
-            'selling_price_per_unit' => 0,
+            'selling_price_per_unit' => $transport_finance_to_clone->selling_price_per_unit ?? 0,
             'selling_price_per_ton' => 0,
             'is_transport_costs_inc_price' => 0,
             'transport_cost' => 0,
             'transport_rate_per_ton' => 0,
-            'transport_rate' => 0,
+            'transport_rate' => $transport_finance_to_clone->transport_rate ?? 0,
             'transport_price' => 0,
             'load_insurance_per_ton' => 0,
             'comms_due_per_ton' => 0,
@@ -389,8 +394,6 @@ class TransportTransactionController extends Controller
 
         $transport_finance->CalculateFields();
 
-        $transport_invoice_to_clone = $trans_to_clone->TransportInvoice;
-
         $transport_invoice = TransportInvoice::create([
             'transport_trans_id' => $transport_trans->id,
             'is_active' => false,
@@ -400,20 +403,21 @@ class TransportTransactionController extends Controller
             'customer_id' => $transport_trans->customer_id
         ]);
 
-        $transport_invoice_details_to_clone = $transport_invoice_to_clone->TransportInvoiceDetails;
-
+        // The invoice is never cloned. Copying the original's invoice date, amount
+        // and "invoiced" flag put a second, phantom invoice into Debtor Standing.
+        // A clone starts with a blank invoice, exactly like a new trade.
         $transport_invoice_details = TransportInvoiceDetails::create([
             'transport_trans_id' => $transport_trans->id,
             'invoice_id' => $transport_invoice->id,
-            'is_invoiced' => $transport_invoice_details_to_clone->is_invoiced,
+            'is_invoiced' => false,
             'is_invoice_paid' => false,
-            'invoice_paid_date' => $transport_invoice_details_to_clone->invoice_paid_date,
-            'invoice_pay_by_date' => $transport_invoice_details_to_clone->invoice_pay_by_date,
-            'invoice_date' => $transport_invoice_details_to_clone->invoice_date,
-            'invoice_amount' => $transport_invoice_details_to_clone->invoice_amount,
-            'cost_price' => $transport_invoice_details_to_clone->cost_price,
-            'selling_price' => $transport_invoice_details_to_clone->selling_price,
-            'status_id' => $transport_invoice_details_to_clone->status_id,
+            'invoice_paid_date' => null,
+            'invoice_pay_by_date' => null,
+            'invoice_date' => null,
+            'invoice_amount' => 0,
+            'cost_price' => 0,
+            'selling_price' => 0,
+            'status_id' => 1,
         ]);
 
         $unallocated_vehicle_id_clone = RegularVehicle::firstOrCreate(['reg_no' => 'N/A'], ['vehicle_type_id' => 1])->id;
